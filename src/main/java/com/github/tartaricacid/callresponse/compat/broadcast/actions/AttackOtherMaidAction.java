@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskAttack;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,6 +13,7 @@ import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,7 +25,7 @@ public class AttackOtherMaidAction {
 
     private static final int SEARCH_RADIUS = 16;
     private static final int ATTACK_COOLDOWN_TICKS = 10; // 每 0.5 秒攻击一次
-    private static final ResourceLocation ATTACK_TASK_ID = ResourceLocation.parse("touhou_little_maid:attack");
+    private static final Identifier ATTACK_TASK_ID = Identifier.parse("touhou_little_maid:attack");
 
     // 管理每个女仆的攻击状态
     private static final Map<UUID, ScheduledExecutorService> attackThreads = new ConcurrentHashMap<>();
@@ -42,10 +43,8 @@ public class AttackOtherMaidAction {
         );
 
         if (targets.isEmpty()) {
-            maid.sendSystemMessage(Component.literal("§c[攻击] 附近没有可攻击的女仆！"));
-            if (debugPlayer != null) {
-                debugPlayer.sendSystemMessage(Component.literal("§c[调试] 没有找到攻击目标"));
-            }
+            debugPlayer.sendSystemMessage(Component.literal("§c[攻击] 附近没有可攻击的女仆！"));
+            debugPlayer.sendSystemMessage(Component.literal("§c[调试] 没有找到攻击目标"));
             return;
         }
 
@@ -110,7 +109,7 @@ public class AttackOtherMaidAction {
             }
 
             // 在主线程执行攻击
-            maid.getServer().execute(() -> {
+            Objects.requireNonNull(maid.level().getServer()).execute(() -> {
                 if (!maid.isAlive() || !target.isAlive()) {
                     stopAttack(maid);
                     return;
@@ -134,11 +133,8 @@ public class AttackOtherMaidAction {
         // 10. 反馈消息
         String maidName = maid.getCustomName() != null ? maid.getCustomName().getString() : "女仆";
         String targetName = target.getCustomName() != null ? target.getCustomName().getString() : "女仆";
-        maid.sendSystemMessage(Component.literal("§a[攻击] " + maidName + " 开始攻击 " + targetName));
-
-        if (debugPlayer != null) {
-            debugPlayer.sendSystemMessage(Component.literal("§a[调试] " + maidName + " 锁定目标: " + targetName));
-        }
+        debugPlayer.sendSystemMessage(Component.literal("§a[攻击] " + maidName + " 开始攻击 " + targetName));
+        debugPlayer.sendSystemMessage(Component.literal("§a[调试] " + maidName + " 锁定目标: " + targetName));
     }
 
     /**
@@ -163,14 +159,14 @@ public class AttackOtherMaidAction {
      */
     private static void clearRangedWeapons(EntityMaid maid) {
         var inv = maid.getMaidInv();
-        for (int i = 0; i < inv.getSlots(); i++) {
-            var stack = inv.getStackInSlot(i);
+        for (int i = 0; i < inv.size(); i++) {
+            var stack = inv.getResource(i);
             if (!stack.isEmpty()) {
                 String itemId = stack.getItem().getDescriptionId();
                 if (itemId.contains("bow") || itemId.contains("crossbow") ||
                         itemId.contains("snowball") || itemId.contains("egg") ||
                         itemId.contains("trident") || itemId.contains("gun")) {
-                    inv.setStackInSlot(i, net.minecraft.world.item.ItemStack.EMPTY);
+                    inv.set(i, ItemResource.EMPTY, 0);
                 }
             }
         }
@@ -194,16 +190,12 @@ public class AttackOtherMaidAction {
      */
     public static void stopAllAttacks(EntityMaid maid, ServerPlayer debugPlayer) {
         if (!attackThreads.containsKey(maid.getUUID())) {
-            maid.sendSystemMessage(Component.literal("§e[停战] 当前没有攻击目标"));
-            if (debugPlayer != null) {
-                debugPlayer.sendSystemMessage(Component.literal("§e[调试] " + maid.getCustomName() + " 没有正在攻击的目标"));
-            }
+            debugPlayer.sendSystemMessage(Component.literal("§e[停战] 当前没有攻击目标"));
+            debugPlayer.sendSystemMessage(Component.literal("§e[调试] " + maid.getCustomName() + " 没有正在攻击的目标"));
             return;
         }
         stopAttack(maid);
-        maid.sendSystemMessage(Component.literal("§a[停战] 已停止攻击"));
-        if (debugPlayer != null) {
-            debugPlayer.sendSystemMessage(Component.literal("§a[调试] " + maid.getCustomName() + " 已停战"));
-        }
+        debugPlayer.sendSystemMessage(Component.literal("§a[停战] 已停止攻击"));
+        debugPlayer.sendSystemMessage(Component.literal("§a[调试] " + maid.getCustomName() + " 已停战"));
     }
 }

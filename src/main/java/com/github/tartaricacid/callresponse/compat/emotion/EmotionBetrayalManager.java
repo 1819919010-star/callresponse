@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -61,7 +61,7 @@ public class EmotionBetrayalManager {
         }
         CompoundTag data = maid.getPersistentData();
         if (data.contains(BETRAYAL_NBT_TAG)) {
-            boolean state = data.getBoolean(BETRAYAL_NBT_TAG);
+            boolean state = data.getBoolean(BETRAYAL_NBT_TAG).orElse(false);
             if (state) {
                 isBetraying.put(maidId, true);
             }
@@ -74,7 +74,7 @@ public class EmotionBetrayalManager {
     public static void onVictimAttackedByBetrayer(EntityMaid victim, EntityMaid betrayer) {
         // 只有有主人的女仆才会触发求救（野生女仆不触发）
         if (!victim.isTame() || victim.getOwner() == null) return;
-        if (victim.level().isClientSide) return;
+        if (victim.level().isClientSide()) return;
 
         UUID victimId = victim.getUUID();
         long now = victim.level().getGameTime();
@@ -88,7 +88,7 @@ public class EmotionBetrayalManager {
         float healthRatio = victim.getHealth() / victim.getMaxHealth();
         boolean isNearDeath = healthRatio < 0.4;
 
-        String tendencyDesc = EmotionData.getTendencyPromptSuffix(victim, victim.getOwnerUUID());
+        String tendencyDesc = EmotionData.getTendencyPromptSuffix(victim, victim.getOwner().getUUID());
         if (count == 1) {
             instruction = "你完全没想到同类会攻击你！那个女仆的眼睛里没有理智，只有疯狂。" + tendencyDesc + " 你感到震惊和困惑，请说一段话表达你的惊恐和求救。";
         } else if (count <= 4 && !isNearDeath) {
@@ -181,14 +181,14 @@ public class EmotionBetrayalManager {
         attackCooldown.remove(maidId);
 
         if (maid.isInSittingPose()) maid.setInSittingPose(false);
-        maid.setOwnerUUID(null);
+        maid.setOwner(null);
         maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
         maid.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
         maid.getBrain().eraseMemory(MemoryModuleType.PATH);
         maid.getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET);
         maid.getBrain().eraseMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES);
 
-        ResourceLocation attackTaskId = ResourceLocation.parse("touhou_little_maid:attack");
+        Identifier attackTaskId = Identifier.parse("touhou_little_maid:attack");
         TaskManager.findTask(attackTaskId).ifPresent(maid::setTask);
 
         maid.setAggressive(true);
@@ -210,7 +210,7 @@ public class EmotionBetrayalManager {
 
         // 确保内存状态一致（如果内存中不存在但NBT存在，恢复）
         if (!isBetraying.containsKey(maidId) && maid.getPersistentData().contains(BETRAYAL_NBT_TAG)) {
-            boolean state = maid.getPersistentData().getBoolean(BETRAYAL_NBT_TAG);
+            boolean state = maid.getPersistentData().getBoolean(BETRAYAL_NBT_TAG).orElse(false);
             if (state) {
                 isBetraying.put(maidId, true);
             }
@@ -303,9 +303,9 @@ public class EmotionBetrayalManager {
                     maid.getAttribute(Attributes.ATTACK_DAMAGE).getValue() : 0.0;
             float finalDamage = Math.max(2.0f, (float) baseDamage);
 
-            boolean success = player.hurt(player.damageSources().mobAttack(maid), finalDamage);
+            boolean success = player.hurtServer(player.level(), player.damageSources().mobAttack(maid), finalDamage);
             if (!success) {
-                player.hurt(player.damageSources().generic(), finalDamage);
+                player.hurtServer(player.level(), player.damageSources().generic(), finalDamage);
             }
 
             maid.playSound(SoundEvents.PLAYER_ATTACK_STRONG, 0.8f, 1.0f);
@@ -389,7 +389,7 @@ public class EmotionBetrayalManager {
     // ===== 爆炸 =====
     private static void triggerExplosion(EntityMaid maid) {
         Level level = maid.level();
-        if (level.isClientSide) return;
+        if (level.isClientSide()) return;
 
         Vec3 pos = maid.position();
         level.explode(null, pos.x, pos.y, pos.z, EXPLOSION_POWER, Level.ExplosionInteraction.TNT);

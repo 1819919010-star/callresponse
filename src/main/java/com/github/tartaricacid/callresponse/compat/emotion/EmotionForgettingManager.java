@@ -4,14 +4,20 @@ import com.github.tartaricacid.callresponse.compat.broadcast.MaidResponder;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -61,7 +67,7 @@ public class EmotionForgettingManager {
         boolean inForgetCondition = (trust <= TRUST_THRESHOLD && fear <= FEAR_THRESHOLD);
 
         if (!inForgetCondition) {
-            if (data.contains(KEY_FORGET_TIMER) || data.contains(KEY_FORGET_COUNTDOWN) || data.getBoolean(KEY_FORGET_TRIGGERED)) {
+            if (data.contains(KEY_FORGET_TIMER) || data.contains(KEY_FORGET_COUNTDOWN) || data.getBoolean(KEY_FORGET_TRIGGERED).orElse(false)) {
                 data.remove(KEY_FORGET_TIMER);
                 data.remove(KEY_FORGET_COUNTDOWN);
                 data.remove(KEY_FORGET_TRIGGERED);
@@ -71,7 +77,7 @@ public class EmotionForgettingManager {
         }
 
         if (data.contains(KEY_FORGET_COUNTDOWN)) {
-            int remaining = data.getInt(KEY_FORGET_COUNTDOWN) - 1;
+            int remaining = data.getInt(KEY_FORGET_COUNTDOWN).orElse(1) - 1;
             if (remaining <= 0) {
                 performForgetting(maid);
                 data.remove(KEY_FORGET_COUNTDOWN);
@@ -84,11 +90,11 @@ public class EmotionForgettingManager {
             return;
         }
 
-        if (data.getBoolean(KEY_FORGET_TRIGGERED)) {
+        if (data.getBoolean(KEY_FORGET_TRIGGERED).orElse(false)) {
             return;
         }
 
-        int timer = data.getInt(KEY_FORGET_TIMER) + 1;
+        int timer = data.getInt(KEY_FORGET_TIMER).orElse(0) + 1;
         data.putInt(KEY_FORGET_TIMER, timer);
 
         if (timer >= DURATION_THRESHOLD) {
@@ -101,8 +107,8 @@ public class EmotionForgettingManager {
         UUID maidId = maid.getUUID();
         CompoundTag data = maid.getPersistentData();
 
-        if (data.getBoolean(KEY_FORGET_TRIGGERED)) return;
-        if (data.getInt(KEY_FORGET_TIMER) < DURATION_THRESHOLD) return;
+        if (data.getBoolean(KEY_FORGET_TRIGGERED).orElse(false)) return;
+        if (data.getInt(KEY_FORGET_TIMER).orElse(0) < DURATION_THRESHOLD) return;
 
         data.remove(KEY_FORGET_TIMER);
         data.putBoolean(KEY_FORGET_TRIGGERED, true);
@@ -116,11 +122,13 @@ public class EmotionForgettingManager {
         EntityMaid finalMaid = maid;
         if (!currentLevel.dimension().equals(targetLevel.dimension())) {
             CompoundTag nbt = new CompoundTag();
-            maid.saveWithoutId(nbt);
+            ValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, currentLevel.registryAccess());
+            output.store(nbt);
+            maid.saveWithoutId(output);
             maid.discard();
-            EntityMaid newMaid = InitEntities.MAID.get().create(targetLevel);
+            EntityMaid newMaid = InitEntities.MAID.get().create(targetLevel, EntitySpawnReason.SPAWN_ITEM_USE);
             if (newMaid != null) {
-                newMaid.load(nbt);
+                newMaid.load(TagValueInput.create(ProblemReporter.DISCARDING, targetLevel.registryAccess(), nbt));
                 Vec3 pos = player.position();
                 newMaid.setPos(pos.x, pos.y, pos.z);
                 newMaid.setYRot(player.getYRot());

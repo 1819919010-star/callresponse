@@ -6,8 +6,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.ServerChatEvent;
 
 import java.util.List;
 
@@ -40,19 +40,18 @@ public class ChatEventListener {
         AABB area = new AABB(player.blockPosition()).inflate(radius);
         List<EntityMaid> maids = level.getEntitiesOfClass(
                 EntityMaid.class, area,
-                (maid) -> maid.isAlive() && maid.getOwnerUUID() != null
+                (maid) -> maid.isAlive() && maid.getOwner() != null
         );
 
         MaidResponder.debug(player, "§e[调试] 找到女仆: " + maids.size());
 
         if (maids.isEmpty()) {
-            player.displayClientMessage(Component.literal("§c[广播] 周围没有女仆..."), false);
+            player.sendSystemMessage(Component.literal("§c[广播] 周围没有女仆..."));
             return;
         }
 
-        player.displayClientMessage(
-                Component.literal("§a[广播] 已向 " + maids.size() + " 位女仆传达指令"),
-                false
+        player.sendSystemMessage(
+                Component.literal("§a[广播] 已向 " + maids.size() + " 位女仆传达指令")
         );
 
         // 玩家指令传入 true

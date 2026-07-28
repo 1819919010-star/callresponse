@@ -3,6 +3,7 @@ package com.github.tartaricacid.callresponse.compat.broadcast.actions;
 import com.github.tartaricacid.callresponse.compat.broadcast.MaidResponder;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -13,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -34,15 +36,13 @@ public class WalkToOwnerAndTakeFoodAction {
 
     public static void execute(EntityMaid maid, ServerPlayer debugPlayer) {
         if (maid.getOwner() == null) {
-            maid.sendSystemMessage(Component.literal("§c[动作] 没有主人！"));
             MaidResponder.debug(debugPlayer, "§c[调试] 女仆没有主人");
             return;
         }
 
         Player owner = (Player) maid.getOwner();
         ItemStack foodInHand = owner.getMainHandItem();
-        if (foodInHand.isEmpty() || foodInHand.getFoodProperties(maid) == null) {
-            maid.sendSystemMessage(Component.literal("§c[动作] 主人手里没有食物！"));
+        if (foodInHand.isEmpty() || foodInHand.get(DataComponents.FOOD) == null) {
             MaidResponder.debug(debugPlayer, "§c[调试] 主人手里没有食物");
             return;
         }
@@ -72,10 +72,9 @@ public class WalkToOwnerAndTakeFoodAction {
                 }
                 double distSq = maid.distanceToSqr(targetPos.getX() + 0.5, targetPos.getY() + 0.5, targetPos.getZ() + 0.5);
                 if (distSq < 2.25) {
-                    maid.getServer().execute(() -> {
+                    Objects.requireNonNull(maid.level().getServer()).execute(() -> {
                         ItemStack currentFood = owner.getMainHandItem();
-                        if (currentFood.isEmpty() || currentFood.getFoodProperties(maid) == null) {
-                            maid.sendSystemMessage(Component.literal("§c[动作] 主人手里没有食物了！"));
+                        if (currentFood.isEmpty() || currentFood.get(DataComponents.FOOD) == null) {
                             MaidResponder.debug(debugPlayer, "§c[调试] 主人手里没有食物了");
                             maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
                             maid.getNavigation().stop();
@@ -87,7 +86,6 @@ public class WalkToOwnerAndTakeFoodAction {
                         owner.getMainHandItem().shrink(1);
 
                         maid.setItemInHand(InteractionHand.MAIN_HAND, foodToTake);
-                        maid.sendSystemMessage(Component.literal("§a[动作] " + name + " 从主人手中拿到了 " + foodToTake.getDisplayName().getString()));
                         MaidResponder.debug(debugPlayer, "§a[调试] " + name + " 已拿到食物");
 
                         maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);

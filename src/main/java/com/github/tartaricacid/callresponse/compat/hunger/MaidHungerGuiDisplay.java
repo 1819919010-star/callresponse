@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.event.client.MaidContainerGu
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.AbstractMaidContainerGui;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.SubscribeEvent;
 
@@ -34,10 +34,10 @@ public class MaidHungerGuiDisplay {
 
         // 如果缓存没有，从本地读取（降级）
         if (!isCached) {
-            hunger = (int) Math.round(HungerData.get(maid));
+            hunger = Math.round(HungerData.get(maid));
         }
 
-        GuiGraphics graphics = event.getGraphics();
+        GuiGraphicsExtractor graphics = event.getGraphics();
         int leftPos = event.getLeftPos();
         int topPos = event.getTopPos();
 
@@ -52,7 +52,7 @@ public class MaidHungerGuiDisplay {
 
         // 主显示
         String text = "饥饿值: " + hunger;
-        graphics.drawString(
+        graphics.text(
                 Minecraft.getInstance().font,
                 Component.literal(text),
                 leftPos + 35,
@@ -62,7 +62,7 @@ public class MaidHungerGuiDisplay {
 
         // 状态提示（缓存是否有效）
         String status = isCached ? "§a网络同步" : "§c本地读取";
-        graphics.drawString(
+        graphics.text(
                 Minecraft.getInstance().font,
                 Component.literal(status),
                 leftPos + 40,

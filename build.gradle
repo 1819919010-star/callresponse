@@ -4,10 +4,10 @@ plugins {
     id 'idea'
 
     // NeoForge 开发插件
-    id 'net.neoforged.moddev' version '2.0.95'
+    id 'net.neoforged.moddev' version '2.0.141'
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 version = mod_version
 group = mod_group_id
@@ -42,9 +42,6 @@ neoForge {
         server {
             server()
         }
-        data {
-            data()
-        }
     }
 
     mods {
@@ -55,8 +52,8 @@ neoForge {
 }
 
 dependencies {
-    // Touhou Little Maid 1.21.1 NeoForge
-    implementation "maven.modrinth:touhou-little-maid:1.5.3-neoforge+mc1.21.1"
+    implementation(files("libs/touhoulittlemaid-2.0.0-neoforge+mc26.1.2-snapshot.jar"))
+    compileOnly(files("libs/touhoulittlemaid-2.0.0-neoforge+mc26.1.2-sources.jar"))
 }
 
 processResources {
@@ -71,6 +68,7 @@ processResources {
             mod_license            : mod_license,
             mod_version            : mod_version,
             mod_authors            : mod_authors,
+            mod_credits            : mod_credits,
             mod_description        : mod_description
     ]
     inputs.properties replaceProperties
