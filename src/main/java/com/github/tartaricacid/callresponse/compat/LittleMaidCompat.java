@@ -2,12 +2,14 @@ package com.github.tartaricacid.callresponse.compat;
 
 import com.github.tartaricacid.callresponse.compat.brain.CustomExtraMaidBrain;
 import com.github.tartaricacid.callresponse.compat.brain.LazyMaidHitHandler;
+import com.github.tartaricacid.callresponse.compat.broadcast.BroadcastTools;
 import com.github.tartaricacid.callresponse.compat.broadcast.ChatEventListener;
 import com.github.tartaricacid.callresponse.compat.emotion.*;
 import com.github.tartaricacid.callresponse.compat.hunger.CustomCakeEdible;
 import com.github.tartaricacid.callresponse.compat.hunger.HungerManager;
 import com.github.tartaricacid.callresponse.compat.hunger.MaidHungerGuiDisplay;
 import com.github.tartaricacid.callresponse.compat.task.LazyMaidTask;
+import com.github.tartaricacid.touhoulittlemaid.ai.agent.tool.ToolRegister;
 import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.LittleMaidExtension;
 import com.github.tartaricacid.touhoulittlemaid.client.overlay.MaidTipsOverlay;
@@ -42,8 +44,10 @@ public class LittleMaidCompat implements ILittleMaid {
         NeoForge.EVENT_BUS.register(new LazyMaidHitHandler());
     }
 
-
-
+    @Override
+    public void registerAITool(ToolRegister register) {
+        BroadcastTools.register(register);
+    }
 
     @Override
     @OnlyIn(Dist.CLIENT)

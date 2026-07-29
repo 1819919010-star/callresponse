@@ -13,7 +13,7 @@ public class HungerData {
     public static float get(EntityMaid maid) {
         CompoundTag tag = maid.getPersistentData();
         if (tag.contains(HUNGER_TAG)) {
-            return tag.getFloat(HUNGER_TAG);
+            return tag.getFloat(HUNGER_TAG).orElse(DEFAULT_HUNGER);
         } else {
             // 首次获取时初始化为默认值并保存
             set(maid, DEFAULT_HUNGER);

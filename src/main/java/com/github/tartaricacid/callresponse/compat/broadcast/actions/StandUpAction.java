@@ -15,7 +15,6 @@ public class StandUpAction {
         if (isSitting(maid)) {
             maid.setInSittingPose(false);
             String name = maid.getCustomName() != null ? maid.getCustomName().getString() : "无名";
-            maid.sendSystemMessage(Component.literal("§a[动作] " + name + " 已站起来"));
             MaidResponder.debug(debugPlayer, "§a[调试] " + name + " 执行: 站起来");
         } else {
             MaidResponder.debug(debugPlayer, "§e[调试] 已经站着了");

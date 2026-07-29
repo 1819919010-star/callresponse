@@ -40,7 +40,7 @@ public class CustomCakeEdible implements IMaidEdibleBlock {
             level.removeBlock(pos, false);
         }
         maid.spawnItemParticles(new ItemStack(Items.CAKE), 8);
-        maid.playSound(SoundEvents.GENERIC_EAT);
+        maid.playSound(SoundEvents.GENERIC_EAT.value());
 
         // ===== 增加饱食度（每口 +6） =====
         HungerData.add(maid, 6.0f);

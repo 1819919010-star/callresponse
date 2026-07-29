@@ -2,8 +2,10 @@ package com.github.tartaricacid.callresponse.compat.brain;
 
 import com.github.tartaricacid.callresponse.compat.broadcast.MaidResponder;
 import com.github.tartaricacid.callresponse.compat.emotion.EmotionData;
+import com.github.tartaricacid.callresponse.compat.task.LazyMaidTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -25,11 +27,11 @@ public class LazyMaidHitHandler {
     @SubscribeEvent
     public void onMaidHurt(LivingDamageEvent.Pre event) {
         if (!(event.getEntity() instanceof EntityMaid maid)) return;
-        if (maid.level().isClientSide) return;
+        if (maid.level().isClientSide()) return;
 
         Entity attacker = event.getSource().getEntity();
         if (!(attacker instanceof Player player)) return;
-        if (maid.getOwner() == null || !player.getUUID().equals(maid.getOwnerUUID())) return;
+        if (maid.getOwner() == null || !player.getUUID().equals(maid.getOwner().getUUID())) return;
 
         if (!isLazyMode(maid)) return;
 
@@ -39,9 +41,7 @@ public class LazyMaidHitHandler {
     }
 
     public static boolean isLazyMode(EntityMaid maid) {
-        CompoundTag nbt = new CompoundTag();
-        maid.addAdditionalSaveData(nbt);
-        return "callresponse:lazy".equals(nbt.getString("MaidTask"));
+        return maid.getTask() instanceof LazyMaidTask;
     }
 
     public static void triggerEscape(EntityMaid maid, ServerPlayer player) {
@@ -57,12 +57,12 @@ public class LazyMaidHitHandler {
 
     static void dropFoodFromHands(EntityMaid maid) {
         ItemStack mainHand = maid.getMainHandItem();
-        if (!mainHand.isEmpty() && mainHand.getFoodProperties(maid) != null) {
+        if (!mainHand.isEmpty() && mainHand.get(DataComponents.FOOD) != null) {
             spawnFoodDrop(maid, mainHand.copy());
             maid.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         }
         ItemStack offHand = maid.getOffhandItem();
-        if (!offHand.isEmpty() && offHand.getFoodProperties(maid) != null) {
+        if (!offHand.isEmpty() && offHand.get(DataComponents.FOOD) != null) {
             spawnFoodDrop(maid, offHand.copy());
             maid.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
         }
@@ -81,7 +81,7 @@ public class LazyMaidHitHandler {
     }
 
     static boolean checkEscape(EntityMaid maid) {
-        long escapeTick = maid.getPersistentData().getLong(KEY_ESCAPE_TICK);
+        long escapeTick = maid.getPersistentData().getLong(KEY_ESCAPE_TICK).orElse(0L);
         if (escapeTick <= 0) return false;
         long now = maid.level().getGameTime();
         if (now - escapeTick > 5) {

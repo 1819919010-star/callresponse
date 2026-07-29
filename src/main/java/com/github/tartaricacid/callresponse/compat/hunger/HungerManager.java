@@ -2,7 +2,9 @@ package com.github.tartaricacid.callresponse.compat.hunger;
 
 import com.github.tartaricacid.callresponse.compat.broadcast.MaidResponder;
 import com.github.tartaricacid.callresponse.compat.emotion.EmotionData;
+import com.github.tartaricacid.callresponse.compat.emotion.TransferHelper;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,15 +16,18 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
-import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.transfer.CombinedResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class HungerManager {
 
@@ -62,7 +67,7 @@ public class HungerManager {
 
     // ===== 同步饱食度到客户端 =====
     public static void syncHungerToClient(EntityMaid maid) {
-        if (maid.level().isClientSide) return;
+        if (maid.level().isClientSide()) return;
         int hunger = (int) Math.round(HungerData.get(maid));
         SyncHungerPacket packet = new SyncHungerPacket(maid.getUUID(), hunger);
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(maid, packet);
@@ -72,11 +77,11 @@ public class HungerManager {
     @SubscribeEvent
     public void onMaidEat(LivingEntityUseItemEvent.Finish event) {
         if (!(event.getEntity() instanceof EntityMaid maid)) return;
-        if (maid.level().isClientSide) return;
+        if (maid.level().isClientSide()) return;
         if (!maid.isTame() || maid.getOwner() == null) return;
 
         ItemStack stack = event.getItem();
-        FoodProperties food = stack.getFoodProperties(maid);
+        FoodProperties food = stack.get(DataComponents.FOOD);
         if (food == null) return;
 
         int nutrition = food.nutrition();
@@ -214,7 +219,7 @@ public class HungerManager {
     private boolean tryEatFoodFromBackpack(EntityMaid maid) {
         // 检查主手是否有可食用的物品
         ItemStack mainHand = maid.getMainHandItem();
-        if (!mainHand.isEmpty() && mainHand.getFoodProperties(maid) != null) {
+        if (!mainHand.isEmpty() && mainHand.get(DataComponents.FOOD) != null) {
             // 直接开始吃主手的食物
             maid.startUsingItem(InteractionHand.MAIN_HAND);
             return true;
@@ -222,7 +227,7 @@ public class HungerManager {
 
         // 检查副手是否有可食用的物品
         ItemStack offHand = maid.getOffhandItem();
-        if (!offHand.isEmpty() && offHand.getFoodProperties(maid) != null) {
+        if (!offHand.isEmpty() && offHand.get(DataComponents.FOOD) != null) {
             // 将副手物品换到主手，原主手物品换到副手
             maid.setItemInHand(InteractionHand.MAIN_HAND, offHand);
             maid.setItemInHand(InteractionHand.OFF_HAND, mainHand);
@@ -232,24 +237,23 @@ public class HungerManager {
         }
 
         // 手里没有食物，从背包搜索
-        CombinedInvWrapper inv = maid.getAvailableBackpackInv();
-        if (inv == null) return false;
+        CombinedResourceHandler<ItemResource> inv = maid.getAvailableBackpackInv();
 
-        for (int i = 0; i < inv.getSlots(); i++) {
-            ItemStack stack = inv.getStackInSlot(i);
+        for (int i = 0; i < inv.size(); i++) {
+            ItemStack stack = inv.getResource(i).toStack();
             if (stack.isEmpty()) continue;
-            FoodProperties food = stack.getFoodProperties(maid);
+            FoodProperties food = stack.get(DataComponents.FOOD);
             if (food == null) continue;
 
             // 取出一个食物
-            ItemStack extracted = inv.extractItem(i, 1, false);
+            ItemStack extracted = TransferHelper.extractItem(inv, i, 1, false);
             if (!extracted.isEmpty()) {
                 // 将当前主手物品放回背包（如果有）
                 ItemStack currentMain = maid.getMainHandItem();
                 if (!currentMain.isEmpty()) {
-                    ItemStack remain = ItemHandlerHelper.insertItemStacked(inv, currentMain, false);
-                    if (!remain.isEmpty()) {
-                        maid.spawnAtLocation(remain);
+                    ItemStack remain = TransferHelper.insertItemStacked(inv, currentMain, false);
+                    if (!remain.isEmpty() && !maid.level().isClientSide()) {
+                        maid.spawnAtLocation((ServerLevel) maid.level(), remain);
                     }
                 }
 
@@ -306,8 +310,8 @@ public class HungerManager {
     @SubscribeEvent
     public void onMaidDeath(LivingDeathEvent event) {
         if (!(event.getEntity() instanceof EntityMaid maid)) return;
-        if (!maid.getPersistentData().getBoolean(OVERFED_DEATH_TAG)) return;
-        if (maid.getPersistentData().getBoolean("DevotedSacrifice")) return;
+        if (!maid.getPersistentData().getBoolean(OVERFED_DEATH_TAG).orElse(false)) return;
+        if (maid.getPersistentData().getBoolean("DevotedSacrifice").orElse(false)) return;
 
         if (!event.getSource().is(DamageTypes.STARVE) || HungerData.get(maid) < 91) {
             maid.getPersistentData().remove(OVERFED_DEATH_TAG);

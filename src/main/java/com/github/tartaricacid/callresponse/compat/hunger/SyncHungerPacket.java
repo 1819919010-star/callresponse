@@ -4,7 +4,7 @@ import com.github.tartaricacid.callresponse.CallResponseMod;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public record SyncHungerPacket(UUID maidUUID, int hunger) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<SyncHungerPacket> TYPE = new CustomPacketPayload.Type<>(
-            ResourceLocation.fromNamespaceAndPath(CallResponseMod.MOD_ID, "sync_hunger"));
+            Identifier.fromNamespaceAndPath(CallResponseMod.MOD_ID, "sync_hunger"));
     public static final StreamCodec<ByteBuf, SyncHungerPacket> STREAM_CODEC = new StreamCodec<>() {
         @Override
         public void encode(ByteBuf buf, SyncHungerPacket pkt) {

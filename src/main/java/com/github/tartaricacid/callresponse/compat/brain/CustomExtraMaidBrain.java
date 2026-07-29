@@ -1,16 +1,18 @@
 package com.github.tartaricacid.callresponse.compat.brain;
 
-import com.github.tartaricacid.callresponse.compat.broadcast.MaidResponder;
 import com.github.tartaricacid.callresponse.compat.emotion.EmotionData;
+import com.github.tartaricacid.callresponse.compat.emotion.TransferHelper;
+import com.github.tartaricacid.callresponse.compat.task.LazyMaidTask;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.ai.IExtraMaidBrain;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -29,9 +31,9 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -150,30 +152,30 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
         private void loadState(EntityMaid maid) {
             CompoundTag nbt = maid.getPersistentData();
             if (nbt.contains(KEY_LAZY_STATE)) {
-                int stateOrd = nbt.getInt(KEY_LAZY_STATE);
+                int stateOrd = nbt.getInt(KEY_LAZY_STATE).orElse(0);
                 if (stateOrd >= 0 && stateOrd < State.values().length) {
                     currentState = State.values()[stateOrd];
                 }
-                stateTimer = nbt.getInt(KEY_STATE_TIMER);
+                stateTimer = nbt.getInt(KEY_STATE_TIMER).orElse(0);
                 if (nbt.contains(KEY_TARGET_REST_X)) {
                     targetRestPos = new BlockPos(
-                            nbt.getInt(KEY_TARGET_REST_X),
-                            nbt.getInt(KEY_TARGET_REST_Y),
-                            nbt.getInt(KEY_TARGET_REST_Z)
+                            nbt.getInt(KEY_TARGET_REST_X).orElse(0),
+                            nbt.getInt(KEY_TARGET_REST_Y).orElse(0),
+                            nbt.getInt(KEY_TARGET_REST_Z).orElse(0)
                     );
                 }
                 if (nbt.contains(KEY_TARGET_FOOD_X)) {
                     targetFoodPos = new BlockPos(
-                            nbt.getInt(KEY_TARGET_FOOD_X),
-                            nbt.getInt(KEY_TARGET_FOOD_Y),
-                            nbt.getInt(KEY_TARGET_FOOD_Z)
+                            nbt.getInt(KEY_TARGET_FOOD_X).orElse(0),
+                            nbt.getInt(KEY_TARGET_FOOD_Y).orElse(0),
+                            nbt.getInt(KEY_TARGET_FOOD_Z).orElse(0)
                     );
                 }
                 if (nbt.contains(KEY_TARGET_CAKE_X)) {
                     targetCakePos = new BlockPos(
-                            nbt.getInt(KEY_TARGET_CAKE_X),
-                            nbt.getInt(KEY_TARGET_CAKE_Y),
-                            nbt.getInt(KEY_TARGET_CAKE_Z)
+                            nbt.getInt(KEY_TARGET_CAKE_X).orElse(0),
+                            nbt.getInt(KEY_TARGET_CAKE_Y).orElse(0),
+                            nbt.getInt(KEY_TARGET_CAKE_Z).orElse(0)
                     );
                 }
                 nbt.remove(KEY_LAZY_STATE);
@@ -193,9 +195,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
         private boolean isLazyMode(EntityMaid maid) {
             if (--lazyModeCheckTimer > 0) return cachedLazyMode;
             lazyModeCheckTimer = 20;
-            CompoundTag nbt = new CompoundTag();
-            maid.addAdditionalSaveData(nbt);
-            cachedLazyMode = "callresponse:lazy".equals(nbt.getString("MaidTask"));
+            cachedLazyMode = maid.getTask() instanceof LazyMaidTask;
             return cachedLazyMode;
         }
 
@@ -226,7 +226,9 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
         }
 
         private void eatFood(EntityMaid maid, ItemStack food) {
-            maid.eat(maid.level(), food);
+//            maid.eat(maid.level(), food);
+            maid.setUseItem(food);
+            maid.startUsingItem(InteractionHand.MAIN_HAND);
             playVoice(maid);
             maid.getChatBubbleManager().addTextChatBubble("好吃~");
         }
@@ -243,10 +245,8 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
         private boolean isWorkTime(EntityMaid maid) {
             if (--workCheckTimer > 0) return cachedWorkTime;
             workCheckTimer = 20;
-            CompoundTag nbt = new CompoundTag();
-            maid.addAdditionalSaveData(nbt);
-            String scheduleMode = nbt.getString("MaidScheduleMode");
-            long dayTime = maid.level().getDayTime() % 24000;
+            String scheduleMode = maid.getSchedule().toString();
+            long dayTime = maid.level().getGameTime() % 24000;
             if ("NIGHT".equals(scheduleMode)) {
                 cachedWorkTime = dayTime >= 13000 || dayTime <= 6000;
             } else if ("DAY".equals(scheduleMode)) {
@@ -275,7 +275,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                 for (int dz = -searchRadius; dz <= searchRadius; dz++) {
                     for (int dy = -3; dy <= 3; dy++) {
                         BlockPos checkPos = maidPos.offset(dx, dy, dz);
-                        ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(level.getBlockState(checkPos).getBlock());
+                        Identifier blockKey = BuiltInRegistries.BLOCK.getKey(level.getBlockState(checkPos).getBlock());
                         if (blockKey != null && blockKey.toString().equals("touhou_little_maid:maid_bed")) {
                             double dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
                             if (dist < closestDist) {
@@ -298,7 +298,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                 for (int dz = -searchRadius; dz <= searchRadius; dz++) {
                     for (int dy = -3; dy <= 3; dy++) {
                         BlockPos checkPos = maidPos.offset(dx, dy, dz);
-                        ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(level.getBlockState(checkPos).getBlock());
+                        Identifier blockKey = BuiltInRegistries.BLOCK.getKey(level.getBlockState(checkPos).getBlock());
                         if (blockKey != null && blockKey.toString().equals("touhou_little_maid:snack_cabinet")) {
                             double dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
                             if (dist < closestDist) {
@@ -316,22 +316,22 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
             BlockEntity be = level.getBlockEntity(pos);
             if (be == null) return ItemStack.EMPTY;
             java.util.List<Integer> foodSlots = new java.util.ArrayList<>();
-            IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, null);
+            ResourceHandler<ItemResource> handler = level.getCapability(Capabilities.Item.BLOCK, pos, null);
             if (handler != null) {
-                for (int slot = 0; slot < handler.getSlots(); slot++) {
-                    ItemStack stack = handler.getStackInSlot(slot);
-                    if (!stack.isEmpty() && stack.getFoodProperties(maid) != null) {
+                for (int slot = 0; slot < handler.size(); slot++) {
+                    ItemStack stack = handler.getResource(slot).toStack();
+                    if (!stack.isEmpty() && stack.get(DataComponents.FOOD) != null) {
                         foodSlots.add(slot);
                     }
                 }
                 if (!foodSlots.isEmpty()) {
                     int chosen = foodSlots.get(RANDOM.nextInt(foodSlots.size()));
-                    return handler.extractItem(chosen, 1, false);
+                    return TransferHelper.extractItem(handler, chosen, 1, false);
                 }
             } else if (be instanceof RandomizableContainerBlockEntity container) {
                 for (int i = 0; i < container.getContainerSize(); i++) {
                     ItemStack stack = container.getItem(i);
-                    if (!stack.isEmpty() && stack.getFoodProperties(maid) != null) {
+                    if (!stack.isEmpty() && stack.get(DataComponents.FOOD) != null) {
                         foodSlots.add(i);
                     }
                 }
@@ -376,10 +376,10 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
         }
 
         private ItemStack getFoodFromOwner(Player owner) {
-            if (!owner.getMainHandItem().isEmpty() && owner.getMainHandItem().getFoodProperties(null) != null) {
+            if (!owner.getMainHandItem().isEmpty() && owner.getMainHandItem().get(DataComponents.FOOD) != null) {
                 return owner.getMainHandItem();
             }
-            if (!owner.getOffhandItem().isEmpty() && owner.getOffhandItem().getFoodProperties(null) != null) {
+            if (!owner.getOffhandItem().isEmpty() && owner.getOffhandItem().get(DataComponents.FOOD) != null) {
                 return owner.getOffhandItem();
             }
             return ItemStack.EMPTY;
@@ -409,19 +409,17 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
         }
 
         private void checkDropFoodOnHit(EntityMaid maid) {
-            CompoundTag nbt = new CompoundTag();
-            maid.addAdditionalSaveData(nbt);
-            short hurtTime = nbt.getShort("HurtTime");
+            int hurtTime = maid.hurtTime;
             if (hurtTime > 0 && hurtTime != lastHurtTick) {
                 lastHurtTick = hurtTime;
                 ItemStack mainHand = maid.getMainHandItem();
-                if (!mainHand.isEmpty() && mainHand.getFoodProperties(maid) != null) {
+                if (!mainHand.isEmpty() && mainHand.get(DataComponents.FOOD) != null) {
                     ItemStack toDrop = mainHand.copy();
                     maid.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
                     spawnFoodDrop(maid, toDrop);
                 }
                 ItemStack offHand = maid.getOffhandItem();
-                if (!offHand.isEmpty() && offHand.getFoodProperties(maid) != null) {
+                if (!offHand.isEmpty() && offHand.get(DataComponents.FOOD) != null) {
                     ItemStack toDrop = offHand.copy();
                     maid.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
                     spawnFoodDrop(maid, toDrop);
@@ -636,7 +634,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                     }
                     if (targetRestPos != null) {
                         boolean reached = isReachedTarget(maid, targetRestPos);
-                        ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(level.getBlockState(targetRestPos).getBlock());
+                        Identifier blockKey = BuiltInRegistries.BLOCK.getKey(level.getBlockState(targetRestPos).getBlock());
                         boolean isValid = (blockKey != null && blockKey.toString().equals("touhou_little_maid:maid_bed"));
                         if (!isValid) {
                             currentState = State.SEARCHING_REST;
@@ -842,7 +840,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                     if (stateTimer <= 0) {
                         if (!foodToEat.isEmpty()) {
                             maid.setItemInHand(InteractionHand.MAIN_HAND, foodToEat);
-                            if (foodToEat.getFoodProperties(maid) != null) {
+                            if (foodToEat.get(DataComponents.FOOD) != null) {
                                 maid.startUsingItem(InteractionHand.MAIN_HAND);
                             } else {
                                 eatFood(maid, foodToEat);
@@ -867,7 +865,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                     }
                     if (targetFoodPos != null) {
                         boolean reached = isReachedTarget(maid, targetFoodPos);
-                        ResourceLocation blockKey = BuiltInRegistries.BLOCK.getKey(level.getBlockState(targetFoodPos).getBlock());
+                        Identifier blockKey = BuiltInRegistries.BLOCK.getKey(level.getBlockState(targetFoodPos).getBlock());
                         boolean isValid = (blockKey != null && blockKey.toString().equals("touhou_little_maid:snack_cabinet"));
                         if (!isValid) {
                             currentState = State.SEARCHING_FOOD;

@@ -6,19 +6,20 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
-import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -322,8 +323,8 @@ public class EmotionDotingManager {
             }
         }
 
-        ItemStack remaining = ItemHandlerHelper.insertItemStacked(maid.getMaidInv(), taken, false);
-        if (!remaining.isEmpty()) maid.spawnAtLocation(remaining);
+        ItemStack remaining = TransferHelper.insertItemStacked(maid.getMaidInv(), taken, false);
+        if (!remaining.isEmpty()) maid.spawnAtLocation(player.level(), remaining);
 
         String itemName = taken.getDisplayName().getString();
         String prompt = "你趁主人不注意，偷偷拿了一样东西（" + itemName + "）——作为一只被宠坏的女仆，你早就习惯了主人什么都顺着你。主人东西多的是，拿一件怎么了？请用一句理直气壮又带点调皮的话告诉主人：你拿了就是你的了，完全不觉得理亏，甚至觉得是主人赚了——你的笑容不就是最好的回报吗？语气要像在说'我看上它是你的福气'。";
@@ -334,12 +335,12 @@ public class EmotionDotingManager {
     private static void executeSearch(EntityMaid maid, ServerPlayer player, BlockPos targetPos) {
         BlockEntity be = maid.level().getBlockEntity(targetPos);
         if (be == null) return;
-        IItemHandler handler = maid.level().getCapability(net.neoforged.neoforge.capabilities.Capabilities.ItemHandler.BLOCK, targetPos, null);
+        ResourceHandler<ItemResource> handler = maid.level().getCapability(Capabilities.Item.BLOCK, targetPos, null);
         if (handler == null) return;
 
         List<Integer> slotsWithItems = new ArrayList<>();
-        for (int i = 0; i < handler.getSlots(); i++) {
-            if (!handler.getStackInSlot(i).isEmpty()) slotsWithItems.add(i);
+        for (int i = 0; i < handler.size(); i++) {
+            if (!handler.getResource(i).isEmpty()) slotsWithItems.add(i);
         }
         if (slotsWithItems.isEmpty()) {
             triggerAIDialogue(maid, player, "你打开箱子，发现里面居然是空的！你作为主人的掌上明珠，怎么可以忍受空箱子？请用一句嫌弃又撒娇的语气抱怨主人连箱子都不塞满——言下之意是：快快快塞满，不然怎么配得上我这么可爱的女仆。");
@@ -347,11 +348,11 @@ public class EmotionDotingManager {
         }
 
         int slot = slotsWithItems.get(maid.getRandom().nextInt(slotsWithItems.size()));
-        ItemStack stack = handler.getStackInSlot(slot);
-        ItemStack taken = handler.extractItem(slot, stack.getCount(), false);
+        ItemStack stack = TransferHelper.getItemInSlot(handler, slot);
+        ItemStack taken = TransferHelper.extractItem(handler, slot, stack.getCount(), false);
         if (!taken.isEmpty()) {
-            ItemStack remaining = ItemHandlerHelper.insertItemStacked(maid.getMaidInv(), taken, false);
-            if (!remaining.isEmpty()) maid.spawnAtLocation(remaining);
+            ItemStack remaining = TransferHelper.insertItemStacked(maid.getMaidInv(), taken, false);
+            if (!remaining.isEmpty()) maid.spawnAtLocation(player.level(), remaining);
             String itemName = taken.getDisplayName().getString();
             String prompt = "你在主人家的箱子里翻到一样东西（" + itemName + "），你也不知道它值不值钱，反正你看着合眼缘就拿走了。作为一只被宠坏的女仆，你心里根本没有任何'偷'的概念——主人的就是你的，这家里有什么是你不能拿的？请用一句像在自己家翻自己东西一样自然的语气告诉主人你拿了什么，仿佛这本来就是你的。天真又理直气壮，完全不怕主人怪罪。";
             triggerAIDialogue(maid, player, prompt);
@@ -400,7 +401,7 @@ public class EmotionDotingManager {
                 Blocks.OXEYE_DAISY, Blocks.CORNFLOWER, Blocks.LILY_OF_THE_VALLEY
         };
         Block flower = flowers[maid.getRandom().nextInt(flowers.length)];
-        if (maid.level().isEmptyBlock(pos) && pos.getY() >= maid.level().getMinBuildHeight()) {
+        if (maid.level().isEmptyBlock(pos) && pos.getY() >= maid.level().getMinY()) {
             maid.level().setBlock(pos, flower.defaultBlockState(), 3);
             maid.swing(InteractionHand.MAIN_HAND);
             maid.playSound(net.minecraft.sounds.SoundEvents.GRASS_PLACE, 0.8f, 1.0f);

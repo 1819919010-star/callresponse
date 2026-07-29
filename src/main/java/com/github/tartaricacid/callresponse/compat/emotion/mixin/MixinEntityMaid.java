@@ -6,6 +6,7 @@ import com.github.tartaricacid.callresponse.compat.emotion.EmotionBetrayalManage
 import com.github.tartaricacid.callresponse.compat.emotion.EmotionData;
 import com.github.tartaricacid.callresponse.compat.broadcast.MaidResponder;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -32,10 +33,9 @@ import java.util.UUID;
 public abstract class MixinEntityMaid extends Mob {
     private MixinEntityMaid() { super(null, null); }
 
-    @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)
-    private void example$onHurtHead(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "hurtServer", at = @At("HEAD"), cancellable = true)
+    private void example$onHurtHead(ServerLevel level, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         EntityMaid maid = (EntityMaid) (Object) this;
-        if (maid.level().isClientSide) return;
 
         Entity directEntity = source.getDirectEntity();
 
@@ -78,7 +78,7 @@ public abstract class MixinEntityMaid extends Mob {
         // 伤害绕过：主人故意攻击 / 女仆间攻击
         if (isOwnerAttack || isMaidAttack) {
             DamageSource neutral = maid.damageSources().generic();
-            boolean result = super.hurt(neutral, amount);
+            boolean result = super.hurtServer(level, source, amount);
             if (result) {
                 Entity entity = source.getDirectEntity();
                 if (entity == null) entity = source.getEntity();
@@ -98,8 +98,8 @@ public abstract class MixinEntityMaid extends Mob {
 
     @Unique
     private boolean isOwnerAttackingMaid(EntityMaid maid, DamageSource source) {
-        UUID ownerId = maid.getOwnerUUID();
-        if (ownerId == null) return false;
+        if (maid.getOwner() == null) return false;
+        UUID ownerId = maid.getOwner().getUUID();
 
         Entity entity = source.getEntity();
         if (entity instanceof Player player && player.getUUID().equals(ownerId)) return true;
@@ -143,7 +143,7 @@ public abstract class MixinEntityMaid extends Mob {
         // 搜索射线路径上的所有实体
         AABB searchBox = player.getBoundingBox().expandTowards(lookVec.x * reach, lookVec.y * reach, lookVec.z * reach).inflate(1.0);
         // 获取第一个被击中的实体
-        EntityHitResult hit = ProjectileUtil.getEntityHitResult(player.level(), player, eyePos, endPos, searchBox, e -> e == maid || e.isPickable());
+        EntityHitResult hit = ProjectileUtil.getEntityHitResult(player.level(), player, eyePos, endPos, searchBox, e -> e == maid || e.isPickable(), 0);
         if (hit == null || hit.getEntity() != maid) return false;
         // 确认射线到女仆之间没有方块阻挡
         Vec3 maidPos = maid.getEyePosition();

@@ -3,8 +3,10 @@ package com.github.tartaricacid.callresponse.compat.emotion;
 import com.github.tartaricacid.callresponse.compat.broadcast.MaidResponder;
 import com.github.tartaricacid.callresponse.config.EmotionPassiveConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -90,7 +92,7 @@ public class EmotionPassiveManager {
     private static final Map<UUID, Long> lastFireworkTrigger = new ConcurrentHashMap<>();
     private static final Map<UUID, Integer> companionTimer = new ConcurrentHashMap<>();
     private static final Map<UUID, Long> lastCompanionTrigger = new ConcurrentHashMap<>();
-    private static final Map<UUID, ResourceLocation> lastDimension = new ConcurrentHashMap<>();
+    private static final Map<UUID, Identifier> lastDimension = new ConcurrentHashMap<>();
 
     // ===== 辅助方法：浮点数情感变化 =====
     private static void addTrustFloat(EntityMaid maid, UUID playerId, float delta) {
@@ -110,7 +112,7 @@ public class EmotionPassiveManager {
     }
 
     // ===== 维度名称转中文 =====
-    private static String getDimensionDisplayName(ResourceLocation dimId) {
+    private static String getDimensionDisplayName(Identifier dimId) {
         String ns = dimId.getNamespace();
         String path = dimId.getPath();
         return switch (dimId.toString()) {
@@ -159,7 +161,7 @@ public class EmotionPassiveManager {
     private static boolean isWeaponItem(ItemStack stack) {
         if (stack.isEmpty()) return false;
         Item item = stack.getItem();
-        return item instanceof SwordItem ||
+        return stack.is(ItemTags.SWORDS) ||
                 item instanceof AxeItem ||
                 item instanceof BowItem ||
                 item instanceof CrossbowItem ||
@@ -328,7 +330,7 @@ public class EmotionPassiveManager {
                             boolean isLooking = isOwnerLookingAtMaid(serverOwner, maid);
                             if (isLooking) {
                                 ItemStack mainHand = serverOwner.getMainHandItem();
-                                boolean isFood = mainHand.getFoodProperties(maid) != null || isFoodBlock(mainHand);
+                                boolean isFood = mainHand.get(DataComponents.FOOD) != null || isFoodBlock(mainHand);
                                 boolean isWeapon = isWeaponItem(mainHand);
 
                                 if (isFood) {
@@ -375,7 +377,7 @@ public class EmotionPassiveManager {
                             }
                         }
                         // ===== 物品栏第6格（索引5）检测 =====
-                        ItemStack slotSix = maid.getMaidInv().getStackInSlot(5);
+                        ItemStack slotSix = maid.getMaidInv().getResource(5).toStack();
                         ItemStack lastSlotSix = lastSlotSixStack.getOrDefault(maidId, ItemStack.EMPTY);
 
                         boolean slotChanged = false;
@@ -566,8 +568,8 @@ public class EmotionPassiveManager {
 
                         // ===== 维度切换检测 =====
                         {
-                            ResourceLocation currentDim = maid.level().dimension().location();
-                            ResourceLocation lastDim = lastDimension.get(maidId);
+                            Identifier currentDim = maid.level().dimension().identifier();
+                            Identifier lastDim = lastDimension.get(maidId);
                             if (lastDim != null && !lastDim.equals(currentDim)) {
                                 // 重置冷却
                                 companionTimer.remove(maidId);
@@ -599,7 +601,7 @@ public class EmotionPassiveManager {
     @SubscribeEvent
     public void onLivingDeath(LivingDeathEvent event) {
         LivingEntity dead = event.getEntity();
-        if (dead.level().isClientSide) return;
+        if (dead.level().isClientSide()) return;
 
         LivingEntity killer = null;
         if (event.getSource().getEntity() instanceof LivingEntity) {
@@ -640,7 +642,7 @@ public class EmotionPassiveManager {
     @SubscribeEvent
     public void onMaidHurt(LivingDamageEvent.Pre event) {
         if (!(event.getEntity() instanceof EntityMaid maid)) return;
-        if (maid.level().isClientSide) return;
+        if (maid.level().isClientSide()) return;
         if (!maid.isTame() || maid.getOwner() == null) return;
         if (EmotionBetrayalManager.isBetraying(maid)) return;
 
@@ -689,7 +691,7 @@ public class EmotionPassiveManager {
 
     // ===== 玩家交互标记（NeoForge 禁止注册抽象事件） =====
     private void markPlayerInteraction(Player player) {
-        if (player.level().isClientSide) return;
+        if (player.level().isClientSide()) return;
         player.level().getEntitiesOfClass(EntityMaid.class,
                         player.getBoundingBox().inflate(32))
                 .forEach(maid -> {
@@ -729,7 +731,7 @@ public class EmotionPassiveManager {
     @SubscribeEvent
     public void onMaidTick(EntityTickEvent.Post event) {
         if (!(event.getEntity() instanceof EntityMaid maid)) return;
-        if (maid.level().isClientSide) return;
+        if (maid.level().isClientSide()) return;
         if (!maid.isTame() || maid.getOwner() == null) return;
         if (EmotionBetrayalManager.isBetraying(maid)) return;
         if (!EmotionPassiveConfig.SIT_DETECTION_ENABLED.get()) return;

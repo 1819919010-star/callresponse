@@ -1,27 +1,28 @@
 package com.github.tartaricacid.callresponse.compat.emotion;
 
+import com.github.tartaricacid.callresponse.CallResponseMod;
 import com.github.tartaricacid.callresponse.compat.broadcast.MaidResponder;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.callresponse.CallResponseMod;
 import com.github.tartaricacid.touhoulittlemaid.inventory.handler.BaubleItemHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -62,8 +63,8 @@ public class EmotionDevotedManager {
     }
 
     // ===== 属性加成/移除 =====
-    private static final ResourceLocation DEVOTED_ATTACK_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(CallResponseMod.MOD_ID, "devoted_attack");
-    private static final ResourceLocation DEVOTED_SPEED_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(CallResponseMod.MOD_ID, "devoted_speed");
+    private static final Identifier DEVOTED_ATTACK_MODIFIER_ID = Identifier.fromNamespaceAndPath(CallResponseMod.MOD_ID, "devoted_attack");
+    private static final Identifier DEVOTED_SPEED_MODIFIER_ID = Identifier.fromNamespaceAndPath(CallResponseMod.MOD_ID, "devoted_speed");
 
     private static void applyDevotedBuffs(EntityMaid maid) {
         AttributeInstance attackAttr = maid.getAttribute(Attributes.ATTACK_DAMAGE);
@@ -167,7 +168,7 @@ public class EmotionDevotedManager {
         }
 
         maid.swing(InteractionHand.MAIN_HAND);
-        maid.doHurtTarget(target);
+        maid.doHurtTarget(owner.level(), target);
         lastAttackTime.put(maidId, now);
 
         if (maid.getRandom().nextDouble() < STEAL_CHANCE) {
@@ -184,6 +185,7 @@ public class EmotionDevotedManager {
 
     // ===== 从背叛女仆身上夺取盔甲/饰品 =====
     private static void stealFromBetrayer(EntityMaid attacker, EntityMaid target) {
+        if(attacker.level().isClientSide())return;
         List<ItemStack> candidates = new ArrayList<>();
 
         // ===== 1. 收集盔甲 =====
@@ -202,10 +204,10 @@ public class EmotionDevotedManager {
 
         // ===== 2. 收集饰品 =====
         BaubleItemHandler baubles = target.getMaidBauble();
-        for (int i = 0; i < baubles.getSlots(); i++) {
-            ItemStack stack = baubles.getStackInSlot(i);
-            if (!stack.isEmpty()) {
-                candidates.add(stack);
+        for (int i = 0; i < baubles.size(); i++) {
+            ItemResource resource = baubles.getResource(i);
+            if (!resource.isEmpty()) {
+                candidates.add(resource.toStack());
             }
         }
 
@@ -226,10 +228,10 @@ public class EmotionDevotedManager {
         }
 
         if (!removed) {
-            for (int i = 0; i < baubles.getSlots(); i++) {
-                ItemStack stack = baubles.getStackInSlot(i);
-                if (stack == selected) {
-                    baubles.setStackInSlot(i, ItemStack.EMPTY);
+            for (int i = 0; i < baubles.size(); i++) {
+                ItemResource resource = baubles.getResource(i);
+                if (resource.toStack() == selected) {
+                    baubles.set(i, ItemResource.EMPTY, 0);
                     removed = true;
                     break;
                 }
@@ -238,9 +240,9 @@ public class EmotionDevotedManager {
 
         if (!removed) return;
 
-        ItemStack remaining = ItemHandlerHelper.insertItemStacked(attacker.getMaidInv(), selected, false);
+        ItemStack remaining = TransferHelper.insertItemStacked(attacker.getMaidInv(), selected, false);
         if (!remaining.isEmpty()) {
-            attacker.spawnAtLocation(remaining);
+            attacker.spawnAtLocation((ServerLevel) attacker.level(), remaining);
         }
     }
 
@@ -311,7 +313,7 @@ public class EmotionDevotedManager {
         if (!devotedMaids.contains(maidId)) return;
 
         // 如果是牺牲伤害（DevotedSacrifice），不减免，保证女仆能正常死亡
-        if (maid.getPersistentData().getBoolean("DevotedSacrifice")) {
+        if (maid.getPersistentData().getBoolean("DevotedSacrifice").orElse(false)) {
             return;
         }
 
@@ -325,9 +327,9 @@ public class EmotionDevotedManager {
     @SubscribeEvent
     public void onMaidDeath(LivingDeathEvent event) {
         if (!(event.getEntity() instanceof EntityMaid maid)) return;
-        if (!maid.getPersistentData().getBoolean("DevotedSacrifice")) return;
+        if (!maid.getPersistentData().getBoolean("DevotedSacrifice").orElse(false)) return;
 
-        int sacrificeTick = maid.getPersistentData().getInt("DevotedSacrificeTick");
+        int sacrificeTick = maid.getPersistentData().getInt("DevotedSacrificeTick").orElse(0);
         if (!event.getSource().is(DamageTypes.GENERIC) || maid.tickCount - sacrificeTick > 1) {
             maid.getPersistentData().remove("DevotedSacrifice");
             maid.getPersistentData().remove("DevotedSacrificeTick");

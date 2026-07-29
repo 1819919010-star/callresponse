@@ -10,6 +10,7 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -31,7 +32,6 @@ public class WalkToOwnerAndSitAction {
 
     public static void execute(EntityMaid maid, ServerPlayer debugPlayer) {
         if (maid.getOwner() == null) {
-            maid.sendSystemMessage(Component.literal("§c[动作] 没有主人！"));
             MaidResponder.debug(debugPlayer, "§c[调试] 女仆没有主人");
             return;
         }
@@ -61,7 +61,7 @@ public class WalkToOwnerAndSitAction {
                 }
                 double distSq = maid.distanceToSqr(targetPos.getX() + 0.5, targetPos.getY() + 0.5, targetPos.getZ() + 0.5);
                 if (distSq < 2.25) {
-                    maid.getServer().execute(() -> {
+                    Objects.requireNonNull(maid.level().getServer()).execute(() -> {
                         maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
                         maid.getNavigation().stop();
                         sitDown(maid);
