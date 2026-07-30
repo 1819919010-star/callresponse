@@ -30,5 +30,7 @@
   "callresponse.configuration.section.callresponse.common.toml": "通用配置",
   "callresponse.configuration.section.callresponse.common.toml.title": "通用配置",
   "callresponse.configuration.section.callresponse.emotion.passive.toml": "被动情感配置",
-  "callresponse.configuration.section.callresponse.emotion.passive.toml.title": "被动情感配置"
+  "callresponse.configuration.section.callresponse.emotion.passive.toml.title": "被动情感配置",
+
+  "item.callresponse.emotion_book": "数值调整器"
 }

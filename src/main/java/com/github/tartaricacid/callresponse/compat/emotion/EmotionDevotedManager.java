@@ -34,6 +34,7 @@ public class EmotionDevotedManager {
     private static final int ATTACK_COOLDOWN_TICKS = 10;
     private static final int DIALOGUE_COOLDOWN_TICKS = 400;
     private static final int HEAL_COOLDOWN_TICKS = 1200;
+    private static final int HEAL_DELAY_TICKS = 20;
     private static final double OWNER_LOW_HP_THRESHOLD = 0.1;
     private static final double STEAL_CHANCE = 0.6;
     private static final float ATTACK_BONUS = 5.0f;
@@ -46,6 +47,16 @@ public class EmotionDevotedManager {
     private static final Map<UUID, Long> lastDialogueTime = new ConcurrentHashMap<>();
     private static final Map<UUID, Long> lastHealTime = new ConcurrentHashMap<>();
     private static final Set<UUID> devotedMaids = ConcurrentHashMap.newKeySet();
+    private static final Map<UUID, PendingHeal> pendingHeals = new ConcurrentHashMap<>();
+
+    private static class PendingHeal {
+        final int startTick;
+        final ServerPlayer owner;
+        PendingHeal(int startTick, ServerPlayer owner) {
+            this.startTick = startTick;
+            this.owner = owner;
+        }
+    }
 
     // ===== 检查死忠状态 =====
     public static boolean isDevoted(EntityMaid maid, ServerPlayer player) {

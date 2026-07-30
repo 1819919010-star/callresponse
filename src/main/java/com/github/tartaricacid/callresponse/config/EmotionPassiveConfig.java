@@ -14,7 +14,7 @@ public class EmotionPassiveConfig {
 
         SIT_DETECTION_ENABLED = builder
                 .comment("是否启用坐姿情感变化调试")
-                .define("sitDetectionEnabled", true);
+                .define("sitDetectionEnabled", false);
 
         SIT_TRUST_CHANGE = builder
                 .comment("坐下时信任变化值（范围 -10 ~ +10，负值减少信任）")

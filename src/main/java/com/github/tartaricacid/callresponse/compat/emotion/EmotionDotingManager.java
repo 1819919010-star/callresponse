@@ -5,7 +5,6 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
@@ -16,6 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
@@ -31,7 +31,7 @@ public class EmotionDotingManager {
 
     // 攻击专用冷却
     private static final int ATTACK_COOLDOWN = 10;           // 0.25秒
-    private static final int ATTACK_DIALOGUE_COOLDOWN = 100; // 10秒
+    private static final int ATTACK_DIALOGUE_COOLDOWN = 200;           // 10秒
 
     // 日常行为共享冷却
     private static final int ACTION_COOLDOWN = 2400;         // 120秒
@@ -41,7 +41,7 @@ public class EmotionDotingManager {
     private static final double SEARCH_WEIGHT = 0.3;
     private static final double FLOWER_WEIGHT = 0.3;
 
-    private static final double ATTACK_DAMAGE_REDUCTION = 0.5;
+
     private static final int DIALOGUE_COOLDOWN = 2400;
 
     // ===== 状态存储 =====
@@ -99,12 +99,14 @@ public class EmotionDotingManager {
     @SubscribeEvent
     public void onServerTick(ServerTickEvent.Post event) {
 
+
         for (ServerPlayer player : event.getServer().getPlayerList().getPlayers()) {
             player.level().getEntitiesOfClass(EntityMaid.class,
                             player.getBoundingBox().inflate(32))
                     .forEach(maid -> {
                         if (!maid.isTame() || maid.getOwner() == null) return;
                         if (!maid.isAlive()) return;
+                        if (!maid.getOwnerUUID().equals(player.getUUID())) return;
                         if (!isDoting(maid, player)) return;
 
                         long tick = maid.level().getGameTime();
@@ -158,13 +160,11 @@ public class EmotionDotingManager {
         }
     }
 
-    // ===== 攻击附近女仆（目标：除了自己以外的所有女仆） =====
+    // ===== 赶走主人附近的所有其他女仆（无伤害，只击退） =====
     private static boolean attackNearbyMaids(EntityMaid maid, ServerPlayer player, long tick) {
-        // 检测范围 3 格
-        // 目标：所有女仆实体，无论驯服、野生、主人是谁，只要不是自己就攻击
         AABB box = new AABB(player.blockPosition()).inflate(3);
         List<EntityMaid> targets = maid.level().getEntitiesOfClass(EntityMaid.class, box,
-                m -> m != maid && m.isAlive()); // 只排除自己，其他所有女仆都是目标
+                m -> m != maid && m.isAlive());
         if (targets.isEmpty()) return false;
 
         targets.sort(Comparator.comparingDouble(maid::distanceToSqr));
@@ -178,19 +178,27 @@ public class EmotionDotingManager {
             return true;
         }
 
-        // 攻击
+        // 视觉攻击（不造成实际伤害）
         maid.swing(InteractionHand.MAIN_HAND);
-        double damage = maid.getAttribute(Attributes.ATTACK_DAMAGE) != null ?
-                maid.getAttribute(Attributes.ATTACK_DAMAGE).getValue() * ATTACK_DAMAGE_REDUCTION : 1.0;
-        target.hurt(target.damageSources().mobAttack(maid), (float) damage);
         maid.playSound(net.minecraft.sounds.SoundEvents.PLAYER_ATTACK_STRONG, 0.6f, 1.0f);
 
-        // 对话冷却
+        target.hurtTime = target.hurtDuration = 10;
+
+        // 击退目标女仆
+        double dx = target.getX() - maid.getX();
+        double dz = target.getZ() - maid.getZ();
+        double dist = Math.sqrt(dx * dx + dz * dz);
+        if (dist > 0.01) {
+            target.setDeltaMovement(dx / dist * 0.5, 0.3, dz / dist * 0.5);
+            target.hurtMarked = true;
+        }
+
+        // 对话冷却（独立于全局对话，只用自己的 10秒冷却）
         UUID maidId = maid.getUUID();
         Long lastDialogue = lastAttackDialogueTime.get(maidId);
         if (lastDialogue == null || tick - lastDialogue >= ATTACK_DIALOGUE_COOLDOWN) {
             String prompt = "你是一只被主人宠坏了的女仆，眼里容不下任何其他女仆靠近主人。你看到有其他女仆靠近主人，瞬间火冒三丈——那是你的主人！你的！请用充满占有欲和威胁的语气，说一段话把这个不知好歹的女仆赶走，要让主人知道你只允许自己独占他，也要让那个女仆知道她永远不可能比你更受宠。说话要霸道一点，宣誓主权。";
-            triggerAIDialogue(maid, player, prompt);
+            MaidResponder.processBroadcast(player, Collections.singletonList(maid), prompt, false);
             lastAttackDialogueTime.put(maidId, tick);
         }
 
@@ -334,7 +342,7 @@ public class EmotionDotingManager {
     private static void executeSearch(EntityMaid maid, ServerPlayer player, BlockPos targetPos) {
         BlockEntity be = maid.level().getBlockEntity(targetPos);
         if (be == null) return;
-        IItemHandler handler = maid.level().getCapability(net.neoforged.neoforge.capabilities.Capabilities.ItemHandler.BLOCK, targetPos, null);
+        IItemHandler handler = maid.level().getCapability(Capabilities.ItemHandler.BLOCK, targetPos, null);
         if (handler == null) return;
 
         List<Integer> slotsWithItems = new ArrayList<>();

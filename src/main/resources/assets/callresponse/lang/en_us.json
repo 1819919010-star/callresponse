@@ -30,5 +30,7 @@
   "callresponse.configuration.section.callresponse.common.toml": "Common Configuration",
   "callresponse.configuration.section.callresponse.common.toml.title": "Common Configuration",
   "callresponse.configuration.section.callresponse.emotion.passive.toml": "Passive Emotion Configuration",
-  "callresponse.configuration.section.callresponse.emotion.passive.toml.title": "Passive Emotion Configuration"
+  "callresponse.configuration.section.callresponse.emotion.passive.toml.title": "Passive Emotion Configuration",
+
+  "item.callresponse.emotion_book": "Value Adjuster"
 }
