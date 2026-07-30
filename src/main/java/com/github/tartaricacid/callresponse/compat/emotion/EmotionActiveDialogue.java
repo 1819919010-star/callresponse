@@ -3,8 +3,8 @@ package com.github.tartaricacid.callresponse.compat.emotion;
 import com.github.tartaricacid.callresponse.compat.broadcast.MaidResponder;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.util.Collections;
 import java.util.Map;

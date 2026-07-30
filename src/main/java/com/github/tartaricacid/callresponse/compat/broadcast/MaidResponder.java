@@ -1,8 +1,8 @@
 package com.github.tartaricacid.callresponse.compat.broadcast;
 
 import com.github.tartaricacid.callresponse.compat.broadcast.actions.*;
-import com.github.tartaricacid.callresponse.compat.emotion.EmotionPrompt;
 import com.github.tartaricacid.callresponse.compat.emotion.EmotionDotingManager;
+import com.github.tartaricacid.callresponse.compat.emotion.EmotionPrompt;
 import com.github.tartaricacid.callresponse.config.BroadcastConfig;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.ChatClientInfo;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatManager;
@@ -13,7 +13,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 public final class MaidResponder {
 

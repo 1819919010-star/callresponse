@@ -1,19 +1,19 @@
 package com.github.tartaricacid.callresponse.compat.emotion.mixin;
 
 import com.github.tartaricacid.callresponse.compat.brain.LazyMaidHitHandler;
+import com.github.tartaricacid.callresponse.compat.broadcast.MaidResponder;
 import com.github.tartaricacid.callresponse.compat.emotion.EmotionActiveDialogue;
 import com.github.tartaricacid.callresponse.compat.emotion.EmotionBetrayalManager;
 import com.github.tartaricacid.callresponse.compat.emotion.EmotionData;
-import com.github.tartaricacid.callresponse.compat.broadcast.MaidResponder;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
