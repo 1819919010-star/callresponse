@@ -19,6 +19,7 @@ public class EmotionEventListener {
     public void onMaidInteract(InteractMaidEvent event) {
         Player player = event.getPlayer();
         EntityMaid maid = event.getMaid();
+        ItemStack stack = event.getStack();
 
         if (EmotionBetrayalManager.isBetraying(maid)) {
             event.setCanceled(true);
@@ -29,7 +30,7 @@ public class EmotionEventListener {
             event.setCanceled(true);
             if (player instanceof ServerPlayer serverPlayer) {
                 EmotionData.EmotionValues v = EmotionData.get(maid, serverPlayer);
-                int hunger = (int) Math.round(HungerData.get(maid));
+                int hunger = Math.round(HungerData.get(maid));
                 PacketDistributor.sendToPlayer(serverPlayer,
                         new OpenEmotionBookScreenS2CPacket(maid.getUUID(), v.trust(), v.fear(), hunger));
             }

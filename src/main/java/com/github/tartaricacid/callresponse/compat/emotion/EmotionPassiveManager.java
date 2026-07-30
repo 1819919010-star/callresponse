@@ -20,7 +20,6 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
@@ -94,23 +93,6 @@ public class EmotionPassiveManager {
     private static final Map<UUID, Integer> companionTimer = new ConcurrentHashMap<>();
     private static final Map<UUID, Long> lastCompanionTrigger = new ConcurrentHashMap<>();
     private static final Map<UUID, ResourceLocation> lastDimension = new ConcurrentHashMap<>();
-
-    // ===== 辅助方法：浮点数情感变化 =====
-    private static void addTrustFloat(EntityMaid maid, UUID playerId, float delta) {
-        if (delta == 0) return;
-        int intDelta = Math.round(delta);
-        if (intDelta != 0) {
-            EmotionData.addTrust(maid, playerId, intDelta);
-        }
-    }
-
-    private static void addFearFloat(EntityMaid maid, UUID playerId, float delta) {
-        if (delta == 0) return;
-        int intDelta = Math.round(delta);
-        if (intDelta != 0) {
-            EmotionData.addFear(maid, playerId, intDelta);
-        }
-    }
 
     // ===== 维度名称转中文 =====
     private static String getDimensionDisplayName(ResourceLocation dimId) {
@@ -697,7 +679,7 @@ public class EmotionPassiveManager {
                             EmotionData.addFear(maid, ownerId, 8);
                             EmotionData.addTrust(maid, ownerId, -4);
                         } else {
-                            addFearFloat(maid, ownerId, 0.02f);
+                            EmotionData.addFear(maid, ownerId, 4);
                         }
 
                         if (isMaidDeath && isKilledByPlayer && isKillerPlayer) {
@@ -707,27 +689,28 @@ public class EmotionPassiveManager {
         }
     }
 
-    // ===== 受伤检测 =====
-    @SubscribeEvent
-    public void onMaidHurt(LivingDamageEvent.Pre event) {
-        if (!(event.getEntity() instanceof EntityMaid maid)) return;
-        if (maid.level().isClientSide) return;
-        if (!maid.isTame() || maid.getOwner() == null) return;
-        if (EmotionBetrayalManager.isBetraying(maid)) return;
-
-        UUID ownerId = getOwnerUUID(maid);
-        if (ownerId == null) return;
-
-        addFearFloat(maid, ownerId, 0.1f);
-        addTrustFloat(maid, ownerId, -0.1f);
-
-        if (maid.getOwner() instanceof ServerPlayer owner) {
-            MaidResponder.debug(owner,
-                    Component.literal("§e[被动] ")
-                            .append(maid.getName())
-                            .append(Component.literal(" 受伤：恐惧+0.1，信任-0.1"))
-            );        }
-    }
+    // todo:先删了吧，hurt过于高频确实不好算
+//    @SubscribeEvent
+//    public void onMaidHurt(LivingDamageEvent.Pre event) {
+//        if (!(event.getEntity() instanceof EntityMaid maid)) return;
+//        if (maid.level().isClientSide) return;
+//        if (!maid.isTame() || maid.getOwner() == null) return;
+//        if (EmotionBetrayalManager.isBetraying(maid)) return;
+//
+//        UUID ownerId = getOwnerUUID(maid);
+//        if (ownerId == null) return;
+//
+//        addFearFloat(maid, ownerId, 0.1f);
+//        addTrustFloat(maid, ownerId, -0.1f);
+//
+//        if (maid.getOwner() instanceof ServerPlayer owner) {
+//            MaidResponder.debug(owner,
+//                    Component.literal("§e[被动] ")
+//                            .append(maid.getName())
+//                            .append(Component.literal(" 受伤：恐惧+0.1，信任-0.1"))
+//            );
+//        }
+//    }
 
     // ===== 触发目睹主人杀女仆的 AI 对话 =====
     private static void triggerWitnessDialogue(EntityMaid maid, ServerPlayer owner, LivingEntity dead) {

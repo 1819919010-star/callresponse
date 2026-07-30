@@ -80,14 +80,14 @@ public class HungerManager {
         LivingEntity ownerEntity = maid.getOwner();
         if (ownerEntity instanceof ServerPlayer serverPlayer) {
             UUID playerId = serverPlayer.getUUID();
-            EmotionData.addTrustFloat(maid, playerId, 0.5f);
-            EmotionData.addFearFloat(maid, playerId, -0.5f);
+            EmotionData.addTrust(maid, playerId, 1);
+            EmotionData.addFear(maid, playerId, -1);
             MaidResponder.debug(serverPlayer,
                     Component.literal("§e[压力] ")
                             .append(maid.getName())
                             .append(Component.literal(" 吃了 "))
                             .append(stack.getDisplayName()) // 直接使用 Component
-                            .append(Component.literal("饥饿度 " + oldHunger + " → " + newHunger + "信任度 +0.5恐惧度 -0.5"))
+                            .append(Component.literal("饥饿度 " + oldHunger + " → " + newHunger + "信任度 +1恐惧度 -1"))
             );
         }
 
