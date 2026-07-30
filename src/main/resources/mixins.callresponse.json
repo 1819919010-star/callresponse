@@ -1,10 +1,12 @@
 {
     "required": true,
     "minVersion": "0.8",
-    "package": "com.github.tartaricacid.callresponse.compat.emotion.mixin",
+    "package": "com.github.tartaricacid.callresponse.mixin",
     "compatibilityLevel": "JAVA_21",
     "mixins": [
-        "MixinEntityMaid"
+        "MixinCakeEdible",
+        "MixinEntityMaid",
+        "MixinMaidEdibleBlockManager"
     ],
     "injectors": {
         "defaultRequire": 1

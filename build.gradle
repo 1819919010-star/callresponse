@@ -71,6 +71,7 @@ processResources {
             mod_license            : mod_license,
             mod_version            : mod_version,
             mod_authors            : mod_authors,
+            mod_credits            : mod_credits,
             mod_description        : mod_description
     ]
     inputs.properties replaceProperties

@@ -1,4 +1,4 @@
-package com.github.tartaricacid.callresponse.compat.emotion.mixin;
+package com.github.tartaricacid.callresponse.mixin;
 
 import com.github.tartaricacid.callresponse.compat.brain.LazyMaidHitHandler;
 import com.github.tartaricacid.callresponse.compat.broadcast.MaidResponder;

@@ -14,9 +14,8 @@ public class SitDownAction {
     public static void execute(EntityMaid maid, ServerPlayer debugPlayer) {
         if (!isSitting(maid)) {
             maid.setInSittingPose(true);
-            String name = maid.getCustomName() != null ? maid.getCustomName().getString() : "无名";
-            maid.sendSystemMessage(Component.literal("§a[动作] " + name + " 已坐下"));
-            MaidResponder.debug(debugPlayer, "§a[调试] " + name + " 执行: 坐下");
+            Component name = maid.getName();
+            MaidResponder.debug(debugPlayer, Component.literal("§a[调试] ").append(name).append(" 执行: 坐下"));
         } else {
             MaidResponder.debug(debugPlayer, "§e[调试] 已经坐下了");
         }

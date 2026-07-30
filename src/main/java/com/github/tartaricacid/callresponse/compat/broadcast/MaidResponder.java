@@ -1,5 +1,6 @@
 package com.github.tartaricacid.callresponse.compat.broadcast;
 
+import com.github.tartaricacid.callresponse.CallResponseMod;
 import com.github.tartaricacid.callresponse.compat.broadcast.actions.*;
 import com.github.tartaricacid.callresponse.compat.emotion.EmotionDotingManager;
 import com.github.tartaricacid.callresponse.compat.emotion.EmotionPrompt;
@@ -21,9 +22,15 @@ import java.util.Optional;
 public final class MaidResponder {
 
     public static void debug(Player player, String msg) {
+        debug(player, Component.literal(msg));
+    }
+
+    // 使用 Component 以避免在服务端时的问题
+    // 救…我……
+    public static void debug(Player player, Component msg) {
         boolean debugEnabled = BroadcastConfig.DEBUG_ENABLED.get();
         if (debugEnabled && player != null) {
-            player.sendSystemMessage(Component.literal(msg));
+            player.sendSystemMessage(msg);
         }
     }
 
@@ -72,19 +79,31 @@ public final class MaidResponder {
                         if (!isDoting) {
                             WalkToOwnerAndSitAction.execute(maid, serverPlayer);
                         } else {
-                            debug(player, "§e[调试] " + maid.getCustomName() + " 溺爱模式，拒绝集合指令");
+                            debug(player,
+                                    Component.literal("§e[调试] ")
+                                            .append(maid.getName())
+                                            .append(Component.literal(" 溺爱模式，拒绝集合指令"))
+                            );
                         }
                     } else if (lowerCmd.contains("开饭") || lowerCmd.contains("拿食物")) {
                         if (!isDoting) {
                             WalkToOwnerAndTakeFoodAction.execute(maid, serverPlayer);
                         } else {
-                            debug(player, "§e[调试] " + maid.getCustomName() + " 溺爱模式，拒绝拿食物指令");
+                            debug(player,
+                                    Component.literal("§e[调试] ")
+                                            .append(maid.getName())
+                                            .append(Component.literal(" 溺爱模式，拒绝拿食物指令"))
+                            );
                         }
                     } else if (lowerCmd.contains("打起来") || lowerCmd.contains("攻击") || lowerCmd.contains("打架") || lowerCmd.contains("决斗")) {
                         if (!isDoting) {
                             AttackOtherMaidAction.execute(maid, serverPlayer);
                         } else {
-                            debug(player, "§e[调试] " + maid.getCustomName() + " 溺爱模式，拒绝攻击指令");
+                            debug(player,
+                                    Component.literal("§e[调试] ")
+                                            .append(maid.getName())
+                                            .append(Component.literal(" 溺爱模式，拒绝攻击指令"))
+                            );
                         }
                     } else if (lowerCmd.contains("停战") || lowerCmd.contains("停止攻击")) {
                         StopAttackAction.execute(maid, serverPlayer);
@@ -92,13 +111,21 @@ public final class MaidResponder {
                         if (!isDoting) {
                             StandUpAction.execute(maid, serverPlayer);
                         } else {
-                            debug(player, "§e[调试] " + maid.getCustomName() + " 溺爱模式，拒绝站起来指令");
+                            debug(player,
+                                    Component.literal("§e[调试] ")
+                                            .append(maid.getName())
+                                            .append(Component.literal(" 溺爱模式，拒绝站起来指令"))
+                            );
                         }
                     } else if (lowerCmd.contains("坐下")) {
                         if (!isDoting) {
                             SitDownAction.execute(maid, serverPlayer);
                         } else {
-                            debug(player, "§e[调试] " + maid.getCustomName() + " 溺爱模式，拒绝坐下指令");
+                            debug(player,
+                                    Component.literal("§e[调试] ")
+                                            .append(maid.getName())
+                                            .append(Component.literal(" 溺爱模式，拒绝坐下指令"))
+                            );
                         }
                     }
                 }
@@ -114,10 +141,6 @@ public final class MaidResponder {
         // ===== AI 对话 =====
         EntityMaid firstMaid = responders.get(0);
         MaidAIChatManager firstManager = firstMaid.getAiChatManager();
-        if (firstManager == null) {
-            debug(player, "§c无法获取女仆AI管理器");
-            return;
-        }
 
         String language = firstManager.getTTSLanguage();
         if (language == null || language.isBlank()) {
@@ -126,43 +149,45 @@ public final class MaidResponder {
         debug(player, "§e[调试] 使用语言: " + language);
 
 
-        final ServerPlayer finalServerPlayer = serverPlayer;
-
         for (EntityMaid maid : responders) {
             MaidAIChatManager manager = maid.getAiChatManager();
-            if (manager == null) continue;
 
             final EntityMaid finalMaid = maid;
-            final MaidAIChatManager finalManager = manager;
 
-            String maidName = finalMaid.getCustomName() != null ? finalMaid.getCustomName().getString() : "无名";
-            debug(finalServerPlayer, "§e[调试] 正在处理: " + maidName);
+            Component maidName = finalMaid.getName();
+            debug(serverPlayer, Component.literal("§e[调试] 正在处理: ").append(maidName));
 
             try {
                 // ===== 获取人设（如果有） =====
-                Optional<CharacterSetting> settingOpt = finalManager.getSetting();
+                Optional<CharacterSetting> settingOpt = manager.getSetting();
                 String finalLanguage = language;
                 String setting = settingOpt.map(s -> s.getSetting(finalMaid, finalLanguage))
                         .orElse("你是一个女仆，请友好地回复主人。");
 
                 // ===== 获取情感上下文 =====
-                String emotionContext = EmotionPrompt.buildEmotionContext(finalMaid, finalServerPlayer);
+                String emotionContext = EmotionPrompt.buildEmotionContext(finalMaid, serverPlayer);
 
                 // ===== 融合人设 + 情感作为用户消息前缀 =====
                 String modifiedCommand = "【人设】\n" + setting + "\n\n【情感状态】\n" + emotionContext + "\n\n【玩家的指令】\n" + command;
 
                 // ===== 调用原版 chat =====
                 ChatClientInfo clientInfo = new ChatClientInfo(
-                        finalServerPlayer.getName().getString(),
+                        serverPlayer.getName().getString(),
                         language,
                         Collections.emptyList()
                 );
-                finalManager.chat(modifiedCommand, clientInfo, finalServerPlayer);
-                debug(finalServerPlayer, "§a[调试] " + maidName + " 的 chat() 调用完成（人设+情感已注入）");
-
+                manager.chat(modifiedCommand, clientInfo, serverPlayer);
+                debug(serverPlayer,
+                        Component.literal("§a[调试] ")
+                                .append(maidName)
+                                .append(Component.literal(" 的 chat() 调用完成（人设+情感已注入）"))
+                );
             } catch (Exception e) {
-                debug(finalServerPlayer, "§c[调试] " + maidName + " 异常: " + e.getMessage());
-                e.printStackTrace();
+                debug(serverPlayer,
+                        Component.literal("§c[调试] ")
+                                .append(maidName)
+                                .append(Component.literal(" 异常: " + e.getMessage()))
+                );                CallResponseMod.LOGGER.error("出现错误：", e);
             }
         }
     }

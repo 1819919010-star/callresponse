@@ -8,8 +8,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.SubscribeEvent;
 
-import java.util.UUID;
-
 public class MaidHungerGuiDisplay {
 
     // 调试计数器
@@ -26,16 +24,8 @@ public class MaidHungerGuiDisplay {
         EntityMaid maid = gui.getMaid();
         if (maid == null) return;
 
-        UUID maidUUID = maid.getUUID();
-
-        // 从缓存读取
-        int hunger = HungerClientCache.getHunger(maidUUID);
-        boolean isCached = hunger != -1;
-
-        // 如果缓存没有，从本地读取（降级）
-        if (!isCached) {
-            hunger = (int) Math.round(HungerData.get(maid));
-        }
+        // 从本地读取
+        var hunger = Math.round(HungerData.get(maid));
 
         GuiGraphics graphics = event.getGraphics();
         int leftPos = event.getLeftPos();
@@ -43,7 +33,7 @@ public class MaidHungerGuiDisplay {
 
         // ----- 调试信息（每20帧刷新一次，显示在界面） -----
         if (frameCount % 500 == 0) {
-            String debugMsg = "[饱食度] 缓存: " + hunger + (isCached ? " ✓" : " ✗");
+            String debugMsg = "饱食度: " + hunger;
             // 输出到游戏聊天栏
             if (Minecraft.getInstance().player != null) {
                 Minecraft.getInstance().player.sendSystemMessage(Component.literal("§e" + debugMsg));
@@ -58,16 +48,6 @@ public class MaidHungerGuiDisplay {
                 leftPos + 35,
                 topPos + 30,
                 0xFFFFFF
-        );
-
-        // 状态提示（缓存是否有效）
-        String status = isCached ? "§a网络同步" : "§c本地读取";
-        graphics.drawString(
-                Minecraft.getInstance().font,
-                Component.literal(status),
-                leftPos + 40,
-                topPos + 45,
-                isCached ? 0x55FF55 : 0xFF5555
         );
     }
 }

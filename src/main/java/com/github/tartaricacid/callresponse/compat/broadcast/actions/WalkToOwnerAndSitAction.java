@@ -31,14 +31,13 @@ public class WalkToOwnerAndSitAction {
 
     public static void execute(EntityMaid maid, ServerPlayer debugPlayer) {
         if (maid.getOwner() == null) {
-            maid.sendSystemMessage(Component.literal("§c[动作] 没有主人！"));
             MaidResponder.debug(debugPlayer, "§c[调试] 女仆没有主人");
             return;
         }
 
         Vec3 ownerPos = maid.getOwner().position();
         BlockPos targetPos = new BlockPos((int) ownerPos.x, (int) ownerPos.y, (int) ownerPos.z);
-        String name = maid.getCustomName() != null ? maid.getCustomName().getString() : "无名";
+        Component name = maid.getName();
 
         if (isSitting(maid)) standUp(maid);
 
@@ -50,7 +49,7 @@ public class WalkToOwnerAndSitAction {
         maid.getBrain().setMemory(MemoryModuleType.WALK_TARGET, walkTarget);
         maid.setSpeed(0.7f);
 
-        MaidResponder.debug(debugPlayer, "§a[动作] " + name + " 正在前往主人 (" + targetPos.getX() + ", " + targetPos.getY() + ", " + targetPos.getZ() + ")");
+        MaidResponder.debug(debugPlayer, Component.literal("§a[动作] ").append(name).append(" 正在前往主人 (").append(targetPos.toShortString()).append(")"));
 
         TimerTask task = new TimerTask() {
             @Override
@@ -65,7 +64,11 @@ public class WalkToOwnerAndSitAction {
                         maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
                         maid.getNavigation().stop();
                         sitDown(maid);
-                        MaidResponder.debug(debugPlayer, "§a[调试] " + name + " 已到达主人身边并坐下");
+                        MaidResponder.debug(debugPlayer,
+                                Component.literal("§a[调试] ")
+                                        .append(name)
+                                        .append(Component.literal(" 已到达主人身边并坐下"))
+                        );
                     });
                     this.cancel();
                 }

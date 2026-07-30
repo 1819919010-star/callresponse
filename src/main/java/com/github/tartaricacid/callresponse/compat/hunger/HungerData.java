@@ -1,30 +1,22 @@
 package com.github.tartaricacid.callresponse.compat.hunger;
 
+import com.github.tartaricacid.callresponse.init.InitAttachTypes;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import net.minecraft.nbt.CompoundTag;
 
 public class HungerData {
 
-    private static final String HUNGER_TAG = "MaidHunger";
-    private static final float MAX_HUNGER = 100.0f;
-    private static final float MIN_HUNGER = 0.0f;
-    private static final float DEFAULT_HUNGER = 50.0f; // 默认正常值
+    public static final String HUNGER_TAG = "MaidHunger";
+    public static final float MAX_HUNGER = 100.0f;
+    public static final float MIN_HUNGER = 0.0f;
+    public static final float DEFAULT_HUNGER = 50.0f; // 默认正常值
 
     public static float get(EntityMaid maid) {
-        CompoundTag tag = maid.getPersistentData();
-        if (tag.contains(HUNGER_TAG)) {
-            return tag.getFloat(HUNGER_TAG);
-        } else {
-            // 首次获取时初始化为默认值并保存
-            set(maid, DEFAULT_HUNGER);
-            return DEFAULT_HUNGER;
-        }
+        return maid.getData(InitAttachTypes.SYNCED_HUNGER);
     }
 
     public static void set(EntityMaid maid, float value) {
-        CompoundTag tag = maid.getPersistentData();
-        float clamped = Math.max(MIN_HUNGER, Math.min(MAX_HUNGER, value));
-        tag.putFloat(HUNGER_TAG, clamped);
+        float clamped = Math.clamp(value, MIN_HUNGER, MAX_HUNGER);
+        maid.setData(InitAttachTypes.SYNCED_HUNGER, clamped);
     }
 
     public static void add(EntityMaid maid, float delta) {

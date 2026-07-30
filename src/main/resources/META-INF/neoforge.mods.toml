@@ -5,10 +5,12 @@ license = "${mod_license}"
 [[mods]]
     modId = "${mod_id}"
     version = "${mod_version}"
-    displayName = "${mod_name}"
-    credits = "${mod_authors}"
+    displayName = "爱憎分明 - Love & Loathing"
+    credits = "${mod_credits}"
     authors = "${mod_authors}"
-    description = '''${mod_description}'''
+    description = '''一个可以管教自己女仆的mod'''
+
+# gradle.properties 不支持中文
 
 [[dependencies."${mod_id}"]]
     modId = "neoforge"

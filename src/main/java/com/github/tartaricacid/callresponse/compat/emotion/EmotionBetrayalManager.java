@@ -6,6 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -100,10 +101,12 @@ public class EmotionBetrayalManager {
         LivingEntity ownerEntity = victim.getOwner();
         if (ownerEntity instanceof ServerPlayer ownerPlayer) {
             if (ownerPlayer.distanceTo(victim) < 16) {
-                String victimName = victim.getCustomName() != null ? victim.getCustomName().getString() : "女仆";
-                ownerPlayer.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                        "§c[警告] 你的女仆 " + victimName + " 正在被一个疯狂的女仆攻击！"
-                ));
+                Component victimName = victim.getName();
+                ownerPlayer.sendSystemMessage(
+                        Component.literal("§c[警告] 你的女仆 ")
+                                .append(victimName)
+                                .append(Component.literal(" 正在被一个疯狂的女仆攻击！"))
+                );
             }
             MaidResponder.processBroadcast(ownerPlayer, Collections.singletonList(victim), instruction, false);
         } else {
@@ -193,11 +196,13 @@ public class EmotionBetrayalManager {
 
         maid.setAggressive(true);
 
-        String maidName = maid.getName().getString();
+        Component maidName = maid.getName();
         if (player != null) {
-            player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                    "§c§l" + maidName + " 背叛了你！她开始疯狂攻击！"
-            ));
+            player.sendSystemMessage(
+                    Component.literal("§c§l")
+                            .append(maidName)
+                            .append(Component.literal(" 背叛了你！她开始疯狂攻击！"))
+            );
         }
         maid.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1.0f, 1.0f);
     }
