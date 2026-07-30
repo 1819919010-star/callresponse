@@ -6,8 +6,8 @@ license = "${mod_license}"
     modId = "${mod_id}"
     version = "${mod_version}"
     displayName = "${mod_name}"
-    credits = "${mod_authors}"
-    authors = "${mod_authors}"
+    credits = "JumDa5he"
+    authors = "JumDa5he"
     description = '''${mod_description}'''
 
 [[dependencies."${mod_id}"]]

@@ -18,7 +18,6 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -89,13 +88,11 @@ public class HungerManager {
         LivingEntity ownerEntity = maid.getOwner();
         if (ownerEntity instanceof ServerPlayer serverPlayer) {
             UUID playerId = serverPlayer.getUUID();
-            int trustDelta = 1 + (nutrition / 4);
-            int fearDelta = -(1 + (nutrition / 5));
-            EmotionData.addTrust(maid, playerId, trustDelta);
-            EmotionData.addFear(maid, playerId, fearDelta);
+            EmotionData.addTrustFloat(maid, playerId, 0.5f);
+            EmotionData.addFearFloat(maid, playerId, -0.5f);
 
-            MaidResponder.debug(serverPlayer, "§e[饥饿] " + maid.getCustomName() + " 吃了 " + stack.getDisplayName().getString() +
-                    "，饱食度 " + oldHunger + " → " + newHunger + "，信任 +" + trustDelta + "，恐惧 " + fearDelta);
+            MaidResponder.debug(serverPlayer, "\u001b[e[压力] " + maid.getCustomName() + " 吃了 " + stack.getDisplayName().getString() +
+                    "饥饿度 " + oldHunger + " → " + newHunger + "信任度 +0.5恐惧度 -0.5");
         }
 
         applySpeedEffect(maid);
@@ -211,11 +208,13 @@ public class HungerManager {
     }
 
     // ===== 尝试从背包中吃一个食物（模拟正常吃） =====
+    // 逻辑完全对齐 TLM MaidWorkMealTask：
+    // 1) 先查双手是否有食物，有就直接吃
+    // 2) 都没食物就从背包取，默认放副手（双手都有东西时不干扰主手）
     private boolean tryEatFoodFromBackpack(EntityMaid maid) {
         // 检查主手是否有可食用的物品
         ItemStack mainHand = maid.getMainHandItem();
         if (!mainHand.isEmpty() && mainHand.getFoodProperties(maid) != null) {
-            // 直接开始吃主手的食物
             maid.startUsingItem(InteractionHand.MAIN_HAND);
             return true;
         }
@@ -223,17 +222,24 @@ public class HungerManager {
         // 检查副手是否有可食用的物品
         ItemStack offHand = maid.getOffhandItem();
         if (!offHand.isEmpty() && offHand.getFoodProperties(maid) != null) {
-            // 将副手物品换到主手，原主手物品换到副手
-            maid.setItemInHand(InteractionHand.MAIN_HAND, offHand);
-            maid.setItemInHand(InteractionHand.OFF_HAND, mainHand);
-            // 开始使用主手的食物
-            maid.startUsingItem(InteractionHand.MAIN_HAND);
+            maid.startUsingItem(InteractionHand.OFF_HAND);
             return true;
         }
 
         // 手里没有食物，从背包搜索
         CombinedInvWrapper inv = maid.getAvailableBackpackInv();
         if (inv == null) return false;
+
+        // 选择进食手：TLM 原版逻辑
+        // - 默认副手（双手都有物品时不干扰主手）
+        // - 有空手则用空手
+        InteractionHand eatHand = InteractionHand.OFF_HAND;
+        if (mainHand.isEmpty()) {
+            eatHand = InteractionHand.MAIN_HAND;
+        } else if (offHand.isEmpty()) {
+            eatHand = InteractionHand.OFF_HAND;
+        }
+        ItemStack handItem = maid.getItemInHand(eatHand);
 
         for (int i = 0; i < inv.getSlots(); i++) {
             ItemStack stack = inv.getStackInSlot(i);
@@ -244,18 +250,13 @@ public class HungerManager {
             // 取出一个食物
             ItemStack extracted = inv.extractItem(i, 1, false);
             if (!extracted.isEmpty()) {
-                // 将当前主手物品放回背包（如果有）
-                ItemStack currentMain = maid.getMainHandItem();
-                if (!currentMain.isEmpty()) {
-                    ItemStack remain = ItemHandlerHelper.insertItemStacked(inv, currentMain, false);
-                    if (!remain.isEmpty()) {
-                        maid.spawnAtLocation(remain);
-                    }
+                // 用 TLM 隐藏物品栏暂存进食手的原物品
+                if (!handItem.isEmpty()) {
+                    maid.memoryHandItemStack(handItem.copy());
                 }
-
-                // 设置食物到主手并开始使用
-                maid.setItemInHand(InteractionHand.MAIN_HAND, extracted);
-                maid.startUsingItem(InteractionHand.MAIN_HAND);
+                // 设置食物到进食手并开始使用
+                maid.setItemInHand(eatHand, extracted);
+                maid.startUsingItem(eatHand);
                 return true;
             }
         }

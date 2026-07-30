@@ -4,10 +4,38 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class EmotionData {
     private static final String EMOTION_TAG = "MaidEmotions";
+    private static final Map<String, Float> trustRemainder = new ConcurrentHashMap<>();
+    private static final Map<String, Float> fearRemainder = new ConcurrentHashMap<>();
+
+    public static void addTrustFloat(EntityMaid maid, UUID playerId, float delta) {
+        String key = maid.getUUID() + ":" + playerId;
+        float acc = trustRemainder.getOrDefault(key, 0f) + delta;
+        int intPart = (int) acc;
+        if (intPart != 0) {
+            addTrust(maid, playerId, intPart);
+            trustRemainder.put(key, acc - intPart);
+        } else {
+            trustRemainder.put(key, acc);
+        }
+    }
+
+    public static void addFearFloat(EntityMaid maid, UUID playerId, float delta) {
+        String key = maid.getUUID() + ":" + playerId;
+        float acc = fearRemainder.getOrDefault(key, 0f) + delta;
+        int intPart = (int) acc;
+        if (intPart != 0) {
+            addFear(maid, playerId, intPart);
+            fearRemainder.put(key, acc - intPart);
+        } else {
+            fearRemainder.put(key, acc);
+        }
+    }
 
     // ===== 获取情感值（ServerPlayer 版本） =====
     public static EmotionValues get(EntityMaid maid, ServerPlayer player) {

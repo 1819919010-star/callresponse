@@ -1,7 +1,10 @@
 package com.github.tartaricacid.callresponse;
 
+import com.github.tartaricacid.callresponse.compat.gui.EmotionBookUpdateC2SPacket;
+import com.github.tartaricacid.callresponse.compat.gui.OpenEmotionBookScreenS2CPacket;
 import com.github.tartaricacid.callresponse.compat.hunger.HungerAwareEdibleWrapper;
 import com.github.tartaricacid.callresponse.compat.hunger.SyncHungerPacket;
+import com.github.tartaricacid.callresponse.compat.item.ModItems;
 import com.github.tartaricacid.callresponse.config.BroadcastConfig;
 import com.github.tartaricacid.callresponse.config.EmotionPassiveConfig;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
@@ -24,12 +27,17 @@ public class CallResponseMod {
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     public CallResponseMod(IEventBus modEventBus, ModContainer modContainer) {
-        // 1. 注册配置文件
+        // 1. 注册物品
+        ModItems.ITEMS.register(modEventBus);
+
+        // 2. 注册配置文件
         modContainer.registerConfig(ModConfig.Type.COMMON, BroadcastConfig.SPEC);
         modContainer.registerConfig(ModConfig.Type.COMMON, EmotionPassiveConfig.SPEC, MOD_ID + "-emotion-passive.toml");
 
-        // 2. 注册网络包
+        // 3. 注册网络包
         modEventBus.addListener(SyncHungerPacket::register);
+        modEventBus.addListener(OpenEmotionBookScreenS2CPacket::register);
+        modEventBus.addListener(EmotionBookUpdateC2SPacket::register);
 
         // 3. 注册 ILittleMaid 扩展
         TouhouLittleMaid.EXTENSIONS.add(new ILittleMaid() {
