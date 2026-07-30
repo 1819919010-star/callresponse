@@ -13,8 +13,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.util.Collections;
 import java.util.UUID;
@@ -108,7 +108,7 @@ public class EmotionForgettingManager {
         data.putBoolean(KEY_FORGET_TRIGGERED, true);
 
         // ★ 使用女仆本名
-        String maidName = maid.getName().getString();
+        Component maidName = maid.getName();
 
         ServerLevel targetLevel = (ServerLevel) player.level();
         ServerLevel currentLevel = (ServerLevel) maid.level();
@@ -146,17 +146,18 @@ public class EmotionForgettingManager {
         finalMaid.getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET);
         finalMaid.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
 
-        player.sendSystemMessage(Component.literal(
-                "§e" + maidName + " 突然出现在你面前，眼中带着一种说不清的平静..."
-        ));
+        player.sendSystemMessage(
+                Component.literal("§e")
+                        .append(maidName)
+                        .append(Component.literal(" 突然出现在你面前，眼中带着一种说不清的平静..."))
+        );
 
         String prompt = "你被主人遗忘了太久，久到信任消散了，恐惧也磨平了。你不再愤怒，也不再害怕，心里只剩下一种空空荡荡的平静。曾经你是那么在意主人，在意到每一分情绪的起落都是因为他——但时间真的能冲淡一切。现在你看着主人，感觉像是在看一个熟悉的陌生人。请用一段平静而释然的话，约30字左右，告诉主人你曾经多么快乐，但你受不了永远在等待的生活。没有眼泪，没有控诉，只有淡淡的释然和一句安静的告别。就像秋叶落地那样自然。";
         MaidResponder.processBroadcast(player, Collections.singletonList(finalMaid), prompt, false);
 
         finalMaid.getPersistentData().putInt(KEY_FORGET_COUNTDOWN, POST_DIALOGUE_WAIT);
 
-        MaidResponder.debug(player, "§e[淡忘] " + maidName + " 将在 10 秒后消失...");
-    }
+        MaidResponder.debug(player, Component.literal("§e[淡忘] ").append(maidName).append(Component.literal(" 将在 10 秒后消失...")));    }
 
     // ===== 执行淡忘（女仆消失） =====
     private void performForgetting(EntityMaid maid) {
@@ -164,7 +165,7 @@ public class EmotionForgettingManager {
         Vec3 pos = maid.position();
         Level level = maid.level();
         // ★ 使用女仆本名
-        String maidName = maid.getName().getString();
+        Component maidName = maid.getName();
 
         ItemStack cake = new ItemStack(Items.CAKE);
         ItemEntity itemEntity = new ItemEntity(
@@ -187,9 +188,11 @@ public class EmotionForgettingManager {
         pendingTeleport.remove(maidId);
 
         if (maid.getOwner() instanceof ServerPlayer player) {
-            player.sendSystemMessage(Component.literal(
-                    "§c" + maidName + " 消失了... 只留下了一块蛋糕。"
-            ));
+            player.sendSystemMessage(
+                    Component.literal("§c")
+                            .append(maidName)
+                            .append(Component.literal(" 消失了... 只留下了一块蛋糕。"))
+            );
         }
     }
 

@@ -32,9 +32,6 @@ public class HungerAwareEdibleWrapper implements IMaidEdibleBlock {
         // 增加饱食度（每口固定 +6，可根据需要调整）
         HungerData.add(maid, 6.0f);
 
-        // 同步到客户端（更新GUI）
-        HungerManager.syncHungerToClient(maid);
-
         return result;
     }
 

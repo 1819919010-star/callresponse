@@ -45,9 +45,6 @@ public class CustomCakeEdible implements IMaidEdibleBlock {
         // ===== 增加饱食度（每口 +6） =====
         HungerData.add(maid, 6.0f);
 
-        // ===== 同步到客户端（显示GUI更新） =====
-        HungerManager.syncHungerToClient(maid);
-
         return true;
     }
 

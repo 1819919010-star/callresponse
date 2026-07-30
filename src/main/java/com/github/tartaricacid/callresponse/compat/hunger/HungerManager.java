@@ -4,7 +4,6 @@ import com.github.tartaricacid.callresponse.compat.broadcast.MaidResponder;
 import com.github.tartaricacid.callresponse.compat.emotion.EmotionData;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
@@ -14,14 +13,16 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
-import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
-import net.neoforged.neoforge.network.PacketDistributor;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class HungerManager {
 
@@ -59,14 +60,6 @@ public class HungerManager {
     // 女仆上次自动进食时间
     private static final Map<UUID, Long> lastAutoEatTime = new HashMap<>();
 
-    // ===== 同步饱食度到客户端 =====
-    public static void syncHungerToClient(EntityMaid maid) {
-        if (maid.level().isClientSide) return;
-        int hunger = (int) Math.round(HungerData.get(maid));
-        SyncHungerPacket packet = new SyncHungerPacket(maid.getUUID(), hunger);
-        PacketDistributor.sendToPlayersTrackingEntityAndSelf(maid, packet);
-    }
-
     // ===== 监听女仆吃东西（玩家喂食或其他方式触发） =====
     @SubscribeEvent
     public void onMaidEat(LivingEntityUseItemEvent.Finish event) {
@@ -79,24 +72,26 @@ public class HungerManager {
         if (food == null) return;
 
         int nutrition = food.nutrition();
-        float hungerGain = nutrition;
 
         float oldHunger = HungerData.get(maid);
-        HungerData.add(maid, hungerGain);
+        HungerData.add(maid, (float) nutrition);
         float newHunger = HungerData.get(maid);
 
         LivingEntity ownerEntity = maid.getOwner();
         if (ownerEntity instanceof ServerPlayer serverPlayer) {
             UUID playerId = serverPlayer.getUUID();
-            EmotionData.addTrustFloat(maid, playerId, 0.5f);
-            EmotionData.addFearFloat(maid, playerId, -0.5f);
-
-            MaidResponder.debug(serverPlayer, "\u001b[e[压力] " + maid.getCustomName() + " 吃了 " + stack.getDisplayName().getString() +
-                    "饥饿度 " + oldHunger + " → " + newHunger + "信任度 +0.5恐惧度 -0.5");
+            EmotionData.addTrust(maid, playerId, 1);
+            EmotionData.addFear(maid, playerId, -1);
+            MaidResponder.debug(serverPlayer,
+                    Component.literal("§e[压力] ")
+                            .append(maid.getName())
+                            .append(Component.literal(" 吃了 "))
+                            .append(stack.getDisplayName()) // 直接使用 Component
+                            .append(Component.literal("饥饿度 " + oldHunger + " → " + newHunger + "信任度 +1恐惧度 -1"))
+            );
         }
 
         applySpeedEffect(maid);
-        syncHungerToClient(maid);
     }
 
     // ===== 定时处理 =====
@@ -110,14 +105,12 @@ public class HungerManager {
                         if (!maid.isAlive()) return;
 
                         long tick = maid.level().getGameTime();
-                        boolean hungerChanged = false;
 
                         // 1. 饱食度衰减
                         if (tick % HUNGER_DECAY_INTERVAL == 0) {
                             float current = HungerData.get(maid);
                             if (current > 0) {
                                 HungerData.add(maid, -HUNGER_DECAY_AMOUNT);
-                                hungerChanged = true;
                             }
                         }
 
@@ -152,7 +145,6 @@ public class HungerManager {
                                 HungerData.add(maid, -HUNGER_COST);
                                 // 恢复生命
                                 maid.heal(CONSUMPTION_HEAL_AMOUNT);
-                                hungerChanged = true;
                             }
                         }
 
@@ -169,14 +161,9 @@ public class HungerManager {
                             if (lastEatTime == null || tick - lastEatTime >= EAT_COOLDOWN_TICKS) {
                                 if (tryEatFoodFromBackpack(maid)) {
                                     lastAutoEatTime.put(maidId, tick);
-                                    hungerChanged = true;
                                     // 进食后同步（但饱食度会在事件中增加，延迟一下）
                                 }
                             }
-                        }
-
-                        if (hungerChanged) {
-                            syncHungerToClient(maid);
                         }
 
                         // 6. 饱食度对话
@@ -228,7 +215,6 @@ public class HungerManager {
 
         // 手里没有食物，从背包搜索
         CombinedInvWrapper inv = maid.getAvailableBackpackInv();
-        if (inv == null) return false;
 
         // 选择进食手：TLM 原版逻辑
         // - 默认副手（双手都有物品时不干扰主手）
@@ -281,7 +267,6 @@ public class HungerManager {
             targetSpeed = BASE_SPEED;
         }
 
-        targetSpeed = Math.max(0.05f, targetSpeed);
         speedAttr.setBaseValue(targetSpeed);
     }
 

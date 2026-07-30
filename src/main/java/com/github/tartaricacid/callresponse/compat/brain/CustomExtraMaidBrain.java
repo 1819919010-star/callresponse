@@ -1,6 +1,5 @@
 package com.github.tartaricacid.callresponse.compat.brain;
 
-import com.github.tartaricacid.callresponse.compat.broadcast.MaidResponder;
 import com.github.tartaricacid.callresponse.compat.emotion.EmotionData;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.ai.IExtraMaidBrain;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
@@ -31,7 +30,6 @@ import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 

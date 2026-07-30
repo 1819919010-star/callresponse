@@ -14,7 +14,10 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.phys.AABB;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -42,7 +45,6 @@ public class AttackOtherMaidAction {
         );
 
         if (targets.isEmpty()) {
-            maid.sendSystemMessage(Component.literal("§c[攻击] 附近没有可攻击的女仆！"));
             if (debugPlayer != null) {
                 debugPlayer.sendSystemMessage(Component.literal("§c[调试] 没有找到攻击目标"));
             }
@@ -132,12 +134,11 @@ public class AttackOtherMaidAction {
         }, 0, ATTACK_COOLDOWN_TICKS * 50, TimeUnit.MILLISECONDS);
 
         // 10. 反馈消息
-        String maidName = maid.getCustomName() != null ? maid.getCustomName().getString() : "女仆";
-        String targetName = target.getCustomName() != null ? target.getCustomName().getString() : "女仆";
-        maid.sendSystemMessage(Component.literal("§a[攻击] " + maidName + " 开始攻击 " + targetName));
+        Component maidName = maid.getName();
+        Component targetName = target.getName();
 
         if (debugPlayer != null) {
-            debugPlayer.sendSystemMessage(Component.literal("§a[调试] " + maidName + " 锁定目标: " + targetName));
+            debugPlayer.sendSystemMessage(Component.literal("§a[调试] ").append(maidName).append(" 锁定目标: ").append(targetName));
         }
     }
 
@@ -194,16 +195,22 @@ public class AttackOtherMaidAction {
      */
     public static void stopAllAttacks(EntityMaid maid, ServerPlayer debugPlayer) {
         if (!attackThreads.containsKey(maid.getUUID())) {
-            maid.sendSystemMessage(Component.literal("§e[停战] 当前没有攻击目标"));
             if (debugPlayer != null) {
-                debugPlayer.sendSystemMessage(Component.literal("§e[调试] " + maid.getCustomName() + " 没有正在攻击的目标"));
+                debugPlayer.sendSystemMessage(
+                        Component.literal("§e[调试] ")
+                                .append(maid.getName())
+                                .append(Component.literal(" 没有正在攻击的目标"))
+                );
             }
             return;
         }
         stopAttack(maid);
-        maid.sendSystemMessage(Component.literal("§a[停战] 已停止攻击"));
         if (debugPlayer != null) {
-            debugPlayer.sendSystemMessage(Component.literal("§a[调试] " + maid.getCustomName() + " 已停战"));
+            debugPlayer.sendSystemMessage(
+                    Component.literal("§a[调试] ")
+                            .append(maid.getName())
+                            .append(Component.literal(" 已停战"))
+            );
         }
     }
 }

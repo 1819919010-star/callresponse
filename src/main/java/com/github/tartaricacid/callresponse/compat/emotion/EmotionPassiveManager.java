@@ -3,8 +3,11 @@ package com.github.tartaricacid.callresponse.compat.emotion;
 import com.github.tartaricacid.callresponse.compat.broadcast.MaidResponder;
 import com.github.tartaricacid.callresponse.config.EmotionPassiveConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -14,18 +17,17 @@ import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.item.*;
-import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class EmotionPassiveManager {
@@ -92,23 +94,6 @@ public class EmotionPassiveManager {
     private static final Map<UUID, Long> lastCompanionTrigger = new ConcurrentHashMap<>();
     private static final Map<UUID, ResourceLocation> lastDimension = new ConcurrentHashMap<>();
 
-    // ===== 辅助方法：浮点数情感变化 =====
-    private static void addTrustFloat(EntityMaid maid, UUID playerId, float delta) {
-        if (delta == 0) return;
-        int intDelta = Math.round(delta);
-        if (intDelta != 0) {
-            EmotionData.addTrust(maid, playerId, intDelta);
-        }
-    }
-
-    private static void addFearFloat(EntityMaid maid, UUID playerId, float delta) {
-        if (delta == 0) return;
-        int intDelta = Math.round(delta);
-        if (intDelta != 0) {
-            EmotionData.addFear(maid, playerId, intDelta);
-        }
-    }
-
     // ===== 维度名称转中文 =====
     private static String getDimensionDisplayName(ResourceLocation dimId) {
         String ns = dimId.getNamespace();
@@ -134,7 +119,7 @@ public class EmotionPassiveManager {
                         sb.append(c);
                     }
                 }
-                yield sb.toString() + "（" + ns + "）";
+                yield sb + "（" + ns + "）";
             }
         };
     }
@@ -243,7 +228,11 @@ public class EmotionPassiveManager {
                                 EmotionData.addTrust(maid, ownerId, 1);
                                 lastSleepTrigger.put(maidId, tick);
                                 if (maid.getOwner() instanceof ServerPlayer owner) {
-                                    MaidResponder.debug(owner, "§e[被动] " + maid.getCustomName() + " 睡觉：信任+1");
+                                    MaidResponder.debug(owner,
+                                            Component.literal("§e[被动] ")
+                                                    .append(maid.getName())
+                                                    .append(Component.literal(" 睡觉：信任+1"))
+                                    );
                                 }
                             }
                         }
@@ -256,7 +245,11 @@ public class EmotionPassiveManager {
                             EmotionData.addFear(maid, ownerId, -1);
                             lastNaturalGrowth.put(maidId, tick);
                             if (maid.getOwner() instanceof ServerPlayer owner) {
-                                MaidResponder.debug(owner, "§e[被动] " + maid.getCustomName() + " 自然增长：信任+1，恐惧-1");
+                                MaidResponder.debug(owner,
+                                        Component.literal("§e[被动] ")
+                                                .append(maid.getName())
+                                                .append(Component.literal(" 自然增长：信任+1，恐惧-1"))
+                                );
                             }
                         }
 
@@ -267,12 +260,20 @@ public class EmotionPassiveManager {
                             if (isWorking) {
                                 EmotionData.addFear(maid, ownerId, -1);
                                 if (maid.getOwner() instanceof ServerPlayer owner) {
-                                    MaidResponder.debug(owner, "§e[被动] " + maid.getCustomName() + " 工作中：恐惧-1");
+                                    MaidResponder.debug(owner,
+                                            Component.literal("§e[被动] ")
+                                                    .append(maid.getName())
+                                                    .append(Component.literal(" 工作中：恐惧-1"))
+                                    );
                                 }
                             } else {
                                 EmotionData.addTrust(maid, ownerId, 1);
                                 if (maid.getOwner() instanceof ServerPlayer owner) {
-                                    MaidResponder.debug(owner, "§e[被动] " + maid.getCustomName() + " 休息中：信任+1");
+                                    MaidResponder.debug(owner,
+                                            Component.literal("§e[被动] ")
+                                                    .append(maid.getName())
+                                                    .append(Component.literal(" 休息中：信任+1"))
+                                    );
                                 }
                             }
                             lastWorkCheck.put(maidId, tick);
@@ -286,7 +287,11 @@ public class EmotionPassiveManager {
                                 EmotionData.addTrust(maid, ownerId, -1);
                                 EmotionData.addFear(maid, ownerId, -1);
                                 if (maid.getOwner() instanceof ServerPlayer owner) {
-                                    MaidResponder.debug(owner, "§e[被动] " + maid.getCustomName() + " 主人3分钟无交互：信任-1，恐惧-1");
+                                    MaidResponder.debug(owner,
+                                            Component.literal("§e[被动] ")
+                                                    .append(maid.getName())
+                                                    .append(Component.literal(" 主人3分钟无交互：信任-1，恐惧-1"))
+                                    );
                                 }
                             }
                             lastInteractionFlag.put(maidId, false);
@@ -304,7 +309,11 @@ public class EmotionPassiveManager {
                                 EmotionData.addFear(maid, ownerId, -1);
                                 lastArmorFullTrigger.put(maidId, tick);
                                 if (maid.getOwner() instanceof ServerPlayer owner) {
-                                    MaidResponder.debug(owner, "§e[被动] " + maid.getCustomName() + " 盔甲穿满：信任+3，恐惧-1");
+                                    MaidResponder.debug(owner,
+                                            Component.literal("§e[被动] ")
+                                                    .append(maid.getName())
+                                                    .append(Component.literal(" 盔甲穿满：信任+3，恐惧-1"))
+                                    );
                                 }
                             }
                         }
@@ -317,7 +326,11 @@ public class EmotionPassiveManager {
                                 EmotionData.addTrust(maid, ownerId, 1);
                                 lastPositiveEffectTrigger.put(maidId, tick);
                                 if (maid.getOwner() instanceof ServerPlayer owner) {
-                                    MaidResponder.debug(owner, "§e[被动] " + maid.getCustomName() + " 获得正面效果：信任+1");
+                                    MaidResponder.debug(owner,
+                                            Component.literal("§e[被动] ")
+                                                    .append(maid.getName())
+                                                    .append(Component.literal(" 获得正面效果：信任+1"))
+                                    );
                                 }
                             }
                         }
@@ -341,7 +354,11 @@ public class EmotionPassiveManager {
                                             lastGazeTrigger.put(maidId, tick);
                                             foodGazeTimer.put(maidId, 0);
                                             if (maid.getOwner() instanceof ServerPlayer owner) {
-                                                MaidResponder.debug(owner, "§e[被动] " + maid.getCustomName() + " 主人拿食物看着女仆：信任+1");
+                                                MaidResponder.debug(owner,
+                                                        Component.literal("§e[被动] ")
+                                                                .append(maid.getName())
+                                                                .append(Component.literal(" 主人拿食物看着女仆：信任+1"))
+                                                );
                                                 String tendencyDesc = EmotionData.getTendencyPromptSuffix(maid, ownerId);
                                                 String prompt = "主人手上拿着食物，一直看着你。" + tendencyDesc + " 根据你当前的情感状态，说一段20字左右的话表达你的反应";
                                                 MaidResponder.processBroadcast(owner, Collections.singletonList(maid), prompt, false);
@@ -358,7 +375,11 @@ public class EmotionPassiveManager {
                                             lastGazeTrigger.put(maidId, tick);
                                             weaponGazeTimer.put(maidId, 0);
                                             if (maid.getOwner() instanceof ServerPlayer owner) {
-                                                MaidResponder.debug(owner, "§c[被动] " + maid.getCustomName() + " 被主人盯着武器看：恐惧+1");
+                                                MaidResponder.debug(owner,
+                                                        Component.literal("§c[被动] ")
+                                                                .append(maid.getName())
+                                                                .append(Component.literal(" 被主人盯着武器看：恐惧+1"))
+                                                );
                                                 String tendencyDesc = EmotionData.getTendencyPromptSuffix(maid, ownerId);
                                                 String prompt = "主人拿着武器盯着你，不知道他是什么意思。" + tendencyDesc + " 根据你当前的情感状态，说一段20字左右的话表达你的不安。";
                                                 MaidResponder.processBroadcast(owner, Collections.singletonList(maid), prompt, false);
@@ -395,7 +416,13 @@ public class EmotionPassiveManager {
 
                                 if (maid.getOwner() instanceof ServerPlayer owner) {
                                     String itemName = slotSix.getDisplayName().getString();
-                                    MaidResponder.debug(owner, "§e[被动] " + maid.getCustomName() + " 第6格放入 " + itemName + "：信任+1，恐惧-2");
+                                    MaidResponder.debug(owner,
+                                            Component.literal("§e[被动] ")
+                                                    .append(maid.getName())
+                                                    .append(Component.literal(" 第6格放入 "))
+                                                    .append(Component.literal(itemName)) // itemName 为 String
+                                                    .append(Component.literal("：信任+1，恐惧-2"))
+                                    );
                                     // 触发 AI 对话
                                     String tendencyDesc = EmotionData.getTendencyPromptSuffix(maid, ownerId);
                                     String prompt = "主人在你头上第6格放了个 " + itemName + "。" + tendencyDesc + " 根据你当前的情感状态，对主人给你的这个礼物（或是随便放的东西）说一句话表达你的心情。";
@@ -416,7 +443,11 @@ public class EmotionPassiveManager {
                                 EmotionData.addTrust(maid, ownerId, -1);
                                 lastLeashTrigger.put(maidId, tick);
                                 if (maid.getOwner() instanceof ServerPlayer owner) {
-                                    MaidResponder.debug(owner, "§e[被动] " + maid.getCustomName() + " 被拴绳/鱼钩拴住：信任-2");
+                                    MaidResponder.debug(owner,
+                                            Component.literal("§e[被动] ")
+                                                    .append(maid.getName())
+                                                    .append(Component.literal(" 被拴绳/鱼钩拴住：信任-2"))
+                                    );
                                 }
                                 Long lastDialogue = lastLeashDialogue.get(maidId);
                                 if (lastDialogue == null || tick - lastDialogue >= LEASH_DIALOGUE_COOLDOWN) {
@@ -441,7 +472,11 @@ public class EmotionPassiveManager {
                                             EmotionData.addFear(witness, witnessOwnerId, 1);
                                             lastLeashWitnessTrigger.put(witness.getUUID(), tick);
                                             if (witness.getOwner() instanceof ServerPlayer owner) {
-                                                MaidResponder.debug(owner, "§c[被动] " + witness.getCustomName() + " 目睹同伴被拴住：恐惧+2");
+                                                MaidResponder.debug(owner,
+                                                        Component.literal("§c[被动] ")
+                                                                .append(witness.getName())
+                                                                .append(Component.literal(" 目睹同伴被拴住：恐惧+2"))
+                                                );
                                             }
                                             Long witnessDialogue = lastWitnessDialogueTime.get(witness.getUUID());
                                             if (witnessDialogue == null || tick - witnessDialogue >= LEASH_DIALOGUE_COOLDOWN) {
@@ -470,8 +505,11 @@ public class EmotionPassiveManager {
                                     lastDarknessTrigger.put(maidId, tick);
                                     darknessTimer.put(maidId, 0);
                                     if (maid.getOwner() instanceof ServerPlayer owner) {
-                                        MaidResponder.debug(owner, "§c[被动] " + maid.getCustomName() + " 身处黑暗中：恐惧+1");
-                                        String tendencyDesc = EmotionData.getTendencyPromptSuffix(maid, ownerId);
+                                        MaidResponder.debug(owner,
+                                                Component.literal("§c[被动] ")
+                                                        .append(maid.getName())
+                                                        .append(Component.literal(" 身处黑暗中：恐惧+1"))
+                                        );                                        String tendencyDesc = EmotionData.getTendencyPromptSuffix(maid, ownerId);
                                         String prompt = "周围太暗了，你几乎什么都看不见。" + tendencyDesc + " 根据你当前的情感状态，说一句话表达你的不安——你是害怕黑暗中的未知，还是渴望主人来保护你？";
                                         MaidResponder.processBroadcast(owner, Collections.singletonList(maid), prompt, false);
                                     }
@@ -498,8 +536,11 @@ public class EmotionPassiveManager {
                                     lastWaterTrigger.put(maidId, tick);
                                     waterTimer.put(maidId, 0);
                                     if (maid.getOwner() instanceof ServerPlayer owner) {
-                                        MaidResponder.debug(owner, "§e[被动] " + maid.getCustomName() + " 泡在水中过久：信任-1");
-                                        String tendencyDesc = EmotionData.getTendencyPromptSuffix(maid, ownerId);
+                                        MaidResponder.debug(owner,
+                                                Component.literal("§e[被动] ")
+                                                        .append(maid.getName())
+                                                        .append(Component.literal(" 泡在水中过久：信任-1"))
+                                        );                                        String tendencyDesc = EmotionData.getTendencyPromptSuffix(maid, ownerId);
                                         String prompt = "你在水里泡了很久，浑身湿透了，主人却没有注意到。" + tendencyDesc + " 根据你当前的情感状态，说一段30字左右的话表达你的感受——是委屈、凉透心，还是觉得主人迟早会来的？";
                                         MaidResponder.processBroadcast(owner, Collections.singletonList(maid), prompt, false);
                                     }
@@ -520,8 +561,11 @@ public class EmotionPassiveManager {
                                     EmotionData.addTrust(maid, ownerId, 1);
                                     lastFireworkTrigger.put(maidId, tick);
                                     if (maid.getOwner() instanceof ServerPlayer owner) {
-                                        MaidResponder.debug(owner, "§e[被动] " + maid.getCustomName() + " 看到烟花：信任+1");
-                                        EmotionData.EmotionTendency tendency = EmotionData.getTendency(maid, ownerId);
+                                        MaidResponder.debug(owner,
+                                                Component.literal("§e[被动] ")
+                                                        .append(maid.getName())
+                                                        .append(Component.literal(" 看到烟花：信任+1"))
+                                        );                                        EmotionData.EmotionTendency tendency = EmotionData.getTendency(maid, ownerId);
                                         EmotionData.EmotionValues v = EmotionData.get(maid, ownerId);
                                         String prompt = switch (tendency) {
                                             case BOND -> "夜空中绽放着绚丽的烟花，五彩的光芒照亮了你的脸庞。你兴奋地转头看向主人，想和他分享这份美好。请对主人说一句20字左右的话，表达你看到烟花的喜悦和想和他一起看的心情。";
@@ -555,8 +599,11 @@ public class EmotionPassiveManager {
                                         lastCompanionTrigger.put(maidId, tick);
                                         companionTimer.put(maidId, 0);
                                         if (maid.getOwner() instanceof ServerPlayer owner) {
-                                            MaidResponder.debug(owner, "§e[被动] " + maid.getCustomName() + " 同伴陪伴：恐惧-1");
-                                        }
+                                            MaidResponder.debug(owner,
+                                                    Component.literal("§e[被动] ")
+                                                            .append(maid.getName())
+                                                            .append(Component.literal(" 同伴陪伴：恐惧-1"))
+                                            );                                        }
                                     }
                                 }
                             } else {
@@ -585,7 +632,13 @@ public class EmotionPassiveManager {
                                         case NEUTRAL -> "你跟着主人一起来到了" + dimName + "。你平静地观察着这个新环境，等待主人的指示。请对主人说一句20字左右的话，简单地描述你看到的环境。";
                                     };
                                     MaidResponder.processBroadcast(owner, Collections.singletonList(maid), prompt, false);
-                                    MaidResponder.debug(owner, "§b[被动] " + maid.getCustomName() + " 进入" + dimName + "，触发对话");
+                                    MaidResponder.debug(owner,
+                                            Component.literal("§b[被动] ")
+                                                    .append(maid.getName())
+                                                    .append(Component.literal(" 进入"))
+                                                    .append(Component.literal(dimName)) // dimName 为 String
+                                                    .append(Component.literal("，触发对话"))
+                                    );
                                 }
                             }
                             lastDimension.put(maidId, currentDim);
@@ -626,7 +679,7 @@ public class EmotionPassiveManager {
                             EmotionData.addFear(maid, ownerId, 8);
                             EmotionData.addTrust(maid, ownerId, -4);
                         } else {
-                            addFearFloat(maid, ownerId, 0.02f);
+                            EmotionData.addFear(maid, ownerId, 4);
                         }
 
                         if (isMaidDeath && isKilledByPlayer && isKillerPlayer) {
@@ -636,24 +689,28 @@ public class EmotionPassiveManager {
         }
     }
 
-    // ===== 受伤检测 =====
-    @SubscribeEvent
-    public void onMaidHurt(LivingDamageEvent.Pre event) {
-        if (!(event.getEntity() instanceof EntityMaid maid)) return;
-        if (maid.level().isClientSide) return;
-        if (!maid.isTame() || maid.getOwner() == null) return;
-        if (EmotionBetrayalManager.isBetraying(maid)) return;
-
-        UUID ownerId = getOwnerUUID(maid);
-        if (ownerId == null) return;
-
-        addFearFloat(maid, ownerId, 0.1f);
-        addTrustFloat(maid, ownerId, -0.1f);
-
-        if (maid.getOwner() instanceof ServerPlayer owner) {
-            MaidResponder.debug(owner, "§e[被动] " + maid.getCustomName() + " 受伤：恐惧+0.1，信任-0.1");
-        }
-    }
+    // todo:先删了吧，hurt过于高频确实不好算
+//    @SubscribeEvent
+//    public void onMaidHurt(LivingDamageEvent.Pre event) {
+//        if (!(event.getEntity() instanceof EntityMaid maid)) return;
+//        if (maid.level().isClientSide) return;
+//        if (!maid.isTame() || maid.getOwner() == null) return;
+//        if (EmotionBetrayalManager.isBetraying(maid)) return;
+//
+//        UUID ownerId = getOwnerUUID(maid);
+//        if (ownerId == null) return;
+//
+//        addFearFloat(maid, ownerId, 0.1f);
+//        addTrustFloat(maid, ownerId, -0.1f);
+//
+//        if (maid.getOwner() instanceof ServerPlayer owner) {
+//            MaidResponder.debug(owner,
+//                    Component.literal("§e[被动] ")
+//                            .append(maid.getName())
+//                            .append(Component.literal(" 受伤：恐惧+0.1，信任-0.1"))
+//            );
+//        }
+//    }
 
     // ===== 触发目睹主人杀女仆的 AI 对话 =====
     private static void triggerWitnessDialogue(EntityMaid maid, ServerPlayer owner, LivingEntity dead) {
@@ -684,8 +741,11 @@ public class EmotionPassiveManager {
         MaidResponder.processBroadcast(owner, Collections.singletonList(maid), prompt, false);
         lastWitnessDialogueTime.put(maidId, now);
 
-        MaidResponder.debug(owner, "§c[被动] " + maid.getCustomName() + " 目睹主人杀死女仆，触发对话");
-    }
+        MaidResponder.debug(owner,
+                Component.literal("§c[被动] ")
+                        .append(maid.getName())
+                        .append(Component.literal(" 目睹主人杀死女仆，触发对话"))
+        );    }
 
     // ===== 玩家交互标记（NeoForge 禁止注册抽象事件） =====
     private void markPlayerInteraction(Player player) {
@@ -747,8 +807,13 @@ public class EmotionPassiveManager {
                 EmotionData.addTrust(maid, ownerId, trustChange);
                 EmotionData.addFear(maid, ownerId, fearChange);
                 if (maid.getOwner() instanceof ServerPlayer owner) {
-                    MaidResponder.debug(owner, "§a[坐姿] " + maid.getCustomName() + " 坐下：信任" + (trustChange >= 0 ? "+" : "") + trustChange + "，恐惧" + (fearChange >= 0 ? "+" : "") + fearChange);
-                }
+                    String trustSign = trustChange >= 0 ? "+" : "";
+                    String fearSign = fearChange >= 0 ? "+" : "";
+                    MaidResponder.debug(owner,
+                            Component.literal("§a[坐姿] ")
+                                    .append(maid.getName())
+                                    .append(Component.literal(" 坐下：信任" + trustSign + trustChange + "，恐惧" + fearSign + fearChange))
+                    );                }
             }
         }
         lastSitState.put(maidId, isSitting);

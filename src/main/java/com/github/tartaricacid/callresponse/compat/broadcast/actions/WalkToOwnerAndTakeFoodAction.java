@@ -34,7 +34,6 @@ public class WalkToOwnerAndTakeFoodAction {
 
     public static void execute(EntityMaid maid, ServerPlayer debugPlayer) {
         if (maid.getOwner() == null) {
-            maid.sendSystemMessage(Component.literal("§c[动作] 没有主人！"));
             MaidResponder.debug(debugPlayer, "§c[调试] 女仆没有主人");
             return;
         }
@@ -42,14 +41,13 @@ public class WalkToOwnerAndTakeFoodAction {
         Player owner = (Player) maid.getOwner();
         ItemStack foodInHand = owner.getMainHandItem();
         if (foodInHand.isEmpty() || foodInHand.getFoodProperties(maid) == null) {
-            maid.sendSystemMessage(Component.literal("§c[动作] 主人手里没有食物！"));
             MaidResponder.debug(debugPlayer, "§c[调试] 主人手里没有食物");
             return;
         }
 
         Vec3 ownerPos = owner.position();
         BlockPos targetPos = new BlockPos((int) ownerPos.x, (int) ownerPos.y, (int) ownerPos.z);
-        String name = maid.getCustomName() != null ? maid.getCustomName().getString() : "无名";
+        Component name = maid.getName();
 
         if (isSitting(maid)) standUp(maid);
 
@@ -61,7 +59,7 @@ public class WalkToOwnerAndTakeFoodAction {
         maid.getBrain().setMemory(MemoryModuleType.WALK_TARGET, walkTarget);
         maid.setSpeed(0.7f);
 
-        MaidResponder.debug(debugPlayer, "§a[动作] " + name + " 正在前往主人取食物 (" + targetPos.getX() + ", " + targetPos.getY() + ", " + targetPos.getZ() + ")");
+        MaidResponder.debug(debugPlayer, Component.literal("§a[动作] ").append(name).append(" 正在前往主人取食物 (").append(targetPos.toShortString()).append(")"));
 
         TimerTask task = new TimerTask() {
             @Override
@@ -75,7 +73,6 @@ public class WalkToOwnerAndTakeFoodAction {
                     maid.getServer().execute(() -> {
                         ItemStack currentFood = owner.getMainHandItem();
                         if (currentFood.isEmpty() || currentFood.getFoodProperties(maid) == null) {
-                            maid.sendSystemMessage(Component.literal("§c[动作] 主人手里没有食物了！"));
                             MaidResponder.debug(debugPlayer, "§c[调试] 主人手里没有食物了");
                             maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
                             maid.getNavigation().stop();
@@ -87,8 +84,11 @@ public class WalkToOwnerAndTakeFoodAction {
                         owner.getMainHandItem().shrink(1);
 
                         maid.setItemInHand(InteractionHand.MAIN_HAND, foodToTake);
-                        maid.sendSystemMessage(Component.literal("§a[动作] " + name + " 从主人手中拿到了 " + foodToTake.getDisplayName().getString()));
-                        MaidResponder.debug(debugPlayer, "§a[调试] " + name + " 已拿到食物");
+                        MaidResponder.debug(debugPlayer,
+                                Component.literal("§a[调试] ")
+                                        .append(name)
+                                        .append(Component.literal(" 已拿到食物"))
+                        );
 
                         maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
                         maid.getNavigation().stop();

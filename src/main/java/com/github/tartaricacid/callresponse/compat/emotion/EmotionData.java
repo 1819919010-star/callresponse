@@ -1,41 +1,22 @@
 package com.github.tartaricacid.callresponse.compat.emotion;
 
+import com.github.tartaricacid.callresponse.init.InitAttachTypes;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import net.minecraft.nbt.CompoundTag;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class EmotionData {
     private static final String EMOTION_TAG = "MaidEmotions";
-    private static final Map<String, Float> trustRemainder = new ConcurrentHashMap<>();
-    private static final Map<String, Float> fearRemainder = new ConcurrentHashMap<>();
-
-    public static void addTrustFloat(EntityMaid maid, UUID playerId, float delta) {
-        String key = maid.getUUID() + ":" + playerId;
-        float acc = trustRemainder.getOrDefault(key, 0f) + delta;
-        int intPart = (int) acc;
-        if (intPart != 0) {
-            addTrust(maid, playerId, intPart);
-            trustRemainder.put(key, acc - intPart);
-        } else {
-            trustRemainder.put(key, acc);
-        }
-    }
-
-    public static void addFearFloat(EntityMaid maid, UUID playerId, float delta) {
-        String key = maid.getUUID() + ":" + playerId;
-        float acc = fearRemainder.getOrDefault(key, 0f) + delta;
-        int intPart = (int) acc;
-        if (intPart != 0) {
-            addFear(maid, playerId, intPart);
-            fearRemainder.put(key, acc - intPart);
-        } else {
-            fearRemainder.put(key, acc);
-        }
-    }
 
     // ===== 获取情感值（ServerPlayer 版本） =====
     public static EmotionValues get(EntityMaid maid, ServerPlayer player) {
@@ -44,35 +25,26 @@ public class EmotionData {
 
     // ===== 获取情感值（UUID 版本） =====
     public static EmotionValues get(EntityMaid maid, UUID playerId) {
-        CompoundTag root = maid.getPersistentData();
-        CompoundTag emotionMap = root.getCompound(EMOTION_TAG);
-        CompoundTag playerData = emotionMap.getCompound(playerId.toString());
-        int trust = playerData.getInt("trust");
-        int fear = playerData.getInt("fear");
-        if (trust == 0 && !playerData.contains("trust")) trust = 40;
-        if (fear == 0 && !playerData.contains("fear")) fear = 10;
-        return new EmotionValues(trust, fear);
+        var e = maid.getData(InitAttachTypes.SYNCED_EMOTION).emotions().get(playerId);
+        if(e == null)return EmotionValues.DEFAULT;
+        return e;
     }
 
     public static void set(EntityMaid maid, UUID playerId, int trust, int fear) {
-        CompoundTag root = maid.getPersistentData();
-        CompoundTag emotionMap = root.getCompound(EMOTION_TAG);
-        CompoundTag playerData = new CompoundTag();
-        playerData.putInt("trust", Math.max(0, Math.min(100, trust)));
-        playerData.putInt("fear", Math.max(0, Math.min(100, fear)));
-        emotionMap.put(playerId.toString(), playerData);
-        root.put(EMOTION_TAG, emotionMap);
+        var newMap = new HashMap<>(maid.getData(InitAttachTypes.SYNCED_EMOTION).emotions);
+        newMap.put(playerId, new EmotionValues(trust, fear));
+        maid.setData(InitAttachTypes.SYNCED_EMOTION, new MaidEmotion(Collections.unmodifiableMap(newMap)));
     }
 
     public static void addTrust(EntityMaid maid, UUID playerId, int delta) {
         EmotionValues current = get(maid, playerId);
-        int newTrust = Math.max(0, Math.min(100, current.trust + delta));
+        int newTrust = Math.clamp(current.trust + delta, 0, 100);
         set(maid, playerId, newTrust, current.fear);
     }
 
     public static void addFear(EntityMaid maid, UUID playerId, int delta) {
         EmotionValues current = get(maid, playerId);
-        int newFear = Math.max(0, Math.min(100, current.fear + delta));
+        int newFear = Math.clamp(current.fear + delta, 0, 100);
         set(maid, playerId, current.trust, newFear);
     }
 
@@ -85,15 +57,36 @@ public class EmotionData {
     public static EmotionTendency getTendency(EntityMaid maid, UUID playerId) {
         EmotionValues v = get(maid, playerId);
         if (v.trust >= 70 && v.fear <= 20) return EmotionTendency.BOND;
+        if (v.trust <= 20 && v.fear >= 70) return EmotionTendency.TERRIFIED;
         if (v.trust >= 40 && v.fear <= 30) return EmotionTendency.FRIENDLY;
         if (v.trust <= 30 && v.fear <= 20) return EmotionTendency.STRANGER;
         if (v.trust <= 40 && v.fear >= 50) return EmotionTendency.FEARFUL;
-        if (v.trust <= 20 && v.fear >= 70) return EmotionTendency.TERRIFIED;
         if (v.trust >= 60 && v.fear >= 60) return EmotionTendency.CONFLICTED;
         return EmotionTendency.NEUTRAL;
     }
 
-    public record EmotionValues(int trust, int fear) {}
+    public record EmotionValues(int trust, int fear) {
+        public static final Codec<EmotionValues> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.INT.fieldOf("trust").forGetter(EmotionValues::trust),
+                Codec.INT.fieldOf("fear").forGetter(EmotionValues::fear)
+        ).apply(i, EmotionValues::new));
+        public static final StreamCodec<ByteBuf, EmotionValues> STREAM_CODEC = ByteBufCodecs.fromCodec(CODEC);
+        public static final EmotionValues DEFAULT = new EmotionValues(40, 10);
+    }
+
+    public record MaidEmotion(Map<UUID, EmotionValues> emotions){
+        // fucking ojang
+        public static final Codec<UUID> STRING_UUID_CODEC = Codec.STRING.xmap(UUID::fromString, UUID::toString);
+        public static final Codec<MaidEmotion> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.unboundedMap(STRING_UUID_CODEC, EmotionValues.CODEC).fieldOf(EMOTION_TAG).forGetter(MaidEmotion::emotions)
+        ).apply(i, MaidEmotion::new));
+        public static final StreamCodec<ByteBuf, MaidEmotion> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.map(HashMap::new, UUIDUtil.STREAM_CODEC, EmotionValues.STREAM_CODEC),
+                MaidEmotion::emotions,
+                MaidEmotion::new
+        );
+        public static final MaidEmotion DEFAULT = new MaidEmotion(Map.of());
+    }
 
     public enum EmotionTendency {
         BOND, FRIENDLY, STRANGER, FEARFUL, TERRIFIED, CONFLICTED, NEUTRAL
