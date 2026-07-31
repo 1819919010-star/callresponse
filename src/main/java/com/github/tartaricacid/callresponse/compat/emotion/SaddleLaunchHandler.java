@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SaddleLaunchHandler {
-    private static final double LAUNCH_POWER = 2;
+    private static final double LAUNCH_POWER = 1;
     private static final int LAUNCH_DIALOGUE_COOLDOWN = 12000;
     private static final int WITNESS_RADIUS = 5;
 
@@ -42,7 +42,6 @@ public class SaddleLaunchHandler {
         if (!event.getStack().is(Items.SADDLE)) return;
         if (!event.isCanceled()) return;
         Player player = event.getPlayer();
-        if (player == null) return;
         if (!(player.getFirstPassenger() instanceof EntityMaid maid)) return;
         maid.setHomeModeEnable(true);
         maid.setInSittingPose(true);
@@ -70,11 +69,16 @@ public class SaddleLaunchHandler {
 
         event.setCanceled(true);
 
+        dropMaid(maid, player, 0);
+    }
+
+    public static void dropMaid(EntityMaid maid, Player player, float chargePercent){
         maid.stopRiding();
         maid.setPos(player.getX(), player.getY() + 0.5, player.getZ());
 
         Vec3 look = player.getLookAngle();
-        maid.setDeltaMovement(look.x * LAUNCH_POWER, look.y * LAUNCH_POWER + 0.8, look.z * LAUNCH_POWER);
+        final double power = LAUNCH_POWER + LAUNCH_POWER * chargePercent * 2;
+        maid.setDeltaMovement(look.x * power, look.y * power + 0.8, look.z * power);
         maid.hurtMarked = true;
         maid.hasImpulse = true;
 

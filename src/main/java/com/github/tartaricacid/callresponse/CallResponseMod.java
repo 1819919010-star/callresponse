@@ -3,8 +3,7 @@ package com.github.tartaricacid.callresponse;
 import com.github.tartaricacid.callresponse.compat.brain.LazyMaidHitHandler;
 import com.github.tartaricacid.callresponse.compat.broadcast.ChatEventListener;
 import com.github.tartaricacid.callresponse.compat.emotion.*;
-import com.github.tartaricacid.callresponse.compat.gui.EmotionBookUpdateC2SPacket;
-import com.github.tartaricacid.callresponse.compat.gui.OpenEmotionBookScreenS2CPacket;
+import com.github.tartaricacid.callresponse.compat.gui.NetworkRegistryHandler;
 import com.github.tartaricacid.callresponse.compat.hunger.HungerManager;
 import com.github.tartaricacid.callresponse.compat.hunger.MaidHungerGuiDisplay;
 import com.github.tartaricacid.callresponse.compat.item.ModItems;
@@ -36,8 +35,7 @@ public class CallResponseMod {
         InitAttachTypes.init(modEventBus);
         
         // 4. 注册网络包
-        modEventBus.addListener(OpenEmotionBookScreenS2CPacket::register);
-        modEventBus.addListener(EmotionBookUpdateC2SPacket::register);
+        modEventBus.addListener(NetworkRegistryHandler::register);
 
         // 5.EventHandler
         NeoForge.EVENT_BUS.register(new EmotionEventListener());

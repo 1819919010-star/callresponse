@@ -9,9 +9,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -37,11 +35,6 @@ public record EmotionBookUpdateC2SPacket(UUID maidUUID, int trust, int fear, int
         }
     };
 
-    public static void register(RegisterPayloadHandlersEvent event) {
-        PayloadRegistrar registrar = event.registrar("1.0.0");
-        registrar.playToServer(TYPE, STREAM_CODEC, EmotionBookUpdateC2SPacket::handle);
-    }
-
     public static void handle(EmotionBookUpdateC2SPacket message, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (!(context.player() instanceof ServerPlayer player)) return;
@@ -50,9 +43,9 @@ public record EmotionBookUpdateC2SPacket(UUID maidUUID, int trust, int fear, int
             if (!(entity instanceof EntityMaid maid)) return;
             if (!maid.isTame() || !player.getUUID().equals(maid.getOwnerUUID())) return;
             EmotionData.set(maid, player.getUUID(),
-                    Math.max(0, Math.min(100, message.trust)),
-                    Math.max(0, Math.min(100, message.fear)));
-            HungerData.set(maid, Math.max(0, Math.min(100, message.hunger)));
+                    Math.clamp(message.trust, 0, 100),
+                    Math.clamp(message.fear, 0, 100));
+            HungerData.set(maid, Math.clamp(message.hunger, 0, 100));
         });
     }
 
