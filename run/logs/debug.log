@@ -1,0 +1,1312 @@
+[038月2026 17:30:17.276] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeserveruserdev, --gameDir, ., --fml.forgeVersion, 47.4.0, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --nogui, --mixin.config, mixins.callresponse.json]
+[038月2026 17:30:17.284] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.19 by Oracle Corporation; OS Windows 11 arch amd64 version 10.0
+[038月2026 17:30:17.310] [main/DEBUG] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Found launch services [fmlclientdev,forgeclient,minecraft,forgegametestserverdev,fmlserveruserdev,fmlclient,fmldatauserdev,forgeserverdev,forgeserveruserdev,forgeclientdev,forgeclientuserdev,forgeserver,forgedatadev,fmlserver,fmlclientuserdev,fmlserverdev,forgedatauserdev,testharness,forgegametestserveruserdev]
+[038月2026 17:30:17.320] [main/DEBUG] [cpw.mods.modlauncher.NameMappingServiceHandler/MODLAUNCHER]: Found naming services : [srgtomcp]
+[038月2026 17:30:17.332] [main/DEBUG] [cpw.mods.modlauncher.LaunchPluginHandler/MODLAUNCHER]: Found launch plugins: [mixin,eventbus,slf4jfixer,object_holder_definalize,runtime_enum_extender,capability_token_subclass,accesstransformer,runtimedistcleaner]
+[038月2026 17:30:17.340] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Discovering transformation services
+[038月2026 17:30:17.345] [main/DEBUG] [net.minecraftforge.fml.loading.FMLPaths/CORE]: Path GAMEDIR is D:\车万女仆\呼应\TLMAdditionExample-master\run
+[038月2026 17:30:17.345] [main/DEBUG] [net.minecraftforge.fml.loading.FMLPaths/CORE]: Path MODSDIR is D:\车万女仆\呼应\TLMAdditionExample-master\run\mods
+[038月2026 17:30:17.345] [main/DEBUG] [net.minecraftforge.fml.loading.FMLPaths/CORE]: Path CONFIGDIR is D:\车万女仆\呼应\TLMAdditionExample-master\run\config
+[038月2026 17:30:17.345] [main/DEBUG] [net.minecraftforge.fml.loading.FMLPaths/CORE]: Path FMLCONFIG is D:\车万女仆\呼应\TLMAdditionExample-master\run\config\fml.toml
+[038月2026 17:30:17.382] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Found additional transformation services from discovery services: 
+[038月2026 17:30:17.387] [main/INFO] [net.minecraftforge.fml.loading.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgeserveruserdev
+[038月2026 17:30:17.394] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Found transformer services : [mixin,fml]
+[038月2026 17:30:17.395] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Transformation services loading
+[038月2026 17:30:17.396] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Loading service mixin
+[038月2026 17:30:17.397] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Loaded service mixin
+[038月2026 17:30:17.397] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Loading service fml
+[038月2026 17:30:17.398] [main/DEBUG] [net.minecraftforge.fml.loading.LauncherVersion/CORE]: Found FMLLauncher version 1.0
+[038月2026 17:30:17.398] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: FML 1.0 loading
+[038月2026 17:30:17.398] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: FML found ModLauncher version : 10.0.9+10.0.9+main.dcd20f30
+[038月2026 17:30:17.398] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Requesting CoreMods to not apply the fix for ASMAPI.findFirstInstructionBefore by default
+[038月2026 17:30:17.399] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: FML found AccessTransformer version : 8.0.4+66+master.c09db6d7
+[038月2026 17:30:17.399] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: FML found EventBus version : 6.0.5+6.0.5+master.eb8e549b
+[038月2026 17:30:17.399] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Found Runtime Dist Cleaner
+[038月2026 17:30:17.402] [main/DEBUG] [net.minecraftforge.coremod.CoreModEngine/]: CoreMods will preserve legacy behavior of ASMAPI.findFirstInstructionBefore for backwards-compatibility
+[038月2026 17:30:17.403] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: FML found CoreMod version : 5.2.4
+[038月2026 17:30:17.403] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Found ForgeSPI package implementation version 7.0.1+7.0.1+master.d2b38bf6
+[038月2026 17:30:17.403] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Found ForgeSPI package specification 5
+[038月2026 17:30:17.403] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Loaded service fml
+[038月2026 17:30:17.405] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Configuring option handling for services
+[038月2026 17:30:17.412] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Transformation services initializing
+[038月2026 17:30:17.413] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformation service mixin
+[038月2026 17:30:17.424] [main/DEBUG] [mixin/]: MixinService [ModLauncher] was successfully booted in cpw.mods.cl.ModuleClassLoader@17046283
+[038月2026 17:30:17.434] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/C:/Users/18199/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23128!/ Service=ModLauncher Env=SERVER
+[038月2026 17:30:17.436] [main/DEBUG] [mixin/]: Initialising Mixin Platform Manager
+[038月2026 17:30:17.437] [main/DEBUG] [mixin/]: Adding mixin platform agents for container ModLauncher Root Container(ModLauncher:4f56a0a2)
+[038月2026 17:30:17.437] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for ModLauncher Root Container(ModLauncher:4f56a0a2)
+[038月2026 17:30:17.437] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container ModLauncher Root Container(ModLauncher:4f56a0a2)
+[038月2026 17:30:17.438] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for ModLauncher Root Container(ModLauncher:4f56a0a2)
+[038月2026 17:30:17.438] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container ModLauncher Root Container(ModLauncher:4f56a0a2)
+[038月2026 17:30:17.439] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformation service mixin
+[038月2026 17:30:17.439] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformation service fml
+[038月2026 17:30:17.439] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/CORE]: Setting up basic FML game directories
+[038月2026 17:30:17.441] [main/DEBUG] [net.minecraftforge.fml.loading.FMLPaths/CORE]: Path GAMEDIR is D:\车万女仆\呼应\TLMAdditionExample-master\run
+[038月2026 17:30:17.441] [main/DEBUG] [net.minecraftforge.fml.loading.FMLPaths/CORE]: Path MODSDIR is D:\车万女仆\呼应\TLMAdditionExample-master\run\mods
+[038月2026 17:30:17.441] [main/DEBUG] [net.minecraftforge.fml.loading.FMLPaths/CORE]: Path CONFIGDIR is D:\车万女仆\呼应\TLMAdditionExample-master\run\config
+[038月2026 17:30:17.441] [main/DEBUG] [net.minecraftforge.fml.loading.FMLPaths/CORE]: Path FMLCONFIG is D:\车万女仆\呼应\TLMAdditionExample-master\run\config\fml.toml
+[038月2026 17:30:17.441] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/CORE]: Loading configuration
+[038月2026 17:30:17.445] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/CORE]: Preparing ModFile
+[038月2026 17:30:17.447] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/CORE]: Preparing launch handler
+[038月2026 17:30:17.447] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Using forgeserveruserdev as launch service
+[038月2026 17:30:17.458] [main/DEBUG] [net.minecraftforge.fml.loading.FMLLoader/CORE]: Received command line version data  : VersionInfo[forgeVersion=47.4.0, mcVersion=1.20.1, mcpVersion=20230612.114412, forgeGroup=net.minecraftforge]
+[038月2026 17:30:17.459] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformation service fml
+[038月2026 17:30:17.459] [main/DEBUG] [cpw.mods.modlauncher.NameMappingServiceHandler/MODLAUNCHER]: Current naming domain is 'mcp'
+[038月2026 17:30:17.460] [main/DEBUG] [cpw.mods.modlauncher.NameMappingServiceHandler/MODLAUNCHER]: Identified name mapping providers {srg=srgtomcp:1234}
+[038月2026 17:30:17.460] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Transformation services begin scanning
+[038月2026 17:30:17.461] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Beginning scan trigger - transformation service mixin
+[038月2026 17:30:17.461] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: End scan trigger - transformation service mixin
+[038月2026 17:30:17.461] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Beginning scan trigger - transformation service fml
+[038月2026 17:30:17.461] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/CORE]: Initiating mod scan
+[038月2026 17:30:17.469] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModListHandler/CORE]: Found mod coordinates from lists: []
+[038月2026 17:30:17.472] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModDiscoverer/CORE]: Found Mod Locators : (mods folder:null),(maven libs:null),(exploded directory:null),(minecraft:null),(userdev classpath:null)
+[038月2026 17:30:17.472] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModDiscoverer/CORE]: Found Dependency Locators : (JarInJar:null)
+[038月2026 17:30:17.477] [main/DEBUG] [net.minecraftforge.fml.loading.targets.CommonLaunchHandler/CORE]: Got mod coordinates callresponse%%D:\车万女仆\呼应\TLMAdditionExample-master\build\resources\main;callresponse%%D:\车万女仆\呼应\TLMAdditionExample-master\build\classes\java\main from env
+[038月2026 17:30:17.478] [main/DEBUG] [net.minecraftforge.fml.loading.targets.CommonLaunchHandler/CORE]: Found supplied mod coordinates [{callresponse=[D:\车万女仆\呼应\TLMAdditionExample-master\build\resources\main, D:\车万女仆\呼应\TLMAdditionExample-master\build\classes\java\main]}]
+[038月2026 17:30:17.627] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar with {minecraft} mods - versions {1.20.1}
+[038月2026 17:30:17.632] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate C:\Users\18199\.gradle\caches\modules-2\files-2.1\net.minecraftforge\javafmllanguage\1.20.1-47.4.0\f0c0b352173d0a378cbdcec9cfc4ba65899a721\javafmllanguage-1.20.1-47.4.0.jar
+[038月2026 17:30:17.632] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\18199\.gradle\caches\modules-2\files-2.1\net.minecraftforge\javafmllanguage\1.20.1-47.4.0\f0c0b352173d0a378cbdcec9cfc4ba65899a721\javafmllanguage-1.20.1-47.4.0.jar is missing mods.toml file
+[038月2026 17:30:17.635] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate C:\Users\18199\.gradle\caches\modules-2\files-2.1\net.minecraftforge\lowcodelanguage\1.20.1-47.4.0\e862740d8c84d08dbfedea412bef88fe42e727c5\lowcodelanguage-1.20.1-47.4.0.jar
+[038月2026 17:30:17.635] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\18199\.gradle\caches\modules-2\files-2.1\net.minecraftforge\lowcodelanguage\1.20.1-47.4.0\e862740d8c84d08dbfedea412bef88fe42e727c5\lowcodelanguage-1.20.1-47.4.0.jar is missing mods.toml file
+[038月2026 17:30:17.637] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate C:\Users\18199\.gradle\caches\modules-2\files-2.1\net.minecraftforge\mclanguage\1.20.1-47.4.0\5719b3a297a33f877ed5dde4cb4bd75c859096af\mclanguage-1.20.1-47.4.0.jar
+[038月2026 17:30:17.637] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\18199\.gradle\caches\modules-2\files-2.1\net.minecraftforge\mclanguage\1.20.1-47.4.0\5719b3a297a33f877ed5dde4cb4bd75c859096af\mclanguage-1.20.1-47.4.0.jar is missing mods.toml file
+[038月2026 17:30:17.640] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate C:\Users\18199\.gradle\caches\modules-2\files-2.1\net.minecraftforge\fmlcore\1.20.1-47.4.0\235975dafa4309945b59c56b53f31dc5b65a6051\fmlcore-1.20.1-47.4.0.jar
+[038月2026 17:30:17.640] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\18199\.gradle\caches\modules-2\files-2.1\net.minecraftforge\fmlcore\1.20.1-47.4.0\235975dafa4309945b59c56b53f31dc5b65a6051\fmlcore-1.20.1-47.4.0.jar is missing mods.toml file
+[038月2026 17:30:17.642] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate D:\车万女仆\呼应\TLMAdditionExample-master\build\resources\main
+[038月2026 17:30:17.647] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file main with {callresponse} mods - versions {2.0.0}
+[038月2026 17:30:17.649] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /
+[038月2026 17:30:17.651] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file  with {forge} mods - versions {47.4.0}
+[038月2026 17:30:17.664] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate C:\Users\18199\.gradle\caches\forge_gradle\deobf_dependencies\maven\modrinth\touhou-little-maid\1.5.3-forge+mc1.20.1_mapped_parchment_2023.08.20-1.20.1\touhou-little-maid-1.5.3-forge+mc1.20.1_mapped_parchment_2023.08.20-1.20.1.jar
+[038月2026 17:30:17.667] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file touhou-little-maid-1.5.3-forge+mc1.20.1_mapped_parchment_2023.08.20-1.20.1.jar with {touhou_little_maid} mods - versions {1.5.3-forge+mc1.20.1}
+[038月2026 17:30:17.670] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate C:\Users\18199\.gradle\caches\forge_gradle\deobf_dependencies\maven\modrinth\touhou-little-maid\1.5.3-forge+mc1.20.1_mapped_parchment_2023.08.20-1.20.1\touhou-little-maid-1.5.3-forge+mc1.20.1_mapped_parchment_2023.08.20-1.20.1.jar
+[038月2026 17:30:17.671] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file touhou-little-maid-1.5.3-forge+mc1.20.1_mapped_parchment_2023.08.20-1.20.1.jar with {touhou_little_maid} mods - versions {1.5.3-forge+mc1.20.1}
+[038月2026 17:30:17.673] [main/DEBUG] [net.minecraftforge.fml.loading.UniqueModListBuilder/]: Found 2 mods for first modid touhou_little_maid, selecting most recent based on version data
+[038月2026 17:30:17.674] [main/DEBUG] [net.minecraftforge.fml.loading.UniqueModListBuilder/]: Selected file touhou-little-maid-1.5.3-forge+mc1.20.1_mapped_parchment_2023.08.20-1.20.1.jar for modid touhou_little_maid with version 1.5.3-forge+mc1.20.1
+[038月2026 17:30:17.679] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF\jarjar\metadata.json from forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar, it does not contain dependency information.
+[038月2026 17:30:17.679] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF\jarjar\metadata.json from main, it does not contain dependency information.
+[038月2026 17:30:17.680] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF\jarjar\metadata.json from , it does not contain dependency information.
+[038月2026 17:30:17.680] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF\jarjar\metadata.json from touhou-little-maid-1.5.3-forge+mc1.20.1_mapped_parchment_2023.08.20-1.20.1.jar, it does not contain dependency information.
+[038月2026 17:30:17.680] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF\jarjar\metadata.json from mclanguage-1.20.1-47.4.0.jar, it does not contain dependency information.
+[038月2026 17:30:17.680] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF\jarjar\metadata.json from javafmllanguage-1.20.1-47.4.0.jar, it does not contain dependency information.
+[038月2026 17:30:17.681] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF\jarjar\metadata.json from fmlcore-1.20.1-47.4.0.jar, it does not contain dependency information.
+[038月2026 17:30:17.681] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF\jarjar\metadata.json from lowcodelanguage-1.20.1-47.4.0.jar, it does not contain dependency information.
+[038月2026 17:30:17.701] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: No dependencies to load found. Skipping!
+[038月2026 17:30:17.703] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar with {minecraft} mods - versions {1.20.1}
+[038月2026 17:30:17.703] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Loading mod file C:\Users\18199\.gradle\caches\forge_gradle\minecraft_user_repo\net\minecraftforge\forge\1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1\forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar with languages [LanguageSpec[languageName=minecraft, acceptedVersions=1]]
+[038月2026 17:30:17.705] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate D:\车万女仆\呼应\TLMAdditionExample-master\build\resources\main
+[038月2026 17:30:17.706] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file main with {callresponse} mods - versions {2.0.0}
+[038月2026 17:30:17.706] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Loading mod file D:\车万女仆\呼应\TLMAdditionExample-master\build\resources\main with languages [LanguageSpec[languageName=javafml, acceptedVersions=[47,)]]
+[038月2026 17:30:17.707] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate /
+[038月2026 17:30:17.707] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file  with {forge} mods - versions {47.4.0}
+[038月2026 17:30:17.707] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Loading mod file / with languages [LanguageSpec[languageName=javafml, acceptedVersions=[24,]]]
+[038月2026 17:30:17.724] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Found coremod field_to_method with Javascript path coremods/field_to_method.js
+[038月2026 17:30:17.725] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Found coremod field_to_instanceof with Javascript path coremods/field_to_instanceof.js
+[038月2026 17:30:17.725] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Found coremod add_bouncer_method with Javascript path coremods/add_bouncer_method.js
+[038月2026 17:30:17.725] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Found coremod method_redirector with Javascript path coremods/method_redirector.js
+[038月2026 17:30:17.725] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Found coremod coremods/field_to_method.js
+[038月2026 17:30:17.725] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Found coremod coremods/field_to_instanceof.js
+[038月2026 17:30:17.725] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Found coremod coremods/add_bouncer_method.js
+[038月2026 17:30:17.725] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Found coremod coremods/method_redirector.js
+[038月2026 17:30:17.725] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Considering mod file candidate C:\Users\18199\.gradle\caches\forge_gradle\deobf_dependencies\maven\modrinth\touhou-little-maid\1.5.3-forge+mc1.20.1_mapped_parchment_2023.08.20-1.20.1\touhou-little-maid-1.5.3-forge+mc1.20.1_mapped_parchment_2023.08.20-1.20.1.jar
+[038月2026 17:30:17.726] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFileInfo/LOADING]: Found valid mod file touhou-little-maid-1.5.3-forge+mc1.20.1_mapped_parchment_2023.08.20-1.20.1.jar with {touhou_little_maid} mods - versions {1.5.3-forge+mc1.20.1}
+[038月2026 17:30:17.726] [main/DEBUG] [net.minecraftforge.fml.loading.moddiscovery.ModFile/LOADING]: Loading mod file C:\Users\18199\.gradle\caches\forge_gradle\deobf_dependencies\maven\modrinth\touhou-little-maid\1.5.3-forge+mc1.20.1_mapped_parchment_2023.08.20-1.20.1\touhou-little-maid-1.5.3-forge+mc1.20.1_mapped_parchment_2023.08.20-1.20.1.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[46,)]]
+[038月2026 17:30:17.727] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: End scan trigger - transformation service fml
+[038月2026 17:30:17.736] [main/DEBUG] [net.minecraftforge.fml.loading.LanguageLoadingProvider/CORE]: Found 3 language providers
+[038月2026 17:30:17.737] [main/DEBUG] [net.minecraftforge.fml.loading.LanguageLoadingProvider/CORE]: Found language provider minecraft, version 1.0
+[038月2026 17:30:17.737] [main/DEBUG] [net.minecraftforge.fml.loading.LanguageLoadingProvider/CORE]: Found language provider lowcodefml, version 47
+[038月2026 17:30:17.737] [main/DEBUG] [net.minecraftforge.fml.loading.LanguageLoadingProvider/CORE]: Found language provider javafml, version 47
+[038月2026 17:30:17.742] [main/DEBUG] [net.minecraftforge.fml.loading.ModSorter/]: Configured system mods: [minecraft, forge]
+[038月2026 17:30:17.742] [main/DEBUG] [net.minecraftforge.fml.loading.ModSorter/]: Found system mod: minecraft
+[038月2026 17:30:17.743] [main/DEBUG] [net.minecraftforge.fml.loading.ModSorter/]: Found system mod: forge
+[038月2026 17:30:17.745] [main/DEBUG] [net.minecraftforge.fml.loading.ModSorter/LOADING]: Found 4 mod requirements (4 mandatory, 0 optional)
+[038月2026 17:30:17.745] [main/DEBUG] [net.minecraftforge.fml.loading.ModSorter/LOADING]: Found 0 mod requirements missing (0 mandatory, 0 optional)
+[038月2026 17:30:18.041] [main/DEBUG] [net.minecraftforge.fml.loading.MCPNamingService/CORE]: Loaded 34318 method mappings from methods.csv
+[038月2026 17:30:18.060] [main/DEBUG] [net.minecraftforge.fml.loading.MCPNamingService/CORE]: Loaded 31014 field mappings from fields.csv
+[038月2026 17:30:18.097] [main/DEBUG] [cpw.mods.modlauncher.TransformationServicesHandler/MODLAUNCHER]: Transformation services loading transformers
+[038月2026 17:30:18.099] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformers for transformation service mixin
+[038月2026 17:30:18.099] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformers for transformation service mixin
+[038月2026 17:30:18.099] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformers for transformation service fml
+[038月2026 17:30:18.099] [main/DEBUG] [net.minecraftforge.fml.loading.FMLServiceProvider/CORE]: Loading coremod transformers
+[038月2026 17:30:18.100] [main/DEBUG] [net.minecraftforge.coremod.CoreModEngine/COREMOD]: Loading CoreMod from coremods/field_to_method.js
+[038月2026 17:30:18.321] [main/DEBUG] [net.minecraftforge.coremod.CoreModEngine/COREMOD]: CoreMod loaded successfully
+[038月2026 17:30:18.321] [main/DEBUG] [net.minecraftforge.coremod.CoreModEngine/COREMOD]: Loading CoreMod from coremods/field_to_instanceof.js
+[038月2026 17:30:18.408] [main/DEBUG] [net.minecraftforge.coremod.CoreModEngine/COREMOD]: CoreMod loaded successfully
+[038月2026 17:30:18.408] [main/DEBUG] [net.minecraftforge.coremod.CoreModEngine/COREMOD]: Loading CoreMod from coremods/add_bouncer_method.js
+[038月2026 17:30:18.448] [main/DEBUG] [net.minecraftforge.coremod.CoreModEngine/COREMOD]: CoreMod loaded successfully
+[038月2026 17:30:18.448] [main/DEBUG] [net.minecraftforge.coremod.CoreModEngine/COREMOD]: Loading CoreMod from coremods/method_redirector.js
+[038月2026 17:30:18.499] [main/DEBUG] [net.minecraftforge.coremod.CoreModEngine/COREMOD]: CoreMod loaded successfully
+[038月2026 17:30:18.510] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@66933239 to Target : CLASS {Lnet/minecraft/world/level/biome/Biome;} {} {V}
+[038月2026 17:30:18.511] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@6a12c7a8 to Target : CLASS {Lnet/minecraft/world/level/levelgen/structure/Structure;} {} {V}
+[038月2026 17:30:18.511] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@161aa04a to Target : CLASS {Lnet/minecraft/world/effect/MobEffectInstance;} {} {V}
+[038月2026 17:30:18.512] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@436bd4df to Target : CLASS {Lnet/minecraft/world/level/block/LiquidBlock;} {} {V}
+[038月2026 17:30:18.512] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@6848a051 to Target : CLASS {Lnet/minecraft/world/item/BucketItem;} {} {V}
+[038月2026 17:30:18.512] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@149b0577 to Target : CLASS {Lnet/minecraft/world/level/block/StairBlock;} {} {V}
+[038月2026 17:30:18.512] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@5740ff5e to Target : CLASS {Lnet/minecraft/world/level/block/FlowerPotBlock;} {} {V}
+[038月2026 17:30:18.512] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@4a901445 to Target : CLASS {Lnet/minecraft/world/item/ItemStack;} {} {V}
+[038月2026 17:30:18.512] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@67f77f6e to Target : CLASS {Lnet/minecraft/network/play/client/CClientSettingsPacket;} {} {V}
+[038月2026 17:30:18.512] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2b0b7e5a to Target : CLASS {Lnet/minecraft/world/entity/ai/village/VillageSiege;} {} {V}
+[038月2026 17:30:18.512] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2b0b7e5a to Target : CLASS {Lnet/minecraft/world/entity/animal/horse/SkeletonTrapGoal;} {} {V}
+[038月2026 17:30:18.512] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2b0b7e5a to Target : CLASS {Lnet/minecraft/world/level/levelgen/PatrolSpawner;} {} {V}
+[038月2026 17:30:18.512] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2b0b7e5a to Target : CLASS {Lnet/minecraft/world/level/levelgen/structure/structures/WoodlandMansionPieces$WoodlandMansionPiece;} {} {V}
+[038月2026 17:30:18.512] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2b0b7e5a to Target : CLASS {Lnet/minecraft/world/entity/animal/frog/Tadpole;} {} {V}
+[038月2026 17:30:18.514] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2b0b7e5a to Target : CLASS {Lnet/minecraft/world/entity/monster/ZombieVillager;} {} {V}
+[038月2026 17:30:18.514] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2b0b7e5a to Target : CLASS {Lnet/minecraft/world/entity/npc/CatSpawner;} {} {V}
+[038月2026 17:30:18.514] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2b0b7e5a to Target : CLASS {Lnet/minecraft/world/entity/raid/Raid;} {} {V}
+[038月2026 17:30:18.514] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2b0b7e5a to Target : CLASS {Lnet/minecraft/world/level/levelgen/structure/structures/OceanRuinPieces$OceanRuinPiece;} {} {V}
+[038月2026 17:30:18.514] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2b0b7e5a to Target : CLASS {Lnet/minecraft/world/entity/npc/Villager;} {} {V}
+[038月2026 17:30:18.515] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2b0b7e5a to Target : CLASS {Lnet/minecraft/world/level/NaturalSpawner;} {} {V}
+[038月2026 17:30:18.515] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2b0b7e5a to Target : CLASS {Lnet/minecraft/world/level/levelgen/structure/structures/OceanMonumentPieces$OceanMonumentPiece;} {} {V}
+[038月2026 17:30:18.515] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2b0b7e5a to Target : CLASS {Lnet/minecraft/world/entity/monster/Strider;} {} {V}
+[038月2026 17:30:18.515] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2b0b7e5a to Target : CLASS {Lnet/minecraft/world/entity/monster/Zombie;} {} {V}
+[038月2026 17:30:18.515] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2b0b7e5a to Target : CLASS {Lnet/minecraft/world/entity/EntityType;} {} {V}
+[038月2026 17:30:18.515] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2b0b7e5a to Target : CLASS {Lnet/minecraft/server/commands/SummonCommand;} {} {V}
+[038月2026 17:30:18.515] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2b0b7e5a to Target : CLASS {Lnet/minecraft/world/level/levelgen/structure/structures/SwampHutPiece;} {} {V}
+[038月2026 17:30:18.515] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2b0b7e5a to Target : CLASS {Lnet/minecraft/world/level/levelgen/PhantomSpawner;} {} {V}
+[038月2026 17:30:18.515] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2b0b7e5a to Target : CLASS {Lnet/minecraft/server/commands/RaidCommand;} {} {V}
+[038月2026 17:30:18.515] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2b0b7e5a to Target : CLASS {Lnet/minecraft/world/entity/monster/Spider;} {} {V}
+[038月2026 17:30:18.515] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2b0b7e5a to Target : CLASS {Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate;} {} {V}
+[038月2026 17:30:18.515] [main/DEBUG] [cpw.mods.modlauncher.TransformStore/MODLAUNCHER]: Adding transformer net.minecraftforge.coremod.transformer.CoreModClassTransformer@2b0b7e5a to Target : CLASS {Lnet/minecraft/world/entity/monster/Evoker$EvokerSummonSpellGoal;} {} {V}
+[038月2026 17:30:18.515] [main/DEBUG] [cpw.mods.modlauncher.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformers for transformation service fml
+[038月2026 17:30:18.772] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
+[038月2026 17:30:18.772] [main/DEBUG] [mixin/]: Registering mixin config: mixins.callresponse.json
+[038月2026 17:30:18.792] [main/DEBUG] [mixin/]: Compatibility level JAVA_17 specified by mixins.callresponse.json is higher than the maximum level supported by this version of mixin (JAVA_13).
+[038月2026 17:30:18.796] [main/INFO] [mixin/]: Compatibility level set to JAVA_17
+[038月2026 17:30:18.796] [main/DEBUG] [mixin/]: Processing launch tasks for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
+[038月2026 17:30:18.796] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(minecraft)
+[038月2026 17:30:18.796] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(minecraft)
+[038月2026 17:30:18.796] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(minecraft)
+[038月2026 17:30:18.796] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(minecraft)
+[038月2026 17:30:18.796] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(minecraft)
+[038月2026 17:30:18.797] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(minecraft)]
+[038月2026 17:30:18.797] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(forge)
+[038月2026 17:30:18.797] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(forge)
+[038月2026 17:30:18.797] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(forge)
+[038月2026 17:30:18.797] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(forge)
+[038月2026 17:30:18.797] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(forge)
+[038月2026 17:30:18.797] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(forge)]
+[038月2026 17:30:18.797] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(touhou_little_maid)
+[038月2026 17:30:18.797] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(touhou_little_maid)
+[038月2026 17:30:18.797] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(touhou_little_maid)
+[038月2026 17:30:18.797] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(touhou_little_maid)
+[038月2026 17:30:18.797] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(touhou_little_maid)
+[038月2026 17:30:18.797] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(touhou_little_maid)]
+[038月2026 17:30:18.797] [main/DEBUG] [mixin/]: Registering mixin config: touhou_little_maid.mixins.json
+[038月2026 17:30:18.799] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(callresponse)
+[038月2026 17:30:18.799] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(callresponse)
+[038月2026 17:30:18.799] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(callresponse)
+[038月2026 17:30:18.799] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(callresponse)
+[038月2026 17:30:18.799] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(callresponse)
+[038月2026 17:30:18.799] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(callresponse)]
+[038月2026 17:30:18.799] [main/DEBUG] [mixin/]: inject() running with 5 agents
+[038月2026 17:30:18.799] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
+[038月2026 17:30:18.799] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(minecraft)]
+[038月2026 17:30:18.799] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(forge)]
+[038月2026 17:30:18.799] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(touhou_little_maid)]
+[038月2026 17:30:18.799] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(callresponse)]
+[038月2026 17:30:18.800] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeserveruserdev' with arguments [--gameDir, ., --nogui]
+[038月2026 17:30:18.864] [main/DEBUG] [mixin/]: Error cleaning class output directory: .mixin.out
+[038月2026 17:30:18.866] [main/DEBUG] [mixin/]: Preparing mixins for MixinEnvironment[DEFAULT]
+[038月2026 17:30:18.867] [main/DEBUG] [mixin/]: Selecting config mixins.callresponse.json
+[038月2026 17:30:18.871] [main/WARN] [mixin/]: Reference map 'mixins.callresponse.refmap.json' for mixins.callresponse.json could not be read. If this is a development environment you can ignore this message
+[038月2026 17:30:18.872] [main/DEBUG] [mixin/]: Selecting config touhou_little_maid.mixins.json
+[038月2026 17:30:19.024] [main/INFO] [mixin/]: Remapping refMap touhou_little_maid.refmap.json using D:\车万女仆\呼应\TLMAdditionExample-master/build/createSrgToMcp/output.srg
+[038月2026 17:30:19.024] [main/DEBUG] [mixin/]: Preparing mixins.callresponse.json (1)
+[038月2026 17:30:19.070] [main/DEBUG] [mixin/]: Preparing touhou_little_maid.mixins.json (23)
+[038月2026 17:30:19.114] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate
+[038月2026 17:30:19.321] [main/DEBUG] [mixin/]: Registering new injector for @Inject with org.spongepowered.asm.mixin.injection.struct.CallbackInjectionInfo
+[038月2026 17:30:19.323] [main/DEBUG] [mixin/]: Registering new injector for @ModifyArg with org.spongepowered.asm.mixin.injection.struct.ModifyArgInjectionInfo
+[038月2026 17:30:19.324] [main/DEBUG] [mixin/]: Registering new injector for @ModifyArgs with org.spongepowered.asm.mixin.injection.struct.ModifyArgsInjectionInfo
+[038月2026 17:30:19.327] [main/DEBUG] [mixin/]: Registering new injector for @Redirect with org.spongepowered.asm.mixin.injection.struct.RedirectInjectionInfo
+[038月2026 17:30:19.327] [main/DEBUG] [mixin/]: Registering new injector for @ModifyVariable with org.spongepowered.asm.mixin.injection.struct.ModifyVariableInjectionInfo
+[038月2026 17:30:19.330] [main/DEBUG] [mixin/]: Registering new injector for @ModifyConstant with org.spongepowered.asm.mixin.injection.struct.ModifyConstantInjectionInfo
+[038月2026 17:30:19.344] [main/DEBUG] [mixin/]: Prepared 19 mixins in 0.476 sec (25.1ms avg) (0ms load, 0ms transform, 0ms plugin)
+[038月2026 17:30:19.417] [main/DEBUG] [io.netty.util.internal.logging.InternalLoggerFactory/]: Using SLF4J as the default logging framework
+[038月2026 17:30:19.424] [main/DEBUG] [io.netty.util.ResourceLeakDetector/]: -Dio.netty.leakDetection.level: simple
+[038月2026 17:30:19.424] [main/DEBUG] [io.netty.util.ResourceLeakDetector/]: -Dio.netty.leakDetection.targetRecords: 4
+[038月2026 17:30:19.621] [main/DEBUG] [oshi.util.FileUtil/]: No oshi.properties file found from ClassLoader cpw.mods.modlauncher.TransformingClassLoader@4ed4a7e4
+[038月2026 17:30:19.858] [main/DEBUG] [oshi.util.FileUtil/]: No oshi.architecture.properties file found from ClassLoader cpw.mods.modlauncher.TransformingClassLoader@4ed4a7e4
+[038月2026 17:30:21.736] [main/DEBUG] [mixin/]: Mixing BlockBurningCache from touhou_little_maid.mixins.json into net.minecraft.world.level.block.Block
+[038月2026 17:30:21.764] [main/DEBUG] [mixin/]: Mixing EntityMixin from touhou_little_maid.mixins.json into net.minecraft.world.entity.Entity
+[038月2026 17:30:21.772] [main/DEBUG] [mixin/]: Mixing accessor.EntityAccessor from touhou_little_maid.mixins.json into net.minecraft.world.entity.Entity
+[038月2026 17:30:21.853] [main/DEBUG] [mixin/]: Mixing accessor.LivingEntityAccessor from touhou_little_maid.mixins.json into net.minecraft.world.entity.LivingEntity
+[038月2026 17:30:21.894] [main/DEBUG] [mixin/]: Mixing PlayerMixin from touhou_little_maid.mixins.json into net.minecraft.world.entity.player.Player
+[038月2026 17:30:21.953] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/EntityType
+[038月2026 17:30:22.227] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/block/LiquidBlock
+[038月2026 17:30:22.245] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/block/StairBlock
+[038月2026 17:30:22.251] [main/DEBUG] [mixin/]: Mixing accessor.CropBlockAccessor from touhou_little_maid.mixins.json into net.minecraft.world.level.block.CropBlock
+[038月2026 17:30:22.278] [main/DEBUG] [mixin/]: Mixing accessor.FenceGateBlockAccessor from touhou_little_maid.mixins.json into net.minecraft.world.level.block.FenceGateBlock
+[038月2026 17:30:22.289] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/block/FlowerPotBlock
+[038月2026 17:30:22.317] [main/DEBUG] [mixin/]: Mixing SweetBerryBushBlockMixin from touhou_little_maid.mixins.json into net.minecraft.world.level.block.SweetBerryBushBlock
+[038月2026 17:30:22.626] [main/DEBUG] [mixin/]: Mixing ArrowMixin from touhou_little_maid.mixins.json into net.minecraft.world.entity.projectile.AbstractArrow
+[038月2026 17:30:22.628] [main/DEBUG] [mixin/]: Mixing accessor.ArrowAccessor from touhou_little_maid.mixins.json into net.minecraft.world.entity.projectile.AbstractArrow
+[038月2026 17:30:22.632] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/EntityType
+[038月2026 17:30:22.670] [main/DEBUG] [mixin/]: Mixing MobInteractMixin from touhou_little_maid.mixins.json into net.minecraft.world.entity.Mob
+[038月2026 17:30:22.673] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/item/ItemStack
+[038月2026 17:30:22.741] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/item/ItemStack
+[038月2026 17:30:22.869] [main/DEBUG] [mixin/]: Mixing ConduitBlockEntityMixin from touhou_little_maid.mixins.json into net.minecraft.world.level.block.entity.ConduitBlockEntity
+[038月2026 17:30:22.875] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/effect/MobEffectInstance
+[038月2026 17:30:23.072] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/animal/frog/Tadpole
+[038月2026 17:30:23.101] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/item/BucketItem
+[038月2026 17:30:23.165] [main/DEBUG] [mixin/]: Mixing NavigationMixin from touhou_little_maid.mixins.json into net.minecraft.world.entity.ai.navigation.PathNavigation
+[038月2026 17:30:23.580] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/monster/Spider
+[038月2026 17:30:23.603] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/monster/Zombie
+[038月2026 17:30:23.616] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/monster/ZombieVillager
+[038月2026 17:30:23.624] [main/DEBUG] [mixin/]: Mixing ThrownTridentMixin from touhou_little_maid.mixins.json into net.minecraft.world.entity.projectile.ThrownTrident
+[038月2026 17:30:23.652] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/monster/Evoker$EvokerSummonSpellGoal
+[038月2026 17:30:23.749] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/animal/horse/SkeletonTrapGoal
+[038月2026 17:30:23.758] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/monster/Strider
+[038月2026 17:30:23.817] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/npc/Villager
+[038月2026 17:30:23.862] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/effect/MobEffectInstance
+[038月2026 17:30:24.123] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/levelgen/structure/Structure
+[038月2026 17:30:24.139] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/levelgen/structure/structures/OceanRuinPieces$OceanRuinPiece
+[038月2026 17:30:24.143] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/levelgen/structure/structures/SwampHutPiece
+[038月2026 17:30:24.148] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/levelgen/structure/structures/OceanMonumentPieces$OceanMonumentPiece
+[038月2026 17:30:24.154] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/levelgen/structure/structures/WoodlandMansionPieces$WoodlandMansionPiece
+[038月2026 17:30:24.200] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/biome/Biome
+[038月2026 17:30:24.303] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Creating vanilla freeze snapshot
+[038月2026 17:30:24.306] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:block Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.312] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:fluid Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.312] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:item Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.318] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:mob_effect Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.318] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:sound_event Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.322] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:potion Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.322] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:enchantment Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.323] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:entity_type Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.324] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:block_entity_type Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.324] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:particle_type Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.324] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:menu Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.324] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:painting_variant Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.324] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_type Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.324] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_serializer Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.326] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:attribute Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.326] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:stat_type Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.326] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:command_argument_type Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.326] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:villager_profession Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.327] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:point_of_interest_type Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.327] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:memory_module_type Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.328] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:sensor_type Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.328] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:schedule Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.328] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:activity Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.328] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/carver Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.328] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/feature Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.329] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:chunk_status Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.329] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/block_state_provider_type Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.329] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/foliage_placer_type Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.329] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/tree_decorator_type Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.329] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/biome Sync: VANILLA -> ACTIVE
+[038月2026 17:30:24.333] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Vanilla freeze snapshot created
+[038月2026 17:30:24.369] [main/DEBUG] [io.netty.util.internal.PlatformDependent0/]: -Dio.netty.noUnsafe: false
+[038月2026 17:30:24.369] [main/DEBUG] [io.netty.util.internal.PlatformDependent0/]: Java version: 17
+[038月2026 17:30:24.371] [main/DEBUG] [io.netty.util.internal.PlatformDependent0/]: sun.misc.Unsafe.theUnsafe: available
+[038月2026 17:30:24.371] [main/DEBUG] [io.netty.util.internal.PlatformDependent0/]: sun.misc.Unsafe.copyMemory: available
+[038月2026 17:30:24.372] [main/DEBUG] [io.netty.util.internal.PlatformDependent0/]: sun.misc.Unsafe.storeFence: available
+[038月2026 17:30:24.373] [main/DEBUG] [io.netty.util.internal.PlatformDependent0/]: java.nio.Buffer.address: available
+[038月2026 17:30:24.373] [main/DEBUG] [io.netty.util.internal.PlatformDependent0/]: direct buffer constructor: unavailable
+java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
+	at io.netty.util.internal.ReflectionUtil.trySetAccessible(ReflectionUtil.java:31) ~[netty-common-4.1.82.Final.jar:4.1.82.Final]
+	at io.netty.util.internal.PlatformDependent0$5.run(PlatformDependent0.java:288) ~[netty-common-4.1.82.Final.jar:4.1.82.Final]
+	at java.security.AccessController.doPrivileged(AccessController.java:318) ~[?:?]
+	at io.netty.util.internal.PlatformDependent0.<clinit>(PlatformDependent0.java:282) ~[netty-common-4.1.82.Final.jar:4.1.82.Final]
+	at io.netty.util.internal.PlatformDependent.isAndroid(PlatformDependent.java:333) ~[netty-common-4.1.82.Final.jar:4.1.82.Final]
+	at io.netty.util.internal.PlatformDependent.<clinit>(PlatformDependent.java:88) ~[netty-common-4.1.82.Final.jar:4.1.82.Final]
+	at io.netty.util.ConstantPool.<init>(ConstantPool.java:34) ~[netty-common-4.1.82.Final.jar:4.1.82.Final]
+	at io.netty.util.AttributeKey$1.<init>(AttributeKey.java:27) ~[netty-common-4.1.82.Final.jar:4.1.82.Final]
+	at io.netty.util.AttributeKey.<clinit>(AttributeKey.java:27) ~[netty-common-4.1.82.Final.jar:4.1.82.Final]
+	at net.minecraftforge.network.NetworkConstants.<clinit>(NetworkConstants.java:34) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar:?]
+	at net.minecraftforge.network.NetworkHooks.init(NetworkHooks.java:52) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar:?]
+	at net.minecraft.server.Bootstrap.bootStrap(Bootstrap.java:66) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar:?]
+	at net.minecraft.server.Main.main(Main.java:121) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:568) ~[?:?]
+	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.4.0.jar:?]
+	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.serverService(CommonLaunchHandler.java:103) ~[fmlloader-1.20.1-47.4.0.jar:?]
+	at net.minecraftforge.fml.loading.targets.ForgeServerUserdevLaunchHandler.devService(ForgeServerUserdevLaunchHandler.java:16) ~[fmlloader-1.20.1-47.4.0.jar:?]
+	at net.minecraftforge.fml.loading.targets.CommonDevLaunchHandler.lambda$makeService$7(CommonDevLaunchHandler.java:135) ~[fmlloader-1.20.1-47.4.0.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?]
+[038月2026 17:30:24.395] [main/DEBUG] [io.netty.util.internal.PlatformDependent0/]: java.nio.Bits.unaligned: available, true
+[038月2026 17:30:24.397] [main/DEBUG] [io.netty.util.internal.PlatformDependent0/]: jdk.internal.misc.Unsafe.allocateUninitializedArray(int): unavailable
+java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent0$7 (in module io.netty.common) cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to module io.netty.common
+	at jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:392) ~[?:?]
+	at java.lang.reflect.AccessibleObject.checkAccess(AccessibleObject.java:674) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:560) ~[?:?]
+	at io.netty.util.internal.PlatformDependent0$7.run(PlatformDependent0.java:410) ~[netty-common-4.1.82.Final.jar:4.1.82.Final]
+	at java.security.AccessController.doPrivileged(AccessController.java:318) ~[?:?]
+	at io.netty.util.internal.PlatformDependent0.<clinit>(PlatformDependent0.java:401) ~[netty-common-4.1.82.Final.jar:4.1.82.Final]
+	at io.netty.util.internal.PlatformDependent.isAndroid(PlatformDependent.java:333) ~[netty-common-4.1.82.Final.jar:4.1.82.Final]
+	at io.netty.util.internal.PlatformDependent.<clinit>(PlatformDependent.java:88) ~[netty-common-4.1.82.Final.jar:4.1.82.Final]
+	at io.netty.util.ConstantPool.<init>(ConstantPool.java:34) ~[netty-common-4.1.82.Final.jar:4.1.82.Final]
+	at io.netty.util.AttributeKey$1.<init>(AttributeKey.java:27) ~[netty-common-4.1.82.Final.jar:4.1.82.Final]
+	at io.netty.util.AttributeKey.<clinit>(AttributeKey.java:27) ~[netty-common-4.1.82.Final.jar:4.1.82.Final]
+	at net.minecraftforge.network.NetworkConstants.<clinit>(NetworkConstants.java:34) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar:?]
+	at net.minecraftforge.network.NetworkHooks.init(NetworkHooks.java:52) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar:?]
+	at net.minecraft.server.Bootstrap.bootStrap(Bootstrap.java:66) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar:?]
+	at net.minecraft.server.Main.main(Main.java:121) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:568) ~[?:?]
+	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.4.0.jar:?]
+	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.serverService(CommonLaunchHandler.java:103) ~[fmlloader-1.20.1-47.4.0.jar:?]
+	at net.minecraftforge.fml.loading.targets.ForgeServerUserdevLaunchHandler.devService(ForgeServerUserdevLaunchHandler.java:16) ~[fmlloader-1.20.1-47.4.0.jar:?]
+	at net.minecraftforge.fml.loading.targets.CommonDevLaunchHandler.lambda$makeService$7(CommonDevLaunchHandler.java:135) ~[fmlloader-1.20.1-47.4.0.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?]
+[038月2026 17:30:24.399] [main/DEBUG] [io.netty.util.internal.PlatformDependent0/]: java.nio.DirectByteBuffer.<init>(long, int): unavailable
+[038月2026 17:30:24.400] [main/DEBUG] [io.netty.util.internal.PlatformDependent/]: sun.misc.Unsafe: available
+[038月2026 17:30:24.401] [main/DEBUG] [io.netty.util.internal.PlatformDependent/]: maxDirectMemory: 8522825728 bytes (maybe)
+[038月2026 17:30:24.401] [main/DEBUG] [io.netty.util.internal.PlatformDependent/]: -Dio.netty.tmpdir: C:\Users\18199\AppData\Local\Temp (java.io.tmpdir)
+[038月2026 17:30:24.401] [main/DEBUG] [io.netty.util.internal.PlatformDependent/]: -Dio.netty.bitMode: 64 (sun.arch.data.model)
+[038月2026 17:30:24.401] [main/DEBUG] [io.netty.util.internal.PlatformDependent/]: Platform: Windows
+[038月2026 17:30:24.402] [main/DEBUG] [io.netty.util.internal.PlatformDependent/]: -Dio.netty.maxDirectMemory: -1 bytes
+[038月2026 17:30:24.402] [main/DEBUG] [io.netty.util.internal.PlatformDependent/]: -Dio.netty.uninitializedArrayAllocationThreshold: -1
+[038月2026 17:30:24.404] [main/DEBUG] [io.netty.util.internal.CleanerJava9/]: java.nio.ByteBuffer.cleaner(): available
+[038月2026 17:30:24.404] [main/DEBUG] [io.netty.util.internal.PlatformDependent/]: -Dio.netty.noPreferDirect: false
+[038月2026 17:30:24.492] [main/DEBUG] [net.minecraftforge.network.NetworkHooks/]: Loading Network data for FML net version: FML3
+[038月2026 17:30:24.515] [main/DEBUG] [net.minecraftforge.common.ForgeI18n/CORE]: Loading I18N data entries: 6434
+[038月2026 17:30:24.530] [main/DEBUG] [net.minecraftforge.fml.ModWorkManager/LOADING]: Using 32 threads for parallel mod-loading
+[038月2026 17:30:24.534] [main/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLJavaModLanguageProvider/LOADING]: Loading FMLModContainer from classloader cpw.mods.modlauncher.TransformingClassLoader@4ed4a7e4 - got cpw.mods.cl.ModuleClassLoader@71c905a3
+[038月2026 17:30:24.535] [main/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Creating FMLModContainer instance for net.minecraftforge.common.ForgeMod
+[038月2026 17:30:24.537] [main/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLJavaModLanguageProvider/LOADING]: Loading FMLModContainer from classloader cpw.mods.modlauncher.TransformingClassLoader@4ed4a7e4 - got cpw.mods.cl.ModuleClassLoader@71c905a3
+[038月2026 17:30:24.537] [main/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Creating FMLModContainer instance for com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid
+[038月2026 17:30:24.538] [main/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLJavaModLanguageProvider/LOADING]: Loading FMLModContainer from classloader cpw.mods.modlauncher.TransformingClassLoader@4ed4a7e4 - got cpw.mods.cl.ModuleClassLoader@71c905a3
+[038月2026 17:30:24.538] [main/DEBUG] [net.minecraftforge.fml.javafmlmod.FMLModContainer/LOADING]: Creating FMLModContainer instance for com.github.tartaricacid.callresponse.CallResponseMod
+[038月2026 17:30:24.559] [modloading-worker-0/DEBUG] [net.minecraftforge.versions.forge.ForgeVersion/CORE]: Forge Version package package net.minecraftforge.versions.forge, Forge, version 47.4 from cpw.mods.modlauncher.TransformingClassLoader@4ed4a7e4
+[038月2026 17:30:24.559] [modloading-worker-0/DEBUG] [net.minecraftforge.versions.forge.ForgeVersion/CORE]: Found Forge version 47.4.0
+[038月2026 17:30:24.559] [modloading-worker-0/DEBUG] [net.minecraftforge.versions.forge.ForgeVersion/CORE]: Found Forge spec 47.4
+[038月2026 17:30:24.559] [modloading-worker-0/DEBUG] [net.minecraftforge.versions.forge.ForgeVersion/CORE]: Found Forge group net.minecraftforge
+[038月2026 17:30:24.560] [modloading-worker-0/DEBUG] [net.minecraftforge.versions.mcp.MCPVersion/CORE]: MCP Version package package net.minecraftforge.versions.mcp, Minecraft, version 1.20.1 from cpw.mods.modlauncher.TransformingClassLoader@4ed4a7e4
+[038月2026 17:30:24.560] [modloading-worker-0/DEBUG] [net.minecraftforge.versions.mcp.MCPVersion/CORE]: Found MC version information 1.20.1
+[038月2026 17:30:24.560] [modloading-worker-0/DEBUG] [net.minecraftforge.versions.mcp.MCPVersion/CORE]: Found MCP version information 20230612.114412
+[038月2026 17:30:24.560] [modloading-worker-0/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 47.4.0, for MC 1.20.1 with MCP 20230612.114412
+[038月2026 17:30:24.562] [modloading-worker-0/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v47.4.0 Initialized
+[038月2026 17:30:24.573] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.config.ConfigTracker/CONFIG]: Config file callresponse-common.toml for callresponse tracking
+[038月2026 17:30:24.574] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.config.ConfigTracker/CONFIG]: Config file callresponse-emotion-passive.toml for callresponse tracking
+[038月2026 17:30:24.583] [modloading-worker-0/INFO] [callresponse/]: ? CallResponse mod 初始化完成！
+[038月2026 17:30:24.584] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for callresponse
+[038月2026 17:30:24.585] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.config.ConfigTracker/CONFIG]: Config file forge-client.toml for forge tracking
+[038月2026 17:30:24.585] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.config.ConfigTracker/CONFIG]: Config file forge-server.toml for forge tracking
+[038月2026 17:30:24.586] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.ModLoadingContext/]: Attempted to register an empty config for type COMMON on mod forge
+[038月2026 17:30:24.587] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.callresponse.config.BroadcastConfig to FORGE
+[038月2026 17:30:24.605] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for forge
+[038月2026 17:30:24.607] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing net.minecraftforge.common.ForgeSpawnEggItem$CommonHandler to MOD
+[038月2026 17:30:24.619] [modloading-worker-0/DEBUG] [mixin/]: Mixing MixinEntityMaid from mixins.callresponse.json into com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid
+[038月2026 17:30:24.619] [modloading-worker-0/DEBUG] [mixin/]: Renaming synthetic method lambda$isAimingAtMaid$0(Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;Lnet/minecraft/world/entity/Entity;)Z to md87dbb8$lambda$isAimingAtMaid$0$0 in mixins.callresponse.json:MixinEntityMaid
+[038月2026 17:30:24.760] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.config.ConfigTracker/CONFIG]: Config file touhou_little_maid-common.toml for touhou_little_maid tracking
+[038月2026 17:30:24.761] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.config.ConfigTracker/CONFIG]: Config file touhou_little_maid-server.toml for touhou_little_maid tracking
+[038月2026 17:30:24.761] [modloading-worker-0/INFO] [touhou_little_maid/]: common default pack init start...
+[038月2026 17:30:25.400] [modloading-worker-0/INFO] [touhou_little_maid/]: common default pack init finished, cost time: 637.383 ms
+[038月2026 17:30:25.401] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for touhou_little_maid
+[038月2026 17:30:25.401] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.item.ItemSubstituteJizo to FORGE
+[038月2026 17:30:25.404] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.init.registry.MobSpawnInfoRegistry to FORGE
+[038月2026 17:30:25.405] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.init.registry.DatapackRegistry to FORGE
+[038月2026 17:30:25.405] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.init.registry.CompatRegistry to MOD
+[038月2026 17:30:25.405] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.init.registry.CommonRegistry to MOD
+[038月2026 17:30:25.406] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.init.registry.CommandRegistry to FORGE
+[038月2026 17:30:25.406] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.init.registry.CapabilityRegistry to MOD
+[038月2026 17:30:25.406] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.init.InitRecipes to MOD
+[038月2026 17:30:25.407] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.init.InitLootModifier to MOD
+[038月2026 17:30:25.407] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.init.InitEntities to MOD
+[038月2026 17:30:25.407] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.maid.UseNameTagEvent to FORGE
+[038月2026 17:30:25.409] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.maid.UseFavorabilityToolEvent to FORGE
+[038月2026 17:30:25.410] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.maid.SwitchSittingEvent to FORGE
+[038月2026 17:30:25.410] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.maid.SlabClickEvent to FORGE
+[038月2026 17:30:25.410] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.maid.SaddleMaidEvent to FORGE
+[038月2026 17:30:25.412] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.maid.PotionItemUse to FORGE
+[038月2026 17:30:25.412] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.maid.MaidMountEvent to FORGE
+[038月2026 17:30:25.413] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.maid.MaidFarmlandTrample to FORGE
+[038月2026 17:30:25.413] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.maid.MaidDropBaubleEvent to FORGE
+[038月2026 17:30:25.413] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.maid.MaidDeathFavorability to FORGE
+[038月2026 17:30:25.415] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.maid.MaidAreaClickEvent to FORGE
+[038月2026 17:30:25.416] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.maid.HandleBackpackEvent to FORGE
+[038月2026 17:30:25.416] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.maid.GetExpBottleEvent to FORGE
+[038月2026 17:30:25.417] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.maid.DismountMaidEvent to FORGE
+[038月2026 17:30:25.417] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.maid.ApplyPotionEffectEvent to FORGE
+[038月2026 17:30:25.417] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.maid.ApplyGoldenAppleEvent to FORGE
+[038月2026 17:30:25.417] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.food.DefaultEatenEvent to FORGE
+[038月2026 17:30:25.418] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.food.BowlFoodEvent to FORGE
+[038月2026 17:30:25.418] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.MaidTrackEvent to FORGE
+[038月2026 17:30:25.420] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.MaidMealRegConfigEvent to MOD
+[038月2026 17:30:25.420] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.MaidLivingEntityEvent to FORGE
+[038月2026 17:30:25.421] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.InstallChairEvent to FORGE
+[038月2026 17:30:25.423] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.EntityJoinWorldEvent to FORGE
+[038月2026 17:30:25.423] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.EntityHurtEvent to FORGE
+[038月2026 17:30:25.424] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.EntityDeathEvent to FORGE
+[038月2026 17:30:25.425] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.EnterServerEvent to FORGE
+[038月2026 17:30:25.425] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.CopyEntityIdEvent to FORGE
+[038月2026 17:30:25.426] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.CapabilityEvent to FORGE
+[038月2026 17:30:25.428] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.event.CancelSaddleMaidEvent to FORGE
+[038月2026 17:30:25.429] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.RandomEmoji to FORGE
+[038月2026 17:30:25.429] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.debug.target.SendMaidDebugDataEvent to FORGE
+[038月2026 17:30:25.431] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.debug.event.DebugStickClickEvent to FORGE
+[038月2026 17:30:25.431] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.datagen.MaidDataGenerator to MOD
+[038月2026 17:30:25.431] [modloading-worker-0/DEBUG] [net.minecraftforge.fml.javafmlmod.AutomaticEventSubscriber/LOADING]: Auto-subscribing com.github.tartaricacid.touhoulittlemaid.compat.domesticationinnovation.EnchantmentRefuse to FORGE
+[038月2026 17:30:25.444] [main/DEBUG] [net.minecraftforge.registries.ObjectHolderRegistry/REGISTRIES]: Processing ObjectHolder annotations
+[038月2026 17:30:25.454] [main/DEBUG] [net.minecraftforge.registries.ObjectHolderRegistry/REGISTRIES]: Found 4056 ObjectHolder annotations
+[038月2026 17:30:25.456] [main/DEBUG] [net.minecraftforge.common.capabilities.CapabilityManager/CAPABILITIES]: Attempting to automatically register: Lnet/minecraftforge/energy/IEnergyStorage;
+[038月2026 17:30:25.457] [main/DEBUG] [net.minecraftforge.common.capabilities.CapabilityManager/CAPABILITIES]: Attempting to automatically register: Lnet/minecraftforge/fluids/capability/IFluidHandler;
+[038月2026 17:30:25.457] [main/DEBUG] [net.minecraftforge.common.capabilities.CapabilityManager/CAPABILITIES]: Attempting to automatically register: Lnet/minecraftforge/fluids/capability/IFluidHandlerItem;
+[038月2026 17:30:25.457] [main/DEBUG] [net.minecraftforge.common.capabilities.CapabilityManager/CAPABILITIES]: Attempting to automatically register: Lnet/minecraftforge/items/IItemHandler;
+[038月2026 17:30:25.457] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Unfreezing vanilla registries
+[038月2026 17:30:25.459] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:sound_event
+[038月2026 17:30:25.461] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:sound_event
+[038月2026 17:30:25.461] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:fluid
+[038月2026 17:30:25.461] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:fluid
+[038月2026 17:30:25.538] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:block
+[038月2026 17:30:25.540] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:block
+[038月2026 17:30:25.540] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:attribute
+[038月2026 17:30:25.540] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:attribute
+[038月2026 17:30:25.540] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:mob_effect
+[038月2026 17:30:25.541] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:mob_effect
+[038月2026 17:30:25.541] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:particle_type
+[038月2026 17:30:25.541] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:particle_type
+[038月2026 17:30:25.544] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:item
+[038月2026 17:30:25.544] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:item
+[038月2026 17:30:25.559] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:entity_type
+[038月2026 17:30:25.560] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:entity_type
+[038月2026 17:30:25.561] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:sensor_type
+[038月2026 17:30:25.561] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:sensor_type
+[038月2026 17:30:25.561] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:memory_module_type
+[038月2026 17:30:25.562] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:memory_module_type
+[038月2026 17:30:25.562] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:potion
+[038月2026 17:30:25.562] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:potion
+[038月2026 17:30:25.562] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:game_event
+[038月2026 17:30:25.562] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:game_event
+[038月2026 17:30:25.562] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:enchantment
+[038月2026 17:30:25.562] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:enchantment
+[038月2026 17:30:25.565] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:block_entity_type
+[038月2026 17:30:25.565] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:block_entity_type
+[038月2026 17:30:25.565] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:painting_variant
+[038月2026 17:30:25.565] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:painting_variant
+[038月2026 17:30:25.565] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:stat_type
+[038月2026 17:30:25.565] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:stat_type
+[038月2026 17:30:25.565] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:custom_stat
+[038月2026 17:30:25.565] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:custom_stat
+[038月2026 17:30:25.565] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:chunk_status
+[038月2026 17:30:25.565] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:chunk_status
+[038月2026 17:30:25.565] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:rule_test
+[038月2026 17:30:25.567] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:rule_test
+[038月2026 17:30:25.567] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:rule_block_entity_modifier
+[038月2026 17:30:25.567] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:rule_block_entity_modifier
+[038月2026 17:30:25.567] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:pos_rule_test
+[038月2026 17:30:25.567] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:pos_rule_test
+[038月2026 17:30:25.574] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:menu
+[038月2026 17:30:25.576] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:menu
+[038月2026 17:30:25.576] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:recipe_type
+[038月2026 17:30:25.576] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:recipe_type
+[038月2026 17:30:25.583] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:recipe_serializer
+[038月2026 17:30:25.584] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:recipe_serializer
+[038月2026 17:30:25.584] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:position_source_type
+[038月2026 17:30:25.584] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:position_source_type
+[038月2026 17:30:25.587] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:command_argument_type
+[038月2026 17:30:25.587] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:command_argument_type
+[038月2026 17:30:25.587] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:villager_type
+[038月2026 17:30:25.587] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:villager_type
+[038月2026 17:30:25.587] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:villager_profession
+[038月2026 17:30:25.587] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:villager_profession
+[038月2026 17:30:25.589] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:point_of_interest_type
+[038月2026 17:30:25.589] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:point_of_interest_type
+[038月2026 17:30:25.589] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:schedule
+[038月2026 17:30:25.589] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:schedule
+[038月2026 17:30:25.589] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:activity
+[038月2026 17:30:25.589] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:activity
+[038月2026 17:30:25.589] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:loot_pool_entry_type
+[038月2026 17:30:25.590] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:loot_pool_entry_type
+[038月2026 17:30:25.590] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:loot_function_type
+[038月2026 17:30:25.590] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:loot_function_type
+[038月2026 17:30:25.591] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:loot_condition_type
+[038月2026 17:30:25.591] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:loot_condition_type
+[038月2026 17:30:25.591] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:loot_number_provider_type
+[038月2026 17:30:25.591] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:loot_number_provider_type
+[038月2026 17:30:25.591] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:loot_nbt_provider_type
+[038月2026 17:30:25.591] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:loot_nbt_provider_type
+[038月2026 17:30:25.591] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:loot_score_provider_type
+[038月2026 17:30:25.591] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:loot_score_provider_type
+[038月2026 17:30:25.592] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:float_provider_type
+[038月2026 17:30:25.592] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:float_provider_type
+[038月2026 17:30:25.592] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:int_provider_type
+[038月2026 17:30:25.592] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:int_provider_type
+[038月2026 17:30:25.592] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:height_provider_type
+[038月2026 17:30:25.592] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:height_provider_type
+[038月2026 17:30:25.592] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:block_predicate_type
+[038月2026 17:30:25.592] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:block_predicate_type
+[038月2026 17:30:25.592] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:worldgen/carver
+[038月2026 17:30:25.593] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:worldgen/carver
+[038月2026 17:30:25.593] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:worldgen/feature
+[038月2026 17:30:25.593] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:worldgen/feature
+[038月2026 17:30:25.593] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:worldgen/structure_processor
+[038月2026 17:30:25.593] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:worldgen/structure_processor
+[038月2026 17:30:25.593] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:worldgen/structure_placement
+[038月2026 17:30:25.593] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:worldgen/structure_placement
+[038月2026 17:30:25.593] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:worldgen/structure_piece
+[038月2026 17:30:25.593] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:worldgen/structure_piece
+[038月2026 17:30:25.593] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:worldgen/structure_type
+[038月2026 17:30:25.593] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:worldgen/structure_type
+[038月2026 17:30:25.593] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:worldgen/placement_modifier_type
+[038月2026 17:30:25.593] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:worldgen/placement_modifier_type
+[038月2026 17:30:25.593] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:worldgen/block_state_provider_type
+[038月2026 17:30:25.593] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:worldgen/block_state_provider_type
+[038月2026 17:30:25.593] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:worldgen/foliage_placer_type
+[038月2026 17:30:25.593] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:worldgen/foliage_placer_type
+[038月2026 17:30:25.595] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:worldgen/trunk_placer_type
+[038月2026 17:30:25.595] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:worldgen/trunk_placer_type
+[038月2026 17:30:25.595] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:worldgen/root_placer_type
+[038月2026 17:30:25.595] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:worldgen/root_placer_type
+[038月2026 17:30:25.595] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:worldgen/tree_decorator_type
+[038月2026 17:30:25.595] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:worldgen/tree_decorator_type
+[038月2026 17:30:25.595] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:worldgen/feature_size_type
+[038月2026 17:30:25.595] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:worldgen/feature_size_type
+[038月2026 17:30:25.595] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:worldgen/biome_source
+[038月2026 17:30:25.595] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:worldgen/biome_source
+[038月2026 17:30:25.595] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:worldgen/chunk_generator
+[038月2026 17:30:25.595] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:worldgen/chunk_generator
+[038月2026 17:30:25.595] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:worldgen/material_condition
+[038月2026 17:30:25.596] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:worldgen/material_condition
+[038月2026 17:30:25.596] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:worldgen/material_rule
+[038月2026 17:30:25.596] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:worldgen/material_rule
+[038月2026 17:30:25.596] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:worldgen/density_function_type
+[038月2026 17:30:25.596] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:worldgen/density_function_type
+[038月2026 17:30:25.596] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:worldgen/structure_pool_element
+[038月2026 17:30:25.596] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:worldgen/structure_pool_element
+[038月2026 17:30:25.596] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:cat_variant
+[038月2026 17:30:25.596] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:cat_variant
+[038月2026 17:30:25.596] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:frog_variant
+[038月2026 17:30:25.596] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:frog_variant
+[038月2026 17:30:25.597] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:banner_pattern
+[038月2026 17:30:25.597] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:banner_pattern
+[038月2026 17:30:25.597] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:instrument
+[038月2026 17:30:25.597] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:instrument
+[038月2026 17:30:25.598] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:decorated_pot_patterns
+[038月2026 17:30:25.598] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:decorated_pot_patterns
+[038月2026 17:30:25.598] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:creative_mode_tab
+[038月2026 17:30:25.598] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:creative_mode_tab
+[038月2026 17:30:25.602] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: forge:biome_modifier_serializers
+[038月2026 17:30:25.603] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: forge:biome_modifier_serializers
+[038月2026 17:30:25.603] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: forge:display_contexts
+[038月2026 17:30:25.603] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: forge:display_contexts
+[038月2026 17:30:25.603] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: forge:entity_data_serializers
+[038月2026 17:30:25.603] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: forge:entity_data_serializers
+[038月2026 17:30:25.605] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: forge:fluid_type
+[038月2026 17:30:25.606] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: forge:fluid_type
+[038月2026 17:30:25.606] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: forge:global_loot_modifier_serializers
+[038月2026 17:30:25.607] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: forge:global_loot_modifier_serializers
+[038月2026 17:30:25.609] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: forge:holder_set_type
+[038月2026 17:30:25.609] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: forge:holder_set_type
+[038月2026 17:30:25.609] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: forge:structure_modifier_serializers
+[038月2026 17:30:25.609] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: forge:structure_modifier_serializers
+[038月2026 17:30:25.609] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Applying holder lookups: minecraft:worldgen/biome
+[038月2026 17:30:25.609] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Holder lookups applied: minecraft:worldgen/biome
+[038月2026 17:30:25.647] [main/DEBUG] [net.minecraftforge.fml.config.ConfigTracker/CONFIG]: Loading configs type COMMON
+[038月2026 17:30:25.650] [main/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Built TOML config for D:\车万女仆\呼应\TLMAdditionExample-master\run\config\callresponse-common.toml
+[038月2026 17:30:25.657] [main/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Loaded TOML config file D:\车万女仆\呼应\TLMAdditionExample-master\run\config\callresponse-common.toml
+[038月2026 17:30:25.661] [main/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Watching TOML config file D:\车万女仆\呼应\TLMAdditionExample-master\run\config\callresponse-common.toml for changes
+[038月2026 17:30:25.664] [main/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Built TOML config for D:\车万女仆\呼应\TLMAdditionExample-master\run\config\callresponse-emotion-passive.toml
+[038月2026 17:30:25.678] [main/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Loaded TOML config file D:\车万女仆\呼应\TLMAdditionExample-master\run\config\callresponse-emotion-passive.toml
+[038月2026 17:30:25.678] [main/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Watching TOML config file D:\车万女仆\呼应\TLMAdditionExample-master\run\config\callresponse-emotion-passive.toml for changes
+[038月2026 17:30:25.680] [main/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Built TOML config for D:\车万女仆\呼应\TLMAdditionExample-master\run\config\touhou_little_maid-common.toml
+[038月2026 17:30:25.687] [main/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Loaded TOML config file D:\车万女仆\呼应\TLMAdditionExample-master\run\config\touhou_little_maid-common.toml
+[038月2026 17:30:25.688] [main/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Watching TOML config file D:\车万女仆\呼应\TLMAdditionExample-master\run\config\touhou_little_maid-common.toml for changes
+[038月2026 17:30:25.698] [Thread-1/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Config file touhou_little_maid-common.toml changed, sending notifies
+[038月2026 17:30:25.699] [main/DEBUG] [net.minecraftforge.fml.DeferredWorkQueue/LOADING]: Dispatching synchronous work for work queue COMMON_SETUP: 4 jobs
+[038月2026 17:30:25.704] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loading...
+[038月2026 17:30:25.727] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: authors_and_credits:wine_fox_maid
+[038月2026 17:30:25.728] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: authors_and_credits:wine_fox_taisho
+[038月2026 17:30:25.728] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: authors_and_credits:sazuki
+[038月2026 17:30:25.728] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: authors_and_credits:pajinyi
+[038月2026 17:30:25.728] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: authors_and_credits:fledge
+[038月2026 17:30:25.728] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: authors_and_credits:clocklalier
+[038月2026 17:30:25.728] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: authors_and_credits:cyra
+[038月2026 17:30:25.728] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: authors_and_credits:cyra_b2eb6fe570df68d353aa9d07b127b902
+[038月2026 17:30:25.728] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: authors_and_credits:cyra_pow_wow
+[038月2026 17:30:25.728] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: authors_and_credits:mory_chan
+[038月2026 17:30:25.728] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: authors_and_credits:flower_candy
+[038月2026 17:30:25.728] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loaded
+[038月2026 17:30:25.728] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loading...
+[038月2026 17:30:25.728] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loading...
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_blue
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_nine_tailed
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_nine_tailed_f609258f13252f11c3f44051b51f93c4
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_hanfu
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_new_year
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_jk
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_astronaut
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_kongfu
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_kongfu_163d46bab6d00d2e2910d32b83c7de53
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_kongfu_9dcb55de5689ffa419d9009d3eb82cac
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_kongfu_a4dbe4e83a24193e1005a40204c415ac
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_kongfu_538780bcc09da2d92795797b65aefe87
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_kongfu_15030e12f688c8163573af95dc4c6728
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_magical
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_magical_a12dc19190c076d8d24aff8714515c8e
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_magical_b073380075f0d30ea8bbcde8566f825e
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_magical_3b7aba412b5ededbab0780e258207bf0
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_magical_38ffa7d8d6f062b86c6bf88ac47a4c73
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_magical_7952f4718991f317b2f11926a90cbd10
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_saint
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_saint_c4f14815c46c13e6eb3d82ba88ed2f96
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_elf
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_salesperson
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_salesperson_84961723c2751ef4c6b9a0f8596f95cc
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_little
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_matured
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_momo
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_momo_897c13175aa632e673b32ed45ffd4961
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_wedding
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_tactics
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_mini
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:winefox_survivor
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:sta
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:zhiban
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:zhiban_hanfu
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:zhiban_new_year
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:hailuo_new_year
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:kluonoa
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:foxmaid
+[038月2026 17:30:25.739] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:rice_cake_fox
+[038月2026 17:30:25.740] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loaded
+[038月2026 17:30:25.823] [Forge Version Check/INFO] [net.minecraftforge.fml.VersionChecker/]: [forge] Starting version check at https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json
+[038月2026 17:30:25.853] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loading...
+[038月2026 17:30:25.861] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: geckolib:qingluka
+[038月2026 17:30:25.861] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loaded
+[038月2026 17:30:25.861] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loading...
+[038月2026 17:30:25.861] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loading...
+[038月2026 17:30:25.861] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loading...
+[038月2026 17:30:25.876] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: minecraft_15th:alex
+[038月2026 17:30:25.876] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: minecraft_15th:rana
+[038月2026 17:30:25.876] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: minecraft_15th:natalie
+[038月2026 17:30:25.876] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: minecraft_15th:dawn
+[038月2026 17:30:25.876] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loaded
+[038月2026 17:30:25.876] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loading...
+[038月2026 17:30:25.876] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loading...
+[038月2026 17:30:25.876] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loading...
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:stage
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:japanese_lottery_machine
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:fishpond
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:mine
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:logging_hut
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:kitchen
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:dining_table_default
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:dining_table_spring
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:dining_table_summer
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:dining_table_autumn
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:dining_table_winter
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:cumin_lamb_chop
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:hot_spring
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:picnic_cloth
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:elite_slime
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:slime
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:flip_phone
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:fox_demon_statue
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:fox_demon_statue_1
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:bathroom
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:backpack
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:cabinet
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:single_bed
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:double_bed
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:shrine
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:3d_printer
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:doorbell_ground
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:doorbell_wall
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: next_update_model:exchange_machine
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loaded
+[038月2026 17:30:25.895] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loading...
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:hakurei_reimu
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:hakurei_reimu_2
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:hakurei_reimu_type_b
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:hakurei_reimu_type_b_716c27087f2716348835e7775121532f
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:hakurei_reimu_type_b_1720614ea46709023787aae005df1134
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:hakurei_reimu_type_b_9cc0af67a94bdbb6dbae8056ab30c2bc
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:kirisame_marisa
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:kirisame_marisa_2
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:rumia
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:daiyousei
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:cirno
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:cirno_maid
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:cirno_tan
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:cirno_slim
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:cirno_slim_43e8d943f0564065031ec0efc405edbb
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:cirno_slim_af6bc1a4e6e95433d0d72fe108ec09b7
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:hong_meiling
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:koakuma
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:patchouli_knowledge
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:patchouli_knowledge_2
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:izayoi_sakuya
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:remilia_scarlet
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:remilia_scarlet_2
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:flandre_scarlet
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:letty_whiterock
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:chen
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:alice_margatroid
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:shanghai_doll
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:hourai_doll
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:goliath_doll
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:lily_white
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:lily_black
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:lunasa_prismriver
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:merlin_prismriver
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:lyrica_prismriver
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:konpaku_youmu
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:saigyouji_yuyuko
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:yakumo_ran
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:yukari_yakumo
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:ibuki_suika
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:wriggle_nightbug
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:mystia_lorelei
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:keine_kamishirasawa
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:keine_kamishirasawa_2
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:tewi_inaba
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:reisen_udongein_inaba
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:yagokoro_eirin
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:houraisan_kaguya
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:fujiwara_no_mokou
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:syameimaru_aya
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:medicine_melancholy
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:kazami_yuka
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:onozuka_komachi
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:shikieiki_yamaxanadu
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:aki_sizuha
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:minoriko_aki
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:kagiyama_hina
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:kawasiro_nitori
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:inubashiri_momizi
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:kochiya_sanae
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:yasaka_kanako
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:moriya_suwako
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:nagae_iku
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:hinanawi_tenshi
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:kisume
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:kurodani_yamame
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:mizuhashi_parsee
+[038月2026 17:30:25.916] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:hoshiguma_yugi
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:komeiji_satori
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:kaenbyou_rin
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:reiuji_utsuho
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:komeiji_koishi
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:komeiji_koishi_2
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:nazrin
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:tatara_kogasa
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:kumoi_ichirin
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:murasa_minamitsu
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:toramaru_shou
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:hijiri_byakuren
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:houjuu_nue
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:himekaidou_hatate
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:kasodani_kyouko
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:miyako_yoshika
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:kaku_seiga
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:mononobe_no_futo
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:toyosatomimi_no_miko
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:soga_no_toziko
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:hata_no_kokoro
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:hutatsuiwa_mamizou
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:wakasagihime
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:sekibanki
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:imaizumi_kagerou
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:tsukumo_yatsuhashi
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:tsukumo_benben
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:kijin_seija
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:sukuna_shinmyoumaru
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:horikawa_raiko
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:usami_sumireko
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:seiran
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:ringo
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:doremy_sweet
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:kisin_sagume
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:clownpiece
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:junko
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:hecatia_lapislazuli
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:yorigami_jyoon
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:yorigami_shion
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:eternity_larva
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:sakata_nemuno
+[038月2026 17:30:25.917] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:komano_aunn
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:yatadera_narumi
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:nishida_satono
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:teireid_mai
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:matara_okina
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:ebisu_eika
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:ushizaki_urumi
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:niwatari_kutaka
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:kitcho_yachie
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:joutougu_mayumi
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:haniyasushin_keiki
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:kurokoma_saki
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:toutetsu_yuma
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:goutokuzi_mike
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:yamashiro_takane
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:komakusa_sannyo
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:tamatsukuri_misumaru
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:kudamaki_tsukasa
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:iizunamaru_megumu
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:tenkyu_chimata
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:himemushi_momoyo
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:son_biten
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:mitsugashira_enoko
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:tenkajin_chiyari
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:yomotsu_hisami
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:nippaku_zanmu
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:ubame_chirizuka
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:chimi_houjuu
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:nareko_michigami
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:yuiman_asama
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:ariya_iwanaga
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:watari_nina
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:morichika_rinnosuke
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:tokiko
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:sunny_milk
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:luna_child
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:star_sapphire
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:watatsuki_no_toyohime
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:watatsuki_no_yorihime
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:reisen
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:hieda_no_akyuu
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:ibaraki_kasen
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:ibaraki_kasen_2
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:motoori_kosuzu
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:miyadeguchi_mizuchi
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:miyoi_okunoda
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:usami_renko
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:maribel_hearn
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:satsuki_rin
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loaded
+[038月2026 17:30:25.918] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loading...
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:cushion
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:class_desk
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:class_chair
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:kotatsu
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:play_station
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:tall_stool
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:low_stool
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:barbecue_booth
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:barbecue_booth_2
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:long_stool
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:square_table
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:mahjong_table
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:beach_chair
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:parasol
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:water_wheel
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:saisen_bako
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:well
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:torii
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:torii_2
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:torii_3
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:ema
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:anti_collision_bucket
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:park_bench
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:rinnosuke_children_toys
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:moto
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:bowl
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:lucky_cat_2m
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:yumemi_strawberry_milk
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:crystalizedsuns_moms_tombstone
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:legendary_pig_man
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:head_of_academycraft
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:fogg05
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid:native_drum
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loaded
+[038月2026 17:30:25.937] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loading...
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:reimu_hakurei
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:singyoku2
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:singyoku3
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:mima
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:kikuri
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:konngara
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:yuugen_magan
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:elis
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:sariel
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:genjii
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:rika
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:meira
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:kirisame_marisa
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:ellen
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:kotohime
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:kana_anaberal
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:rikako_asakura
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:chiyuri_kitashirakawa
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:yumemi_okazaki
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:orange
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:kurumi
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:elly
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:yuuka_old
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:mugetsu
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:gengetsu
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:sara
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:louise
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:alice
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:yuki
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:mai
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:yumeko
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:shinki
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:ruukoto
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_old:trump_king
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loaded
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loading...
+[038月2026 17:30:25.962] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loading...
+[038月2026 17:30:25.979] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_seihou:vivit
+[038月2026 17:30:25.979] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_seihou:vivit_2
+[038月2026 17:30:25.979] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_seihou:milia
+[038月2026 17:30:25.979] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_seihou:mei
+[038月2026 17:30:25.979] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Loaded model info: touhou_little_maid_seihou:mai
+[038月2026 17:30:25.979] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loaded
+[038月2026 17:30:25.979] [main/DEBUG] [touhou_little_maid/ServerCustomPackLoader]: Touhou little maid mod's model is loading...
+[038月2026 17:30:26.149] [main/DEBUG] [net.minecraftforge.fml.DeferredWorkQueue/LOADING]: Synchronous work queue completed in 449.0 ms
+[038月2026 17:30:26.153] [main/DEBUG] [net.minecraftforge.fml.DeferredWorkQueue/LOADING]: Dispatching synchronous work for work queue ENQUEUE_IMC: 9 jobs
+[038月2026 17:30:26.156] [main/DEBUG] [net.minecraftforge.fml.DeferredWorkQueue/LOADING]: Synchronous work queue completed in 3.723 ms
+[038月2026 17:30:26.158] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: Freezing registries
+[038月2026 17:30:26.159] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:block Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.162] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:fluid Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.162] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:item Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.165] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:mob_effect Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.166] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:sound_event Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.170] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:potion Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.170] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:enchantment Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.170] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:entity_type Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.171] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:block_entity_type Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.171] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:particle_type Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.171] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:menu Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.171] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:painting_variant Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.171] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_type Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.171] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_serializer Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.171] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:attribute Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.171] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:stat_type Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.171] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:command_argument_type Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.172] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:villager_profession Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.173] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:point_of_interest_type Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.173] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:memory_module_type Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.174] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:sensor_type Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.174] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:schedule Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.174] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:activity Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.174] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/carver Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.175] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/feature Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.175] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:chunk_status Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.175] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/block_state_provider_type Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.175] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/foliage_placer_type Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.175] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/tree_decorator_type Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.175] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/biome Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.175] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry forge:entity_data_serializers Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.175] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry forge:global_loot_modifier_serializers Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.175] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry forge:biome_modifier_serializers Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.175] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry forge:fluid_type Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.175] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry forge:structure_modifier_serializers Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.176] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry forge:holder_set_type Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.176] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry forge:display_contexts Sync: FROZEN -> ACTIVE
+[038月2026 17:30:26.702] [main/DEBUG] [net.minecraftforge.registries.GameData/REGISTRIES]: All registries frozen
+[038月2026 17:30:26.732] [main/INFO] [com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService/]: Environment: authHost='https://authserver.mojang.com', accountsHost='https://api.mojang.com', sessionHost='https://sessionserver.mojang.com', servicesHost='https://api.minecraftservices.com', name='PROD'
+[038月2026 17:30:26.773] [main/WARN] [net.minecraftforge.common.ForgeHooks/WP]: The following mods have version differences that were not resolved:
+callresponse (version 1.0.0 -> 2.0.0)
+Things may not work well.
+[038月2026 17:30:26.785] [main/INFO] [net.minecraftforge.registries.GameData/REGISTRIES]: Injecting existing registry data into this CLIENT instance
+[038月2026 17:30:26.826] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:block Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.828] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:fluid Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.829] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:item Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.832] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:mob_effect Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.832] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:sound_event Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.834] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:potion Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.834] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:enchantment Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.834] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:entity_type Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.836] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:block_entity_type Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.836] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:particle_type Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.836] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:menu Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.836] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:painting_variant Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.836] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_type Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.836] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_serializer Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.836] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:attribute Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.836] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:stat_type Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.836] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:command_argument_type Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.836] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:villager_profession Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.837] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:point_of_interest_type Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.837] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:memory_module_type Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.837] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:sensor_type Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.837] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:schedule Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.837] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:activity Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.837] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/carver Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.837] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/feature Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.838] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:chunk_status Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.838] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/block_state_provider_type Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.838] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/foliage_placer_type Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.838] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/tree_decorator_type Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.838] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/biome Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.838] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry forge:entity_data_serializers Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.838] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry forge:global_loot_modifier_serializers Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.838] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry forge:biome_modifier_serializers Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.838] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry forge:fluid_type Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.838] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry forge:structure_modifier_serializers Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.838] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry forge:holder_set_type Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.838] [main/DEBUG] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry forge:display_contexts Sync: ACTIVE -> STAGING
+[038月2026 17:30:26.892] [Forge Version Check/DEBUG] [net.minecraftforge.fml.VersionChecker/]: [forge] Received version check data:
+{
+  "homepage": "https://files.minecraftforge.net/net/minecraftforge/forge/",
+  "promos": {
+    "1.1-latest": "1.3.4.29",
+    "1.2.3-latest": "1.4.1.64",
+    "1.2.4-latest": "2.0.0.68",
+    "1.2.5-latest": "3.4.9.171",
+    "1.3.2-latest": "4.3.5.318",
+    "1.4.0-latest": "5.0.0.326",
+    "1.4.1-latest": "6.0.0.329",
+    "1.4.2-latest": "6.0.1.355",
+    "1.4.3-latest": "6.2.1.358",
+    "1.4.4-latest": "6.3.0.378",
+    "1.4.5-latest": "6.4.2.448",
+    "1.4.6-latest": "6.5.0.489",
+    "1.4.7-latest": "6.6.2.534",
+    "1.5-latest": "7.7.0.598",
+    "1.5.1-latest": "7.7.2.682",
+    "1.5.2-latest": "7.8.1.738",
+    "1.5.2-recommended": "7.8.1.738",
+    "1.6.1-latest": "8.9.0.775",
+    "1.6.2-latest": "9.10.1.871",
+    "1.6.2-recommended": "9.10.1.871",
+    "1.6.3-latest": "9.11.0.878",
+    "1.6.4-latest": "9.11.1.1345",
+    "1.6.4-recommended": "9.11.1.1345",
+    "1.7.2-latest": "10.12.2.1161",
+    "1.7.2-recommended": "10.12.2.1161",
+    "1.7.10-latest": "10.13.4.1614",
+    "1.7.10-recommended": "10.13.4.1614",
+    "1.8-latest": "11.14.4.1577",
+    "1.8-recommended": "11.14.4.1563",
+    "1.8.8-latest": "11.15.0.1655",
+    "1.8.9-latest": "11.15.1.2318",
+    "1.8.9-recommended": "11.15.1.2318",
+    "1.9-latest": "12.16.1.1938",
+    "1.9-recommended": "12.16.1.1887",
+    "1.9.4-latest": "12.17.0.2317",
+    "1.9.4-recommended": "12.17.0.2317",
+    "1.10-latest": "12.18.0.2000",
+    "1.10.2-latest": "12.18.3.2511",
+    "1.10.2-recommended": "12.18.3.2511",
+    "1.11-latest": "13.19.1.2199",
+    "1.11-recommended": "13.19.1.2189",
+    "1.11.2-latest": "13.20.1.2588",
+    "1.11.2-recommended": "13.20.1.2588",
+    "1.12-latest": "14.21.1.2443",
+    "1.12-recommended": "14.21.1.2387",
+    "1.12.1-latest": "14.22.1.2485",
+    "1.12.1-recommended": "14.22.1.2478",
+    "1.12.2-latest": "14.23.5.2864",
+    "1.12.2-recommended": "14.23.5.2859",
+    "1.13.2-latest": "25.0.223",
+    "1.14.2-latest": "26.0.63",
+    "1.14.3-latest": "27.0.60",
+    "1.14.4-latest": "28.2.30",
+    "1.14.4-recommended": "28.2.26",
+    "1.15-latest": "29.0.4",
+    "1.15.1-latest": "30.0.51",
+    "1.15.2-latest": "31.2.62",
+    "1.15.2-recommended": "31.2.57",
+    "1.16.1-latest": "32.0.108",
+    "1.16.2-latest": "33.0.61",
+    "1.16.3-latest": "34.1.42",
+    "1.16.3-recommended": "34.1.0",
+    "1.16.4-latest": "35.1.37",
+    "1.16.4-recommended": "35.1.4",
+    "1.16.5-latest": "36.2.42",
+    "1.16.5-recommended": "36.2.34",
+    "1.17.1-latest": "37.1.1",
+    "1.17.1-recommended": "37.1.1",
+    "1.18-latest": "38.0.17",
+    "1.18.1-latest": "39.1.2",
+    "1.18.1-recommended": "39.1.0",
+    "1.18.2-recommended": "40.3.0",
+    "1.18.2-latest": "40.3.12",
+    "1.19-latest": "41.1.0",
+    "1.19-recommended": "41.1.0",
+    "1.19.1-latest": "42.0.9",
+    "1.19.2-recommended": "43.5.0",
+    "1.19.2-latest": "43.5.2",
+    "1.19.3-latest": "44.1.23",
+    "1.19.3-recommended": "44.1.0",
+    "1.19.4-recommended": "45.4.0",
+    "1.19.4-latest": "45.4.3",
+    "1.20-latest": "46.0.14",
+    "1.20.1-recommended": "47.4.10",
+    "1.20.1-latest": "47.4.22",
+    "1.20.2-latest": "48.1.0",
+    "1.20.2-recommended": "48.1.0",
+    "1.20.3-latest": "49.0.2",
+    "1.20.4-latest": "49.2.8",
+    "1.20.4-recommended": "49.2.0",
+    "1.20.6-latest": "50.2.10",
+    "1.20.6-recommended": "50.2.0",
+    "1.21-latest": "51.0.33",
+    "1.21.1-latest": "52.1.16",
+    "1.21.1-recommended": "52.1.0",
+    "1.21.3-latest": "53.1.11",
+    "1.21.3-recommended": "53.1.0",
+    "1.21.4-latest": "54.1.17",
+    "1.21.4-recommended": "54.1.14",
+    "1.21.5-latest": "55.1.11",
+    "1.21.5-recommended": "55.1.0",
+    "1.21.6-latest": "56.0.9",
+    "1.21.7-latest": "57.0.3",
+    "1.21.8-latest": "58.1.20",
+    "1.21.8-recommended": "58.1.0",
+    "1.21.9-latest": "59.0.5",
+    "1.21.10-latest": "60.1.13",
+    "1.21.10-recommended": "60.1.0",
+    "1.21.11-latest": "61.1.14",
+    "1.21.11-recommended": "61.1.0",
+    "26.1-latest": "62.0.9",
+    "26.1.1-latest": "63.0.2",
+    "26.1.2-latest": "64.1.0",
+    "26.1.2-recommended": "64.1.0",
+    "26.2-latest": "65.1.0",
+    "26.2-recommended": "65.1.0"
+  }
+}
+[038月2026 17:30:26.893] [Forge Version Check/INFO] [net.minecraftforge.fml.VersionChecker/]: [forge] Found status: OUTDATED Current: 47.4.0 Target: 47.4.10
+[038月2026 17:30:27.057] [main/DEBUG] [net.minecraftforge.registries.ObjectHolderRegistry/REGISTRIES]: Applying holder lookups
+[038月2026 17:30:27.061] [main/DEBUG] [net.minecraftforge.registries.ObjectHolderRegistry/REGISTRIES]: Holder lookups applied
+[038月2026 17:30:27.114] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/18199/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1/forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/assets/.mcassetsroot' uses unexpected schema
+[038月2026 17:30:27.114] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/18199/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1/forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/data/.mcassetsroot' uses unexpected schema
+[038月2026 17:30:27.147] [main/DEBUG] [net.minecraftforge.server.ServerLifecycleHooks/CORE]: Generating PackInfo named mod:forge for mod file /
+[038月2026 17:30:27.148] [main/DEBUG] [net.minecraftforge.server.ServerLifecycleHooks/CORE]: Generating PackInfo named mod:touhou_little_maid for mod file C:\Users\18199\.gradle\caches\forge_gradle\deobf_dependencies\maven\modrinth\touhou-little-maid\1.5.3-forge+mc1.20.1_mapped_parchment_2023.08.20-1.20.1\touhou-little-maid-1.5.3-forge+mc1.20.1_mapped_parchment_2023.08.20-1.20.1.jar
+[038月2026 17:30:27.148] [main/DEBUG] [net.minecraftforge.server.ServerLifecycleHooks/CORE]: Generating PackInfo named mod:callresponse for mod file D:\车万女仆\呼应\TLMAdditionExample-master\build\resources\main
+[038月2026 17:30:27.550] [main/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/server/commands/SummonCommand
+[038月2026 17:30:27.838] [Worker-Main-19/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/raid/Raid
+[038月2026 17:30:27.857] [Worker-Main-19/DEBUG] [mixin/]: Mixing FishingHookPredicateMixin from touhou_little_maid.mixins.json into net.minecraft.advancements.critereon.FishingHookPredicate
+[038月2026 17:30:27.909] [Worker-Main-19/ERROR] [net.minecraftforge.common.ForgeHooks/]: Couldn't parse element loot_tables:touhou_little_maid:grant_book_on_first_join
+com.google.gson.JsonSyntaxException: Expected name to be an item, was unknown string 'patchouli:guide_book'
+	at net.minecraft.util.GsonHelper.lambda$convertToItem$0(GsonHelper.java:143) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at java.util.Optional.orElseThrow(Optional.java:403) ~[?:?]
+	at net.minecraft.util.GsonHelper.convertToItem(GsonHelper.java:142) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.util.GsonHelper.getAsItem(GsonHelper.java:152) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.entries.LootItem$Serializer.deserialize(LootItem.java:59) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.entries.LootItem$Serializer.deserialize(LootItem.java:47) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer$Serializer.deserializeCustom(LootPoolSingletonContainer.java:165) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer$Serializer.deserializeCustom(LootPoolSingletonContainer.java:145) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer$Serializer.deserialize(LootPoolEntryContainer.java:94) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer$Serializer.deserialize(LootPoolEntryContainer.java:77) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.GsonAdapterFactory$JsonAdapter.deserialize(GsonAdapterFactory.java:113) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at com.google.gson.internal.bind.TreeTypeAdapter.read(TreeTypeAdapter.java:76) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.internal.bind.TypeAdapterRuntimeTypeWrapper.read(TypeAdapterRuntimeTypeWrapper.java:40) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.internal.bind.ArrayTypeAdapter.read(ArrayTypeAdapter.java:72) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1214) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1319) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1290) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.internal.bind.TreeTypeAdapter$GsonContextImpl.deserialize(TreeTypeAdapter.java:179) ~[gson-2.10.jar%23130!/:?]
+	at net.minecraft.util.GsonHelper.convertToObject(GsonHelper.java:468) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.util.GsonHelper.getAsObject(GsonHelper.java:476) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.LootPool$Serializer.deserialize(LootPool.java:201) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.LootPool$Serializer.deserialize(LootPool.java:198) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at com.google.gson.internal.bind.TreeTypeAdapter.read(TreeTypeAdapter.java:76) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.internal.bind.TypeAdapterRuntimeTypeWrapper.read(TypeAdapterRuntimeTypeWrapper.java:40) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.internal.bind.ArrayTypeAdapter.read(ArrayTypeAdapter.java:72) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1214) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1319) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1290) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.internal.bind.TreeTypeAdapter$GsonContextImpl.deserialize(TreeTypeAdapter.java:179) ~[gson-2.10.jar%23130!/:?]
+	at net.minecraft.util.GsonHelper.convertToObject(GsonHelper.java:468) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.util.GsonHelper.getAsObject(GsonHelper.java:485) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.LootTable$Serializer.deserialize(LootTable.java:312) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.LootTable$Serializer.deserialize(LootTable.java:309) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at com.google.gson.internal.bind.TreeTypeAdapter.read(TreeTypeAdapter.java:76) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1214) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1319) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1261) ~[gson-2.10.jar%23130!/:?]
+	at net.minecraftforge.common.ForgeHooks.loadLootTable(ForgeHooks.java:873) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23190%23197!/:?]
+	at net.minecraftforge.common.ForgeHooks.lambda$getLootTableDeserializer$3(ForgeHooks.java:850) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23190%23197!/:?]
+	at net.minecraft.world.level.storage.loot.LootDataType.deserialize(LootDataType.java:45) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.LootDataManager.lambda$scheduleElementParse$4(LootDataManager.java:56) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at java.util.HashMap.forEach(HashMap.java:1421) ~[?:?]
+	at net.minecraft.world.level.storage.loot.LootDataManager.lambda$scheduleElementParse$5(LootDataManager.java:55) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804) ~[?:?]
+	at java.util.concurrent.CompletableFuture$AsyncRun.exec(CompletableFuture.java:1796) ~[?:?]
+	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:373) ~[?:?]
+	at java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1182) ~[?:?]
+	at java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1655) ~[?:?]
+	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1622) ~[?:?]
+	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:165) ~[?:?]
+[038月2026 17:30:27.948] [main/INFO] [net.minecraft.world.item.crafting.RecipeManager/]: Skipping loading recipe touhou_little_maid:memorizable_gensokyo as it's serializer returned null
+[038月2026 17:30:27.956] [main/INFO] [net.minecraft.world.item.crafting.RecipeManager/]: Loaded 8 recipes
+[038月2026 17:30:28.000] [main/INFO] [net.minecraft.advancements.AdvancementList/]: Loaded 1324 advancements
+[038月2026 17:30:28.230] [main/DEBUG] [net.minecraftforge.common.ForgeHooks/WP]: Gathering id map for writing to world save world
+[038月2026 17:30:28.238] [main/DEBUG] [net.minecraftforge.common.ForgeHooks/WP]: ID Map collection complete world
+[038月2026 17:30:28.263] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Starting minecraft server version 1.20.1
+[038月2026 17:30:28.263] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Loading properties
+[038月2026 17:30:28.263] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Default game type: SURVIVAL
+[038月2026 17:30:28.263] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Generating keypair
+[038月2026 17:30:28.295] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Starting Minecraft server on *:25565
+[038月2026 17:30:28.295] [Server thread/DEBUG] [net.minecraftforge.network.DualStackUtils/]: Detected IPv6 address: "0:0:0:0:0:0:0:0"
+[038月2026 17:30:28.303] [Server thread/INFO] [net.minecraft.server.network.ServerConnectionListener/]: Using default channel type
+[038月2026 17:30:28.312] [Server thread/DEBUG] [io.netty.channel.MultithreadEventLoopGroup/]: -Dio.netty.eventLoopThreads: 64
+[038月2026 17:30:28.319] [Server thread/DEBUG] [io.netty.util.internal.InternalThreadLocalMap/]: -Dio.netty.threadLocalMap.stringBuilder.initialSize: 1024
+[038月2026 17:30:28.319] [Server thread/DEBUG] [io.netty.util.internal.InternalThreadLocalMap/]: -Dio.netty.threadLocalMap.stringBuilder.maxSize: 4096
+[038月2026 17:30:28.323] [Server thread/DEBUG] [io.netty.channel.nio.NioEventLoop/]: -Dio.netty.noKeySetOptimization: false
+[038月2026 17:30:28.323] [Server thread/DEBUG] [io.netty.channel.nio.NioEventLoop/]: -Dio.netty.selectorAutoRebuildThreshold: 512
+[038月2026 17:30:28.327] [Server thread/DEBUG] [io.netty.util.internal.PlatformDependent/]: org.jctools-core.MpscChunkedArrayQueue: available
+[038月2026 17:30:28.371] [Server thread/DEBUG] [io.netty.channel.DefaultChannelId/]: -Dio.netty.processId: 14076 (auto-detected)
+[038月2026 17:30:28.372] [Server thread/DEBUG] [io.netty.util.NetUtil/]: -Djava.net.preferIPv4Stack: false
+[038月2026 17:30:28.372] [Server thread/DEBUG] [io.netty.util.NetUtil/]: -Djava.net.preferIPv6Addresses: true
+[038月2026 17:30:28.379] [Server thread/DEBUG] [io.netty.util.NetUtilInitializations/]: Loopback interface: lo (Software Loopback Interface 1, 127.0.0.1)
+[038月2026 17:30:28.381] [Server thread/DEBUG] [io.netty.util.NetUtil/]: Failed to get SOMAXCONN from sysctl and file \proc\sys\net\core\somaxconn. Default: 200
+[038月2026 17:30:28.404] [Server thread/DEBUG] [io.netty.channel.DefaultChannelId/]: -Dio.netty.machineId: e4:0d:36:ff:fe:0d:f0:bb (auto-detected)
+[038月2026 17:30:28.421] [Server thread/DEBUG] [io.netty.buffer.PooledByteBufAllocator/]: -Dio.netty.allocator.numHeapArenas: 64
+[038月2026 17:30:28.421] [Server thread/DEBUG] [io.netty.buffer.PooledByteBufAllocator/]: -Dio.netty.allocator.numDirectArenas: 64
+[038月2026 17:30:28.421] [Server thread/DEBUG] [io.netty.buffer.PooledByteBufAllocator/]: -Dio.netty.allocator.pageSize: 8192
+[038月2026 17:30:28.421] [Server thread/DEBUG] [io.netty.buffer.PooledByteBufAllocator/]: -Dio.netty.allocator.maxOrder: 9
+[038月2026 17:30:28.421] [Server thread/DEBUG] [io.netty.buffer.PooledByteBufAllocator/]: -Dio.netty.allocator.chunkSize: 4194304
+[038月2026 17:30:28.421] [Server thread/DEBUG] [io.netty.buffer.PooledByteBufAllocator/]: -Dio.netty.allocator.smallCacheSize: 256
+[038月2026 17:30:28.421] [Server thread/DEBUG] [io.netty.buffer.PooledByteBufAllocator/]: -Dio.netty.allocator.normalCacheSize: 64
+[038月2026 17:30:28.421] [Server thread/DEBUG] [io.netty.buffer.PooledByteBufAllocator/]: -Dio.netty.allocator.maxCachedBufferCapacity: 32768
+[038月2026 17:30:28.421] [Server thread/DEBUG] [io.netty.buffer.PooledByteBufAllocator/]: -Dio.netty.allocator.cacheTrimInterval: 8192
+[038月2026 17:30:28.421] [Server thread/DEBUG] [io.netty.buffer.PooledByteBufAllocator/]: -Dio.netty.allocator.cacheTrimIntervalMillis: 0
+[038月2026 17:30:28.421] [Server thread/DEBUG] [io.netty.buffer.PooledByteBufAllocator/]: -Dio.netty.allocator.useCacheForAllThreads: false
+[038月2026 17:30:28.421] [Server thread/DEBUG] [io.netty.buffer.PooledByteBufAllocator/]: -Dio.netty.allocator.maxCachedByteBuffersPerChunk: 1023
+[038月2026 17:30:28.427] [Server thread/DEBUG] [io.netty.buffer.ByteBufUtil/]: -Dio.netty.allocator.type: pooled
+[038月2026 17:30:28.427] [Server thread/DEBUG] [io.netty.buffer.ByteBufUtil/]: -Dio.netty.threadLocalDirectBufferSize: 0
+[038月2026 17:30:28.427] [Server thread/DEBUG] [io.netty.buffer.ByteBufUtil/]: -Dio.netty.maxThreadLocalCharBufferSize: 16384
+[038月2026 17:30:28.439] [Server thread/DEBUG] [net.minecraftforge.fml.config.ConfigTracker/CONFIG]: Loading configs type SERVER
+[038月2026 17:30:28.439] [Server thread/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Built TOML config for .\world\serverconfig\forge-server.toml
+[038月2026 17:30:28.444] [Server thread/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Loaded TOML config file .\world\serverconfig\forge-server.toml
+[038月2026 17:30:28.446] [Server thread/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Watching TOML config file .\world\serverconfig\forge-server.toml for changes
+[038月2026 17:30:28.446] [Server thread/DEBUG] [net.minecraftforge.common.ForgeConfig/FORGEMOD]: Loaded forge config file forge-server.toml
+[038月2026 17:30:28.447] [Server thread/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Built TOML config for .\world\serverconfig\touhou_little_maid-server.toml
+[038月2026 17:30:28.453] [Server thread/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Loaded TOML config file .\world\serverconfig\touhou_little_maid-server.toml
+[038月2026 17:30:28.453] [Server thread/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Watching TOML config file .\world\serverconfig\touhou_little_maid-server.toml for changes
+[038月2026 17:30:28.454] [Thread-1/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Config file touhou_little_maid-server.toml changed, sending notifies
+[038月2026 17:30:28.455] [Thread-1/DEBUG] [net.minecraftforge.fml.config.ConfigFileTypeHandler/CONFIG]: Config file touhou_little_maid-server.toml changed, sending notifies
+[038月2026 17:30:28.464] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Preparing level "world"
+[038月2026 17:30:28.468] [Server thread/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/levelgen/PhantomSpawner
+[038月2026 17:30:28.470] [Server thread/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/levelgen/PatrolSpawner
+[038月2026 17:30:28.471] [Server thread/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/npc/CatSpawner
+[038月2026 17:30:28.474] [Server thread/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/ai/village/VillageSiege
+[038月2026 17:30:28.499] [Server thread/DEBUG] [mixin/]: Mixing PersistentEntitySectionManagerMixin from touhou_little_maid.mixins.json into net.minecraft.world.level.entity.PersistentEntitySectionManager
+[038月2026 17:30:28.499] [Server thread/DEBUG] [mixin/]: Renaming synthetic method lambda$companionTick$0(J)V to md87dbb8$lambda$companionTick$0$0 in touhou_little_maid.mixins.json:PersistentEntitySectionManagerMixin
+[038月2026 17:30:29.522] [Server thread/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate
+[038月2026 17:30:29.531] [Server thread/DEBUG] [mixin/]: Mixing StructureTemplateMixin from touhou_little_maid.mixins.json into net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate
+[038月2026 17:30:29.531] [Server thread/DEBUG] [mixin/]: Renaming synthetic method lambda$createEntityIgnoreException$0(Lnet/minecraft/world/level/ServerLevelAccessor;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;Lnet/minecraft/world/entity/Entity;)V to md87dbb8$lambda$createEntityIgnoreException$0$0 in touhou_little_maid.mixins.json:StructureTemplateMixin
+[038月2026 17:30:29.716] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Preparing start region for dimension minecraft:overworld
+[038月2026 17:30:29.749] [Server thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 0%
+[038月2026 17:30:30.217] [Worker-Main-23/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 83%
+[038月2026 17:30:30.981] [Worker-Main-1/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 83%
+[038月2026 17:30:31.218] [Worker-Main-23/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 83%
+[038月2026 17:30:31.721] [Worker-Main-10/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 83%
+[038月2026 17:30:32.224] [Worker-Main-27/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 84%
+[038月2026 17:30:32.720] [Worker-Main-5/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 90%
+[038月2026 17:30:33.094] [Server thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Time elapsed: 3377 ms
+[038月2026 17:30:33.094] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Done (4.655s)! For help, type "help"
+[038月2026 17:30:33.099] [Server thread/DEBUG] [net.minecraftforge.network.DualStackUtils/]: Detected IPv6 address: "0:0:0:0:0:0:0:0"
+[038月2026 17:30:33.105] [Server thread/DEBUG] [net.minecraftforge.common.ForgeI18n/CORE]: Loading I18N data entries: 1423
+[038月2026 17:30:33.105] [Server thread/INFO] [net.minecraftforge.gametest.ForgeGameTestHooks/]: Enabled Gametest Namespaces: [callresponse]
+[038月2026 17:30:33.114] [Server thread/INFO] [net.minecraftforge.server.permission.PermissionAPI/]: Successfully initialized permission handler forge:default_handler
+[038月2026 17:30:33.126] [Server thread/DEBUG] [io.netty.buffer.AbstractByteBuf/]: -Dio.netty.buffer.checkAccessible: true
+[038月2026 17:30:33.126] [Server thread/DEBUG] [io.netty.buffer.AbstractByteBuf/]: -Dio.netty.buffer.checkBounds: true
+[038月2026 17:30:33.127] [Server thread/DEBUG] [io.netty.util.ResourceLeakDetectorFactory/]: Loaded default ResourceLeakDetector: io.netty.util.ResourceLeakDetector@269082d2
+[038月2026 17:30:33.143] [Server thread/DEBUG] [net.minecraftforge.coremod.transformer.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/NaturalSpawner

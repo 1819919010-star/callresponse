@@ -1,0 +1,101 @@
+[038月2026 17:30:17.276] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeserveruserdev, --gameDir, ., --fml.forgeVersion, 47.4.0, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --nogui, --mixin.config, mixins.callresponse.json]
+[038月2026 17:30:17.284] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.19 by Oracle Corporation; OS Windows 11 arch amd64 version 10.0
+[038月2026 17:30:17.387] [main/INFO] [net.minecraftforge.fml.loading.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgeserveruserdev
+[038月2026 17:30:17.434] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/C:/Users/18199/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23128!/ Service=ModLauncher Env=SERVER
+[038月2026 17:30:17.632] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\18199\.gradle\caches\modules-2\files-2.1\net.minecraftforge\javafmllanguage\1.20.1-47.4.0\f0c0b352173d0a378cbdcec9cfc4ba65899a721\javafmllanguage-1.20.1-47.4.0.jar is missing mods.toml file
+[038月2026 17:30:17.635] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\18199\.gradle\caches\modules-2\files-2.1\net.minecraftforge\lowcodelanguage\1.20.1-47.4.0\e862740d8c84d08dbfedea412bef88fe42e727c5\lowcodelanguage-1.20.1-47.4.0.jar is missing mods.toml file
+[038月2026 17:30:17.637] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\18199\.gradle\caches\modules-2\files-2.1\net.minecraftforge\mclanguage\1.20.1-47.4.0\5719b3a297a33f877ed5dde4cb4bd75c859096af\mclanguage-1.20.1-47.4.0.jar is missing mods.toml file
+[038月2026 17:30:17.640] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file C:\Users\18199\.gradle\caches\modules-2\files-2.1\net.minecraftforge\fmlcore\1.20.1-47.4.0\235975dafa4309945b59c56b53f31dc5b65a6051\fmlcore-1.20.1-47.4.0.jar is missing mods.toml file
+[038月2026 17:30:17.701] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: No dependencies to load found. Skipping!
+[038月2026 17:30:18.796] [main/INFO] [mixin/]: Compatibility level set to JAVA_17
+[038月2026 17:30:18.800] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeserveruserdev' with arguments [--gameDir, ., --nogui]
+[038月2026 17:30:18.871] [main/WARN] [mixin/]: Reference map 'mixins.callresponse.refmap.json' for mixins.callresponse.json could not be read. If this is a development environment you can ignore this message
+[038月2026 17:30:19.024] [main/INFO] [mixin/]: Remapping refMap touhou_little_maid.refmap.json using D:\车万女仆\呼应\TLMAdditionExample-master/build/createSrgToMcp/output.srg
+[038月2026 17:30:24.560] [modloading-worker-0/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 47.4.0, for MC 1.20.1 with MCP 20230612.114412
+[038月2026 17:30:24.562] [modloading-worker-0/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v47.4.0 Initialized
+[038月2026 17:30:24.583] [modloading-worker-0/INFO] [callresponse/]: ? CallResponse mod 初始化完成！
+[038月2026 17:30:24.761] [modloading-worker-0/INFO] [touhou_little_maid/]: common default pack init start...
+[038月2026 17:30:25.400] [modloading-worker-0/INFO] [touhou_little_maid/]: common default pack init finished, cost time: 637.383 ms
+[038月2026 17:30:25.823] [Forge Version Check/INFO] [net.minecraftforge.fml.VersionChecker/]: [forge] Starting version check at https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json
+[038月2026 17:30:26.732] [main/INFO] [com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService/]: Environment: authHost='https://authserver.mojang.com', accountsHost='https://api.mojang.com', sessionHost='https://sessionserver.mojang.com', servicesHost='https://api.minecraftservices.com', name='PROD'
+[038月2026 17:30:26.773] [main/WARN] [net.minecraftforge.common.ForgeHooks/WP]: The following mods have version differences that were not resolved:
+callresponse (version 1.0.0 -> 2.0.0)
+Things may not work well.
+[038月2026 17:30:26.785] [main/INFO] [net.minecraftforge.registries.GameData/REGISTRIES]: Injecting existing registry data into this CLIENT instance
+[038月2026 17:30:26.893] [Forge Version Check/INFO] [net.minecraftforge.fml.VersionChecker/]: [forge] Found status: OUTDATED Current: 47.4.0 Target: 47.4.10
+[038月2026 17:30:27.114] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/18199/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1/forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/assets/.mcassetsroot' uses unexpected schema
+[038月2026 17:30:27.114] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/C:/Users/18199/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1/forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/data/.mcassetsroot' uses unexpected schema
+[038月2026 17:30:27.909] [Worker-Main-19/ERROR] [net.minecraftforge.common.ForgeHooks/]: Couldn't parse element loot_tables:touhou_little_maid:grant_book_on_first_join
+com.google.gson.JsonSyntaxException: Expected name to be an item, was unknown string 'patchouli:guide_book'
+	at net.minecraft.util.GsonHelper.lambda$convertToItem$0(GsonHelper.java:143) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at java.util.Optional.orElseThrow(Optional.java:403) ~[?:?]
+	at net.minecraft.util.GsonHelper.convertToItem(GsonHelper.java:142) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.util.GsonHelper.getAsItem(GsonHelper.java:152) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.entries.LootItem$Serializer.deserialize(LootItem.java:59) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.entries.LootItem$Serializer.deserialize(LootItem.java:47) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer$Serializer.deserializeCustom(LootPoolSingletonContainer.java:165) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer$Serializer.deserializeCustom(LootPoolSingletonContainer.java:145) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer$Serializer.deserialize(LootPoolEntryContainer.java:94) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer$Serializer.deserialize(LootPoolEntryContainer.java:77) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.GsonAdapterFactory$JsonAdapter.deserialize(GsonAdapterFactory.java:113) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at com.google.gson.internal.bind.TreeTypeAdapter.read(TreeTypeAdapter.java:76) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.internal.bind.TypeAdapterRuntimeTypeWrapper.read(TypeAdapterRuntimeTypeWrapper.java:40) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.internal.bind.ArrayTypeAdapter.read(ArrayTypeAdapter.java:72) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1214) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1319) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1290) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.internal.bind.TreeTypeAdapter$GsonContextImpl.deserialize(TreeTypeAdapter.java:179) ~[gson-2.10.jar%23130!/:?]
+	at net.minecraft.util.GsonHelper.convertToObject(GsonHelper.java:468) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.util.GsonHelper.getAsObject(GsonHelper.java:476) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.LootPool$Serializer.deserialize(LootPool.java:201) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.LootPool$Serializer.deserialize(LootPool.java:198) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at com.google.gson.internal.bind.TreeTypeAdapter.read(TreeTypeAdapter.java:76) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.internal.bind.TypeAdapterRuntimeTypeWrapper.read(TypeAdapterRuntimeTypeWrapper.java:40) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.internal.bind.ArrayTypeAdapter.read(ArrayTypeAdapter.java:72) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1214) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1319) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1290) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.internal.bind.TreeTypeAdapter$GsonContextImpl.deserialize(TreeTypeAdapter.java:179) ~[gson-2.10.jar%23130!/:?]
+	at net.minecraft.util.GsonHelper.convertToObject(GsonHelper.java:468) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.util.GsonHelper.getAsObject(GsonHelper.java:485) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.LootTable$Serializer.deserialize(LootTable.java:312) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.LootTable$Serializer.deserialize(LootTable.java:309) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at com.google.gson.internal.bind.TreeTypeAdapter.read(TreeTypeAdapter.java:76) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1214) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1319) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1261) ~[gson-2.10.jar%23130!/:?]
+	at net.minecraftforge.common.ForgeHooks.loadLootTable(ForgeHooks.java:873) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23190%23197!/:?]
+	at net.minecraftforge.common.ForgeHooks.lambda$getLootTableDeserializer$3(ForgeHooks.java:850) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23190%23197!/:?]
+	at net.minecraft.world.level.storage.loot.LootDataType.deserialize(LootDataType.java:45) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at net.minecraft.world.level.storage.loot.LootDataManager.lambda$scheduleElementParse$4(LootDataManager.java:56) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at java.util.HashMap.forEach(HashMap.java:1421) ~[?:?]
+	at net.minecraft.world.level.storage.loot.LootDataManager.lambda$scheduleElementParse$5(LootDataManager.java:55) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
+	at java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804) ~[?:?]
+	at java.util.concurrent.CompletableFuture$AsyncRun.exec(CompletableFuture.java:1796) ~[?:?]
+	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:373) ~[?:?]
+	at java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1182) ~[?:?]
+	at java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1655) ~[?:?]
+	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1622) ~[?:?]
+	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:165) ~[?:?]
+[038月2026 17:30:27.948] [main/INFO] [net.minecraft.world.item.crafting.RecipeManager/]: Skipping loading recipe touhou_little_maid:memorizable_gensokyo as it's serializer returned null
+[038月2026 17:30:27.956] [main/INFO] [net.minecraft.world.item.crafting.RecipeManager/]: Loaded 8 recipes
+[038月2026 17:30:28.000] [main/INFO] [net.minecraft.advancements.AdvancementList/]: Loaded 1324 advancements
+[038月2026 17:30:28.263] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Starting minecraft server version 1.20.1
+[038月2026 17:30:28.263] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Loading properties
+[038月2026 17:30:28.263] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Default game type: SURVIVAL
+[038月2026 17:30:28.263] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Generating keypair
+[038月2026 17:30:28.295] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Starting Minecraft server on *:25565
+[038月2026 17:30:28.303] [Server thread/INFO] [net.minecraft.server.network.ServerConnectionListener/]: Using default channel type
+[038月2026 17:30:28.464] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Preparing level "world"
+[038月2026 17:30:29.716] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Preparing start region for dimension minecraft:overworld
+[038月2026 17:30:29.749] [Server thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 0%
+[038月2026 17:30:30.217] [Worker-Main-23/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 83%
+[038月2026 17:30:30.981] [Worker-Main-1/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 83%
+[038月2026 17:30:31.218] [Worker-Main-23/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 83%
+[038月2026 17:30:31.721] [Worker-Main-10/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 83%
+[038月2026 17:30:32.224] [Worker-Main-27/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 84%
+[038月2026 17:30:32.720] [Worker-Main-5/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 90%
+[038月2026 17:30:33.094] [Server thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Time elapsed: 3377 ms
+[038月2026 17:30:33.094] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Done (4.655s)! For help, type "help"
+[038月2026 17:30:33.105] [Server thread/INFO] [net.minecraftforge.gametest.ForgeGameTestHooks/]: Enabled Gametest Namespaces: [callresponse]
+[038月2026 17:30:33.114] [Server thread/INFO] [net.minecraftforge.server.permission.PermissionAPI/]: Successfully initialized permission handler forge:default_handler

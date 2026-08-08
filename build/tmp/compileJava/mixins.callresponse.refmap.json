@@ -1,0 +1,14 @@
+{
+  "mappings": {
+    "com/github/tartaricacid/callresponse/compat/emotion/mixin/MixinEntityMaid": {
+      "hurt": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_6469_(Lnet/minecraft/world/damagesource/DamageSource;F)Z"
+    }
+  },
+  "data": {
+    "searge": {
+      "com/github/tartaricacid/callresponse/compat/emotion/mixin/MixinEntityMaid": {
+        "hurt": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_6469_(Lnet/minecraft/world/damagesource/DamageSource;F)Z"
+      }
+    }
+  }
+}

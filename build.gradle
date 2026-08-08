@@ -1,0 +1,130 @@
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'org.spongepowered.mixin' version '[0.7,0.8)'
+}
+
+group = mod_group_id
+version = mod_version
+archivesBaseName = "${mod_id}-${minecraft_version}-forge"
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(17)
+}
+
+minecraft {
+    mappings channel: mapping_channel, version: mapping_version
+    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    copyIdeResources = true
+    runs {
+        configureEach {
+            jvmArgs = [
+                    "-XX:+IgnoreUnrecognizedVMOptions",
+                    "-XX:+AllowEnhancedClassRedefinition"
+            ]
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods {
+                "${mod_id}" {
+                    source sourceSets.main
+                }
+            }
+        }
+        client {
+            property 'forge.enabledGameTestNamespaces', mod_id
+        }
+        server {
+            property 'forge.enabledGameTestNamespaces', mod_id
+            args '--nogui'
+        }
+        gameTestServer {
+            property 'forge.enabledGameTestNamespaces', mod_id
+        }
+        data {
+            workingDirectory project.file('run')
+            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+        }
+    }
+}
+
+mixin {
+    add sourceSets.main, "mixins.callresponse.refmap.json"
+    config "mixins.callresponse.json"
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+repositories {
+    maven {
+        url "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+    // 新增 Modrinth Maven 仓库（用于获取女仆模组 1.5.3）
+    maven {
+        url "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
+    }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    // 使用 Modrinth Maven 引入 TouhouLittleMaid 1.5.3（Forge 1.20.1）
+    implementation fg.deobf("maven.modrinth:touhou-little-maid:1.5.3-forge+mc1.20.1")
+
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
+    // 如果您希望保留 CurseForge 方式（需自行查找 1.5.3 的文件 ID），可注释掉上一行并启用下面这行
+    // implementation fg.deobf('curse.maven:touhou-little-maid-355044:FILE_ID_1.5.3')
+}
+
+processResources {
+    var replaceProperties = [
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            forge_version          : forge_version,
+            forge_version_range    : forge_version_range,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            mod_authors            : mod_authors,
+            mod_description        : mod_description
+    ]
+    inputs.properties replaceProperties
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties + [project: project]
+    }
+}
+
+jar {
+    manifest {
+        attributes([
+                "Implementation-Title"  : project.name,
+                "Implementation-Version": "${version}",
+                "MixinConfigs"          : "mixins.callresponse.json"
+        ])
+    }
+    finalizedBy 'reobfJar'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}

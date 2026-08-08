@@ -1,0 +1,13 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "com.github.tartaricacid.callresponse.compat.emotion.mixin",
+    "compatibilityLevel": "JAVA_17",
+    "refmap": "mixins.callresponse.refmap.json",
+    "mixins": [
+        "MixinEntityMaid"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

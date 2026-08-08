@@ -1,0 +1,12 @@
+
+#女仆情感被动系统配置
+[emotion_passive]
+	#是否启用坐姿情感变化调试
+	sitDetectionEnabled = false
+	#坐下时信任变化值（范围 -10 ~ +10，负值减少信任）
+	#Range: -10 ~ 10
+	sitTrustChange = -2
+	#坐下时恐惧变化值（范围 -10 ~ +10，负值减少恐惧）
+	#Range: -10 ~ 10
+	sitFearChange = -2
+

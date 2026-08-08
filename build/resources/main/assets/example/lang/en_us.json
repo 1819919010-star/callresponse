@@ -1,0 +1,7 @@
+{
+  "task.example.custom_task": "Custom Task",
+  "task.example.custom_task.desc": "Custom Task Desc",
+  "task.callresponse.lazy": "Lazy Maid",
+  "task.callresponse.lazy.desc": "Eat, sleep, and gain experience effortlessly",
+  "overlay.example.apple.tips": "You can right-click with an apple to add a 60-second damage resistance effect"
+}
