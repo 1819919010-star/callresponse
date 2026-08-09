@@ -3,7 +3,9 @@ package com.github.tartaricacid.callresponse.compat.hunger;
 import com.github.tartaricacid.callresponse.compat.bauble.BaubleDetector;
 import com.github.tartaricacid.callresponse.compat.broadcast.MaidResponder;
 import com.github.tartaricacid.callresponse.compat.emotion.EmotionData;
+import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -12,6 +14,9 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -19,10 +24,16 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
+import net.minecraftforge.items.ItemHandlerHelper;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class HungerManager {
@@ -67,6 +78,14 @@ public class HungerManager {
 
     // 女仆上次自动进食时间
     private static final Map<UUID, Long> lastAutoEatTime = new HashMap<>();
+
+    // ===== 功能1：低饱食度向附近同主人的女仆要食物 =====
+    private static final float STEAL_HUNGER_THRESHOLD = 20f;
+    private static final int STEAL_SEARCH_RADIUS = 8;
+    private static final int STEAL_MAX_SEARCH = 3;
+    private static final long STEAL_FAIL_COOLDOWN_TICKS = 20 * 60 * 10; // 10分钟
+    // 记录"找女仆要食物失败"的时间（成功吃到不记）
+    private static final Map<UUID, Long> lastStealFailTime = new HashMap<>();
 
     // ===== 监听女仆吃东西（玩家喂食或其他方式触发） =====
     @SubscribeEvent
@@ -183,6 +202,11 @@ public class HungerManager {
                             }
                         }
 
+                        // 功能1：低饱食度(<20)且自己背包/手上确实没有食物时，去找附近同主人的女仆借食物（禁食饰品不触发）
+                        if (!noEat && hunger < STEAL_HUNGER_THRESHOLD && tick % 20 == 0 && !hasAnyFoodOfOwn(maid)) {
+                            tryStealFoodFromNearbyMaid(maid, tick);
+                        }
+
                         // 7. 饱食度对话
                         if (tick % 200 == 0) {
                             float hungerLevel = HungerData.get(maid);
@@ -260,6 +284,195 @@ public class HungerManager {
                 // 设置食物到进食手并开始使用
                 maid.setItemInHand(eatHand, extracted);
                 maid.startUsingItem(eatHand);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // ===== 功能1：低饱食度向附近同主人的女仆要食物 =====
+    // 每次重新搜索离自己最近、且没搜索过的女仆，走过去检查（物品栏+双手）；
+    // 对方有食物就随机拿一个并吃下，直接结束讨食恢复正常（10 分钟 CD）；
+    // 没食物就排除再找下一个，最多 3 个；都没找到则信任-1 + AI 对话，同样 10 分钟 CD 后再次尝试。
+    // 讨食期间会临时关闭 TLM 的跟随任务（防止中途被拉回主人身边），讨食完成后恢复跟随
+    private static final Map<UUID, StealState> stealStates = new HashMap<>();
+    private static final double STEAL_ARRIVE_DISTANCE = 2.5;
+    private static final long STEAL_WALK_TIMEOUT = 20 * 15; // 走向某个女仆超过15秒视为找不到
+
+    private static class StealState {
+        final Set<UUID> searched = new HashSet<>(); // 已搜索/已排除的女仆
+        UUID currentTarget = null;                  // 正在走去的女仆
+        long walkStartTick = 0;                     // 开始走向当前目标的时间
+        boolean wasFollowing = false;               // 讨食前是否处于跟随模式（结束后要恢复）
+    }
+
+    private void tryStealFoodFromNearbyMaid(EntityMaid maid, long tick) {
+        UUID maidId = maid.getUUID();
+        // 讨食 CD：无论讨到还是没讨到，结束后 10 分钟内不再触发
+        Long lastFail = lastStealFailTime.get(maidId);
+        if (lastFail != null && tick - lastFail < STEAL_FAIL_COOLDOWN_TICKS) {
+            return;
+        }
+
+        StealState state = stealStates.get(maidId);
+        if (state == null) {
+            state = new StealState();
+            // 讨食期间禁止 TLM 跟随任务把女仆拉回玩家身边：临时开启 home mode
+            state.wasFollowing = !maid.isHomeModeEnable();
+            if (state.wasFollowing) {
+                maid.getSchedulePos().setHomeModeEnable(maid, maid.blockPosition());
+                maid.setHomeModeEnable(true);
+            }
+            stealStates.put(maidId, state);
+        }
+
+        // 逐个排除搜索，最多 3 个
+        while (state.searched.size() < STEAL_MAX_SEARCH) {
+            // 重新搜索离自己最近且未搜索过的女仆（必须排除搜索过的，否则会原地搜同一个）
+            if (state.currentTarget == null) {
+                EntityMaid nearest = searchNearestMaid(maid, state.searched);
+                if (nearest == null) {
+                    // 附近已经没有未搜索过的女仆
+                    failStealFood(maid, tick);
+                    return;
+                }
+                state.currentTarget = nearest.getUUID();
+                state.walkStartTick = 0;
+            }
+
+            EntityMaid target = findMaidByUuid(maid, state.currentTarget);
+            if (target == null || !target.isAlive() || !target.isOwnedBy(maid.getOwner())) {
+                // 目标消失/死亡/不再同主人，排除并重搜
+                state.searched.add(state.currentTarget);
+                state.currentTarget = null;
+                continue;
+            }
+
+            // 还没走到目标旁边：走过去（超过15秒视为这个女仆找不到）
+            if (!maid.closerThan(target, STEAL_ARRIVE_DISTANCE)) {
+                if (state.walkStartTick == 0) {
+                    state.walkStartTick = tick;
+                } else if (tick - state.walkStartTick > STEAL_WALK_TIMEOUT) {
+                    state.searched.add(state.currentTarget);
+                    state.currentTarget = null;
+                    continue;
+                }
+                BlockPos targetPos = target.blockPosition();
+                maid.getBrain().setMemory(MemoryModuleType.WALK_TARGET,
+                        new WalkTarget(new BlockPosTracker(targetPos), 0.7f, 1));
+                return; // 正在走路，等下一轮
+            }
+
+            // 已走到：检查对方双手+物品栏有没有食物，有就随机拿一个并吃下
+            if (stealRandomFoodFrom(target, maid)) {
+                tryEatFoodFromBackpack(maid);
+                lastAutoEatTime.put(maidId, tick);
+                // 讨到了：直接结束整个讨食流程，记 10 分钟 CD（吃完前不会再来讨食）
+                lastStealFailTime.put(maidId, tick);
+                finishStealFood(maid);
+                return;
+            }
+
+            // 这个女仆没有食物，排除，重新搜索下一个最近的
+            state.searched.add(state.currentTarget);
+            state.currentTarget = null;
+        }
+
+        // 3 个都找过且都没有食物：失败处理
+        failStealFood(maid, tick);
+    }
+
+    // 搜索离自己最近、同主人、且未搜索过的女仆
+    private static EntityMaid searchNearestMaid(EntityMaid maid, Set<UUID> searched) {
+        return maid.level().getEntitiesOfClass(EntityMaid.class,
+                        maid.getBoundingBox().inflate(STEAL_SEARCH_RADIUS)).stream()
+                .filter(EntityMaid::isAlive)
+                .filter(EntityMaid::isTame)
+                .filter(other -> !other.getUUID().equals(maid.getUUID()))
+                .filter(other -> !searched.contains(other.getUUID()))
+                .filter(other -> maid.getOwner() != null && other.isOwnedBy(maid.getOwner()))
+                .min(Comparator.comparingDouble(other -> other.distanceToSqr(maid)))
+                .orElse(null);
+    }
+
+    private static EntityMaid findMaidByUuid(EntityMaid maid, UUID uuid) {
+        for (EntityMaid maidEntity : maid.level().getEntitiesOfClass(EntityMaid.class,
+                maid.getBoundingBox().inflate(STEAL_SEARCH_RADIUS * 2))) {
+            if (maidEntity.getUUID().equals(uuid)) {
+                return maidEntity;
+            }
+        }
+        return null;
+    }
+
+    // 讨食结束（成功或失败）：恢复 TLM 跟随主人的状态
+    private static void finishStealFood(EntityMaid maid) {
+        StealState state = stealStates.remove(maid.getUUID());
+        if (state != null && state.wasFollowing) {
+            maid.restrictTo(BlockPos.ZERO, MaidConfig.MAID_NON_HOME_RANGE.get());
+            maid.setHomeModeEnable(false);
+        }
+    }
+
+    // 讨食失败：信任-1 + 触发一次对话（强调找了好几个都没有吃的），10 分钟后再尝试
+    private void failStealFood(EntityMaid maid, long tick) {
+        UUID maidId = maid.getUUID();
+        finishStealFood(maid);
+        maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+
+        LivingEntity ownerEntity = maid.getOwner();
+        if (ownerEntity instanceof ServerPlayer serverPlayer) {
+            UUID ownerId = serverPlayer.getUUID();
+            EmotionData.addTrust(maid, ownerId, -1);
+            String suffix = EmotionData.getTendencyPromptSuffix(maid, ownerId);
+            String prompt = "你饿得头昏眼花，跑去找身边的女仆借食物，可是接连找了好几个女仆，她们都没有多余的食物，你空手而归，又饿又委屈。" + suffix
+                    + " 请用你自己的话诉说你这趟借食白跑一趟的失落和委屈，40字左右。";
+            MaidResponder.processBroadcast(serverPlayer, Collections.singletonList(maid), prompt, false);
+        }
+        lastStealFailTime.put(maidId, tick);
+    }
+
+    // 从指定女仆双手+物品栏里随机拿一个食物放到当前女仆背包
+    private boolean stealRandomFoodFrom(EntityMaid target, EntityMaid maid) {
+        CombinedInvWrapper inv = target.getAvailableInv(true);
+        List<Integer> foodSlots = new ArrayList<>();
+        for (int i = 0; i < inv.getSlots(); i++) {
+            ItemStack stack = inv.getStackInSlot(i);
+            if (!stack.isEmpty() && stack.getFoodProperties(target) != null) {
+                foodSlots.add(i);
+            }
+        }
+        if (foodSlots.isEmpty()) {
+            return false;
+        }
+        int slot = foodSlots.get(maid.getRandom().nextInt(foodSlots.size()));
+        ItemStack extracted = inv.extractItem(slot, 1, false);
+        if (extracted.isEmpty()) {
+            return false;
+        }
+        ItemStack rest = ItemHandlerHelper.insertItemStacked(maid.getAvailableBackpackInv(), extracted, false);
+        if (!rest.isEmpty()) {
+            // 自己背包放不下则归还对方
+            target.getAvailableBackpackInv().insertItem(slot, rest, false);
+            return false;
+        }
+        return true;
+    }
+
+    // 检查自己手上/背包里是否还有食物可用
+    private static boolean hasAnyFoodOfOwn(EntityMaid maid) {
+        ItemStack mainHand = maid.getMainHandItem();
+        if (!mainHand.isEmpty() && mainHand.getFoodProperties(maid) != null) {
+            return true;
+        }
+        ItemStack offHand = maid.getOffhandItem();
+        if (!offHand.isEmpty() && offHand.getFoodProperties(maid) != null) {
+            return true;
+        }
+        CombinedInvWrapper inv = maid.getAvailableBackpackInv();
+        for (int i = 0; i < inv.getSlots(); i++) {
+            ItemStack stack = inv.getStackInSlot(i);
+            if (!stack.isEmpty() && stack.getFoodProperties(maid) != null) {
                 return true;
             }
         }

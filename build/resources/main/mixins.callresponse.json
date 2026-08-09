@@ -1,11 +1,22 @@
 {
     "required": true,
     "minVersion": "0.8",
-    "package": "com.github.tartaricacid.callresponse.compat.emotion.mixin",
+    "package": "com.github.tartaricacid.callresponse.mixin",
     "compatibilityLevel": "JAVA_17",
     "refmap": "mixins.callresponse.refmap.json",
     "mixins": [
-        "MixinEntityMaid"
+        "MixinEntityMaid",
+        "BaubleItemHandlerMixin",
+        "HuntForgeEventMixin",
+        "HuntEntityProtectionMixin",
+        "HuntLivingEntityProtectionMixin",
+        "HuntForgeHooksMixin",
+        "HuntTamableAllianceMixin",
+        "HuntTargetingConditionsMixin",
+        "accessor.LivingEntityHealthAccessorMixin",
+        "accessor.SynchedEntityDataAccessorMixin",
+        "MixinMaidConflictBauble",
+        "MixinMaidSyncedData"
     ],
     "injectors": {
         "defaultRequire": 1

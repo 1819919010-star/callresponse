@@ -1,4 +1,6 @@
 tsrg2 left right
+com/github/tartaricacid/callresponse/mixin/HuntLivingEntityProtectionMixin com/github/tartaricacid/callresponse/mixin/HuntLivingEntityProtectionMixin
+	lastHurt f_20898_
 com/mojang/blaze3d/Blaze3D com/mojang/blaze3d/Blaze3D
 	<init> ()V <init>
 	getTime ()D m_83640_
