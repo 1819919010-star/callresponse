@@ -10,6 +10,10 @@ import com.github.tartaricacid.callresponse.compat.hunger.CustomCakeEdible;
 import com.github.tartaricacid.callresponse.compat.hunger.HungerManager;
 import com.github.tartaricacid.callresponse.compat.hunger.MaidHungerGuiDisplay;
 import com.github.tartaricacid.callresponse.compat.hunger.NoEatAwareMaidMeal;
+import com.github.tartaricacid.callresponse.compat.hunt.HuntGunEventBridge;
+import com.github.tartaricacid.callresponse.compat.hunt.HuntOrderInteractListener;
+import com.github.tartaricacid.callresponse.compat.hunt.HuntOrderManager;
+import com.github.tartaricacid.callresponse.compat.hunt.HuntTargetProtectionBypass;
 import com.github.tartaricacid.callresponse.compat.item.ModItems;
 import com.github.tartaricacid.callresponse.compat.task.LazyMaidTask;
 import com.github.tartaricacid.touhoulittlemaid.ai.agent.tool.ToolRegister;
@@ -55,6 +59,10 @@ public class LittleMaidCompat implements ILittleMaid {
         MinecraftForge.EVENT_BUS.register(new LazyMaidHitHandler());
         MinecraftForge.EVENT_BUS.register(new SaddlePickupHandler());
         MinecraftForge.EVENT_BUS.register(new SaddleLaunchHandler());
+        MinecraftForge.EVENT_BUS.register(new HuntOrderManager());
+        MinecraftForge.EVENT_BUS.register(new HuntOrderInteractListener());
+        MinecraftForge.EVENT_BUS.register(new HuntTargetProtectionBypass());
+        HuntGunEventBridge.register();
         MinecraftForge.EVENT_BUS.register(NoEatBauble.class);
     }
 

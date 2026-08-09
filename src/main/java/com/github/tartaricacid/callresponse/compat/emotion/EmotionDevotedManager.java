@@ -136,6 +136,12 @@ public class EmotionDevotedManager {
 
                         if (!isDevoted) return;
 
+                        // 狩猎中的女仆专注狩猎：跳过攻击背叛女仆和给主人补血
+                        // （否则打残主人时会触发补血回满主人并献祭女仆自己）
+                        if (com.github.tartaricacid.callresponse.compat.hunt.HuntOrderManager.isHunting(maid)) {
+                            return;
+                        }
+
                         attackNearbyBetrayers(maid, player);
                         healOwnerIfNeeded(maid, player);
                     });
@@ -262,6 +268,11 @@ public class EmotionDevotedManager {
     private static void healOwnerIfNeeded(EntityMaid maid, ServerPlayer owner) {
         UUID maidId = maid.getUUID();
         long now = maid.level().getGameTime();
+
+        // 主人已死亡：绝不能给尸体回血（会把死亡状态改乱，导致无法正常复活）
+        if (!owner.isAlive()) {
+            return;
+        }
 
         Long lastHeal = lastHealTime.get(maidId);
         if (lastHeal != null && now - lastHeal < HEAL_COOLDOWN_TICKS) {

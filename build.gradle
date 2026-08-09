@@ -81,6 +81,9 @@ dependencies {
     // 使用 Modrinth Maven 引入 TouhouLittleMaid 1.5.3（Forge 1.20.1）
     implementation fg.deobf("maven.modrinth:touhou-little-maid:1.5.3-forge+mc1.20.1")
 
+    // Jade 联动（Forge 1.20.1）
+    implementation fg.deobf("maven.modrinth:jade:${jade_version}")
+
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
     // 如果您希望保留 CurseForge 方式（需自行查找 1.5.3 的文件 ID），可注释掉上一行并启用下面这行

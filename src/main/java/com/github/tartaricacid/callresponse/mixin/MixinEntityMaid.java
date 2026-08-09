@@ -5,10 +5,12 @@ import com.github.tartaricacid.callresponse.compat.broadcast.MaidResponder;
 import com.github.tartaricacid.callresponse.compat.emotion.EmotionActiveDialogue;
 import com.github.tartaricacid.callresponse.compat.emotion.EmotionBetrayalManager;
 import com.github.tartaricacid.callresponse.compat.emotion.EmotionData;
+import com.github.tartaricacid.callresponse.compat.hunt.HuntOrderManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
@@ -32,6 +34,15 @@ import java.util.UUID;
 public abstract class MixinEntityMaid extends Mob {
     private MixinEntityMaid() { super(null, null); }
 
+    // ===== 狩猎令：放行名单内的目标（玩家默认被 TLM 拒绝） =====
+    @Inject(method = "canAttack", at = @At("HEAD"), cancellable = true)
+    private void callresponse$allowHuntTarget(LivingEntity target, CallbackInfoReturnable<Boolean> cir) {
+        EntityMaid maid = (EntityMaid) (Object) this;
+        if (!maid.level().isClientSide && HuntOrderManager.isHuntTarget(maid, target)) {
+            cir.setReturnValue(true);
+        }
+    }
+
     @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)
     private void example$onHurtHead(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         EntityMaid maid = (EntityMaid) (Object) this;
@@ -46,6 +57,14 @@ public abstract class MixinEntityMaid extends Mob {
 
         boolean isOwnerAttack = isOwnerAttackingMaid(maid, source);
         boolean isMaidAttack = directEntity instanceof EntityMaid;
+
+        // 只有来自当前狩猎者的伤害才绕过目标女仆保护，其他伤害仍走原逻辑。
+        if (HuntOrderManager.isHuntDamage(maid, source)) {
+            this.invulnerableTime = 0;
+            boolean huntResult = super.hurt(source, Math.max(amount, 0));
+            cir.setReturnValue(huntResult);
+            return;
+        }
 
 
         if (isOwnerAttack && !EmotionBetrayalManager.isBetraying(maid)) {

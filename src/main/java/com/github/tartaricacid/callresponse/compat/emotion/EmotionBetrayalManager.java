@@ -1,6 +1,7 @@
 package com.github.tartaricacid.callresponse.compat.emotion;
 
 import com.github.tartaricacid.callresponse.compat.broadcast.MaidResponder;
+import com.github.tartaricacid.callresponse.compat.hunt.HuntOrderManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
 import net.minecraft.core.BlockPos;
@@ -145,6 +146,11 @@ public class EmotionBetrayalManager {
                             player.getBoundingBox().inflate(32))
                     .forEach(maid -> {
                         UUID maidId = maid.getUUID();
+
+                        // 狩猎优先级 > 背叛：狩猎中的女仆不处理背叛
+                        if (HuntOrderManager.isHunting(maid)) {
+                            return;
+                        }
 
                         // 检查是否已背叛
                         if (isBetraying(maid)) {

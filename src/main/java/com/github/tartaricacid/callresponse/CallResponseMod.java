@@ -1,8 +1,13 @@
 package com.github.tartaricacid.callresponse;
 
+import com.github.tartaricacid.callresponse.compat.gui.CopyEntityUuidS2CPacket;
 import com.github.tartaricacid.callresponse.compat.gui.DropMaidC2SPacket;
 import com.github.tartaricacid.callresponse.compat.gui.EmotionBookUpdateC2SPacket;
+import com.github.tartaricacid.callresponse.compat.gui.HuntOrderUpdateC2SPacket;
+import com.github.tartaricacid.callresponse.compat.gui.MaidListS2CPacket;
 import com.github.tartaricacid.callresponse.compat.gui.OpenEmotionBookScreenS2CPacket;
+import com.github.tartaricacid.callresponse.compat.gui.OpenHuntOrderScreenS2CPacket;
+import com.github.tartaricacid.callresponse.compat.gui.RequestHuntOrderScreenC2SPacket;
 import com.github.tartaricacid.callresponse.compat.hunger.HungerAwareEdibleWrapper;
 import com.github.tartaricacid.callresponse.compat.item.ModItems;
 import com.github.tartaricacid.callresponse.config.BroadcastConfig;
@@ -63,6 +68,26 @@ public class CallResponseMod {
                 DropMaidC2SPacket::encode,
                 DropMaidC2SPacket::new,
                 DropMaidC2SPacket::handle);
+        CHANNEL.registerMessage(id++, OpenHuntOrderScreenS2CPacket.class,
+                OpenHuntOrderScreenS2CPacket::encode,
+                OpenHuntOrderScreenS2CPacket::new,
+                OpenHuntOrderScreenS2CPacket::handle);
+        CHANNEL.registerMessage(id++, HuntOrderUpdateC2SPacket.class,
+                HuntOrderUpdateC2SPacket::encode,
+                HuntOrderUpdateC2SPacket::new,
+                HuntOrderUpdateC2SPacket::handle);
+        CHANNEL.registerMessage(id++, CopyEntityUuidS2CPacket.class,
+                CopyEntityUuidS2CPacket::encode,
+                CopyEntityUuidS2CPacket::new,
+                CopyEntityUuidS2CPacket::handle);
+        CHANNEL.registerMessage(id++, MaidListS2CPacket.class,
+                MaidListS2CPacket::encode,
+                MaidListS2CPacket::new,
+                MaidListS2CPacket::handle);
+        CHANNEL.registerMessage(id++, RequestHuntOrderScreenC2SPacket.class,
+                RequestHuntOrderScreenC2SPacket::encode,
+                RequestHuntOrderScreenC2SPacket::new,
+                RequestHuntOrderScreenC2SPacket::handle);
 
         // ===== 3. 注册 ILittleMaid 扩展（在 MaidEdibleBlockManager.init() 之前执行） =====
         // 这个扩展会包装所有方块食物，增加饱食度同步逻辑
