@@ -1,11 +1,13 @@
 {
     "required": true,
     "minVersion": "0.8",
-    "package": "com.github.tartaricacid.callresponse.mixin",
+    "package": "com.github.JumDa5he.callresponse.mixin",
     "compatibilityLevel": "JAVA_17",
     "refmap": "mixins.callresponse.refmap.json",
     "mixins": [
         "MixinEntityMaid",
+        "MaidFollowOwnerTaskMixin",
+        "MaidAwaitTaskMixin",
         "BaubleItemHandlerMixin",
         "HuntForgeEventMixin",
         "HuntEntityProtectionMixin",
