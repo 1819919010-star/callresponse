@@ -1,0 +1,25 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "com.github.JumDa5he.callresponse.mixin",
+    "compatibilityLevel": "JAVA_21",
+    "mixins": [
+        "MixinCakeEdible",
+        "MixinEntityMaid",
+        "MaidFollowOwnerTaskMixin",
+        "MaidAwaitTaskMixin",
+        "MixinMaidEdibleBlockManager",
+        "BaubleItemHandlerMixin",
+        "HuntEntityProtectionMixin",
+        "HuntForgeEventMixin",
+        "HuntForgeHooksMixin",
+        "HuntLivingEntityProtectionMixin",
+        "HuntTamableAllianceMixin",
+        "HuntTargetingConditionsMixin",
+        "accessor.LivingEntityHealthAccessorMixin",
+        "accessor.SynchedEntityDataAccessorMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}
