@@ -25,6 +25,11 @@ public class InitAttachTypes {
                     .serialize(EmotionData.MaidEmotion.CODEC)
                     .sync(EmotionData.MaidEmotion.STREAM_CODEC)
                     .build());
+    public static final Supplier<AttachmentType<Boolean>> SYNCED_WANDERING_SPECIAL = ATTACHMENT_TYPES.register("wandering_special", r ->
+            AttachmentType.builder(h -> false)
+                    .serialize(Codec.BOOL)
+                    .sync(ByteBufCodecs.BOOL)
+                    .build());
 
     public static void init(IEventBus bus){
         ATTACHMENT_TYPES.register(bus);

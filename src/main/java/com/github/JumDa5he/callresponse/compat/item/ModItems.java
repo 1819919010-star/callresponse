@@ -30,6 +30,9 @@ public class ModItems {
     public static final Supplier<Item> HUNT_ORDER = ITEMS.register("hunt_order",
             () -> new HuntOrderItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
 
+    public static final Supplier<Item> WANDERING_MAID_BOOK = ITEMS.register("wandering_maid_book",
+            () -> new WanderingMaidBookItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
+
     // ===== 创造模式物品栏：专属栏位 =====
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CallResponseMod.MOD_ID);
 
@@ -42,6 +45,7 @@ public class ModItems {
                         output.accept(NO_EAT_BAUBLE.get());
                         output.accept(MORE_EAT_BAUBLE.get());
                         output.accept(HUNT_ORDER.get());
+                        output.accept(WANDERING_MAID_BOOK.get());
                     })
                     .build());
 }
