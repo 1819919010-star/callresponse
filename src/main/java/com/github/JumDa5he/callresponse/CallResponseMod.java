@@ -8,6 +8,10 @@ import com.github.JumDa5he.callresponse.compat.gui.MaidListS2CPacket;
 import com.github.JumDa5he.callresponse.compat.gui.OpenEmotionBookScreenS2CPacket;
 import com.github.JumDa5he.callresponse.compat.gui.OpenHuntOrderScreenS2CPacket;
 import com.github.JumDa5he.callresponse.compat.gui.RequestHuntOrderScreenC2SPacket;
+import com.github.JumDa5he.callresponse.compat.gui.OpenWanderingMaidRequestS2CPacket;
+import com.github.JumDa5he.callresponse.compat.gui.OpenWanderingSkinPoolS2CPacket;
+import com.github.JumDa5he.callresponse.compat.gui.UpdateWanderingSkinPoolC2SPacket;
+import com.github.JumDa5he.callresponse.compat.gui.WanderingMaidDecisionC2SPacket;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerAwareEdibleWrapper;
 import com.github.JumDa5he.callresponse.compat.item.ModItems;
 import com.github.JumDa5he.callresponse.config.BroadcastConfig;
@@ -36,7 +40,7 @@ public class CallResponseMod {
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     // ===== 网络通道（饱食度同步） =====
-    private static final String PROTOCOL_VERSION = "1";
+    private static final String PROTOCOL_VERSION = "2";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(MOD_ID, "main"),
             () -> PROTOCOL_VERSION,
@@ -88,6 +92,22 @@ public class CallResponseMod {
                 RequestHuntOrderScreenC2SPacket::encode,
                 RequestHuntOrderScreenC2SPacket::new,
                 RequestHuntOrderScreenC2SPacket::handle);
+        CHANNEL.registerMessage(id++, OpenWanderingSkinPoolS2CPacket.class,
+                OpenWanderingSkinPoolS2CPacket::encode,
+                OpenWanderingSkinPoolS2CPacket::new,
+                OpenWanderingSkinPoolS2CPacket::handle);
+        CHANNEL.registerMessage(id++, UpdateWanderingSkinPoolC2SPacket.class,
+                UpdateWanderingSkinPoolC2SPacket::encode,
+                UpdateWanderingSkinPoolC2SPacket::new,
+                UpdateWanderingSkinPoolC2SPacket::handle);
+        CHANNEL.registerMessage(id++, OpenWanderingMaidRequestS2CPacket.class,
+                OpenWanderingMaidRequestS2CPacket::encode,
+                OpenWanderingMaidRequestS2CPacket::new,
+                OpenWanderingMaidRequestS2CPacket::handle);
+        CHANNEL.registerMessage(id++, WanderingMaidDecisionC2SPacket.class,
+                WanderingMaidDecisionC2SPacket::encode,
+                WanderingMaidDecisionC2SPacket::new,
+                WanderingMaidDecisionC2SPacket::handle);
 
         // ===== 3. 注册 ILittleMaid 扩展（在 MaidEdibleBlockManager.init() 之前执行） =====
         // 这个扩展会包装所有方块食物，增加饱食度同步逻辑

@@ -157,7 +157,6 @@ Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/enti
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid/getTypeName()Lnet/minecraft/network/chat/Component; from net/minecraft/world/entity/Entity/getTypeName()Lnet/minecraft/network/chat/Component;: getTypeName -> m_5677_
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid/onSyncedDataUpdated(Lnet/minecraft/network/syncher/EntityDataAccessor;)V from net/minecraft/world/entity/AgeableMob/onSyncedDataUpdated(Lnet/minecraft/network/syncher/EntityDataAccessor;)V: onSyncedDataUpdated -> m_7350_
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid/getRestrictRadius()F from net/minecraft/world/entity/Mob/getRestrictRadius()F: getRestrictRadius -> m_21535_
-Conflicting propagated mapping for net/minecraft/world/entity/LivingEntity/lambda$addAdditionalSaveData$3(Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/nbt/Tag;)V from net/minecraft/world/entity/player/Player/lambda$addAdditionalSaveData$3(Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/nbt/Tag;)V: lambda$addAdditionalSaveData$3 -> m_219754_
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid/getProjectile(Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/ItemStack; from net/minecraft/world/entity/LivingEntity/getProjectile(Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/ItemStack;: getProjectile -> m_6298_
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid/customServerAiStep()V from net/minecraft/world/entity/animal/Animal/customServerAiStep()V: customServerAiStep -> m_8024_
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid/die(Lnet/minecraft/world/damagesource/DamageSource;)V from net/minecraft/world/entity/TamableAnimal/die(Lnet/minecraft/world/damagesource/DamageSource;)V: die -> m_6667_
@@ -192,6 +191,7 @@ Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/enti
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid/getBrain()Lnet/minecraft/world/entity/ai/Brain; from net/minecraft/world/entity/LivingEntity/getBrain()Lnet/minecraft/world/entity/ai/Brain;: getBrain -> m_6274_
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid/isPushedByFluid()Z from net/minecraft/world/entity/Entity/isPushedByFluid()Z: isPushedByFluid -> m_6063_
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid/doHurtTarget(Lnet/minecraft/world/entity/Entity;)Z from net/minecraft/world/entity/Mob/doHurtTarget(Lnet/minecraft/world/entity/Entity;)Z: doHurtTarget -> m_7327_
+Conflicting propagated mapping for net/minecraft/world/entity/LivingEntity/lambda$addAdditionalSaveData$3(Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/nbt/Tag;)V from net/minecraft/world/entity/player/Player/lambda$addAdditionalSaveData$3(Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/nbt/Tag;)V: lambda$addAdditionalSaveData$3 -> m_219754_
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid/isVisuallySwimming()Z from net/minecraft/world/entity/LivingEntity/isVisuallySwimming()Z: isVisuallySwimming -> m_6067_
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid/setItemSlot(Lnet/minecraft/world/entity/EquipmentSlot;Lnet/minecraft/world/item/ItemStack;)V from net/minecraft/world/entity/Mob/setItemSlot(Lnet/minecraft/world/entity/EquipmentSlot;Lnet/minecraft/world/item/ItemStack;)V: setItemSlot -> m_8061_
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid/canAttackType(Lnet/minecraft/world/entity/EntityType;)Z from net/minecraft/world/entity/Mob/canAttackType(Lnet/minecraft/world/entity/EntityType;)Z: canAttackType -> m_6549_
@@ -224,17 +224,31 @@ Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/enti
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid/setChargingCrossbow(Z)V from net/minecraft/world/entity/monster/CrossbowAttackMob/setChargingCrossbow(Z)V: setChargingCrossbow -> m_6136_
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/api/entity/IMaid/onClimbable()Z from com/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid/onClimbable()Z: onClimbable -> m_6147_
 Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/EmotionBookScreen/isPauseScreen()Z from net/minecraft/client/gui/screens/Screen/isPauseScreen()Z: isPauseScreen -> m_7043_
-Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/EmotionBookScreen/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V from net/minecraft/client/gui/screens/Screen/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V: render -> m_88315_
-Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/EmotionBookScreen/init()V from net/minecraft/client/gui/screens/Screen/init()V: init -> m_7856_
-Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/MaidListScreen/isPauseScreen()Z from net/minecraft/client/gui/screens/Screen/isPauseScreen()Z: isPauseScreen -> m_7043_
-Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/MaidListScreen/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V from net/minecraft/client/gui/screens/Screen/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V: render -> m_88315_
-Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/MaidListScreen/mouseScrolled(DDD)Z from net/minecraft/client/gui/components/events/ContainerEventHandler/mouseScrolled(DDD)Z: mouseScrolled -> m_6050_
+Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/WanderingMaidRequestScreen/isPauseScreen()Z from net/minecraft/client/gui/screens/Screen/isPauseScreen()Z: isPauseScreen -> m_7043_
 Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/HuntOrderScreen/keyPressed(III)Z from net/minecraft/client/gui/screens/Screen/keyPressed(III)Z: keyPressed -> m_7933_
+Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/EmotionBookScreen/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V from net/minecraft/client/gui/screens/Screen/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V: render -> m_88315_
 Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/HuntOrderScreen/isPauseScreen()Z from net/minecraft/client/gui/screens/Screen/isPauseScreen()Z: isPauseScreen -> m_7043_
+Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/WanderingMaidRequestScreen/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V from net/minecraft/client/gui/screens/Screen/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V: render -> m_88315_
 Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/HuntOrderScreen/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V from net/minecraft/client/gui/screens/Screen/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V: render -> m_88315_
+Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/client/gui/entity/model/AbstractModelGui/keyPressed(III)Z from net/minecraft/client/gui/screens/Screen/keyPressed(III)Z: keyPressed -> m_7933_
+Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/MaidListScreen/isPauseScreen()Z from net/minecraft/client/gui/screens/Screen/isPauseScreen()Z: isPauseScreen -> m_7043_
+Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/client/gui/entity/model/AbstractModelGui/isPauseScreen()Z from net/minecraft/client/gui/screens/Screen/isPauseScreen()Z: isPauseScreen -> m_7043_
+Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/MaidListScreen/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V from net/minecraft/client/gui/screens/Screen/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V: render -> m_88315_
+Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/WanderingMaidRequestScreen/init()V from net/minecraft/client/gui/screens/Screen/init()V: init -> m_7856_
+Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/EmotionBookScreen/init()V from net/minecraft/client/gui/screens/Screen/init()V: init -> m_7856_
 Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/HuntOrderScreen/mouseScrolled(DDD)Z from net/minecraft/client/gui/components/events/ContainerEventHandler/mouseScrolled(DDD)Z: mouseScrolled -> m_6050_
-Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/MaidListScreen/init()V from net/minecraft/client/gui/screens/Screen/init()V: init -> m_7856_
 Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/HuntOrderScreen/init()V from net/minecraft/client/gui/screens/Screen/init()V: init -> m_7856_
+Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/MaidListScreen/mouseScrolled(DDD)Z from net/minecraft/client/gui/components/events/ContainerEventHandler/mouseScrolled(DDD)Z: mouseScrolled -> m_6050_
+Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/client/gui/entity/model/AbstractModelGui/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V from net/minecraft/client/gui/screens/Screen/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V: render -> m_88315_
+Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/client/gui/entity/model/AbstractModelGui/mouseScrolled(DDD)Z from net/minecraft/client/gui/components/events/ContainerEventHandler/mouseScrolled(DDD)Z: mouseScrolled -> m_6050_
+Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/client/gui/entity/model/AbstractModelGui/init()V from net/minecraft/client/gui/screens/Screen/init()V: init -> m_7856_
+Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/MaidListScreen/init()V from net/minecraft/client/gui/screens/Screen/init()V: init -> m_7856_
+Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/client/gui/entity/model/AbstractModelGui/mouseClicked(DDI)Z from net/minecraft/client/gui/components/events/ContainerEventHandler/mouseClicked(DDI)Z: mouseClicked -> m_6375_
+Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/client/gui/entity/model/AbstractModelGui/tick()V from net/minecraft/client/gui/screens/Screen/tick()V: tick -> m_86600_
+Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/client/gui/entity/model/AbstractModelGui/charTyped(CI)Z from net/minecraft/client/gui/components/events/ContainerEventHandler/charTyped(CI)Z: charTyped -> m_5534_
+Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/WanderingMaidSkinPoolScreen/isPauseScreen()Z from com/github/tartaricacid/touhoulittlemaid/client/gui/entity/model/AbstractModelGui/isPauseScreen()Z: isPauseScreen -> m_7043_
+Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/WanderingMaidSkinPoolScreen/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V from com/github/tartaricacid/touhoulittlemaid/client/gui/entity/model/AbstractModelGui/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V: render -> m_88315_
+Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/gui/WanderingMaidSkinPoolScreen/removed()V from net/minecraft/client/gui/screens/Screen/removed()V: removed -> m_7861_
 Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/item/HuntOrderItem/use(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/InteractionResultHolder; from net/minecraft/world/item/Item/use(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/InteractionResultHolder;: use -> m_7203_
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/client/gui/entity/maid/AbstractMaidContainerGui/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V from net/minecraft/client/gui/screens/inventory/AbstractContainerScreen/render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V: render -> m_88315_
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/client/gui/entity/maid/AbstractMaidContainerGui/mouseScrolled(DDD)Z from net/minecraft/client/gui/components/events/ContainerEventHandler/mouseScrolled(DDD)Z: mouseScrolled -> m_6050_
@@ -242,6 +256,8 @@ Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/clie
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/client/gui/entity/maid/AbstractMaidContainerGui/init()V from net/minecraft/client/gui/screens/inventory/AbstractContainerScreen/init()V: init -> m_7856_
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/client/gui/entity/maid/AbstractMaidContainerGui/renderLabels(Lnet/minecraft/client/gui/GuiGraphics;II)V from net/minecraft/client/gui/screens/inventory/AbstractContainerScreen/renderLabels(Lnet/minecraft/client/gui/GuiGraphics;II)V: renderLabels -> m_280003_
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/client/gui/entity/maid/AbstractMaidContainerGui/containerTick()V from net/minecraft/client/gui/screens/inventory/AbstractContainerScreen/containerTick()V: containerTick -> m_181908_
+Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/wandering/WanderingMaidSavedData/save(Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/nbt/CompoundTag; from net/minecraft/world/level/saveddata/SavedData/save(Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/nbt/CompoundTag;: save -> m_7176_
+Conflicting propagated mapping for com/github/JumDa5he/callresponse/compat/item/WanderingMaidBookItem/use(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/InteractionResultHolder; from net/minecraft/world/item/Item/use(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/InteractionResultHolder;: use -> m_7203_
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/client/gui/entity/maid/AbstractMaidContainerGui/renderTooltip(Lnet/minecraft/client/gui/GuiGraphics;II)V from net/minecraft/client/gui/screens/inventory/AbstractContainerScreen/renderTooltip(Lnet/minecraft/client/gui/GuiGraphics;II)V: renderTooltip -> m_280072_
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/client/gui/entity/maid/AbstractMaidContainerGui/renderBg(Lnet/minecraft/client/gui/GuiGraphics;FII)V from net/minecraft/client/gui/screens/inventory/AbstractContainerScreen/renderBg(Lnet/minecraft/client/gui/GuiGraphics;FII)V: renderBg -> m_7286_
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/entity/ai/brain/task/MaidAwaitTask/start(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/LivingEntity;J)V from net/minecraft/world/entity/ai/behavior/Behavior/start(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/LivingEntity;J)V: start -> m_6735_
@@ -249,8 +265,8 @@ Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/enti
 Conflicting propagated mapping for com/github/tartaricacid/touhoulittlemaid/entity/ai/brain/task/MaidFollowOwnerTask/checkExtraStartConditions(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/LivingEntity;)Z from net/minecraft/world/entity/ai/behavior/Behavior/checkExtraStartConditions(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/LivingEntity;)Z: checkExtraStartConditions -> m_6114_
 Can't Find Class: com/github/tartaricacid/callresponse/compat/broadcast/BroadcastTools
 Can't Find Class: com/github/tartaricacid/callresponse/compat/broadcast/actions/AttackOtherMaidAction
-Can't Find Class: com/github/tartaricacid/callresponse/compat/broadcast/actions/StopAttackAction
 Can't Find Class: com/github/tartaricacid/callresponse/compat/broadcast/actions/WalkToOwnerAndTakeFoodAction
+Can't Find Class: com/github/tartaricacid/callresponse/compat/broadcast/actions/StopAttackAction
 Conflicting propagated mapping for net/minecraft/world/entity/projectile/FireworkRocketEntity/onHit(Lnet/minecraft/world/phys/HitResult;)V from net/minecraft/world/entity/projectile/Projectile/onHit(Lnet/minecraft/world/phys/HitResult;)V: onHit -> m_6532_
 Adding extras
 Sorting
@@ -269,6 +285,7 @@ Writing Output: D:\￨ﾽﾦ￤ﾸﾇ￥ﾥﾳ￤ﾻﾆ\￥ﾑﾼ￥ﾺﾔ\TLMAd
   assets/callresponse/models/item/hunt_order.json
   assets/callresponse/models/item/moreeat_bauble.json
   assets/callresponse/models/item/noeat_bauble.json
+  assets/callresponse/models/item/wandering_maid_book.json
   assets/callresponse/textures/
   assets/callresponse/textures/item/
   assets/callresponse/textures/item/feast.png
@@ -358,7 +375,13 @@ Writing Output: D:\￨ﾽﾦ￤ﾸﾇ￥ﾥﾳ￤ﾻﾆ\￥ﾑﾼ￥ﾺﾔ\TLMAd
   com/github/JumDa5he/callresponse/compat/gui/MaidListScreen.class
   com/github/JumDa5he/callresponse/compat/gui/OpenEmotionBookScreenS2CPacket.class
   com/github/JumDa5he/callresponse/compat/gui/OpenHuntOrderScreenS2CPacket.class
+  com/github/JumDa5he/callresponse/compat/gui/OpenWanderingMaidRequestS2CPacket.class
+  com/github/JumDa5he/callresponse/compat/gui/OpenWanderingSkinPoolS2CPacket.class
   com/github/JumDa5he/callresponse/compat/gui/RequestHuntOrderScreenC2SPacket.class
+  com/github/JumDa5he/callresponse/compat/gui/UpdateWanderingSkinPoolC2SPacket.class
+  com/github/JumDa5he/callresponse/compat/gui/WanderingMaidDecisionC2SPacket.class
+  com/github/JumDa5he/callresponse/compat/gui/WanderingMaidRequestScreen.class
+  com/github/JumDa5he/callresponse/compat/gui/WanderingMaidSkinPoolScreen.class
   com/github/JumDa5he/callresponse/compat/hunger/
   com/github/JumDa5he/callresponse/compat/hunger/CustomCakeEdible.class
   com/github/JumDa5he/callresponse/compat/hunger/HungerAwareEdibleWrapper.class
@@ -390,10 +413,17 @@ Writing Output: D:\￨ﾽﾦ￤ﾸﾇ￥ﾥﾳ￤ﾻﾆ\￥ﾑﾼ￥ﾺﾔ\TLMAd
   com/github/JumDa5he/callresponse/compat/item/
   com/github/JumDa5he/callresponse/compat/item/HuntOrderItem.class
   com/github/JumDa5he/callresponse/compat/item/ModItems.class
+  com/github/JumDa5he/callresponse/compat/item/WanderingMaidBookItem.class
   com/github/JumDa5he/callresponse/compat/jade/
   com/github/JumDa5he/callresponse/compat/jade/CallResponseJadePlugin.class
   com/github/JumDa5he/callresponse/compat/task/
   com/github/JumDa5he/callresponse/compat/task/LazyMaidTask.class
+  com/github/JumDa5he/callresponse/compat/wandering/
+  com/github/JumDa5he/callresponse/compat/wandering/WanderingMaidData.class
+  com/github/JumDa5he/callresponse/compat/wandering/WanderingMaidManager$1.class
+  com/github/JumDa5he/callresponse/compat/wandering/WanderingMaidManager.class
+  com/github/JumDa5he/callresponse/compat/wandering/WanderingMaidSavedData.class
+  com/github/JumDa5he/callresponse/compat/wandering/WanderingMaidState.class
   com/github/JumDa5he/callresponse/config/
   com/github/JumDa5he/callresponse/config/BroadcastConfig.class
   com/github/JumDa5he/callresponse/config/EmotionPassiveConfig.class
@@ -410,7 +440,10 @@ Writing Output: D:\￨ﾽﾦ￤ﾸﾇ￥ﾥﾳ￤ﾻﾆ\￥ﾑﾼ￥ﾺﾔ\TLMAd
   com/github/JumDa5he/callresponse/mixin/MixinEntityMaid.class
   com/github/JumDa5he/callresponse/mixin/MixinMaidConflictBauble.class
   com/github/JumDa5he/callresponse/mixin/MixinMaidSyncedData.class
+  com/github/JumDa5he/callresponse/mixin/WanderingMaidInteractionMixin.class
+  com/github/JumDa5he/callresponse/mixin/WanderingMaidVanillaTameMixin.class
   com/github/JumDa5he/callresponse/mixin/accessor/
+  com/github/JumDa5he/callresponse/mixin/accessor/EntityMaidTameInvoker.class
   com/github/JumDa5he/callresponse/mixin/accessor/LivingEntityHealthAccessorMixin.class
   com/github/JumDa5he/callresponse/mixin/accessor/SynchedEntityDataAccessorMixin.class
   com/github/tartaricacid/
@@ -428,6 +461,7 @@ Writing Output: D:\￨ﾽﾦ￤ﾸﾇ￥ﾥﾳ￤ﾻﾆ\￥ﾑﾼ￥ﾺﾔ\TLMAd
   data/callresponse/recipes/hunt_order.json
   data/callresponse/recipes/moreeat_bauble.json
   data/callresponse/recipes/noeat_bauble.json
+  data/callresponse/recipes/wandering_maid_book.json
   mixins.callresponse.json
   mixins.callresponse.refmap.json
   pack.mcmeta

@@ -17,8 +17,11 @@
         "HuntTargetingConditionsMixin",
         "accessor.LivingEntityHealthAccessorMixin",
         "accessor.SynchedEntityDataAccessorMixin",
+        "accessor.EntityMaidTameInvoker",
         "MixinMaidConflictBauble",
-        "MixinMaidSyncedData"
+        "MixinMaidSyncedData",
+        "WanderingMaidInteractionMixin",
+        "WanderingMaidVanillaTameMixin"
     ],
     "injectors": {
         "defaultRequire": 1

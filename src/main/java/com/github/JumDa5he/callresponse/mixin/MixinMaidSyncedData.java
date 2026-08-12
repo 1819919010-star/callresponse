@@ -2,6 +2,7 @@ package com.github.JumDa5he.callresponse.mixin;
 
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerData;
+import com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidData;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Mob;
@@ -22,6 +23,7 @@ public abstract class MixinMaidSyncedData extends Mob {
     private void callresponse$defineSyncedData(CallbackInfo ci) {
         this.getEntityData().define(EmotionData.EMOTION_KEY, new CompoundTag());
         this.getEntityData().define(HungerData.HUNGER_KEY, HungerData.DEFAULT_HUNGER);
+        this.getEntityData().define(WanderingMaidData.SPECIAL_SYNC, false);
     }
 
     @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
@@ -39,5 +41,6 @@ public abstract class MixinMaidSyncedData extends Mob {
             this.getEntityData().set(EmotionData.EMOTION_KEY, data.getCompound("Emotions"));
             this.getEntityData().set(HungerData.HUNGER_KEY, data.getFloat("Hunger"));
         }
+        WanderingMaidData.restoreSyncedFlag((EntityMaid) (Object) this);
     }
 }
