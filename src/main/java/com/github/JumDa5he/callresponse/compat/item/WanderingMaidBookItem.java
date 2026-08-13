@@ -1,6 +1,6 @@
 package com.github.JumDa5he.callresponse.compat.item;
 
-import com.github.JumDa5he.callresponse.compat.gui.OpenWanderingSkinPoolS2CPacket;
+import com.github.JumDa5he.callresponse.network.OpenWanderingSkinPoolS2CPacket;
 import com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidSavedData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;

@@ -1,11 +1,8 @@
 package com.github.JumDa5he.callresponse;
 
-import com.github.JumDa5he.callresponse.compat.brain.LazyMaidHitHandler;
-import com.github.JumDa5he.callresponse.compat.broadcast.ChatEventListener;
-import com.github.JumDa5he.callresponse.compat.emotion.*;
-import com.github.JumDa5he.callresponse.compat.gui.NetworkRegistryHandler;
-import com.github.JumDa5he.callresponse.compat.hunger.HungerManager;
-import com.github.JumDa5he.callresponse.compat.hunger.MaidHungerGuiDisplay;
+import com.github.JumDa5he.callresponse.compat.block.ModBlocks;
+import com.github.JumDa5he.callresponse.compat.datagen.DataGenerators;
+import com.github.JumDa5he.callresponse.network.NetworkRegistryHandler;
 import com.github.JumDa5he.callresponse.compat.item.ModItems;
 import com.github.JumDa5he.callresponse.compat.menu.ModMenus;
 import com.github.JumDa5he.callresponse.config.BroadcastConfig;
@@ -15,7 +12,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.neoforge.common.NeoForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,6 +25,8 @@ public class CallResponseMod {
         ModItems.ITEMS.register(modEventBus);
         ModItems.TABS.register(modEventBus);
         ModMenus.MENUS.register(modEventBus);
+        ModBlocks.BLOCKS.register(modEventBus);
+        ModBlocks.BLOCK_ENTITY_TYPES.register(modEventBus);
 
         // 2. 注册配置文件
         modContainer.registerConfig(ModConfig.Type.COMMON, BroadcastConfig.SPEC);
@@ -39,6 +37,9 @@ public class CallResponseMod {
         
         // 4. 注册网络包
         modEventBus.addListener(NetworkRegistryHandler::register);
+
+        // 5. 数据生成
+        modEventBus.addListener(DataGenerators::onGatherData);
 
         LOGGER.info("✅ CallResponse mod 初始化完成！");
     }

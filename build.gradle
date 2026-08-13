@@ -44,6 +44,12 @@ neoForge {
         }
         data {
             data()
+            programArguments.set([
+                    '--all', '--mod', mod_id,
+                    '--output', file('src/generated/resources/').getAbsolutePath(),
+                    '--existing', file('src/main/resources/').getAbsolutePath(),
+                    '--existing', file('src/generated/resources/').getAbsolutePath()
+            ])
         }
     }
 
@@ -83,6 +89,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
 }
 
 sourceSets.main.resources.srcDir generateModMetadata
+sourceSets.main.resources.srcDir 'src/generated/resources'
 neoForge.ideSyncTask generateModMetadata
 
 jar {

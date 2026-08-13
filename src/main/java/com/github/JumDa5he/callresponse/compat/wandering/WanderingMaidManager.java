@@ -2,7 +2,7 @@ package com.github.JumDa5he.callresponse.compat.wandering;
 
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
-import com.github.JumDa5he.callresponse.compat.gui.OpenWanderingMaidRequestS2CPacket;
+import com.github.JumDa5he.callresponse.network.OpenWanderingMaidRequestS2CPacket;
 import com.github.JumDa5he.callresponse.config.EmotionPassiveConfig;
 import com.github.JumDa5he.callresponse.mixin.accessor.EntityMaidTameInvoker;
 import com.github.tartaricacid.touhoulittlemaid.entity.info.ServerCustomPackLoader;

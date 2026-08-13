@@ -1,7 +1,6 @@
 package com.github.JumDa5he.callresponse.compat.menu;
 
-import com.github.JumDa5he.callresponse.CallResponseMod;
-import com.github.JumDa5he.callresponse.compat.gui.MaidStatusContainerGui;
+import com.github.JumDa5he.callresponse.compat.client.gui.MaidStatusContainerGui;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 

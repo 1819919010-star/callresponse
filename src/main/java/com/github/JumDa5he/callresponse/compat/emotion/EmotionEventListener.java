@@ -1,6 +1,6 @@
 package com.github.JumDa5he.callresponse.compat.emotion;
 
-import com.github.JumDa5he.callresponse.compat.gui.OpenEmotionBookScreenS2CPacket;
+import com.github.JumDa5he.callresponse.network.OpenEmotionBookScreenS2CPacket;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerData;
 import com.github.JumDa5he.callresponse.compat.item.ModItems;
 import com.github.tartaricacid.touhoulittlemaid.api.event.InteractMaidEvent;

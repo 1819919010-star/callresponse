@@ -1,7 +1,7 @@
 package com.github.JumDa5he.callresponse.compat.item;
 
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionDevotedManager;
-import com.github.JumDa5he.callresponse.compat.gui.MaidListS2CPacket;
+import com.github.JumDa5he.callresponse.network.MaidListS2CPacket;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;

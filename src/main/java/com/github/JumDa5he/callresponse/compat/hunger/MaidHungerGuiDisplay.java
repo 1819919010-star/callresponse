@@ -1,7 +1,7 @@
 package com.github.JumDa5he.callresponse.compat.hunger;
 
-import com.github.JumDa5he.callresponse.compat.gui.MaidStatusContainerGui;
-import com.github.JumDa5he.callresponse.compat.gui.MaidStatusTabButton;
+import com.github.JumDa5he.callresponse.compat.client.gui.MaidStatusContainerGui;
+import com.github.JumDa5he.callresponse.compat.client.gui.MaidStatusTabButton;
 import com.github.JumDa5he.callresponse.compat.menu.OpenMaidStatusC2SPacket;
 import com.github.tartaricacid.touhoulittlemaid.api.event.client.MaidContainerGuiEvent;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.AbstractMaidContainerGui;
