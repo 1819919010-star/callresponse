@@ -114,4 +114,8 @@
   "gui.callresponse.trade.price": "价格：%s 绿宝石",
   "gui.callresponse.trade.old_reward": "报酬沿用旧项目规则",
   "gui.callresponse.trade.sale_reward": "好感工具×%s，另有稀有物品"
+,
+  "item.callresponse.maid_seed": "女仆种子",
+  "item.callresponse.disposable_favorability_tool_add": "好感度工具（一次性）",
+  "block.callresponse.maid_crop": "生长中的女仆"
 }

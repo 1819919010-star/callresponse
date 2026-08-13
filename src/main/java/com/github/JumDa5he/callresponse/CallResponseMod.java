@@ -14,6 +14,7 @@ import com.github.JumDa5he.callresponse.compat.gui.OpenWanderingSkinPoolS2CPacke
 import com.github.JumDa5he.callresponse.compat.gui.UpdateWanderingSkinPoolC2SPacket;
 import com.github.JumDa5he.callresponse.compat.gui.WanderingMaidDecisionC2SPacket;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerAwareEdibleWrapper;
+import com.github.JumDa5he.callresponse.compat.block.ModBlocks;
 import com.github.JumDa5he.callresponse.compat.item.ModItems;
 import com.github.JumDa5he.callresponse.compat.menu.ModMenus;
 import com.github.JumDa5he.callresponse.compat.menu.OpenMaidStatusC2SPacket;
@@ -61,6 +62,8 @@ public class CallResponseMod {
         ModItems.ITEMS.register(modBus);
         ModItems.TABS.register(modBus);
         ModMenus.MENUS.register(modBus);
+        ModBlocks.BLOCKS.register(modBus);
+        ModBlocks.BLOCK_ENTITY_TYPES.register(modBus);
 
         // ===== 2. 注册配置文件 =====
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, BroadcastConfig.SPEC);

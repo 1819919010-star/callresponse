@@ -114,4 +114,8 @@
   "gui.callresponse.trade.price": "Price: %s Emeralds",
   "gui.callresponse.trade.old_reward": "Uses the legacy sale reward",
   "gui.callresponse.trade.sale_reward": "Favor tools x%s plus rare items"
+,
+  "item.callresponse.maid_seed": "Maid Seed",
+  "item.callresponse.disposable_favorability_tool_add": "Favorability Tool (Disposable)",
+  "block.callresponse.maid_crop": "Growing Maid"
 }

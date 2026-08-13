@@ -1,6 +1,8 @@
 package com.github.JumDa5he.callresponse.compat;
 
 import com.github.JumDa5he.callresponse.compat.bauble.NoEatBauble;
+import com.github.JumDa5he.callresponse.compat.block.MaidCropSpecialCropHandler;
+import com.github.JumDa5he.callresponse.compat.block.ModBlocks;
 import com.github.JumDa5he.callresponse.compat.brain.CustomExtraMaidBrain;
 import com.github.JumDa5he.callresponse.compat.brain.LazyMaidHitHandler;
 import com.github.JumDa5he.callresponse.compat.broadcast.BroadcastTools;
@@ -28,6 +30,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.ai.edible.MaidEdibleBlock
 import com.github.tartaricacid.touhoulittlemaid.api.task.meal.IMaidMeal;
 import com.github.tartaricacid.touhoulittlemaid.api.task.meal.MaidMealType;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
+import com.github.tartaricacid.touhoulittlemaid.entity.task.crop.SpecialCropManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.meal.MaidMealManager;
 import com.github.tartaricacid.touhoulittlemaid.item.bauble.BaubleManager;
 
@@ -99,6 +102,12 @@ public class LittleMaidCompat implements ILittleMaid {
     @Override
     public void addMaidTask(TaskManager manager) {
         manager.add(new LazyMaidTask());
+    }
+
+    @Override
+    public void registerSpecialCropHandler(SpecialCropManager manager) {
+        manager.add(ModItems.MAID_SEED.get(), ModBlocks.MAID_CROP_BLOCK.get(),
+                new MaidCropSpecialCropHandler());
     }
 
     @Override
