@@ -1,5 +1,6 @@
 package com.github.JumDa5he.callresponse.compat.gui;
 
+import com.github.JumDa5he.callresponse.compat.menu.OpenMaidStatusC2SPacket;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -13,6 +14,8 @@ public class NetworkRegistryHandler {
         registrar.playToServer(RequestHuntOrderScreenC2SPacket.TYPE, RequestHuntOrderScreenC2SPacket.STREAM_CODEC, RequestHuntOrderScreenC2SPacket::handle);
         registrar.playToServer(UpdateWanderingSkinPoolC2SPacket.TYPE, UpdateWanderingSkinPoolC2SPacket.STREAM_CODEC, UpdateWanderingSkinPoolC2SPacket::handle);
         registrar.playToServer(WanderingMaidDecisionC2SPacket.TYPE, WanderingMaidDecisionC2SPacket.STREAM_CODEC, WanderingMaidDecisionC2SPacket::handle);
+        registrar.playToServer(ExpelMaidC2SPacket.TYPE, ExpelMaidC2SPacket.STREAM_CODEC, ExpelMaidC2SPacket::handle);
+        registrar.playToServer(OpenMaidStatusC2SPacket.TYPE, OpenMaidStatusC2SPacket.STREAM_CODEC, OpenMaidStatusC2SPacket::handle);
 
         // 防服务端崩溃
         if(FMLEnvironment.dist.isClient()){

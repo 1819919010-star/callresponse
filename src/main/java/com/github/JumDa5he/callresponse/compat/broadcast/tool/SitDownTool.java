@@ -8,18 +8,6 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.mojang.serialization.Codec;
 
 public class SitDownTool implements ITool<String> {
-    private static boolean isSitting(EntityMaid maid) {
-        return maid.isInSittingPose();
-    }
-
-    private static void standUp(EntityMaid maid) {
-        maid.setInSittingPose(false);
-    }
-
-    private static void sitDown(EntityMaid maid) {
-        maid.setInSittingPose(true);
-    }
-
     @Override
     public String id() {
         return "sit_down";
@@ -27,7 +15,7 @@ public class SitDownTool implements ITool<String> {
 
     @Override
     public String summary(EntityMaid entityMaid) {
-        return "让女仆坐下。当玩家说'坐下'时调用。";
+        return "让女仆坐下。当玩家要求坐下时调用。";
     }
 
     @Override
@@ -41,11 +29,14 @@ public class SitDownTool implements ITool<String> {
     }
 
     @Override
-    public LLMCallback onCall(String s, String s2, LLMCallback llmCallback) {
-        if (!isSitting(llmCallback.getMaid())) {
-            sitDown(llmCallback.getMaid());
-            return llmCallback.addToolResult("已坐下", "sit_down");
+    public LLMCallback onCall(String toolCallId, String arguments, LLMCallback callback) {
+        if (!OneShotToolCall.claim(callback, id())) {
+            return OneShotToolCall.alreadyUsed(callback, toolCallId, id());
         }
-        return llmCallback.addToolResult("已经坐下了", "sit_down");
+        if (!callback.getMaid().isInSittingPose()) {
+            callback.getMaid().setInSittingPose(true);
+            return OneShotToolCall.finish(callback, toolCallId, id(), "已坐下。");
+        }
+        return OneShotToolCall.finish(callback, toolCallId, id(), "已经坐下了。");
     }
 }

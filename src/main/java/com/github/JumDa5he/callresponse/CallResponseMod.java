@@ -7,6 +7,7 @@ import com.github.JumDa5he.callresponse.compat.gui.NetworkRegistryHandler;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerManager;
 import com.github.JumDa5he.callresponse.compat.hunger.MaidHungerGuiDisplay;
 import com.github.JumDa5he.callresponse.compat.item.ModItems;
+import com.github.JumDa5he.callresponse.compat.menu.ModMenus;
 import com.github.JumDa5he.callresponse.config.BroadcastConfig;
 import com.github.JumDa5he.callresponse.config.EmotionPassiveConfig;
 import com.github.JumDa5he.callresponse.init.InitAttachTypes;
@@ -27,6 +28,7 @@ public class CallResponseMod {
         // 1. 注册物品
         ModItems.ITEMS.register(modEventBus);
         ModItems.TABS.register(modEventBus);
+        ModMenus.MENUS.register(modEventBus);
 
         // 2. 注册配置文件
         modContainer.registerConfig(ModConfig.Type.COMMON, BroadcastConfig.SPEC);
