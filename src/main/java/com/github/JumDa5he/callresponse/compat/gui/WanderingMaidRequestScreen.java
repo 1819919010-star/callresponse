@@ -61,7 +61,6 @@ public final class WanderingMaidRequestScreen extends Screen {
         graphics.fill(panelLeft - 3, panelTop - 3, panelRight + 3, panelBottom + 3, 0xB016101A);
         graphics.fill(panelLeft, panelTop, panelRight, panelBottom, 0xEE171821);
         graphics.fill(panelLeft, panelTop, panelRight, panelTop + 31, 0xFF63334F);
-        graphics.fill(panelLeft, panelTop, centerX, panelTop + 31, 0x405E9AC7);
         graphics.fill(panelLeft, panelTop + 31, panelRight, panelTop + 33, 0xFFD6A75C);
         graphics.fill(panelLeft + 12, panelTop + 43, centerX - 48, panelBottom - 40, 0x802B2632);
         graphics.fill(centerX - 42, panelTop + 47, panelRight - 12, panelBottom - 42, 0x402A202B);

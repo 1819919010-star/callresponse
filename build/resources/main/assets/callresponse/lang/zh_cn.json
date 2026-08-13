@@ -93,5 +93,25 @@
   "text.callresponse.emotion.conflicted": "纠结",
   "text.callresponse.emotion.neutral": "平静",
 
+  "entity.callresponse.trading_maid": "待售女仆（%s 绿宝石）",
+  "message.callresponse.trade.no_stock": "这名流浪商人已经没有可出售的女仆了。",
+  "message.callresponse.trade.not_enough": "购买这名女仆需要 %s 个绿宝石。",
+  "message.callresponse.trade.tame_failed": "购买失败，请检查女仆数量上限。",
+  "message.callresponse.trade.bought": "交易成功：花费 %s 个绿宝石购买了女仆。",
+  "message.callresponse.trade.no_owned_maid": "流浪商人附近 5 格内没有可出售的自家女仆。",
+  "message.callresponse.trade.sold": "女仆已经出售给流浪商人。",
+
   "itemGroup.callresponse": "车万女仆：爱憎分明"
+,
+  "gui.callresponse.trade.open": "交易女仆",
+  "gui.callresponse.trade.title": "流浪商人的女仆交易",
+  "gui.callresponse.trade.buy_side": "购买女仆",
+  "gui.callresponse.trade.sell_side": "出售女仆",
+  "gui.callresponse.trade.buy": "购买",
+  "gui.callresponse.trade.sell": "出售",
+  "gui.callresponse.trade.empty_buy": "这名商人暂无待售女仆",
+  "gui.callresponse.trade.empty_sell": "附近没有你的可出售女仆",
+  "gui.callresponse.trade.price": "价格：%s 绿宝石",
+  "gui.callresponse.trade.old_reward": "报酬沿用旧项目规则",
+  "gui.callresponse.trade.sale_reward": "好感工具×%s，另有稀有物品"
 }

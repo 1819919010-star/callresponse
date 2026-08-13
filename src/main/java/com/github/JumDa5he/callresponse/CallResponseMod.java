@@ -17,6 +17,10 @@ import com.github.JumDa5he.callresponse.compat.hunger.HungerAwareEdibleWrapper;
 import com.github.JumDa5he.callresponse.compat.item.ModItems;
 import com.github.JumDa5he.callresponse.compat.menu.ModMenus;
 import com.github.JumDa5he.callresponse.compat.menu.OpenMaidStatusC2SPacket;
+import com.github.JumDa5he.callresponse.compat.trade.EnableTradingMaidButtonS2CPacket;
+import com.github.JumDa5he.callresponse.compat.trade.OpenTradingMaidScreenS2CPacket;
+import com.github.JumDa5he.callresponse.compat.trade.RequestTradingMaidScreenC2SPacket;
+import com.github.JumDa5he.callresponse.compat.trade.TradingMaidActionC2SPacket;
 import com.github.JumDa5he.callresponse.config.BroadcastConfig;
 import com.github.JumDa5he.callresponse.config.EmotionPassiveConfig;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
@@ -120,6 +124,22 @@ public class CallResponseMod {
                 OpenMaidStatusC2SPacket::encode,
                 OpenMaidStatusC2SPacket::new,
                 OpenMaidStatusC2SPacket::handle);
+        CHANNEL.registerMessage(id++, EnableTradingMaidButtonS2CPacket.class,
+                EnableTradingMaidButtonS2CPacket::encode,
+                EnableTradingMaidButtonS2CPacket::new,
+                EnableTradingMaidButtonS2CPacket::handle);
+        CHANNEL.registerMessage(id++, RequestTradingMaidScreenC2SPacket.class,
+                RequestTradingMaidScreenC2SPacket::encode,
+                RequestTradingMaidScreenC2SPacket::new,
+                RequestTradingMaidScreenC2SPacket::handle);
+        CHANNEL.registerMessage(id++, OpenTradingMaidScreenS2CPacket.class,
+                OpenTradingMaidScreenS2CPacket::encode,
+                OpenTradingMaidScreenS2CPacket::new,
+                OpenTradingMaidScreenS2CPacket::handle);
+        CHANNEL.registerMessage(id++, TradingMaidActionC2SPacket.class,
+                TradingMaidActionC2SPacket::encode,
+                TradingMaidActionC2SPacket::new,
+                TradingMaidActionC2SPacket::handle);
 
         // ===== 3. 注册 ILittleMaid 扩展（在 MaidEdibleBlockManager.init() 之前执行） =====
         // 这个扩展会包装所有方块食物，增加饱食度同步逻辑
