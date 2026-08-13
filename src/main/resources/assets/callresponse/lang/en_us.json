@@ -106,5 +106,25 @@
   "text.callresponse.emotion.fearful": "Fearful",
   "text.callresponse.emotion.terrified": "Terrified",
   "text.callresponse.emotion.conflicted": "Conflicted",
-  "text.callresponse.emotion.neutral": "Neutral"
+  "text.callresponse.emotion.neutral": "Neutral",
+
+  "entity.callresponse.trading_maid": "Maid for Sale (%s Emeralds)",
+  "message.callresponse.trade.no_stock": "This wandering trader has no maids left for sale.",
+  "message.callresponse.trade.not_enough": "This maid costs %s emeralds.",
+  "message.callresponse.trade.tame_failed": "Purchase failed. Check your maid limit.",
+  "message.callresponse.trade.bought": "Trade completed: you bought the maid for %s emeralds.",
+  "message.callresponse.trade.no_owned_maid": "No eligible maid of yours is within 5 blocks of the trader.",
+  "message.callresponse.trade.sold": "The maid has been sold to the wandering trader.",
+
+  "gui.callresponse.trade.open": "Trade Maids",
+  "gui.callresponse.trade.title": "Wandering Trader Maid Market",
+  "gui.callresponse.trade.buy_side": "Buy Maids",
+  "gui.callresponse.trade.sell_side": "Sell Maids",
+  "gui.callresponse.trade.buy": "Buy",
+  "gui.callresponse.trade.sell": "Sell",
+  "gui.callresponse.trade.empty_buy": "This trader has no maids for sale",
+  "gui.callresponse.trade.empty_sell": "No eligible owned maids are nearby",
+  "gui.callresponse.trade.price": "Price: %s Emeralds",
+  "gui.callresponse.trade.old_reward": "Uses the legacy sale reward",
+  "gui.callresponse.trade.sale_reward": "Favor tools x%s plus rare items"
 }

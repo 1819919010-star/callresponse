@@ -30,6 +30,11 @@ public class InitAttachTypes {
                     .serialize(Codec.BOOL)
                     .sync(ByteBufCodecs.BOOL)
                     .build());
+    public static final Supplier<AttachmentType<Boolean>> SYNCED_TRADING = ATTACHMENT_TYPES.register("trading", r ->
+            AttachmentType.builder(h -> false)
+                    .serialize(Codec.BOOL)
+                    .sync(ByteBufCodecs.BOOL)
+                    .build());
 
     public static void init(IEventBus bus){
         ATTACHMENT_TYPES.register(bus);

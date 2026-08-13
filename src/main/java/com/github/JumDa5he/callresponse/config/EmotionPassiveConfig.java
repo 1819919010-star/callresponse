@@ -9,6 +9,7 @@ public class EmotionPassiveConfig {
     public static final ModConfigSpec.IntValue SIT_FEAR_CHANGE;
     public static final ModConfigSpec.IntValue WANDERING_MAID_INTERVAL_MINUTES;
     public static final ModConfigSpec.IntValue WANDERING_MAID_COUNT;
+    public static final ModConfigSpec.BooleanValue WANDERING_TRADER_MAID_TRADE_ENABLED;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -35,6 +36,12 @@ public class EmotionPassiveConfig {
         WANDERING_MAID_COUNT = builder
                 .comment("每名玩家在一次流浪事件中生成的女仆数量（范围 1~10）")
                 .defineInRange("maidsPerPlayer", 1, 1, 10);
+        builder.pop();
+
+        builder.comment("流浪商人女仆交易配置").push("wandering_trader_maid_trade");
+        WANDERING_TRADER_MAID_TRADE_ENABLED = builder
+                .comment("整套流浪商人女仆交易的总开关。关闭后不生成待售女仆、不添加呼应物品交易，也不显示交易女仆按钮")
+                .define("enabled", true);
         builder.pop();
         SPEC = builder.build();
     }
