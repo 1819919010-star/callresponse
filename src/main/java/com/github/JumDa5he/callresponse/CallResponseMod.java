@@ -2,6 +2,7 @@ package com.github.JumDa5he.callresponse;
 
 import com.github.JumDa5he.callresponse.compat.gui.CopyEntityUuidS2CPacket;
 import com.github.JumDa5he.callresponse.compat.gui.DropMaidC2SPacket;
+import com.github.JumDa5he.callresponse.compat.gui.ExpelMaidC2SPacket;
 import com.github.JumDa5he.callresponse.compat.gui.EmotionBookUpdateC2SPacket;
 import com.github.JumDa5he.callresponse.compat.gui.HuntOrderUpdateC2SPacket;
 import com.github.JumDa5he.callresponse.compat.gui.MaidListS2CPacket;
@@ -14,6 +15,8 @@ import com.github.JumDa5he.callresponse.compat.gui.UpdateWanderingSkinPoolC2SPac
 import com.github.JumDa5he.callresponse.compat.gui.WanderingMaidDecisionC2SPacket;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerAwareEdibleWrapper;
 import com.github.JumDa5he.callresponse.compat.item.ModItems;
+import com.github.JumDa5he.callresponse.compat.menu.ModMenus;
+import com.github.JumDa5he.callresponse.compat.menu.OpenMaidStatusC2SPacket;
 import com.github.JumDa5he.callresponse.config.BroadcastConfig;
 import com.github.JumDa5he.callresponse.config.EmotionPassiveConfig;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
@@ -42,7 +45,7 @@ public class CallResponseMod {
     // ===== 网络通道（饱食度同步） =====
     private static final String PROTOCOL_VERSION = "2";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(MOD_ID, "main"),
+             new ResourceLocation(MOD_ID, "main"),
             () -> PROTOCOL_VERSION,
             PROTOCOL_VERSION::equals,
             PROTOCOL_VERSION::equals
@@ -53,6 +56,7 @@ public class CallResponseMod {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         ModItems.ITEMS.register(modBus);
         ModItems.TABS.register(modBus);
+        ModMenus.MENUS.register(modBus);
 
         // ===== 2. 注册配置文件 =====
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, BroadcastConfig.SPEC);
@@ -108,6 +112,14 @@ public class CallResponseMod {
                 WanderingMaidDecisionC2SPacket::encode,
                 WanderingMaidDecisionC2SPacket::new,
                 WanderingMaidDecisionC2SPacket::handle);
+        CHANNEL.registerMessage(id++, ExpelMaidC2SPacket.class,
+                ExpelMaidC2SPacket::encode,
+                ExpelMaidC2SPacket::new,
+                ExpelMaidC2SPacket::handle);
+        CHANNEL.registerMessage(id++, OpenMaidStatusC2SPacket.class,
+                OpenMaidStatusC2SPacket::encode,
+                OpenMaidStatusC2SPacket::new,
+                OpenMaidStatusC2SPacket::handle);
 
         // ===== 3. 注册 ILittleMaid 扩展（在 MaidEdibleBlockManager.init() 之前执行） =====
         // 这个扩展会包装所有方块食物，增加饱食度同步逻辑

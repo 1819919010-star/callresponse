@@ -17,7 +17,7 @@ public class AttackMaidTool implements ITool<String> {
 
     @Override
     public String summary(EntityMaid entityMaid) {
-        return "让女仆攻击周围最近的其他女仆（无差别攻击）。当玩家说'打起来'、'打架'时调用。";
+        return "让女仆攻击附近的其他女仆。当玩家要求攻击、打架时调用。";
     }
 
     @Override
@@ -31,12 +31,15 @@ public class AttackMaidTool implements ITool<String> {
     }
 
     @Override
-    public LLMCallback onCall(String s, String s2, LLMCallback llmCallback) {
-        var owner = llmCallback.getMaid().getOwner();
-        if (!(owner instanceof ServerPlayer sp)) {
-            return llmCallback.addToolResult("没有主人或主人不在线", "attack_maid");
+    public LLMCallback onCall(String toolCallId, String arguments, LLMCallback callback) {
+        if (!OneShotToolCall.claim(callback, id())) {
+            return OneShotToolCall.alreadyUsed(callback, toolCallId, id());
         }
-        AttackOtherMaidAction.execute(llmCallback.getMaid(), sp);
-        return llmCallback.addToolResult("开始攻击", "attack_maid");
+        var owner = callback.getMaid().getOwner();
+        if (!(owner instanceof ServerPlayer player)) {
+            return OneShotToolCall.finish(callback, toolCallId, id(), "没有可用的在线主人，无法执行攻击命令。");
+        }
+        AttackOtherMaidAction.execute(callback.getMaid(), player);
+        return OneShotToolCall.finish(callback, toolCallId, id(), "已开始攻击附近目标。");
     }
 }

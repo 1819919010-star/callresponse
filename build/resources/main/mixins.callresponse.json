@@ -23,6 +23,9 @@
         "WanderingMaidInteractionMixin",
         "WanderingMaidVanillaTameMixin"
     ],
+    "client": [
+        "client.AbstractContainerScreenAccessor"
+    ],
     "injectors": {
         "defaultRequire": 1
     }

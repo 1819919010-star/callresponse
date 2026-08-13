@@ -17,7 +17,7 @@ public class StopAttackTool implements ITool<String> {
 
     @Override
     public String summary(EntityMaid entityMaid) {
-        return "让女仆停止攻击当前目标。当玩家说'停战'、'停止攻击'时调用。";
+        return "让女仆停止攻击当前目标。当玩家要求停战或停止攻击时调用。";
     }
 
     @Override
@@ -31,12 +31,15 @@ public class StopAttackTool implements ITool<String> {
     }
 
     @Override
-    public LLMCallback onCall(String s, String s2, LLMCallback llmCallback) {
-        var owner = llmCallback.getMaid().getOwner();
-        if (!(owner instanceof ServerPlayer sp)) {
-            return llmCallback.addToolResult("没有主人或主人不在线", "stop_attack");
+    public LLMCallback onCall(String toolCallId, String arguments, LLMCallback callback) {
+        if (!OneShotToolCall.claim(callback, id())) {
+            return OneShotToolCall.alreadyUsed(callback, toolCallId, id());
         }
-        StopAttackAction.execute(llmCallback.getMaid(), sp);
-        return llmCallback.addToolResult("已停战", "stop_attack");
+        var owner = callback.getMaid().getOwner();
+        if (!(owner instanceof ServerPlayer player)) {
+            return OneShotToolCall.finish(callback, toolCallId, id(), "没有可用的在线主人，无法执行停战命令。");
+        }
+        StopAttackAction.execute(callback.getMaid(), player);
+        return OneShotToolCall.finish(callback, toolCallId, id(), "已停止攻击。");
     }
 }
