@@ -123,6 +123,7 @@ public final class TradingMaidManager {
         addOfferIfMissing(trader, ModItems.MORE_EAT_BAUBLE, 24);
         addOfferIfMissing(trader, ModItems.HUNT_ORDER, 32);
         addOfferIfMissing(trader, ModItems.WANDERING_MAID_BOOK, 12);
+        addOfferIfMissing(trader, ModItems.MAID_SEED, 35 + trader.getRandom().nextInt(11));
         addOfferIfMissing(trader, InitItems.SMART_SLAB_EMPTY, 8 + trader.getRandom().nextInt(9));
         addOfferIfMissing(trader, InitItems.ULTRAMARINE_ORB_ELIXIR, 40);
         addOfferIfMissing(trader, InitItems.EXPLOSION_PROTECT_BAUBLE, 20);
@@ -150,6 +151,7 @@ public final class TradingMaidManager {
         ItemStack result = offer.getResult();
         return result.is(ModItems.NO_EAT_BAUBLE.get()) || result.is(ModItems.MORE_EAT_BAUBLE.get())
                 || result.is(ModItems.HUNT_ORDER.get()) || result.is(ModItems.WANDERING_MAID_BOOK.get())
+                || result.is(ModItems.MAID_SEED.get())
                 || result.is(InitItems.SMART_SLAB_EMPTY.get())
                 || result.is(InitItems.ULTRAMARINE_ORB_ELIXIR.get())
                 || result.is(InitItems.EXPLOSION_PROTECT_BAUBLE.get())
@@ -422,7 +424,7 @@ public final class TradingMaidManager {
 
     private static void giveSaleReward(ServerPlayer player, ServerLevel level, int favorabilityTools) {
         if (favorabilityTools > 0) {
-            give(player, new ItemStack(InitItems.FAVORABILITY_TOOL_ADD.get(), favorabilityTools));
+            give(player, new ItemStack(ModItems.DISPOSABLE_FAVORABILITY_TOOL_ADD.get(), favorabilityTools));
         }
         give(player, new ItemStack(Items.NETHERITE_INGOT, 1 + level.getRandom().nextInt(3)));
         give(player, new ItemStack(Items.ENCHANTED_GOLDEN_APPLE, 3 + level.getRandom().nextInt(6)));

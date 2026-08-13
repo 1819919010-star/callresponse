@@ -35,6 +35,9 @@ public class ModItems {
             ModBlocks.MAID_CROP_BLOCK.get(), new Item.Properties().rarity(Rarity.RARE)
     ));
 
+    public static final Supplier<Item> DISPOSABLE_FAVORABILITY_TOOL_ADD = ITEMS.register(
+            "disposable_favorability_tool_add", DisposableFavorabilityToolItem::new);
+
     // ===== 创造模式物品栏：专属栏位 =====
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CallResponseMod.MOD_ID);
 
@@ -49,6 +52,7 @@ public class ModItems {
                         output.accept(HUNT_ORDER.get());
                         output.accept(WANDERING_MAID_BOOK.get());
                         output.accept(MAID_SEED.get());
+                        output.accept(DISPOSABLE_FAVORABILITY_TOOL_ADD.get());
                     })
                     .build());
 }

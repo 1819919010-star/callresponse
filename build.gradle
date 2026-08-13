@@ -44,12 +44,17 @@ neoForge {
         }
         data {
             data()
+            def tlmJar = project.provider {
+                configurations.compileClasspath.find { it.name.contains('touhou-little-maid') }.absolutePath
+            }
             programArguments.set([
                     '--all', '--mod', mod_id,
                     '--output', file('src/generated/resources/').getAbsolutePath(),
                     '--existing', file('src/main/resources/').getAbsolutePath(),
                     '--existing', file('src/generated/resources/').getAbsolutePath()
             ])
+            programArguments.add('--existing')
+            programArguments.add(tlmJar)
         }
     }
 
