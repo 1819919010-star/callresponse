@@ -3,8 +3,12 @@ package com.github.JumDa5he.callresponse.compat.block;
 import com.github.JumDa5he.callresponse.compat.item.ModItems;
 import com.github.tartaricacid.touhoulittlemaid.entity.info.ServerCustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent;
+import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
@@ -16,8 +20,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,24 +52,17 @@ public class MaidCropBlock extends CropBlock implements EntityBlock {
 
     @Override
     protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
-        if(state.getValue(CropBlock.AGE) == getMaxAge())
-            return List.of();
-        return super.getDrops(state, params);
-    }
-
-    @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        if(!level.isClientSide &&
-                !state.is(newState.getBlock()) &&
-                !movedByPiston &&
-                getAge(state) == getMaxAge() &&
-                level.getBlockEntity(pos) instanceof MaidCropBlockEntity blockEntity){
-            var maid = new EntityMaid(level);
-            maid.setPos(pos.getCenter().add(0, -0.5, 0));
-            maid.setModelId(blockEntity.getModelID() == null ? MaidCropBlockEntity.DEFAULT_MODEL_ID : blockEntity.getModelID());
-            level.addFreshEntity(maid);
+        if(state.getValue(CropBlock.AGE) == getMaxAge() && params.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof MaidCropBlockEntity blockEntity) {
+            var r = new ArrayList<>(super.getDrops(state, params));
+            var photo = new ItemStack(ModItems.FREE_PHOTO.get());
+            var data = new CompoundTag();
+            data.putString(EntityMaid.MODEL_ID_TAG, blockEntity.getModelID() == null ? randomID(blockEntity.getLevel()) : blockEntity.getModelID());
+            data.putBoolean(EntityMaid.IS_YSM_MODEL_TAG, false);
+            photo.set(InitDataComponent.MAID_INFO, CustomData.of(data));
+            r.add(photo);
+            return r;
         }
-        super.onRemove(state, level, pos, newState, movedByPiston);
+        return super.getDrops(state, params);
     }
 
     @Override

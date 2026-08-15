@@ -21,5 +21,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         singleTexture("maid_seed", mcLoc("item/generated"), "layer0", mcLoc("item/wheat_seeds"));
         singleTexture("disposable_favorability_tool_add", mcLoc("item/generated"), "layer0",
                 ResourceLocation.fromNamespaceAndPath("touhou_little_maid", "item/favorability_tool_add"));
+        singleTexture("free_photo", mcLoc("item/generated"), "layer0",
+                ResourceLocation.fromNamespaceAndPath("touhou_little_maid", "item/photo"));
     }
 }

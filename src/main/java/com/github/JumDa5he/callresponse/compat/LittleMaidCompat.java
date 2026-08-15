@@ -2,7 +2,6 @@ package com.github.JumDa5he.callresponse.compat;
 
 import com.github.JumDa5he.callresponse.compat.bauble.MaidConflictBaubleHandler;
 import com.github.JumDa5he.callresponse.compat.bauble.NoEatBauble;
-import com.github.JumDa5he.callresponse.compat.block.MaidCropSpecialCropHandler;
 import com.github.JumDa5he.callresponse.compat.block.ModBlocks;
 import com.github.JumDa5he.callresponse.compat.brain.CustomExtraMaidBrain;
 import com.github.JumDa5he.callresponse.compat.brain.LazyMaidHitHandler;
@@ -92,10 +91,5 @@ public class LittleMaidCompat implements ILittleMaid {
     @Override
     public void addMaidTask(TaskManager manager) {
         manager.add(new LazyMaidTask());
-    }
-
-    @Override
-    public void registerSpecialCropHandler(SpecialCropManager register) {
-        register.add(ModItems.MAID_SEED.get(), ModBlocks.MAID_CROP_BLOCK.get(), new MaidCropSpecialCropHandler());
     }
 }

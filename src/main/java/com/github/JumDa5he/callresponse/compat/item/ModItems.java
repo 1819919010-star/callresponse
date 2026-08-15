@@ -38,6 +38,8 @@ public class ModItems {
     public static final Supplier<Item> DISPOSABLE_FAVORABILITY_TOOL_ADD = ITEMS.register(
             "disposable_favorability_tool_add", DisposableFavorabilityToolItem::new);
 
+    public static final Supplier<Item> FREE_PHOTO = ITEMS.register("free_photo", ItemFreePhoto::new);
+
     // ===== 创造模式物品栏：专属栏位 =====
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CallResponseMod.MOD_ID);
 
