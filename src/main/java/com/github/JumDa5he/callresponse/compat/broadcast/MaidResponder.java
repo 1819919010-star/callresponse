@@ -2,8 +2,10 @@ package com.github.JumDa5he.callresponse.compat.broadcast;
 
 import com.github.JumDa5he.callresponse.CallResponseMod;
 import com.github.JumDa5he.callresponse.compat.broadcast.actions.*;
+import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionDotingManager;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionPrompt;
+import com.github.JumDa5he.callresponse.compat.talk.TalkEventManager;
 import com.github.JumDa5he.callresponse.config.BroadcastConfig;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.ChatClientInfo;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatManager;
@@ -14,6 +16,7 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public final class MaidResponder {
@@ -38,7 +41,8 @@ public final class MaidResponder {
 
         // 复制列表，避免不可变列表异常
         List<EntityMaid> maidList = new ArrayList<>(maids);
-        maidList.removeIf(maid -> !maid.isTame() || maid.getOwner() == null);
+        maidList.removeIf(maid -> !maid.isTame() || maid.getOwner() == null
+                || TalkEventManager.isParticipant(maid));
         if (maidList.isEmpty()) {
             debug(player, "§c[调试] 没有已驯服且有主人的女仆");
             return;
@@ -46,7 +50,10 @@ public final class MaidResponder {
 
         debug(player, "§e[调试] 进入广播处理，女仆数量: " + maidList.size());
 
-        List<EntityMaid> responders = selectResponders(maidList, player, command);
+        // 配置概率只约束玩家的 #全体 广播；内部事件指定的单只女仆不能再被二次随机吞掉。
+        List<EntityMaid> responders = isPlayerCommand
+                ? selectResponders(maidList, player, command)
+                : new ArrayList<>(maidList);
         if (responders.isEmpty()) {
             debug(player, "§c[调试] 没有女仆通过筛选");
             return;
@@ -70,6 +77,13 @@ public final class MaidResponder {
 
                 for (EntityMaid maid : responders) {
                     boolean isDoting = EmotionDotingManager.isDoting(maid, serverPlayer);
+
+                    // 谈话成员可以在近距离回应主人，但外部指令不能改变围坐、寻路或工作。
+                    if (TalkEventManager.suppressBroadcastAction(maid, serverPlayer)) {
+                        debug(player, Component.literal("§e[调试] ").append(maid.getName())
+                                .append(Component.literal(" 正在谈话，仅原地回应指令")));
+                        continue;
+                    }
 
                     if (lowerCmd.contains("集合") || lowerCmd.contains("过来")) {
                         if (!isDoting) {
@@ -136,13 +150,27 @@ public final class MaidResponder {
 
         // ===== AI 对话 =====
         for (EntityMaid maid : responders) {
+            if (!DialogueApiLimiter.tryAcquire()) {
+                debug(serverPlayer, "§e[调试] 已达到《呼应》每分钟 AI 调用限额，本轮剩余回应已跳过");
+                break;
+            }
             MaidAIChatManager manager = maid.getAiChatManager();
             Component maidName = maid.getName();
             debug(serverPlayer, Component.literal("§e[调试] 正在处理: ").append(maidName));
 
             try {
+                if (isPlayerCommand) {
+                    EmotionData.FeedbackKind feedback = EmotionData.applyChatFeedback(
+                            maid, serverPlayer, command);
+                    if (feedback != EmotionData.FeedbackKind.NONE) {
+                        debug(serverPlayer, Component.literal("§e[调试] ")
+                                .append(maidName)
+                                .append(Component.literal(" 检测到聊天反馈: " + feedback)));
+                    }
+                }
                 String emotionContext = EmotionPrompt.buildEmotionContext(maid, serverPlayer);
-                String message = buildConversationMessage(command, emotionContext);
+                String message = BroadcastDialogueTracker.mark(
+                        buildConversationMessage(command, emotionContext), serverPlayer.getUUID());
                 ChatClientInfo clientInfo = createClientInfo(serverPlayer, maid);
 
                 // 完整交给本体 chat()：自定义人设、内置人设、自动生成人设、历史、工具和 TTS
@@ -183,11 +211,55 @@ public final class MaidResponder {
      * 此处仅保留附属特有的情感状态和原始指令，避免同一人设被重复注入。
      */
     private static String buildConversationMessage(String command, String emotionContext) {
-        return "【情感状态】\n" + emotionContext + "\n\n【对话或事件】\n" + command;
+        return EmotionPrompt.wrapConversation(command, emotionContext);
     }
 
     private static List<EntityMaid> selectResponders(List<EntityMaid> maids, Player player, String command) {
-        debug(player, "§e[调试] 强制所有女仆回应");
-        return new ArrayList<>(maids);
+        double baseChance = BroadcastConfig.BASE_CHANCE.get();
+        double nameBonus = BroadcastConfig.NAME_MENTION_BONUS.get();
+        int maxResponders = BroadcastConfig.MAX_RESPONDERS.get();
+        String normalizedCommand = command.toLowerCase();
+        List<ResponseCandidate> passed = new ArrayList<>();
+
+        for (EntityMaid maid : maids) {
+            boolean mentioned = isNameMentioned(maid, normalizedCommand);
+            double chance = Math.min(1.0, baseChance + (mentioned ? nameBonus : 0.0));
+            double roll = maid.getRandom().nextDouble();
+            debug(player, Component.literal("§e[调试] 回应筛选 ")
+                    .append(maid.getName())
+                    .append(Component.literal(String.format(
+                            "：点名=%s，概率=%.2f，掷骰=%.2f", mentioned, chance, roll))));
+            if (roll < chance) {
+                passed.add(new ResponseCandidate(maid, mentioned,
+                        maid.distanceToSqr(player)));
+            }
+        }
+
+        // 点名命中的女仆优先；同级按距离取最近者，避免多人同时调用 LLM。
+        passed.sort(Comparator.comparing(ResponseCandidate::mentioned).reversed()
+                .thenComparingDouble(ResponseCandidate::distanceSqr));
+        List<EntityMaid> result = passed.stream()
+                .limit(maxResponders)
+                .map(ResponseCandidate::maid)
+                .toList();
+        debug(player, "§e[调试] 概率筛选通过: " + passed.size()
+                + "，受 maxResponders 限制后: " + result.size());
+        return new ArrayList<>(result);
+    }
+
+    private static boolean isNameMentioned(EntityMaid maid, String normalizedCommand) {
+        String displayName = maid.getDisplayName().getString().trim().toLowerCase();
+        if (!displayName.isEmpty() && normalizedCommand.contains(displayName)) {
+            return true;
+        }
+        Component customName = maid.getCustomName();
+        if (customName == null) {
+            return false;
+        }
+        String ownerGivenName = customName.getString().trim().toLowerCase();
+        return !ownerGivenName.isEmpty() && normalizedCommand.contains(ownerGivenName);
+    }
+
+    private record ResponseCandidate(EntityMaid maid, boolean mentioned, double distanceSqr) {
     }
 }

@@ -9,6 +9,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Map;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,6 +22,18 @@ public class EmotionData {
 
     private static final Map<String, Float> trustRemainder = new ConcurrentHashMap<>();
     private static final Map<String, Float> fearRemainder = new ConcurrentHashMap<>();
+    private static final long CHAT_FEEDBACK_TTL_MS = 5L * 60L * 1000L;
+
+    // 只用于识别玩家对上一轮回复的反馈；不写 NBT，重启或超时后自然清空。
+    private static final Map<ChatKey, ChatFeedbackState> CHAT_FEEDBACK = new ConcurrentHashMap<>();
+    private static final List<String> NEGATIVE_FEEDBACK_WORDS = List.of(
+            "你没懂", "没懂", "不是这个意思", "不是", "别这样", "算了", "离谱", "无语",
+            "你在说什么", "听不懂", "看不懂", "错了", "不对", "好烦", "烦死");
+    private static final List<String> REPAIR_FEEDBACK_WORDS = List.of(
+            "我是说", "我说的是", "重新说", "再说一遍", "不是问", "你理解错",
+            "你搞错", "我问的是", "纠正");
+    private static final List<String> POSITIVE_FEEDBACK_WORDS = List.of(
+            "懂了", "明白了", "可以", "有用", "不错", "好耶", "太好了", "谢谢", "感谢");
 
     public static void addTrustFloat(EntityMaid maid, UUID playerId, float delta) {
         String key = maid.getUUID() + ":" + playerId;
@@ -90,6 +103,80 @@ public class EmotionData {
         EmotionValues current = get(maid, playerId);
         int newFear = Math.max(0, Math.min(100, current.fear + delta));
         set(maid, playerId, current.trust, newFear);
+    }
+
+    public static void recordLastChatReply(EntityMaid maid, UUID playerId, String reply) {
+        if (reply == null || reply.isBlank()) {
+            return;
+        }
+        ChatKey key = new ChatKey(maid.getUUID(), playerId);
+        ChatFeedbackState previous = getValidChatState(key);
+        FeedbackKind previousFeedback = previous == null ? FeedbackKind.NONE : previous.feedback;
+        CHAT_FEEDBACK.put(key, new ChatFeedbackState(reply, previousFeedback,
+                System.currentTimeMillis() + CHAT_FEEDBACK_TTL_MS));
+    }
+
+    /** 只把当前玩家消息当作对该女仆上一条真实回复的反馈。 */
+    public static FeedbackKind applyChatFeedback(EntityMaid maid, ServerPlayer player, String userMessage) {
+        ChatKey key = new ChatKey(maid.getUUID(), player.getUUID());
+        ChatFeedbackState state = getValidChatState(key);
+        if (state == null || state.lastReply.isBlank()) {
+            return FeedbackKind.NONE;
+        }
+        FeedbackKind feedback = classifyFeedback(userMessage);
+        // 聊天反馈暂时只影响当轮语气，不直接改变信任数值。
+        // 等对话内容与词表平衡完成后，再决定是否恢复数值变化。
+        CHAT_FEEDBACK.put(key, new ChatFeedbackState(state.lastReply, feedback,
+                System.currentTimeMillis() + CHAT_FEEDBACK_TTL_MS));
+        return feedback;
+    }
+
+    public static String getChatFeedbackPrompt(EntityMaid maid, UUID playerId) {
+        ChatFeedbackState state = getValidChatState(new ChatKey(maid.getUUID(), playerId));
+        if (state == null) {
+            return "";
+        }
+        return switch (state.feedback) {
+            case NEGATIVE -> "聊天反馈：主人认为你上一轮没有听懂或答偏了。先坦率承认没接住，安抚他的情绪，再围绕这次原话重新回应；不要辩解或装懂。";
+            case REPAIR -> "聊天反馈：主人正在纠正你的理解。暂停原先思路，认真听清他重新强调的对象和问题，再用自己的话确认后作答。";
+            case POSITIVE -> "聊天反馈：主人认可了上一轮回复。保持当前情感语气自然接话，不要反复邀功或连续道谢。";
+            case NONE -> "";
+        };
+    }
+
+    private static FeedbackKind classifyFeedback(String message) {
+        String text = message == null ? "" : message.trim().toLowerCase();
+        if (containsAny(text, REPAIR_FEEDBACK_WORDS)) {
+            return FeedbackKind.REPAIR;
+        }
+        if (containsAny(text, NEGATIVE_FEEDBACK_WORDS)) {
+            return FeedbackKind.NEGATIVE;
+        }
+        if (containsAny(text, POSITIVE_FEEDBACK_WORDS)) {
+            return FeedbackKind.POSITIVE;
+        }
+        return FeedbackKind.NONE;
+    }
+
+    private static boolean containsAny(String text, List<String> words) {
+        return words.stream().anyMatch(text::contains);
+    }
+
+    private static ChatFeedbackState getValidChatState(ChatKey key) {
+        ChatFeedbackState state = CHAT_FEEDBACK.get(key);
+        if (state != null && state.expiresAt >= System.currentTimeMillis()) {
+            return state;
+        }
+        CHAT_FEEDBACK.remove(key);
+        return null;
+    }
+
+    public enum FeedbackKind { NONE, NEGATIVE, REPAIR, POSITIVE }
+
+    private record ChatKey(UUID maidId, UUID playerId) {
+    }
+
+    private record ChatFeedbackState(String lastReply, FeedbackKind feedback, long expiresAt) {
     }
 
     public static EmotionTendency getTendency(EntityMaid maid, ServerPlayer player) {

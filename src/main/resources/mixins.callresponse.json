@@ -21,7 +21,9 @@
         "MixinMaidConflictBauble",
         "MixinMaidSyncedData",
         "WanderingMaidInteractionMixin",
-        "WanderingMaidVanillaTameMixin"
+        "WanderingMaidVanillaTameMixin",
+        "TalkLLMCallbackMixin",
+        "TalkMaidAIChatManagerMixin"
     ],
     "client": [
         "client.AbstractContainerScreenAccessor"

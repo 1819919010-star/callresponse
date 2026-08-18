@@ -18,6 +18,7 @@ import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderManager;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntTargetProtectionBypass;
 import com.github.JumDa5he.callresponse.compat.item.ModItems;
 import com.github.JumDa5he.callresponse.compat.task.LazyMaidTask;
+import com.github.JumDa5he.callresponse.compat.talk.TalkEventManager;
 import com.github.JumDa5he.callresponse.compat.trade.TradingMaidManager;
 import com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidManager;
 import com.github.tartaricacid.touhoulittlemaid.ai.agent.tool.ToolRegister;
@@ -70,6 +71,7 @@ public class LittleMaidCompat implements ILittleMaid {
         MinecraftForge.EVENT_BUS.register(new HuntTargetProtectionBypass());
         MinecraftForge.EVENT_BUS.register(new WanderingMaidManager());
         MinecraftForge.EVENT_BUS.register(new TradingMaidManager());
+        MinecraftForge.EVENT_BUS.register(new TalkEventManager());
         HuntGunEventBridge.register();
         MinecraftForge.EVENT_BUS.register(NoEatBauble.class);
     }

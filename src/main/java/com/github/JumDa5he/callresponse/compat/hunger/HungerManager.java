@@ -3,6 +3,7 @@ package com.github.JumDa5he.callresponse.compat.hunger;
 import com.github.JumDa5he.callresponse.compat.bauble.BaubleDetector;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
+import com.github.JumDa5he.callresponse.compat.talk.TalkEventManager;
 import com.github.tartaricacid.touhoulittlemaid.api.event.MaidAndItemTransformEvent;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
@@ -173,6 +174,9 @@ public class HungerManager {
 
                         long tick = maid.level().getGameTime();
 
+                        // 饱食度超过 90 连续 3 秒后锁住所有主动进食；低于 85 才解除。
+                        HungerEatingGuard.tick(maid, tick);
+
                         // 1. 饱食度衰减
                         if (tick % HUNGER_DECAY_INTERVAL == 0) {
                             float current = HungerData.get(maid);
@@ -223,7 +227,7 @@ public class HungerManager {
 
                         // 6. 自动进食（禁食饰品不主动吃；饥饿低于阈值按正常冷却主动吃；暴食饰品每20秒无条件额外吃一次，与正常进食互不干扰）
                         float hunger = HungerData.get(maid);
-                        boolean noEat = BaubleDetector.hasNoEat(maid);
+                        boolean noEat = HungerEatingGuard.isBlocked(maid);
                         boolean moreEat = BaubleDetector.hasMoreEat(maid);
                         if (!noEat) {
                             UUID maidId = maid.getUUID();
@@ -391,6 +395,8 @@ public class HungerManager {
             state = null;
         }
         if (state == null) {
+            // 先退出谈话并恢复真正的原日程，再让讨食系统保存自己的恢复点。
+            TalkEventManager.leaveForFood(maid);
             state = new StealState(maid);
             // 讨食期间禁止 TLM 跟随任务把女仆拉回玩家身边：跟随模式临时开启 home mode。
             // 原来的日程位置只保存不立即覆盖；选定目标后会每 tick 把临时日程中心对准目标，
@@ -645,6 +651,7 @@ public class HungerManager {
     @SubscribeEvent
     public void onMaidDeath(LivingDeathEvent event) {
         if (!(event.getEntity() instanceof EntityMaid maid)) return;
+        HungerEatingGuard.clear(maid);
         if (!maid.getPersistentData().getBoolean(OVERFED_DEATH_TAG)) return;
         if (maid.getPersistentData().getBoolean("DevotedSacrifice")) return;
 

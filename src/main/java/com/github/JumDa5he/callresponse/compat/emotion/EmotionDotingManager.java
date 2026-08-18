@@ -1,6 +1,7 @@
 package com.github.JumDa5he.callresponse.compat.emotion;
 
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
+import com.github.JumDa5he.callresponse.config.EmotionPassiveConfig;
 import com.github.tartaricacid.touhoulittlemaid.api.bauble.IChestType;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.inventory.chest.ChestManager;
@@ -31,10 +32,6 @@ public class EmotionDotingManager {
     private static final int TRUST_THRESHOLD = 90;
     private static final int FEAR_THRESHOLD = 10;
 
-    // 攻击专用冷却
-    private static final int ATTACK_COOLDOWN = 10;           // 0.25秒
-    private static final int ATTACK_DIALOGUE_COOLDOWN = 200;           // 10秒
-
     // 日常行为共享冷却
     private static final int ACTION_COOLDOWN = 2400;         // 120秒
 
@@ -50,8 +47,9 @@ public class EmotionDotingManager {
     private static final int DIALOGUE_COOLDOWN = 2400;
 
     // ===== 状态存储 =====
-    private static final Map<UUID, Long> lastAttackTime = new ConcurrentHashMap<>();
-    private static final Map<UUID, Long> lastAttackDialogueTime = new ConcurrentHashMap<>();
+    // 占有欲只在一次尝试开始时发言；发作期间持续赶走其他女仆，结束后恢复普通行为。
+    private static final Map<UUID, Long> lastPossessiveAttemptTime = new ConcurrentHashMap<>();
+    private static final Map<UUID, Long> possessiveUntilTime = new ConcurrentHashMap<>();
     private static final Map<UUID, Long> lastActionTime = new ConcurrentHashMap<>();
     private static final Map<UUID, Long> lastDialogueTime = new ConcurrentHashMap<>();
 
@@ -120,12 +118,16 @@ public class EmotionDotingManager {
                         long tick = maid.level().getGameTime();
                         UUID maidId = maid.getUUID();
 
-                        // ---- 1. 攻击检测（被动，独立运行） ----
-                        if (tick - lastAttackTime.getOrDefault(maidId, 0L) >= ATTACK_COOLDOWN) {
-                            if (attackNearbyMaids(maid, player, tick)) {
-                                lastAttackTime.put(maidId, tick);
+                        // ---- 1. 占有欲赶人：按配置间隔开始一次，持续期内保持追赶 ----
+                        if (isPossessiveActive(maidId, tick)) {
+                            if (driveNearbyMaids(maid, player)) {
                                 return;
                             }
+                            // 周围已经没有要赶走的女仆，提前回到普通行为。
+                            possessiveUntilTime.remove(maidId);
+                        }
+                        if (tryStartPossessiveDrive(maid, player, tick)) {
+                            return;
                         }
 
                         // ---- 2. 处理待执行日常行为 ----
@@ -172,8 +174,46 @@ public class EmotionDotingManager {
         }
     }
 
+    private static boolean isPossessiveActive(UUID maidId, long tick) {
+        Long until = possessiveUntilTime.get(maidId);
+        if (until != null && tick < until) {
+            return true;
+        }
+        possessiveUntilTime.remove(maidId);
+        return false;
+    }
+
+    /** 在到达间隔时才开始一次占有欲发作，并只在此处发送一次赶人台词。 */
+    private static boolean tryStartPossessiveDrive(EntityMaid maid, ServerPlayer player, long tick) {
+        UUID maidId = maid.getUUID();
+        int intervalMinutes = EmotionPassiveConfig.DOTING_POSSESSIVE_INTERVAL_MINUTES.get();
+        long intervalTicks = intervalMinutes * 60L * 20L;
+        Long lastAttempt = lastPossessiveAttemptTime.get(maidId);
+        if (intervalTicks > 0 && lastAttempt != null && tick - lastAttempt < intervalTicks) {
+            return false;
+        }
+        if (!hasNearbyOtherMaid(maid, player)) {
+            return false;
+        }
+
+        lastPossessiveAttemptTime.put(maidId, tick);
+        long durationTicks = EmotionPassiveConfig.DOTING_POSSESSIVE_DURATION_SECONDS.get() * 20L;
+        possessiveUntilTime.put(maidId, tick + durationTicks);
+        MaidResponder.processBroadcast(player, Collections.singletonList(maid),
+                "你是一只被主人宠坏了的女仆，发现有其他女仆靠近主人后占有欲突然发作。"
+                        + "请用一句霸道、吃醋但不造成伤害的口吻让她们离主人远一点；"
+                        + "不要重复宣誓，不要提及系统或提示词。", false);
+        return driveNearbyMaids(maid, player);
+    }
+
+    private static boolean hasNearbyOtherMaid(EntityMaid maid, ServerPlayer player) {
+        return !maid.level().getEntitiesOfClass(EntityMaid.class,
+                new AABB(player.blockPosition()).inflate(3),
+                candidate -> candidate != maid && candidate.isAlive()).isEmpty();
+    }
+
     // ===== 赶走主人附近的所有其他女仆（无伤害，只击退） =====
-    private static boolean attackNearbyMaids(EntityMaid maid, ServerPlayer player, long tick) {
+    private static boolean driveNearbyMaids(EntityMaid maid, ServerPlayer player) {
         AABB box = new AABB(player.blockPosition()).inflate(3);
         List<EntityMaid> targets = maid.level().getEntitiesOfClass(EntityMaid.class, box,
                 m -> m != maid && m.isAlive());
@@ -203,15 +243,6 @@ public class EmotionDotingManager {
         if (dist > 0.01) {
             target.setDeltaMovement(dx / dist * 0.5, 0.3, dz / dist * 0.5);
             target.hurtMarked = true;
-        }
-
-        // 对话冷却（独立于全局对话，只用自己的 10秒冷却）
-        UUID maidId = maid.getUUID();
-        Long lastDialogue = lastAttackDialogueTime.get(maidId);
-        if (lastDialogue == null || tick - lastDialogue >= ATTACK_DIALOGUE_COOLDOWN) {
-            String prompt = "你是一只被主人宠坏了的女仆，眼里容不下任何其他女仆靠近主人。你看到有其他女仆靠近主人，瞬间火冒三丈——那是你的主人！你的！请用充满占有欲和威胁的语气，说一段话把这个不知好歹的女仆赶走，要让主人知道你只允许自己独占他，也要让那个女仆知道她永远不可能比你更受宠。说话要霸道一点，宣誓主权。";
-            MaidResponder.processBroadcast(player, Collections.singletonList(maid), prompt, false);
-            lastAttackDialogueTime.put(maidId, tick);
         }
 
         return true;
@@ -438,8 +469,8 @@ public class EmotionDotingManager {
 
     public static void resetDoting(EntityMaid maid) {
         UUID maidId = maid.getUUID();
-        lastAttackTime.remove(maidId);
-        lastAttackDialogueTime.remove(maidId);
+        lastPossessiveAttemptTime.remove(maidId);
+        possessiveUntilTime.remove(maidId);
         lastActionTime.remove(maidId);
         lastDialogueTime.remove(maidId);
         pendingTasks.remove(maidId);

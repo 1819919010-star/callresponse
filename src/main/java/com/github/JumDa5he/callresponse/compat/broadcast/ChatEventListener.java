@@ -1,6 +1,8 @@
 package com.github.JumDa5he.callresponse.compat.broadcast;
 
 import com.github.JumDa5he.callresponse.config.BroadcastConfig;
+import com.github.JumDa5he.callresponse.compat.emotion.EmotionActiveDialogue;
+import com.github.JumDa5he.callresponse.compat.talk.TalkEventManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -17,11 +19,13 @@ public class ChatEventListener {
     public void onPlayerChat(ServerChatEvent event) {
         Player player = event.getPlayer();
         String message = event.getRawText();
+        EmotionActiveDialogue.onPlayerSpoke(event.getPlayer());
 
         MaidResponder.debug(player, "§e[调试] 监听到: " + message);
 
         String prefix = BroadcastConfig.TRIGGER_PREFIX.get();
         if (!message.startsWith(prefix)) {
+            TalkEventManager.handleOwnerChat(event.getPlayer(), message);
             return;
         }
 
@@ -42,11 +46,17 @@ public class ChatEventListener {
                 EntityMaid.class, area,
                 (maid) -> maid.isAlive() && maid.getOwnerUUID() != null
         );
+        int foundBeforeTalkRouting = maids.size();
+        maids = TalkEventManager.routeBroadcastCommand(event.getPlayer(), maids, command);
 
         MaidResponder.debug(player, "§e[调试] 找到女仆: " + maids.size());
 
         if (maids.isEmpty()) {
-            player.displayClientMessage(Component.literal("§c[广播] 周围没有女仆..."), false);
+            if (foundBeforeTalkRouting > 0) {
+                player.displayClientMessage(Component.literal("§e[广播] 谈话中的女仆只会坐在原地回应"), false);
+            } else {
+                player.displayClientMessage(Component.literal("§c[广播] 周围没有女仆..."), false);
+            }
             return;
         }
 

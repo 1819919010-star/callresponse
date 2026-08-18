@@ -43,7 +43,9 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -456,10 +458,13 @@ public final class WanderingMaidManager {
     }
 
     private static List<Item> selectRandomItems(ServerLevel level, int requestedCount) {
+        Set<String> blacklist = normalizeItemIdList(EmotionPassiveConfig.WANDERING_MAID_DROP_BLACKLIST.get());
+        Set<String> whitelist = normalizeItemIdList(EmotionPassiveConfig.WANDERING_MAID_DROP_WHITELIST.get());
         List<Item> candidates = new ArrayList<>();
         for (Item item : ForgeRegistries.ITEMS.getValues()) {
             ItemStack stack = item.getDefaultInstance();
-            if (item != Items.AIR && !stack.isEmpty() && stack.isItemEnabled(level.enabledFeatures())) {
+            if (item != Items.AIR && !stack.isEmpty() && stack.isItemEnabled(level.enabledFeatures())
+                    && isAllowedRandomItem(item, blacklist, whitelist)) {
                 candidates.add(item);
             }
         }
@@ -469,6 +474,29 @@ public final class WanderingMaidManager {
             selected.add(candidates.remove(level.getRandom().nextInt(candidates.size())));
         }
         return selected;
+    }
+
+    /** 黑名单永远优先；白名单为空时只排除黑名单，白名单非空时只允许其中的物品。 */
+    private static boolean isAllowedRandomItem(Item item, Set<String> blacklist, Set<String> whitelist) {
+        var key = ForgeRegistries.ITEMS.getKey(item);
+        if (key == null) {
+            return false;
+        }
+        String itemId = key.toString().toLowerCase(Locale.ROOT);
+        if (blacklist.contains(itemId)) {
+            return false;
+        }
+        return whitelist.isEmpty() || whitelist.contains(itemId);
+    }
+
+    private static Set<String> normalizeItemIdList(List<? extends String> itemIds) {
+        Set<String> normalized = new HashSet<>();
+        for (String itemId : itemIds) {
+            if (itemId != null && !itemId.isBlank()) {
+                normalized.add(itemId.trim().toLowerCase(Locale.ROOT));
+            }
+        }
+        return normalized;
     }
 
     @SubscribeEvent

@@ -12,6 +12,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.event.InteractMaidEvent;
 import com.github.tartaricacid.touhoulittlemaid.entity.info.ServerCustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
+import com.github.tartaricacid.touhoulittlemaid.item.ItemMaidBed;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -27,6 +28,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.TickEvent;
@@ -53,8 +55,8 @@ public final class TradingMaidManager {
     private static final String ITEM_OFFERS_INITIALIZED = "callresponse:item_offers_initialized";
     private static final String SECOND_WAVE_SPAWNED = "callresponse:maid_market_second_wave_spawned";
     private static final String PURCHASE_MOVING = "callresponse:trading_maid_purchase_moving";
-    private static final int MIN_PRICE = 16;
-    private static final int MAX_PRICE = 48;
+    private static final int MIN_PRICE = 60;
+    private static final int MAX_PRICE = 128;
     private static final int TRADER_SCAN_RADIUS = 96;
     private static final int TRADE_RADIUS = 12;
     private static final int SELL_RADIUS = 32;
@@ -122,6 +124,17 @@ public final class TradingMaidManager {
         addOfferIfMissing(trader, ModItems.HUNT_ORDER, 32);
         addOfferIfMissing(trader, ModItems.WANDERING_MAID_BOOK, 12);
         addOfferIfMissing(trader, ModItems.MAID_SEED, 35 + trader.getRandom().nextInt(11));
+        addOfferIfMissing(trader, InitItems.SHRINE, 40 + trader.getRandom().nextInt(21));
+        int bedPrice = 4 + trader.getRandom().nextInt(5);
+        List<DyeColor> bedColors = List.of(DyeColor.WHITE, DyeColor.BLACK, DyeColor.YELLOW,
+                DyeColor.BLUE, DyeColor.GREEN, DyeColor.PURPLE);
+        DyeColor first = bedColors.get(trader.getRandom().nextInt(bedColors.size()));
+        DyeColor second;
+        do {
+            second = bedColors.get(trader.getRandom().nextInt(bedColors.size()));
+        } while (second == first);
+        addBedOfferIfMissing(trader, first, bedPrice);
+        addBedOfferIfMissing(trader, second, bedPrice);
         addOfferIfMissing(trader, InitItems.SMART_SLAB_EMPTY, 8 + trader.getRandom().nextInt(9));
         addOfferIfMissing(trader, InitItems.ULTRAMARINE_ORB_ELIXIR, 40);
         addOfferIfMissing(trader, InitItems.EXPLOSION_PROTECT_BAUBLE, 20);
@@ -145,11 +158,23 @@ public final class TradingMaidManager {
                 new ItemStack(item.get()), 8, 1, 0.05F));
     }
 
+    private static void addBedOfferIfMissing(WanderingTrader trader, DyeColor color, int price) {
+        if (trader.getOffers().stream().anyMatch(offer -> offer.getResult().is(InitItems.MAID_BED.get())
+                && ItemMaidBed.getColor(offer.getResult()) == color)) {
+            return;
+        }
+        ItemStack bed = new ItemStack(InitItems.MAID_BED.get());
+        ItemMaidBed.setColor(color, bed);
+        trader.getOffers().add(new MerchantOffer(new ItemStack(Items.EMERALD, price), bed, 8, 1, 0.05F));
+    }
+
     private static boolean isInjectedOffer(MerchantOffer offer) {
         ItemStack result = offer.getResult();
         return result.is(ModItems.NO_EAT_BAUBLE.get()) || result.is(ModItems.MORE_EAT_BAUBLE.get())
                 || result.is(ModItems.HUNT_ORDER.get()) || result.is(ModItems.WANDERING_MAID_BOOK.get())
                 || result.is(ModItems.MAID_SEED.get())
+                || result.is(InitItems.SHRINE.get())
+                || result.is(InitItems.MAID_BED.get())
                 || result.is(InitItems.SMART_SLAB_EMPTY.get())
                 || result.is(InitItems.ULTRAMARINE_ORB_ELIXIR.get())
                 || result.is(InitItems.EXPLOSION_PROTECT_BAUBLE.get())

@@ -1,6 +1,5 @@
 package com.github.JumDa5he.callresponse.compat.hunger;
 
-import com.github.JumDa5he.callresponse.compat.bauble.BaubleDetector;
 import com.github.tartaricacid.touhoulittlemaid.api.block.IMaidEdibleBlock;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.BlockPos;
@@ -17,7 +16,7 @@ public class HungerAwareEdibleWrapper implements IMaidEdibleBlock {
 
     // 禁食饰品：彻底禁止 edible 偷吃（不寻找目标、不食用、不放置食物）
     private static boolean isBlocked(EntityMaid maid) {
-        return BaubleDetector.hasNoEat(maid);
+        return HungerEatingGuard.isBlocked(maid);
     }
 
     @Override
