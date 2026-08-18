@@ -43,7 +43,9 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -455,17 +457,44 @@ public final class WanderingMaidManager {
     }
 
     private static List<Item> selectRandomItems(ServerLevel level, int requestedCount) {
-        var result = new ArrayList<Item>();
-        for (int i = 0; i < requestedCount * 10 && result.size() < requestedCount; i++) {
-            var item = BuiltInRegistries.ITEM.getRandom(level.random);
-            if(item.isEmpty())continue;
-            if(item.get().value() == Items.AIR)continue;
-            Item value = item.get().value();
-            if (!result.contains(value)) {
-                result.add(value);
+        Set<String> blacklist = normalizeItemIdList(EmotionPassiveConfig.WANDERING_MAID_DROP_BLACKLIST.get());
+        Set<String> whitelist = normalizeItemIdList(EmotionPassiveConfig.WANDERING_MAID_DROP_WHITELIST.get());
+        List<Item> candidates = new ArrayList<>();
+        for (Item item : BuiltInRegistries.ITEM) {
+            ItemStack stack = item.getDefaultInstance();
+            if (item != Items.AIR && !stack.isEmpty() && stack.isItemEnabled(level.enabledFeatures())
+                    && isAllowedRandomItem(item, blacklist, whitelist)) {
+                candidates.add(item);
             }
         }
-        return result;
+        List<Item> selected = new ArrayList<>();
+        for (int i = 0; i < requestedCount && !candidates.isEmpty(); i++) {
+            selected.add(candidates.remove(level.getRandom().nextInt(candidates.size())));
+        }
+        return selected;
+    }
+
+    /** 黑名单永远优先；白名单为空时只排除黑名单，白名单非空时只允许其中的物品。 */
+    private static boolean isAllowedRandomItem(Item item, Set<String> blacklist, Set<String> whitelist) {
+        var key = BuiltInRegistries.ITEM.getKey(item);
+        if (key == null) {
+            return false;
+        }
+        String itemId = key.toString().toLowerCase(Locale.ROOT);
+        if (blacklist.contains(itemId)) {
+            return false;
+        }
+        return whitelist.isEmpty() || whitelist.contains(itemId);
+    }
+
+    private static Set<String> normalizeItemIdList(List<? extends String> itemIds) {
+        Set<String> normalized = new HashSet<>();
+        for (String itemId : itemIds) {
+            if (itemId != null && !itemId.isBlank()) {
+                normalized.add(itemId.trim().toLowerCase(Locale.ROOT));
+            }
+        }
+        return normalized;
     }
 
     @SubscribeEvent

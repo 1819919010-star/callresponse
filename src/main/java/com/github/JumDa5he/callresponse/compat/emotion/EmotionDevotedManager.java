@@ -3,6 +3,7 @@ package com.github.JumDa5he.callresponse.compat.emotion;
 import com.github.JumDa5he.callresponse.CallResponseMod;
 import com.github.JumDa5he.callresponse.compat.api.event.emotion.MaidEmotionEvent;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
+import com.github.JumDa5he.callresponse.compat.hunt.HuntRawHealth;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.inventory.handler.BaubleItemHandler;
 import net.minecraft.core.BlockPos;
@@ -10,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -187,7 +189,27 @@ public class EmotionDevotedManager {
         }
 
         maid.swing(InteractionHand.MAIN_HAND);
+        float healthBefore = target.getHealth();
+        DamageSource source = target.damageSources().mobAttack(maid);
+        target.invulnerableTime = 0;
         maid.doHurtTarget(target);
+
+        // 同主人保护、饰品或其他事件可能让 doHurtTarget 表面成功但实际不扣血。
+        // 仅在生命值完全没变时补一次基础攻击伤害，正常原生伤害不会被重复结算。
+        if (target.isAlive() && target.getHealth() >= healthBefore) {
+            float fallbackDamage = Math.max(1.0F,
+                    (float) maid.getAttributeValue(Attributes.ATTACK_DAMAGE));
+            float healthAfter = Math.max(0.0F, healthBefore - fallbackDamage);
+            HuntRawHealth.write(target, healthAfter);
+            target.hurtTime = target.hurtDuration = 10;
+            target.hurtMarked = true;
+            target.level().broadcastDamageEvent(target, source);
+            target.knockback(0.4D, maid.getX() - target.getX(), maid.getZ() - target.getZ());
+            target.hurtMarked = true;
+            if (healthAfter <= 0.0F) {
+                target.die(source);
+            }
+        }
         lastAttackTime.put(maidId, now);
 
         if (maid.getRandom().nextDouble() < STEAL_CHANCE) {

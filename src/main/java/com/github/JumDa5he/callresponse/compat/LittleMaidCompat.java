@@ -16,6 +16,7 @@ import com.github.JumDa5he.callresponse.compat.hunger.MaidHungerGuiDisplay;
 import com.github.JumDa5he.callresponse.compat.hunger.NoEatAwareMaidMeal;
 import com.github.JumDa5he.callresponse.compat.item.ModItems;
 import com.github.JumDa5he.callresponse.compat.task.LazyMaidTask;
+import com.github.JumDa5he.callresponse.compat.talk.TalkEventManager;
 import com.github.JumDa5he.callresponse.compat.trade.TradingMaidManager;
 import com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidManager;
 import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
@@ -58,6 +59,7 @@ public class LittleMaidCompat implements ILittleMaid {
         HuntGunEventBridge.register();
         NeoForge.EVENT_BUS.register(new WanderingMaidManager());
         NeoForge.EVENT_BUS.register(new TradingMaidManager());
+        NeoForge.EVENT_BUS.register(new TalkEventManager());
     }
 
     @Override

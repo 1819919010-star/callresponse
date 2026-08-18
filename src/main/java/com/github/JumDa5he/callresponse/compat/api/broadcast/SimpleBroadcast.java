@@ -13,8 +13,8 @@ public class SimpleBroadcast implements IBroadcast{
     private final List<String> keywords;
     private final CallFunction callFunction;
     private final CanCall canCall;
-    private static final CanCall DEFAULT = EmotionDotingManager::isDoting;
-    public static final CanCall EMPTY = (a, b) -> true;
+    private static final CanCall DEFAULT = (maid, player) -> !EmotionDotingManager.isDoting(maid, player);
+    public static final CanCall EMPTY = (a, b) -> false;
 
     public SimpleBroadcast(CallFunction function, String... keywords){
         this(function, DEFAULT, keywords);
@@ -37,6 +37,7 @@ public class SimpleBroadcast implements IBroadcast{
                             .append(maid.getName())
                             .append(Component.literal(" 拒绝指令"))
             );
+            return;
         }
         callFunction.onCall(maid, player);
     }

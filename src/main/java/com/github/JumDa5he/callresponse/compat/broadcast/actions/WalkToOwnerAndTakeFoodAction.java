@@ -1,6 +1,7 @@
 package com.github.JumDa5he.callresponse.compat.broadcast.actions;
 
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
+import com.github.JumDa5he.callresponse.compat.hunger.HungerEatingGuard;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -34,6 +35,10 @@ public class WalkToOwnerAndTakeFoodAction {
     }
 
     public static void execute(EntityMaid maid, ServerPlayer debugPlayer) {
+        if (HungerEatingGuard.isBlocked(maid)) {
+            MaidResponder.debug(debugPlayer, "§e[调试] 女仆当前被禁止主动进食");
+            return;
+        }
         if (maid.getOwner() == null) {
             MaidResponder.debug(debugPlayer, "§c[调试] 女仆没有主人");
             return;
@@ -74,6 +79,11 @@ public class WalkToOwnerAndTakeFoodAction {
                 double distSq = maid.distanceToSqr(targetPos.getX() + 0.5, targetPos.getY() + 0.5, targetPos.getZ() + 0.5);
                 if (distSq < 2.25) {
                     maid.getServer().execute(() -> {
+                        if (HungerEatingGuard.isBlocked(maid)) {
+                            maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+                            maid.getNavigation().stop();
+                            return;
+                        }
                         ItemStack currentFood = owner.getMainHandItem();
                         if (currentFood.isEmpty() || currentFood.getFoodProperties(maid) == null) {
                             MaidResponder.debug(debugPlayer, "§c[调试] 主人手里没有食物了");

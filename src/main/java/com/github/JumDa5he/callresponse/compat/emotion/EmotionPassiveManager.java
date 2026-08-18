@@ -2,6 +2,7 @@ package com.github.JumDa5he.callresponse.compat.emotion;
 
 import com.github.JumDa5he.callresponse.compat.api.event.emotion.MaidEmotionEvent;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
+import com.github.JumDa5he.callresponse.compat.talk.TalkEventManager;
 import com.github.JumDa5he.callresponse.config.EmotionPassiveConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.BlockPos;
@@ -689,6 +690,7 @@ public class EmotionPassiveManager {
                     .forEach(maid -> {
                         if (!maid.isTame() || maid.getOwner() == null) return;
                         if (EmotionBetrayalManager.isBetraying(maid)) return;
+                        if (TalkEventManager.isParticipant(maid)) return;
                         if (maid.distanceTo(dead) > DEATH_RADIUS) return;
 
                         UUID ownerId = getOwnerUUID(maid);
