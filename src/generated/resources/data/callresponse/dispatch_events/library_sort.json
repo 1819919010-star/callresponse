@@ -1,0 +1,22 @@
+{
+  "cooldown": 20,
+  "description": "旧书堆得太乱了，需要细心的人重新分类登记。",
+  "duration": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 40,
+    "min_inclusive": 20
+  },
+  "emotion": {
+    "favor": 3,
+    "fear": -2,
+    "hunger": -5,
+    "trust": 1
+  },
+  "rewards": {
+    "loot": [
+      "callresponse:dispatch/library_sort"
+    ]
+  },
+  "title": "图书馆整理委托",
+  "weight": 9
+}

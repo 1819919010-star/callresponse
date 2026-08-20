@@ -1,0 +1,22 @@
+{
+  "cooldown": 30,
+  "description": "村民忙不过来，请女仆帮忙整理货物和照看农田。",
+  "duration": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 20,
+    "min_inclusive": 10
+  },
+  "emotion": {
+    "favor": 2,
+    "fear": -4,
+    "hunger": -10,
+    "trust": 1
+  },
+  "rewards": {
+    "loot": [
+      "callresponse:dispatch/village_help"
+    ]
+  },
+  "title": "村庄临时帮工",
+  "weight": 10
+}

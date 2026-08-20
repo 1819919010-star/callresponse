@@ -1,0 +1,23 @@
+{
+  "category": "play",
+  "cooldown": 20,
+  "description": "去远处的花海慢慢走一圈，顺手采些漂亮的花。",
+  "duration": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 25,
+    "min_inclusive": 10
+  },
+  "emotion": {
+    "favor": 15,
+    "fear": -2,
+    "hunger": -3,
+    "trust": 2
+  },
+  "rewards": {
+    "loot": [
+      "callresponse:dispatch/flower_trip"
+    ]
+  },
+  "title": "花海散步",
+  "weight": 10
+}

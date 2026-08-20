@@ -1,0 +1,22 @@
+{
+  "cooldown": 90,
+  "description": "加入地狱探险队深入下界，协助队伍清理烈焰人与凋零骷髅并搜集稀有物资。",
+  "duration": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 60,
+    "min_inclusive": 45
+  },
+  "emotion": {
+    "favor": 4,
+    "fear": 3,
+    "hunger": -14,
+    "trust": 2
+  },
+  "rewards": {
+    "loot": [
+      "callresponse:dispatch/nether_expedition"
+    ]
+  },
+  "title": "参加地狱探险队",
+  "weight": 6
+}

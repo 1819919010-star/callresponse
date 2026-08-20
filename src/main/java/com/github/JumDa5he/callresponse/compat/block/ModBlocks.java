@@ -14,4 +14,7 @@ public class ModBlocks {
     public static final DeferredHolder<Block, MaidCropBlock> MAID_CROP_BLOCK = BLOCKS.register("maid_crop", r -> new MaidCropBlock());
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MaidCropBlockEntity>> MAID_CROP_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register("maid_crop", r ->
             BlockEntityType.Builder.of(MaidCropBlockEntity::new, MAID_CROP_BLOCK.get()).build(null));
+    public static final DeferredHolder<Block, RewardBoxBlock> REWARD_BOX = BLOCKS.register("reward_box", r -> new RewardBoxBlock());
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RewardBoxBlockEntity>> REWARD_BOX_ENTITY = BLOCK_ENTITY_TYPES.register("reward_box", r ->
+            BlockEntityType.Builder.of(RewardBoxBlockEntity::new, REWARD_BOX.get()).build(null));
 }

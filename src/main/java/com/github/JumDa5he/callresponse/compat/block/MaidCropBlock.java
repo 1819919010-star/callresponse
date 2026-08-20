@@ -79,7 +79,8 @@ public class MaidCropBlock extends CropBlock implements EntityBlock {
             blockEntity.setModelID(randomID(level));
     }
 
-    public static String randomID(Level level){
+    public static String randomID(@Nullable Level level){
+        if (level == null) return MaidCropBlockEntity.DEFAULT_MODEL_ID;
         var count = ServerCustomPackLoader.SERVER_MAID_MODELS.getModelSize();
         if(count <= 0)return MaidCropBlockEntity.DEFAULT_MODEL_ID;
         int skipRandom = level.getRandom().nextInt(count);

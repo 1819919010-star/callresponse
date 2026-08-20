@@ -7,6 +7,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
@@ -20,6 +21,27 @@ public class ModRecipeProvider extends RecipeProvider {
 
     @Override
     protected void buildRecipes(RecipeOutput output) {
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.DISPATCH_BOOK.get())
+                .pattern(" P ")
+                .pattern("BCB")
+                .pattern(" F ")
+                .define('P', Items.PAPER)
+                .define('B', Items.BOOK)
+                .define('C', Items.COMPASS)
+                .define('F', Items.FEATHER)
+                .unlockedBy("has_book", has(Items.BOOK))
+                .save(output, ResourceLocation.fromNamespaceAndPath(CallResponseMod.MOD_ID, "dispatch_book"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModItems.REWARD_BOX.get())
+                .pattern("IGI")
+                .pattern("ICI")
+                .pattern("III")
+                .define('I', Items.IRON_INGOT)
+                .define('G', Items.GOLD_INGOT)
+                .define('C', Items.CHEST)
+                .unlockedBy("has_chest", has(Items.CHEST))
+                .save(output, ResourceLocation.fromNamespaceAndPath(CallResponseMod.MOD_ID, "reward_box"));
+
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.HUNT_ORDER.get())
                 .requires(Items.NETHER_STAR)
                 .requires(Items.DIAMOND_SWORD)

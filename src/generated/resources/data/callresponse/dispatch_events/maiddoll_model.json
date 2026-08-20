@@ -1,0 +1,22 @@
+{
+  "cooldown": 90,
+  "description": "某地正在进行女仆布娃娃的制作，需要一些模特来做样式",
+  "duration": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 50,
+    "min_inclusive": 30
+  },
+  "emotion": {
+    "favor": 2,
+    "fear": 1,
+    "hunger": -10,
+    "trust": 2
+  },
+  "rewards": {
+    "loot": [
+      "callresponse:dispatch/maiddoll_model"
+    ]
+  },
+  "title": "成为女仆布娃娃模特",
+  "weight": 6
+}

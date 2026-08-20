@@ -1,0 +1,22 @@
+{
+  "cooldown": 60,
+  "description": "替矿工检查旧矿道，并把仍可使用的矿物带回来。",
+  "duration": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 40,
+    "min_inclusive": 20
+  },
+  "emotion": {
+    "favor": 2,
+    "fear": 1,
+    "hunger": -15,
+    "trust": 1
+  },
+  "rewards": {
+    "loot": [
+      "callresponse:dispatch/mine_survey"
+    ]
+  },
+  "title": "矿洞物资勘察",
+  "weight": 8
+}

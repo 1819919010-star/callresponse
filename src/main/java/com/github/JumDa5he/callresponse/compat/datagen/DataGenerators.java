@@ -27,6 +27,8 @@ public class DataGenerators {
                 Set.of(),
                 List.of(new LootTableProvider.SubProviderEntry(ModLootTableProvider::new, LootContextParamSets.BLOCK)),
                 lookupProvider));
+        generator.getVanillaPack(event.includeServer()).addProvider(output ->
+                new ModDispatchEventProvider(output, lookupProvider, existingFileHelper));
 
         generator.getVanillaPack(event.includeClient()).addProvider(output ->
                 new ModItemModelProvider(output, CallResponseMod.MOD_ID, existingFileHelper));

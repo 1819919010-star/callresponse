@@ -40,6 +40,11 @@ public class ModItems {
 
     public static final Supplier<Item> FREE_PHOTO = ITEMS.register("free_photo", ItemFreePhoto::new);
 
+    public static final Supplier<Item> DISPATCH_BOOK = ITEMS.register("dispatch_book",
+            () -> new DispatchBookItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
+    public static final Supplier<Item> REWARD_BOX = ITEMS.register("reward_box",
+            () -> new BlockItem(ModBlocks.REWARD_BOX.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+
     // ===== 创造模式物品栏：专属栏位 =====
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CallResponseMod.MOD_ID);
 
@@ -55,6 +60,8 @@ public class ModItems {
                         output.accept(WANDERING_MAID_BOOK.get());
                         output.accept(MAID_SEED.get());
                         output.accept(DISPOSABLE_FAVORABILITY_TOOL_ADD.get());
+                        output.accept(DISPATCH_BOOK.get());
+                        output.accept(REWARD_BOX.get());
                     })
                     .build());
 }

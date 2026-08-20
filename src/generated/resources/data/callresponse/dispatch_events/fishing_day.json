@@ -1,0 +1,23 @@
+{
+  "category": "play",
+  "cooldown": 30,
+  "description": "带上鱼竿，在安静的河边消磨半天。",
+  "duration": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 20,
+    "min_inclusive": 10
+  },
+  "emotion": {
+    "favor": 2,
+    "fear": -1,
+    "hunger": -4,
+    "trust": 1
+  },
+  "rewards": {
+    "loot": [
+      "callresponse:dispatch/fishing_day"
+    ]
+  },
+  "title": "河边垂钓",
+  "weight": 9
+}

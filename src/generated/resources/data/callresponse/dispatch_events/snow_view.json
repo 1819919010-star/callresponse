@@ -1,0 +1,23 @@
+{
+  "category": "play",
+  "cooldown": 60,
+  "description": "去雪原看看白茫茫的景色，捎回一些旅途纪念。",
+  "duration": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 30,
+    "min_inclusive": 15
+  },
+  "emotion": {
+    "favor": 6,
+    "fear": -1,
+    "hunger": -8,
+    "trust": 3
+  },
+  "rewards": {
+    "loot": [
+      "callresponse:dispatch/snow_view"
+    ]
+  },
+  "title": "雪原看风景",
+  "weight": 7
+}

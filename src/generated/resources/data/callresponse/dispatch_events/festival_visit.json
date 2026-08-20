@@ -1,0 +1,23 @@
+{
+  "category": "play",
+  "cooldown": 60,
+  "description": "附近村庄正在举办热闹的小庆典，去逛逛摊位。",
+  "duration": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 40,
+    "min_inclusive": 20
+  },
+  "emotion": {
+    "favor": 6,
+    "fear": -2,
+    "hunger": 6,
+    "trust": 4
+  },
+  "rewards": {
+    "loot": [
+      "callresponse:dispatch/festival_visit"
+    ]
+  },
+  "title": "村庄小庆典",
+  "weight": 8
+}

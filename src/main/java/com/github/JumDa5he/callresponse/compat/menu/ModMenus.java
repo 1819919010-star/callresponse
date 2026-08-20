@@ -16,6 +16,10 @@ public final class ModMenus {
             "maid_status",
             () -> IMenuTypeExtension.create((windowId, inventory, extraData) ->
                     new MaidStatusContainer(windowId, inventory, extraData.readInt())));
+    public static final Supplier<MenuType<RewardBoxMenu>> REWARD_BOX = MENUS.register(
+            "reward_box",
+            () -> IMenuTypeExtension.create((windowId, inventory, data) ->
+                    new RewardBoxMenu(windowId, inventory)));
 
     private ModMenus() {
     }

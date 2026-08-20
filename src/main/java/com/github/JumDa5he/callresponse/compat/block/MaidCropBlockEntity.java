@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class MaidCropBlockEntity extends BlockEntity {
     public static final String DEFAULT_MODEL_ID = "touhou_little_maid:hakurei_reimu";
+    @Nullable
     private String modelID;
     public MaidCropBlockEntity(BlockPos pos, BlockState blockState) {
         super(ModBlocks.MAID_CROP_BLOCK_ENTITY.get(), pos, blockState);
@@ -28,7 +29,8 @@ public class MaidCropBlockEntity extends BlockEntity {
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
-        tag.putString("modelID", modelID);
+        if (modelID != null)
+            tag.putString("modelID", modelID);
     }
 
     @Override

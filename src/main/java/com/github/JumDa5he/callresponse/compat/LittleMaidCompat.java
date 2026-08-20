@@ -6,6 +6,8 @@ import com.github.JumDa5he.callresponse.compat.block.ModBlocks;
 import com.github.JumDa5he.callresponse.compat.brain.CustomExtraMaidBrain;
 import com.github.JumDa5he.callresponse.compat.brain.LazyMaidHitHandler;
 import com.github.JumDa5he.callresponse.compat.broadcast.ChatEventListener;
+import com.github.JumDa5he.callresponse.compat.dispatch.DispatchEventLoader;
+import com.github.JumDa5he.callresponse.compat.dispatch.DispatchManager;
 import com.github.JumDa5he.callresponse.compat.emotion.*;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntGunEventBridge;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderInteractListener;
@@ -59,6 +61,8 @@ public class LittleMaidCompat implements ILittleMaid {
         NeoForge.EVENT_BUS.register(new WanderingMaidManager());
         NeoForge.EVENT_BUS.register(new TradingMaidManager());
         NeoForge.EVENT_BUS.register(new TalkEventManager());
+        NeoForge.EVENT_BUS.register(DispatchManager.class);
+        NeoForge.EVENT_BUS.register(DispatchEventLoader.class);
     }
 
     @Override

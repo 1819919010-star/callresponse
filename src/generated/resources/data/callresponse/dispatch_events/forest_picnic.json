@@ -1,0 +1,23 @@
+{
+  "category": "play",
+  "cooldown": 20,
+  "description": "找一片树荫铺好餐布，安静享受难得的休息。",
+  "duration": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 25,
+    "min_inclusive": 15
+  },
+  "emotion": {
+    "favor": 12,
+    "fear": -3,
+    "hunger": 9,
+    "trust": 3
+  },
+  "rewards": {
+    "loot": [
+      "callresponse:dispatch/forest_picnic"
+    ]
+  },
+  "title": "林间野餐",
+  "weight": 11
+}
