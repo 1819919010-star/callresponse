@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
 Implementation-Title: Example-1.20.1
-Implementation-Version: 2.0.4
+Implementation-Version: 2.0.6
 MixinConfigs: mixins.callresponse.json
 

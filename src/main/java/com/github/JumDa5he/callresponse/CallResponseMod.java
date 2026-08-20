@@ -24,6 +24,9 @@ import com.github.JumDa5he.callresponse.compat.trade.RequestTradingMaidScreenC2S
 import com.github.JumDa5he.callresponse.compat.trade.TradingMaidActionC2SPacket;
 import com.github.JumDa5he.callresponse.config.BroadcastConfig;
 import com.github.JumDa5he.callresponse.config.EmotionPassiveConfig;
+import com.github.JumDa5he.callresponse.config.DispatchConfig;
+import com.github.JumDa5he.callresponse.compat.dispatch.OpenDispatchScreenS2CPacket;
+import com.github.JumDa5he.callresponse.compat.dispatch.DispatchActionC2SPacket;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.block.IMaidEdibleBlock;
@@ -68,6 +71,7 @@ public class CallResponseMod {
         // ===== 2. 注册配置文件 =====
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, BroadcastConfig.SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, EmotionPassiveConfig.SPEC, MOD_ID + "-emotion-passive.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, DispatchConfig.SPEC, MOD_ID + "-dispatch.toml");
 
         // ===== 3. 注册网络包 =====
         int id = 0;
@@ -143,6 +147,14 @@ public class CallResponseMod {
                 TradingMaidActionC2SPacket::encode,
                 TradingMaidActionC2SPacket::new,
                 TradingMaidActionC2SPacket::handle);
+        CHANNEL.registerMessage(id++, OpenDispatchScreenS2CPacket.class,
+                OpenDispatchScreenS2CPacket::encode,
+                OpenDispatchScreenS2CPacket::new,
+                OpenDispatchScreenS2CPacket::handle);
+        CHANNEL.registerMessage(id++, DispatchActionC2SPacket.class,
+                DispatchActionC2SPacket::encode,
+                DispatchActionC2SPacket::new,
+                DispatchActionC2SPacket::handle);
 
         // ===== 3. 注册 ILittleMaid 扩展（在 MaidEdibleBlockManager.init() 之前执行） =====
         // 这个扩展会包装所有方块食物，增加饱食度同步逻辑

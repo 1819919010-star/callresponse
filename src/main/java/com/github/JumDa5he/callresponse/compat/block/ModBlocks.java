@@ -19,6 +19,11 @@ public final class ModBlocks {
     public static final RegistryObject<BlockEntityType<MaidCropBlockEntity>> MAID_CROP_BLOCK_ENTITY =
             BLOCK_ENTITY_TYPES.register("maid_crop", () ->
                     BlockEntityType.Builder.of(MaidCropBlockEntity::new, MAID_CROP_BLOCK.get()).build(null));
+    public static final RegistryObject<RewardBoxBlock> REWARD_BOX =
+            BLOCKS.register("reward_box", RewardBoxBlock::new);
+    public static final RegistryObject<BlockEntityType<RewardBoxBlockEntity>> REWARD_BOX_ENTITY =
+            BLOCK_ENTITY_TYPES.register("reward_box", () ->
+                    BlockEntityType.Builder.of(RewardBoxBlockEntity::new, REWARD_BOX.get()).build(null));
 
     private ModBlocks() {
     }

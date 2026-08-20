@@ -1,0 +1,17 @@
+{
+  "parent":"minecraft:block/block",
+  "textures":{
+    "particle":"callresponse:block/reward_box_front_16x",
+    "front":"callresponse:block/reward_box_front_16x",
+    "back":"callresponse:block/reward_box_back_16x",
+    "left":"callresponse:block/reward_box_left_16x",
+    "right":"callresponse:block/reward_box_right_16x",
+    "top":"callresponse:block/reward_box_top_16x",
+    "bottom":"callresponse:block/reward_box_bottom_16x"
+  },
+  "elements":[{"from":[0,0,0],"to":[16,16,16],"faces":{
+    "down":{"texture":"#bottom","cullface":"down"},"up":{"texture":"#top","cullface":"up"},
+    "north":{"texture":"#front","cullface":"north"},"south":{"texture":"#back","cullface":"south"},
+    "west":{"texture":"#left","cullface":"west"},"east":{"texture":"#right","cullface":"east"}
+  }}]
+}

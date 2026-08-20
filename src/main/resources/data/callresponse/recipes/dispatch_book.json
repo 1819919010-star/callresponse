@@ -1,0 +1,6 @@
+{
+  "type":"minecraft:crafting_shaped",
+  "pattern":[" P ","BCB"," F "],
+  "key":{"P":{"item":"minecraft:paper"},"B":{"item":"minecraft:book"},"C":{"item":"minecraft:compass"},"F":{"item":"minecraft:feather"}},
+  "result":{"item":"callresponse:dispatch_book"}
+}

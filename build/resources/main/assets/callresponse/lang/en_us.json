@@ -133,5 +133,22 @@
 ,
   "item.callresponse.maid_seed": "Maid Seed",
   "item.callresponse.disposable_favorability_tool_add": "Favorability Tool (Disposable)",
-  "block.callresponse.maid_crop": "Growing Maid"
+  "block.callresponse.maid_crop": "Growing Maid",
+  "item.callresponse.dispatch_book": "Maid Dispatch Order",
+  "block.callresponse.reward_box": "Reward Box",
+  "container.callresponse.reward_box": "Maid Dispatch Reward Box",
+  "gui.callresponse.dispatch.title": "Maid Dispatch",
+  "gui.callresponse.dispatch.choose": "Where should a maid go today?",
+  "gui.callresponse.dispatch.play": "Go Out to Play",
+  "gui.callresponse.dispatch.work": "Work Dispatch",
+  "gui.callresponse.dispatch.active": "Away: %s / %s",
+  "gui.callresponse.dispatch.recall": "Recall",
+  "message.callresponse.dispatch.full": "The dispatch limit has been reached.",
+  "message.callresponse.dispatch.started": "%s left for %s.",
+  "callresponse.configuration.dispatch": "Maid Dispatch",
+  "callresponse.configuration.dispatchMaxActive": "Dispatch limit",
+  "callresponse.configuration.dispatchRefreshMinutes": "Event refresh minutes",
+  "callresponse.configuration.dispatchEventCountMin": "Minimum events per category",
+  "callresponse.configuration.dispatchEventCountMax": "Maximum events per category",
+  "callresponse.configuration.dispatchCrossWorld": "Cross-save recovery"
 }

@@ -4,6 +4,7 @@ import com.github.JumDa5he.callresponse.compat.item.ModItems;
 import com.github.tartaricacid.touhoulittlemaid.entity.info.ServerCustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.ItemLike;
@@ -19,6 +20,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.storage.loot.LootParams;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,23 +49,20 @@ public final class MaidCropBlock extends CropBlock implements EntityBlock {
 
     @Override
     public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
-        if (getAge(state) == getMaxAge()) {
-            return List.of();
+        List<ItemStack> drops = new ArrayList<>(super.getDrops(state, params));
+        if (getAge(state) == getMaxAge()
+                && params.getOptionalParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.BLOCK_ENTITY)
+                instanceof MaidCropBlockEntity crop) {
+            ItemStack photo = new ItemStack(ModItems.FREE_PHOTO.get());
+            CompoundTag maidData = new CompoundTag();
+            maidData.putString("id", "touhou_little_maid:maid");
+            maidData.putString(EntityMaid.MODEL_ID_TAG,
+                    crop.getModelId() == null ? randomModelId(crop.getLevel()) : crop.getModelId());
+            maidData.putBoolean(EntityMaid.IS_YSM_MODEL_TAG, false);
+            photo.getOrCreateTag().put("MaidInfo", maidData);
+            drops.add(photo);
         }
-        return super.getDrops(state, params);
-    }
-
-    @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        if (!level.isClientSide && !state.is(newState.getBlock()) && !movedByPiston
-                && getAge(state) == getMaxAge()
-                && level.getBlockEntity(pos) instanceof MaidCropBlockEntity crop) {
-            EntityMaid maid = new EntityMaid(level);
-            maid.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
-            maid.setModelId(crop.getModelId() == null ? MaidCropBlockEntity.DEFAULT_MODEL_ID : crop.getModelId());
-            level.addFreshEntity(maid);
-        }
-        super.onRemove(state, level, pos, newState, movedByPiston);
+        return drops;
     }
 
     @Override
@@ -82,7 +81,10 @@ public final class MaidCropBlock extends CropBlock implements EntityBlock {
         }
     }
 
-    private static String randomModelId(Level level) {
+    private static String randomModelId(@Nullable Level level) {
+        if (level == null) {
+            return MaidCropBlockEntity.DEFAULT_MODEL_ID;
+        }
         int count = ServerCustomPackLoader.SERVER_MAID_MODELS.getModelSize();
         if (count <= 0) {
             return MaidCropBlockEntity.DEFAULT_MODEL_ID;

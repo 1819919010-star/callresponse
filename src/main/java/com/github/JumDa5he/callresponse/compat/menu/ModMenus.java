@@ -15,6 +15,9 @@ public final class ModMenus {
             "maid_status",
             () -> IForgeMenuType.create((windowId, inventory, data) ->
                     new MaidStatusContainer(windowId, inventory, data.readInt())));
+    public static final RegistryObject<MenuType<RewardBoxMenu>> REWARD_BOX = MENUS.register(
+            "reward_box", () -> IForgeMenuType.create((windowId, inventory, data) ->
+                    new RewardBoxMenu(windowId, inventory)));
 
     private ModMenus() {
     }
