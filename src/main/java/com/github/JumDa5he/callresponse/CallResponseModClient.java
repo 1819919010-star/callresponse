@@ -2,6 +2,7 @@ package com.github.JumDa5he.callresponse;
 
 import com.github.JumDa5he.callresponse.compat.block.ModBlocks;
 import com.github.JumDa5he.callresponse.compat.client.renderer.MaidCropBlockRenderer;
+import com.github.JumDa5he.callresponse.compat.hunger.MaidHungerGuiDisplay;
 import com.github.JumDa5he.callresponse.compat.menu.ModMenuClientEvents;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.neoforged.api.distmarker.Dist;
@@ -13,12 +14,14 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.common.NeoForge;
 
 @Mod(value = CallResponseMod.MOD_ID, dist = Dist.CLIENT)
 public class CallResponseModClient {
     public CallResponseModClient(IEventBus modEventBus, ModContainer modContainer) {
         modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
         modEventBus.addListener(ModMenuClientEvents::clientSetup);
+        NeoForge.EVENT_BUS.register(new MaidHungerGuiDisplay());
     }
 
     @EventBusSubscriber(Dist.CLIENT)

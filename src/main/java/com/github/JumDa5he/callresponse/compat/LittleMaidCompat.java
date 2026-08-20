@@ -45,7 +45,6 @@ public class LittleMaidCompat implements ILittleMaid {
         NeoForge.EVENT_BUS.register(new EmotionPassiveManager());
         NeoForge.EVENT_BUS.register(new ChatEventListener());
         NeoForge.EVENT_BUS.register(new EmotionDevotedManager());
-        NeoForge.EVENT_BUS.register(new MaidHungerGuiDisplay());
         NeoForge.EVENT_BUS.register(new EmotionForgettingManager());
         NeoForge.EVENT_BUS.register(new LazyMaidHitHandler());
         NeoForge.EVENT_BUS.register(new SaddlePickupHandler());
