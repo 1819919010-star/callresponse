@@ -1,7 +1,9 @@
 {
   "category": "play",
   "cooldown": 60,
-  "description": "附近村庄正在举办热闹的小庆典，去逛逛摊位。",
+  "description": {
+    "translate": "text.callresponse.dispatch.festival_visit.description"
+  },
   "duration": {
     "type": "minecraft:uniform",
     "max_inclusive": 40,
@@ -18,6 +20,8 @@
       "callresponse:dispatch/festival_visit"
     ]
   },
-  "title": "村庄小庆典",
+  "title": {
+    "translate": "text.callresponse.dispatch.festival_visit.title"
+  },
   "weight": 8
 }

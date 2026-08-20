@@ -1,0 +1,27 @@
+{
+  "cooldown": 15,
+  "description": {
+    "translate": "text.callresponse.dispatch.wool_gathering.description"
+  },
+  "duration": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 20,
+    "min_inclusive": 10
+  },
+  "emotion": {
+    "favor": 3,
+    "fear": -2,
+    "hunger": -5,
+    "trust": 1
+  },
+  "rewards": {
+    "experience": 4,
+    "loot": [
+      "callresponse:dispatch/wool_gathering"
+    ]
+  },
+  "title": {
+    "translate": "text.callresponse.dispatch.wool_gathering.title"
+  },
+  "weight": 10
+}

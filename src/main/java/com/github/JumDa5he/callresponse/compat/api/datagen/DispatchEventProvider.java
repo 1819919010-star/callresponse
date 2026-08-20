@@ -1,10 +1,12 @@
 package com.github.JumDa5he.callresponse.compat.api.datagen;
 
+import com.github.JumDa5he.callresponse.CallResponseMod;
 import com.github.JumDa5he.callresponse.compat.dispatch.DispatchEventDefinition;
 import com.github.JumDa5he.callresponse.compat.api.datagen.DispatchEventBuilder.EnchantEntry;
 import com.github.JumDa5he.callresponse.compat.api.datagen.DispatchEventBuilder.ItemEntry;
 import com.github.JumDa5he.callresponse.compat.api.datagen.DispatchEventBuilder.RewardEntry;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
@@ -13,6 +15,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -81,13 +84,23 @@ public abstract class DispatchEventProvider extends JsonCodecProvider<DispatchEv
 
     private LootPool.Builder pool(List<RewardEntry> rewards, HolderLookup.Provider registries) {
         LootPool.Builder pool = LootPool.lootPool().setRolls(ConstantValue.exactly(1));
-        rewards.forEach(reward -> pool.add(entry(reward, registries)));
+        rewards.forEach(reward -> {
+            var entry = entry(reward, registries);
+            if (entry != null) {
+                pool.add(entry);
+            }
+        });
         return pool;
     }
 
     private LootPoolEntryContainer.Builder<?> entry(RewardEntry reward, HolderLookup.Provider registries) {
         if (reward instanceof ItemEntry item) {
-            return LootItem.lootTableItem(item.item())
+            Item resolved = BuiltInRegistries.ITEM.get(item.item());
+            if (resolved == null) {
+                CallResponseMod.LOGGER.warn("奖励条目引用的物品 {} 不存在，已跳过", item.item());
+                return null;
+            }
+            return LootItem.lootTableItem(resolved)
                     .setWeight(item.weight())
                     .apply(SetItemCountFunction.setCount(
                             UniformGenerator.between(item.countMin(), item.countMax())));

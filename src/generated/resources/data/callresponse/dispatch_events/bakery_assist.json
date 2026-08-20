@@ -1,6 +1,8 @@
 {
   "cooldown": 15,
-  "description": "面包房今天订单很多，邀请女仆去搭把手。",
+  "description": {
+    "translate": "text.callresponse.dispatch.bakery_assist.description"
+  },
   "duration": {
     "type": "minecraft:uniform",
     "max_inclusive": 30,
@@ -17,6 +19,8 @@
       "callresponse:dispatch/bakery_assist"
     ]
   },
-  "title": "面包房帮厨",
+  "title": {
+    "translate": "text.callresponse.dispatch.bakery_assist.title"
+  },
   "weight": 12
 }

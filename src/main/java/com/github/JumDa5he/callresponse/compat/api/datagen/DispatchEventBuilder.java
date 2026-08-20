@@ -4,6 +4,7 @@ import com.github.JumDa5he.callresponse.CallResponseMod;
 import com.github.JumDa5he.callresponse.compat.dispatch.DispatchEventDefinition;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.commands.CacheableFunction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -116,7 +117,27 @@ public final class DispatchEventBuilder {
     }
 
     public DispatchEventBuilder item(Item item, int countMin, int countMax, int weight) {
+        return item(BuiltInRegistries.ITEM.getKey(item), countMin, countMax, weight);
+    }
+
+    public DispatchEventBuilder item(ResourceLocation item, int countMin, int countMax, int weight) {
         rewards.add(new ItemEntry(item, countMin, countMax, weight));
+        return this;
+    }
+
+    /** 一次添加多个物品，共享数量范围与权重。 */
+    public DispatchEventBuilder items(int countMin, int countMax, int weight, Item... items) {
+        for (Item item : items) {
+            item(item, countMin, countMax, weight);
+        }
+        return this;
+    }
+
+    /** 一次添加多个可能不存在的物品（按 id 引用），共享数量范围与权重。 */
+    public DispatchEventBuilder items(int countMin, int countMax, int weight, ResourceLocation... items) {
+        for (ResourceLocation item : items) {
+            item(item, countMin, countMax, weight);
+        }
         return this;
     }
 
@@ -150,7 +171,7 @@ public final class DispatchEventBuilder {
     public sealed interface RewardEntry permits ItemEntry, EnchantEntry {
     }
 
-    public record ItemEntry(Item item, int countMin, int countMax, int weight) implements RewardEntry {
+    public record ItemEntry(ResourceLocation item, int countMin, int countMax, int weight) implements RewardEntry {
     }
 
     public record EnchantEntry(ResourceLocation enchant, int levelMin, int levelMax, int weight) implements RewardEntry {

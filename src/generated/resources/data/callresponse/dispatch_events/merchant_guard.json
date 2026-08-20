@@ -1,6 +1,8 @@
 {
   "cooldown": 90,
-  "description": "商队要穿过一段危险道路，请女仆同行照应。",
+  "description": {
+    "translate": "text.callresponse.dispatch.merchant_guard.description"
+  },
   "duration": {
     "type": "minecraft:uniform",
     "max_inclusive": 60,
@@ -17,6 +19,8 @@
       "callresponse:dispatch/merchant_guard"
     ]
   },
-  "title": "商队短程护送",
+  "title": {
+    "translate": "text.callresponse.dispatch.merchant_guard.title"
+  },
   "weight": 7
 }

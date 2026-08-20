@@ -1,7 +1,9 @@
 {
   "category": "play",
   "cooldown": 20,
-  "description": "找一片树荫铺好餐布，安静享受难得的休息。",
+  "description": {
+    "translate": "text.callresponse.dispatch.forest_picnic.description"
+  },
   "duration": {
     "type": "minecraft:uniform",
     "max_inclusive": 25,
@@ -18,6 +20,8 @@
       "callresponse:dispatch/forest_picnic"
     ]
   },
-  "title": "林间野餐",
+  "title": {
+    "translate": "text.callresponse.dispatch.forest_picnic.title"
+  },
   "weight": 11
 }

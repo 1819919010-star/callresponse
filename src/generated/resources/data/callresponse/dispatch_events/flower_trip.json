@@ -1,7 +1,9 @@
 {
   "category": "play",
   "cooldown": 20,
-  "description": "去远处的花海慢慢走一圈，顺手采些漂亮的花。",
+  "description": {
+    "translate": "text.callresponse.dispatch.flower_trip.description"
+  },
   "duration": {
     "type": "minecraft:uniform",
     "max_inclusive": 25,
@@ -18,6 +20,8 @@
       "callresponse:dispatch/flower_trip"
     ]
   },
-  "title": "花海散步",
+  "title": {
+    "translate": "text.callresponse.dispatch.flower_trip.title"
+  },
   "weight": 10
 }

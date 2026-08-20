@@ -1,7 +1,9 @@
 {
   "category": "play",
   "cooldown": 30,
-  "description": "带上鱼竿，在安静的河边消磨半天。",
+  "description": {
+    "translate": "text.callresponse.dispatch.fishing_day.description"
+  },
   "duration": {
     "type": "minecraft:uniform",
     "max_inclusive": 20,
@@ -18,6 +20,8 @@
       "callresponse:dispatch/fishing_day"
     ]
   },
-  "title": "河边垂钓",
+  "title": {
+    "translate": "text.callresponse.dispatch.fishing_day.title"
+  },
   "weight": 9
 }

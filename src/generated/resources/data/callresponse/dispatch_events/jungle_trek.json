@@ -1,8 +1,8 @@
 {
   "category": "play",
-  "cooldown": 60,
+  "cooldown": 30,
   "description": {
-    "translate": "text.callresponse.dispatch.snow_view.description"
+    "translate": "text.callresponse.dispatch.jungle_trek.description"
   },
   "duration": {
     "type": "minecraft:uniform",
@@ -12,16 +12,17 @@
   "emotion": {
     "favor": 6,
     "fear": -1,
-    "hunger": -8,
+    "hunger": -5,
     "trust": 3
   },
   "rewards": {
+    "experience": 4,
     "loot": [
-      "callresponse:dispatch/snow_view"
+      "callresponse:dispatch/jungle_trek"
     ]
   },
   "title": {
-    "translate": "text.callresponse.dispatch.snow_view.title"
+    "translate": "text.callresponse.dispatch.jungle_trek.title"
   },
-  "weight": 7
+  "weight": 9
 }

@@ -1,6 +1,8 @@
 {
   "cooldown": 20,
-  "description": "旧书堆得太乱了，需要细心的人重新分类登记。",
+  "description": {
+    "translate": "text.callresponse.dispatch.library_sort.description"
+  },
   "duration": {
     "type": "minecraft:uniform",
     "max_inclusive": 40,
@@ -17,6 +19,8 @@
       "callresponse:dispatch/library_sort"
     ]
   },
-  "title": "图书馆整理委托",
+  "title": {
+    "translate": "text.callresponse.dispatch.library_sort.title"
+  },
   "weight": 9
 }

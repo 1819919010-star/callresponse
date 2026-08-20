@@ -1,6 +1,8 @@
 {
   "cooldown": 30,
-  "description": "村民忙不过来，请女仆帮忙整理货物和照看农田。",
+  "description": {
+    "translate": "text.callresponse.dispatch.village_help.description"
+  },
   "duration": {
     "type": "minecraft:uniform",
     "max_inclusive": 20,
@@ -17,6 +19,8 @@
       "callresponse:dispatch/village_help"
     ]
   },
-  "title": "村庄临时帮工",
+  "title": {
+    "translate": "text.callresponse.dispatch.village_help.title"
+  },
   "weight": 10
 }
