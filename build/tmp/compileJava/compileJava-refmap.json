@@ -3,14 +3,31 @@
     "com/github/JumDa5he/callresponse/mixin/HuntLivingEntityProtectionMixin": {
       "checkTotemDeathProtection": "Lnet/minecraft/world/entity/LivingEntity;m_21262_(Lnet/minecraft/world/damagesource/DamageSource;)Z",
       "isDamageSourceBlocked": "Lnet/minecraft/world/entity/LivingEntity;m_21275_(Lnet/minecraft/world/damagesource/DamageSource;)Z",
-      "hurt": "Lnet/minecraft/world/entity/LivingEntity;m_6469_(Lnet/minecraft/world/damagesource/DamageSource;F)Z"
+      "hurt": "Lnet/minecraft/world/entity/LivingEntity;m_6469_(Lnet/minecraft/world/damagesource/DamageSource;F)Z",
+      "setHealth": "Lnet/minecraft/world/entity/LivingEntity;m_21153_(F)V"
     },
     "com/github/JumDa5he/callresponse/mixin/accessor/LivingEntityHealthAccessorMixin": {
       "DATA_HEALTH_ID": "f_20961_:Lnet/minecraft/network/syncher/EntityDataAccessor;"
     },
+    "com/github/JumDa5he/callresponse/mixin/accessor/LootTableReferenceAccessor": {
+      "name": "f_79754_:Lnet/minecraft/resources/ResourceLocation;"
+    },
+    "com/github/JumDa5he/callresponse/mixin/accessor/LootPoolAccessor": {
+      "entries": "f_79023_:[Lnet/minecraft/world/level/storage/loot/entries/LootPoolEntryContainer;"
+    },
+    "com/github/JumDa5he/callresponse/mixin/accessor/LootTableAccessor": {
+      "pools": "f_79109_:Ljava/util/List;"
+    },
     "com/github/JumDa5he/callresponse/mixin/MixinEntityMaid": {
+      "die": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_6667_(Lnet/minecraft/world/damagesource/DamageSource;)V",
       "canAttack": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_6779_(Lnet/minecraft/world/entity/LivingEntity;)Z",
       "hurt": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_6469_(Lnet/minecraft/world/damagesource/DamageSource;F)Z"
+    },
+    "com/github/JumDa5he/callresponse/mixin/accessor/AdvancementRewardsAccessor": {
+      "recipes": "f_9981_:[Lnet/minecraft/resources/ResourceLocation;",
+      "function": "f_9982_:Lnet/minecraft/commands/CommandFunction$CacheableFunction;",
+      "loot": "f_9980_:[Lnet/minecraft/resources/ResourceLocation;",
+      "experience": "f_9979_:I"
     },
     "com/github/JumDa5he/callresponse/mixin/HuntTargetingConditionsMixin": {
       "test": "Lnet/minecraft/world/entity/ai/targeting/TargetingConditions;m_26885_(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/LivingEntity;)Z",
@@ -18,6 +35,9 @@
     },
     "com/github/JumDa5he/callresponse/mixin/HuntTamableAllianceMixin": {
       "isAlliedTo(Lnet/minecraft/world/entity/Entity;)Z": "Lnet/minecraft/world/entity/TamableAnimal;m_7307_(Lnet/minecraft/world/entity/Entity;)Z"
+    },
+    "com/github/JumDa5he/callresponse/mixin/accessor/TagEntryAccessor": {
+      "tag": "f_79821_:Lnet/minecraft/tags/TagKey;"
     },
     "com/github/JumDa5he/callresponse/mixin/MixinMaidSyncedData": {
       "addAdditionalSaveData": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_7380_(Lnet/minecraft/nbt/CompoundTag;)V",
@@ -32,6 +52,9 @@
     },
     "com/github/JumDa5he/callresponse/mixin/WanderingMaidInteractionMixin": {
       "mobInteract": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_6071_(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/InteractionResult;"
+    },
+    "com/github/JumDa5he/callresponse/mixin/accessor/LootItemAccessor": {
+      "item": "f_79564_:Lnet/minecraft/world/item/Item;"
     },
     "com/github/JumDa5he/callresponse/compat/emotion/mixin/MixinEntityMaid": {
       "hurt": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_6469_(Lnet/minecraft/world/damagesource/DamageSource;F)Z"
@@ -52,14 +75,31 @@
       "com/github/JumDa5he/callresponse/mixin/HuntLivingEntityProtectionMixin": {
         "checkTotemDeathProtection": "Lnet/minecraft/world/entity/LivingEntity;m_21262_(Lnet/minecraft/world/damagesource/DamageSource;)Z",
         "isDamageSourceBlocked": "Lnet/minecraft/world/entity/LivingEntity;m_21275_(Lnet/minecraft/world/damagesource/DamageSource;)Z",
-        "hurt": "Lnet/minecraft/world/entity/LivingEntity;m_6469_(Lnet/minecraft/world/damagesource/DamageSource;F)Z"
+        "hurt": "Lnet/minecraft/world/entity/LivingEntity;m_6469_(Lnet/minecraft/world/damagesource/DamageSource;F)Z",
+        "setHealth": "Lnet/minecraft/world/entity/LivingEntity;m_21153_(F)V"
       },
       "com/github/JumDa5he/callresponse/mixin/accessor/LivingEntityHealthAccessorMixin": {
         "DATA_HEALTH_ID": "f_20961_:Lnet/minecraft/network/syncher/EntityDataAccessor;"
       },
+      "com/github/JumDa5he/callresponse/mixin/accessor/LootTableReferenceAccessor": {
+        "name": "f_79754_:Lnet/minecraft/resources/ResourceLocation;"
+      },
+      "com/github/JumDa5he/callresponse/mixin/accessor/LootPoolAccessor": {
+        "entries": "f_79023_:[Lnet/minecraft/world/level/storage/loot/entries/LootPoolEntryContainer;"
+      },
+      "com/github/JumDa5he/callresponse/mixin/accessor/LootTableAccessor": {
+        "pools": "f_79109_:Ljava/util/List;"
+      },
       "com/github/JumDa5he/callresponse/mixin/MixinEntityMaid": {
+        "die": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_6667_(Lnet/minecraft/world/damagesource/DamageSource;)V",
         "canAttack": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_6779_(Lnet/minecraft/world/entity/LivingEntity;)Z",
         "hurt": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_6469_(Lnet/minecraft/world/damagesource/DamageSource;F)Z"
+      },
+      "com/github/JumDa5he/callresponse/mixin/accessor/AdvancementRewardsAccessor": {
+        "recipes": "f_9981_:[Lnet/minecraft/resources/ResourceLocation;",
+        "function": "f_9982_:Lnet/minecraft/commands/CommandFunction$CacheableFunction;",
+        "loot": "f_9980_:[Lnet/minecraft/resources/ResourceLocation;",
+        "experience": "f_9979_:I"
       },
       "com/github/JumDa5he/callresponse/mixin/HuntTargetingConditionsMixin": {
         "test": "Lnet/minecraft/world/entity/ai/targeting/TargetingConditions;m_26885_(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/LivingEntity;)Z",
@@ -67,6 +107,9 @@
       },
       "com/github/JumDa5he/callresponse/mixin/HuntTamableAllianceMixin": {
         "isAlliedTo(Lnet/minecraft/world/entity/Entity;)Z": "Lnet/minecraft/world/entity/TamableAnimal;m_7307_(Lnet/minecraft/world/entity/Entity;)Z"
+      },
+      "com/github/JumDa5he/callresponse/mixin/accessor/TagEntryAccessor": {
+        "tag": "f_79821_:Lnet/minecraft/tags/TagKey;"
       },
       "com/github/JumDa5he/callresponse/mixin/MixinMaidSyncedData": {
         "addAdditionalSaveData": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_7380_(Lnet/minecraft/nbt/CompoundTag;)V",
@@ -81,6 +124,9 @@
       },
       "com/github/JumDa5he/callresponse/mixin/WanderingMaidInteractionMixin": {
         "mobInteract": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_6071_(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/InteractionResult;"
+      },
+      "com/github/JumDa5he/callresponse/mixin/accessor/LootItemAccessor": {
+        "item": "f_79564_:Lnet/minecraft/world/item/Item;"
       },
       "com/github/JumDa5he/callresponse/compat/emotion/mixin/MixinEntityMaid": {
         "hurt": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_6469_(Lnet/minecraft/world/damagesource/DamageSource;F)Z"

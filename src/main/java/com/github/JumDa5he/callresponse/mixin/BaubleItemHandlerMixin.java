@@ -1,5 +1,6 @@
 package com.github.JumDa5he.callresponse.mixin;
 
+import com.github.JumDa5he.callresponse.compat.damage.OwnerDamageContext;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntDamageContext;
 import com.github.tartaricacid.touhoulittlemaid.inventory.handler.BaubleItemHandler;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,7 +16,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class BaubleItemHandlerMixin {
     @Inject(method = "fireEvent", at = @At("HEAD"), cancellable = true, remap = false)
     private void callresponse$skipDuringHuntDamage(CallbackInfoReturnable<Boolean> cir) {
-        if (HuntDamageContext.isSuppressingProtection()) {
+        if (HuntDamageContext.isSuppressingProtection()
+                || OwnerDamageContext.isSuppressingProtection()) {
             cir.setReturnValue(false);
         }
     }

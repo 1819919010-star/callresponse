@@ -12,6 +12,7 @@ public class BroadcastConfig {
     public static final ForgeConfigSpec.DoubleValue NAME_MENTION_BONUS;
     public static final ForgeConfigSpec.IntValue MAX_RESPONDERS;
     public static final ForgeConfigSpec.IntValue API_CALLS_PER_MINUTE;
+    public static final ForgeConfigSpec.BooleanValue OWNER_DAMAGE_BYPASS_ENABLED;
     public static final ForgeConfigSpec.BooleanValue TALK_EVENT_ENABLED;
     public static final ForgeConfigSpec.IntValue TALK_EVENT_MIN_MAIDS;
     public static final ForgeConfigSpec.IntValue TALK_REPLY_INTERVAL_SECONDS;
@@ -55,6 +56,11 @@ public class BroadcastConfig {
                 .comment("《呼应》每分钟最多发起多少次 AI 请求；0 表示不限额。只限制广播、主动对话和女仆谈话，不影响 TLM 本体普通聊天")
                 .translation("callresponse.configuration.apiCallsPerMinute")
                 .defineInRange("apiCallsPerMinute", 20, 0, 300);
+
+        OWNER_DAMAGE_BYPASS_ENABLED = builder
+                .comment("是否允许主人使用原始伤害来源绕过自己女仆的护甲、护符、图腾、盾牌和枪械友伤保护；关闭后完全走正常 TLM/模组伤害逻辑")
+                .translation("callresponse.configuration.ownerDamageBypassEnabled")
+                .define("ownerDamageBypassEnabled", true);
 
         builder.pop();
 

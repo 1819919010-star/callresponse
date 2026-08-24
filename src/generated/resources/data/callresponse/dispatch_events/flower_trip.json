@@ -1,0 +1,31 @@
+{
+  "category": "play",
+  "cooldown": 20,
+  "description": {
+    "translate": "text.callresponse.dispatch.flower_trip.description"
+  },
+  "duration": {
+    "type": "minecraft:uniform",
+    "value": {
+      "max_inclusive": 25,
+      "min_inclusive": 10
+    }
+  },
+  "emotion": {
+    "favor": 15,
+    "fear": -2,
+    "hunger": -3,
+    "trust": 2
+  },
+  "rewards": {
+    "experience": 0,
+    "loot": [
+      "callresponse:dispatch/flower_trip"
+    ],
+    "recipes": []
+  },
+  "title": {
+    "translate": "text.callresponse.dispatch.flower_trip.title"
+  },
+  "weight": 10
+}

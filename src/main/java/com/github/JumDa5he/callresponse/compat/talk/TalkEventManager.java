@@ -7,14 +7,13 @@ import com.github.JumDa5he.callresponse.compat.broadcast.DialogueApiLimiter;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerManager;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderManager;
+import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.JumDa5he.callresponse.compat.trade.TradingMaidData;
 import com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidData;
 import com.github.JumDa5he.callresponse.config.BroadcastConfig;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IAttackTask;
-import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.info.ServerCustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.SchedulePos;
 import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.Commands;
@@ -39,6 +38,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -301,6 +301,19 @@ public final class TalkEventManager {
         if (now % SCAN_INTERVAL == 0) {
             scanForNewSessions(level, now);
         }
+    }
+
+    @SubscribeEvent
+    public void onServerStopping(ServerStoppingEvent event) {
+        for (TalkSession session : List.copyOf(SESSIONS)) {
+            endSession(session, EndReason.TOO_FEW);
+        }
+        for (EscapeRun escape : List.copyOf(ESCAPES)) {
+            restore(escape.member);
+        }
+        ESCAPES.clear();
+        BY_MAID.clear();
+        BY_CHUNK.clear();
     }
 
     @SubscribeEvent
@@ -909,18 +922,16 @@ public final class TalkEventManager {
 
     private static void beginControl(Member member, ServerLevel level) {
         EntityMaid maid = member.maid;
+        MaidMovementControl.begin(maid, MaidMovementControl.Reason.TALK,
+                java.util.EnumSet.of(MaidMovementControl.Field.PATH,
+                        MaidMovementControl.Field.SCHEDULE, MaidMovementControl.Field.POSE));
         maid.setInSittingPose(false);
-        maid.setHomeModeEnable(true);
         overwriteSchedule(maid, member.seat, level);
         forceWalk(maid, member.seat, 1);
     }
 
     private static void overwriteSchedule(EntityMaid maid, BlockPos pos, ServerLevel level) {
-        SchedulePos schedule = maid.getSchedulePos();
-        schedule.setWorkPos(pos);
-        schedule.setIdlePos(pos);
-        schedule.setSleepPos(pos);
-        schedule.setDimension(level.dimension().location());
+        // restriction 不落盘；SchedulePos.tick 在 TALK reason 期间由 Mixin 暂停。
         maid.restrictTo(pos, 3);
     }
 
@@ -1023,25 +1034,8 @@ public final class TalkEventManager {
 
     private static void restore(Member member) {
         EntityMaid maid = member.maid;
-        if (maid.isRemoved()) {
-            return;
-        }
-        maid.getNavigation().stop();
-        maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
-        maid.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
-        maid.getBrain().eraseMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
-        SchedulePos schedule = maid.getSchedulePos();
-        schedule.setWorkPos(member.oldWorkPos);
-        schedule.setIdlePos(member.oldIdlePos);
-        schedule.setSleepPos(member.oldSleepPos);
-        schedule.setDimension(member.oldDimension);
-        maid.setHomeModeEnable(member.oldHomeMode);
-        if (member.hadRestriction) {
-            maid.restrictTo(member.oldRestrictCenter, member.oldRestrictRadius);
-        } else {
-            maid.restrictTo(BlockPos.ZERO, MaidConfig.MAID_NON_HOME_RANGE.get());
-        }
-        maid.setInSittingPose(member.oldSitting);
+        if (!maid.isRemoved()) MaidMovementControl.clearNavigation(maid);
+        MaidMovementControl.end(maid, MaidMovementControl.Reason.TALK);
     }
 
     private enum State { GATHERING, TALKING }
@@ -1053,29 +1047,10 @@ public final class TalkEventManager {
     private static final class Member {
         final EntityMaid maid;
         final BlockPos seat;
-        final boolean oldHomeMode;
-        final boolean oldSitting;
-        final BlockPos oldWorkPos;
-        final BlockPos oldIdlePos;
-        final BlockPos oldSleepPos;
-        final ResourceLocation oldDimension;
-        final boolean hadRestriction;
-        final BlockPos oldRestrictCenter;
-        final int oldRestrictRadius;
 
         Member(EntityMaid maid, BlockPos seat) {
             this.maid = maid;
             this.seat = seat;
-            this.oldHomeMode = maid.isHomeModeEnable();
-            this.oldSitting = maid.isInSittingPose();
-            SchedulePos schedule = maid.getSchedulePos();
-            this.oldWorkPos = schedule.getWorkPos();
-            this.oldIdlePos = schedule.getIdlePos();
-            this.oldSleepPos = schedule.getSleepPos();
-            this.oldDimension = schedule.getDimension();
-            this.hadRestriction = maid.hasRestriction();
-            this.oldRestrictCenter = maid.getRestrictCenter();
-            this.oldRestrictRadius = Math.round(maid.getRestrictRadius());
         }
     }
 

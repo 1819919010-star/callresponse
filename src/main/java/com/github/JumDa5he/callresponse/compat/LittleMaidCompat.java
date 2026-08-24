@@ -4,12 +4,15 @@ import com.github.JumDa5he.callresponse.compat.bauble.NoEatBauble;
 import com.github.JumDa5he.callresponse.compat.block.MaidCropSpecialCropHandler;
 import com.github.JumDa5he.callresponse.compat.block.ModBlocks;
 import com.github.JumDa5he.callresponse.compat.brain.CustomExtraMaidBrain;
+import com.github.JumDa5he.callresponse.compat.brain.IdleMaidHurtFleeManager;
 import com.github.JumDa5he.callresponse.compat.brain.LazyMaidHitHandler;
 import com.github.JumDa5he.callresponse.compat.broadcast.BroadcastTools;
 import com.github.JumDa5he.callresponse.compat.broadcast.ChatEventListener;
+import com.github.JumDa5he.callresponse.compat.broadcast.actions.BroadcastMovementScheduler;
 import com.github.JumDa5he.callresponse.compat.emotion.*;
 import com.github.JumDa5he.callresponse.compat.hunger.CustomCakeEdible;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerManager;
+import com.github.JumDa5he.callresponse.compat.state.MaidMovementLifecycle;
 import com.github.JumDa5he.callresponse.compat.hunger.MaidHungerGuiDisplay;
 import com.github.JumDa5he.callresponse.compat.hunger.NoEatAwareMaidMeal;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderInteractListener;
@@ -53,9 +56,11 @@ public class LittleMaidCompat implements ILittleMaid {
         MinecraftForge.EVENT_BUS.register(new EmotionActiveDialogue());
         MinecraftForge.EVENT_BUS.register(new EmotionBetrayalManager());
         MinecraftForge.EVENT_BUS.register(new HungerManager());
+        MinecraftForge.EVENT_BUS.register(new MaidMovementLifecycle());
         MinecraftForge.EVENT_BUS.register(new EmotionDotingManager());
         MinecraftForge.EVENT_BUS.register(new EmotionPassiveManager());
         MinecraftForge.EVENT_BUS.register(new ChatEventListener());
+        MinecraftForge.EVENT_BUS.register(new BroadcastMovementScheduler());
         MinecraftForge.EVENT_BUS.register(new EmotionDevotedManager());
         if (FMLEnvironment.dist == Dist.CLIENT) {
             // 饥饿条渲染是客户端专属功能（引用客户端 GUI 类），不能在服务器上注册
@@ -63,6 +68,7 @@ public class LittleMaidCompat implements ILittleMaid {
         }
         MinecraftForge.EVENT_BUS.register(new EmotionForgettingManager());
         MinecraftForge.EVENT_BUS.register(new FearPanicManager());
+        MinecraftForge.EVENT_BUS.register(new IdleMaidHurtFleeManager());
         MinecraftForge.EVENT_BUS.register(new LazyMaidHitHandler());
         MinecraftForge.EVENT_BUS.register(new SaddlePickupHandler());
         MinecraftForge.EVENT_BUS.register(new SaddleLaunchHandler());

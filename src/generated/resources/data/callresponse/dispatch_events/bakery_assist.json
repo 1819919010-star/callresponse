@@ -1,0 +1,30 @@
+{
+  "cooldown": 15,
+  "description": {
+    "translate": "text.callresponse.dispatch.bakery_assist.description"
+  },
+  "duration": {
+    "type": "minecraft:uniform",
+    "value": {
+      "max_inclusive": 30,
+      "min_inclusive": 10
+    }
+  },
+  "emotion": {
+    "favor": 5,
+    "fear": -3,
+    "hunger": 4,
+    "trust": 1
+  },
+  "rewards": {
+    "experience": 0,
+    "loot": [
+      "callresponse:dispatch/bakery_assist"
+    ],
+    "recipes": []
+  },
+  "title": {
+    "translate": "text.callresponse.dispatch.bakery_assist.title"
+  },
+  "weight": 12
+}

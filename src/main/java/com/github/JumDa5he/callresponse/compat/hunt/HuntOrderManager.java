@@ -3,6 +3,7 @@ package com.github.JumDa5he.callresponse.compat.hunt;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionBetrayalManager;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
+import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IAttackTask;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IMaidTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
@@ -360,6 +361,10 @@ public class HuntOrderManager {
 
         ActiveHunt hunt = new ActiveHunt(maid, target, entry.name);
         activeHunts.put(maid.getUUID(), hunt);
+        MaidMovementControl.begin(maid, MaidMovementControl.Reason.HUNT,
+                java.util.EnumSet.of(MaidMovementControl.Field.PATH,
+                        MaidMovementControl.Field.SCHEDULE, MaidMovementControl.Field.POSE,
+                        MaidMovementControl.Field.TASK));
 
         if (hunt.protectionBypassTarget) {
             applyHuntLock(maid.level(), target.blockPosition(), target.getUUID());
@@ -370,10 +375,7 @@ public class HuntOrderManager {
 
         // 枪械优先，其次近战武器；两者都没有时收起主手物品并进入空手追击。
         hunt.hasUsableWeapon = configureCombatLoadout(hunt);
-        // 临时关闭 home mode，避免 SchedulePos.tick 每 40 tick 强制拽回
-        if (hunt.homeModeWas) {
-            maid.setHomeModeEnable(false);
-        }
+        // home/schedule 保持原值；统一控制器暂停 SchedulePos/Await/Follow 的竞争。
         maid.setAggressive(true);
         maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
         maid.getBrain().eraseMemory(MemoryModuleType.PATH);
@@ -517,17 +519,12 @@ public class HuntOrderManager {
         }
 
         if (maid.isRemoved() || !maid.isAlive()) {
+            MaidMovementControl.end(maid, MaidMovementControl.Reason.HUNT);
             return;
         }
 
-        // 恢复跟随 / home mode
-        if (hunt.taskChanged) {
-            maid.setTask(hunt.prevTask);
-        }
-        if (hunt.homeModeWas) {
-            maid.setHomeModeEnable(true);
-        }
-        maid.setInSittingPose(hunt.sittingWas);
+        MaidMovementControl.clearNavigation(maid);
+        MaidMovementControl.end(maid, MaidMovementControl.Reason.HUNT);
         maid.setAggressive(false);
         maid.getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET);
         maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
@@ -540,6 +537,8 @@ public class HuntOrderManager {
         if (suicideTickets.containsKey(maid.getUUID())) {
             return;
         }
+        MaidMovementControl.begin(maid, MaidMovementControl.Reason.HUNT,
+                java.util.EnumSet.of(MaidMovementControl.Field.PATH, MaidMovementControl.Field.POSE));
         suicideTickets.put(maid.getUUID(), maid.level().getGameTime() + SUICIDE_WAIT_TICKS);
         maid.setInSittingPose(true);
 
@@ -785,5 +784,6 @@ public class HuntOrderManager {
         lastDialogueTime.remove(maidId);
         meleeCooldown.remove(maidId);
         HuntOrderData.removeSelf(maid);
+        MaidMovementControl.end(maid, MaidMovementControl.Reason.HUNT);
     }
 }

@@ -1,5 +1,6 @@
 package com.github.JumDa5he.callresponse.mixin;
 
+import com.github.JumDa5he.callresponse.compat.damage.OwnerDamageSource;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntEventIntrospection;
 import net.minecraftforge.eventbus.api.Event;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,15 +13,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class HuntForgeEventMixin {
     @Inject(method = "setCanceled", at = @At("HEAD"), cancellable = true, remap = false)
     private void callresponse$keepHuntEventUncancelled(boolean cancel, CallbackInfo ci) {
-        if (cancel && HuntEventIntrospection.belongsToHuntDamage((Event) (Object) this)) {
+        Event event = (Event) (Object) this;
+        if (cancel && (HuntEventIntrospection.belongsToHuntDamage(event)
+                || OwnerDamageSource.belongsToOwnerDamageEvent(event))) {
             ci.cancel();
         }
     }
 
     @Inject(method = "setResult", at = @At("HEAD"), cancellable = true, remap = false)
     private void callresponse$keepHuntEventAllowed(Event.Result result, CallbackInfo ci) {
+        Event event = (Event) (Object) this;
         if (result == Event.Result.DENY
-                && HuntEventIntrospection.belongsToHuntDamage((Event) (Object) this)) {
+                && (HuntEventIntrospection.belongsToHuntDamage(event)
+                || OwnerDamageSource.belongsToOwnerDamageEvent(event))) {
             ci.cancel();
         }
     }

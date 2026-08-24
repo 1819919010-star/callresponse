@@ -9,26 +9,15 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.phys.AABB;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class AttackOtherMaidAction {
 
     private static final int SEARCH_RADIUS = 16;
-    private static final int ATTACK_COOLDOWN_TICKS = 10; // 每 0.5 秒攻击一次
     private static final ResourceLocation ATTACK_TASK_ID = new ResourceLocation("touhou_little_maid:attack");
-
-    // 管理每个女仆的攻击状态
-    private static final Map<UUID, ScheduledExecutorService> attackThreads = new ConcurrentHashMap<>();
-    private static final Map<UUID, UUID> currentTargets = new ConcurrentHashMap<>();
 
     public static void execute(EntityMaid maid, ServerPlayer debugPlayer) {
         // 如果已经在攻击，先停止旧攻击
@@ -52,15 +41,8 @@ public class AttackOtherMaidAction {
         // 2. 选择最近的目标
         targets.sort(Comparator.comparingDouble(maid::distanceToSqr));
         EntityMaid target = targets.get(0);
-        UUID maidId = maid.getUUID();
-        UUID targetId = target.getUUID();
-
-        // 3. 如果女仆坐着，先站起来
-        if (maid.isInSittingPose()) {
-            maid.setInSittingPose(false);
-        }
-
-        // 4. 强制切换为近战攻击任务
+        // 3. 强制切换为近战攻击任务（任务/坐姿基线由主线程调度器保存）
+        BroadcastMovementScheduler.startAttack(maid, target, debugPlayer);
         var attackTask = TaskManager.findTask(ATTACK_TASK_ID);
         if (attackTask.isPresent()) {
             maid.setTask(attackTask.get());
@@ -86,50 +68,8 @@ public class AttackOtherMaidAction {
         // 7. 设置攻击目标
         maid.setTarget(target);
         maid.getBrain().setMemory(MemoryModuleType.ATTACK_TARGET, target);
-        currentTargets.put(maidId, targetId);
-
         // 8. 立即造成一次伤害（触发攻击动画）
         performMeleeAttack(maid, target);
-
-        // 9. 启动持续攻击线程（每 10 tick 攻击一次）
-        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        attackThreads.put(maidId, executor);
-
-        executor.scheduleAtFixedRate(() -> {
-            // 检查女仆是否存活、目标是否存活、是否应该继续攻击
-            if (!maid.isAlive() || !target.isAlive() || !currentTargets.containsKey(maidId)) {
-                stopAttack(maid);
-                return;
-            }
-
-            // 检查目标是否仍然是当前目标
-            UUID currentTargetId = currentTargets.get(maidId);
-            if (currentTargetId == null || !currentTargetId.equals(targetId)) {
-                stopAttack(maid);
-                return;
-            }
-
-            // 在主线程执行攻击
-            maid.getServer().execute(() -> {
-                if (!maid.isAlive() || !target.isAlive()) {
-                    stopAttack(maid);
-                    return;
-                }
-
-                double distance = maid.distanceTo(target);
-
-                // 如果距离大于 2 格，走过去
-                if (distance > 2.0) {
-                    maid.getBrain().setMemory(MemoryModuleType.WALK_TARGET,
-                            new WalkTarget(new BlockPosTracker(target.blockPosition()), 0.8f, 1));
-                } else {
-                    // 距离足够近，执行近战攻击
-                    maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
-                    performMeleeAttack(maid, target);
-                }
-            });
-
-        }, 0, ATTACK_COOLDOWN_TICKS * 50, TimeUnit.MILLISECONDS);
 
         // 10. 反馈消息
         String maidName = maid.getCustomName() != null ? maid.getCustomName().getString() : "女仆";
@@ -145,17 +85,7 @@ public class AttackOtherMaidAction {
      * 停止女仆的攻击
      */
     public static void stopAttack(EntityMaid maid) {
-        UUID maidId = maid.getUUID();
-        ScheduledExecutorService executor = attackThreads.remove(maidId);
-        if (executor != null) {
-            executor.shutdownNow();
-        }
-        currentTargets.remove(maidId);
-        maid.setTarget(null);
-        maid.getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET);
-        maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
-        maid.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
-        maid.getBrain().eraseMemory(MemoryModuleType.PATH);
+        BroadcastMovementScheduler.stopAttack(maid);
     }
 
     /**
@@ -179,7 +109,7 @@ public class AttackOtherMaidAction {
     /**
      * 执行近战攻击
      */
-    private static void performMeleeAttack(EntityMaid attacker, LivingEntity target) {
+    static void performMeleeAttack(EntityMaid attacker, LivingEntity target) {
         attacker.swing(InteractionHand.MAIN_HAND);
 
         double attackDamage = attacker.getAttribute(Attributes.ATTACK_DAMAGE) != null ?
@@ -193,7 +123,7 @@ public class AttackOtherMaidAction {
      * 停战动作（供 StopAttackAction 调用）
      */
     public static void stopAllAttacks(EntityMaid maid, ServerPlayer debugPlayer) {
-        if (!attackThreads.containsKey(maid.getUUID())) {
+        if (!BroadcastMovementScheduler.isAttacking(maid)) {
             maid.sendSystemMessage(Component.literal("§e[停战] 当前没有攻击目标"));
             if (debugPlayer != null) {
                 debugPlayer.sendSystemMessage(Component.literal("§e[调试] " + maid.getCustomName() + " 没有正在攻击的目标"));

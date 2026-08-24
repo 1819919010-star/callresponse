@@ -3,6 +3,7 @@ package com.github.JumDa5he.callresponse.compat.emotion;
 import com.github.JumDa5he.callresponse.CallResponseMod;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntRawHealth;
+import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.inventory.handler.BaubleItemHandler;
 import net.minecraft.core.BlockPos;
@@ -76,7 +77,7 @@ public class EmotionDevotedManager {
 
     // ===== 属性加成/移除 =====
     private static final UUID DEVOTED_ATTACK_MODIFIER_UUID = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890");
-    private static final UUID DEVOTED_SPEED_MODIFIER_UUID = UUID.fromString("b2c3d4e5-f6a7-8901-bcde-f12345678901");
+    public static final UUID DEVOTED_SPEED_MODIFIER_UUID = UUID.fromString("b2c3d4e5-f6a7-8901-bcde-f12345678901");
 
     private static void applyDevotedBuffs(EntityMaid maid) {
         AttributeInstance attackAttr = maid.getAttribute(Attributes.ATTACK_DAMAGE);
@@ -92,7 +93,7 @@ public class EmotionDevotedManager {
         }
         if (speedAttr != null) {
             speedAttr.removeModifier(DEVOTED_SPEED_MODIFIER_UUID);
-            speedAttr.addPermanentModifier(new AttributeModifier(
+            speedAttr.addTransientModifier(new AttributeModifier(
                     DEVOTED_SPEED_MODIFIER_UUID,
                     "Devoted Speed Bonus",
                     SPEED_BONUS,
@@ -136,7 +137,17 @@ public class EmotionDevotedManager {
                             removeDevotedBuffs(maid);
                         }
 
-                        if (!isDevoted) return;
+                        if (!isDevoted) {
+                            MaidMovementControl.end(maid, MaidMovementControl.Reason.DEVOTED_COMBAT);
+                            MaidMovementControl.end(maid, MaidMovementControl.Reason.DEVOTED_HEAL);
+                            return;
+                        }
+
+                        // transient 修饰符不会落盘；区块重载后集合可能仍保留 UUID，需按实际属性补挂。
+                        AttributeInstance speed = maid.getAttribute(Attributes.MOVEMENT_SPEED);
+                        if (speed != null && speed.getModifier(DEVOTED_SPEED_MODIFIER_UUID) == null) {
+                            applyDevotedBuffs(maid);
+                        }
 
                         // 狩猎中的女仆专注狩猎：跳过攻击背叛女仆和给主人补血
                         // （否则打残主人时会触发补血回满主人并献祭女仆自己）
@@ -166,12 +177,15 @@ public class EmotionDevotedManager {
 
         if (betrayers.isEmpty()) {
             maid.setTarget(null);
+            MaidMovementControl.end(maid, MaidMovementControl.Reason.DEVOTED_COMBAT);
             return;
         }
 
         betrayers.sort(Comparator.comparingDouble(maid::distanceToSqr));
         EntityMaid target = betrayers.get(0);
 
+        MaidMovementControl.begin(maid, MaidMovementControl.Reason.DEVOTED_COMBAT,
+                java.util.EnumSet.of(MaidMovementControl.Field.PATH, MaidMovementControl.Field.POSE));
         if (maid.isInSittingPose()) {
             maid.setInSittingPose(false);
         }
@@ -211,6 +225,8 @@ public class EmotionDevotedManager {
             }
         }
         lastAttackTime.put(maidId, now);
+        MaidMovementControl.clearNavigation(maid);
+        MaidMovementControl.end(maid, MaidMovementControl.Reason.DEVOTED_COMBAT);
 
         if (maid.getRandom().nextDouble() < STEAL_CHANCE) {
             stealFromBetrayer(maid, target);
@@ -293,20 +309,25 @@ public class EmotionDevotedManager {
 
         // 主人已死亡：绝不能给尸体回血（会把死亡状态改乱，导致无法正常复活）
         if (!owner.isAlive()) {
+            MaidMovementControl.end(maid, MaidMovementControl.Reason.DEVOTED_HEAL);
             return;
         }
 
         Long lastHeal = lastHealTime.get(maidId);
         if (lastHeal != null && now - lastHeal < HEAL_COOLDOWN_TICKS) {
+            MaidMovementControl.end(maid, MaidMovementControl.Reason.DEVOTED_HEAL);
             return;
         }
 
         float maxHealth = owner.getMaxHealth();
         float currentHealth = owner.getHealth();
         if (currentHealth / maxHealth > OWNER_LOW_HP_THRESHOLD) {
+            MaidMovementControl.end(maid, MaidMovementControl.Reason.DEVOTED_HEAL);
             return;
         }
 
+        MaidMovementControl.begin(maid, MaidMovementControl.Reason.DEVOTED_HEAL,
+                java.util.EnumSet.of(MaidMovementControl.Field.PATH, MaidMovementControl.Field.POSE));
         if (maid.isInSittingPose()) {
             maid.setInSittingPose(false);
         }
@@ -346,6 +367,8 @@ public class EmotionDevotedManager {
 
         String prompt = "主人生命值过低！你的心脏骤然收紧——那是比你自己受伤还要痛苦的感受。作为一只愿意为主人去死的女仆，你毫不犹豫地决定把自己的生命力渡给主人。请用一句简短而坚定的话表达你的决心，语气里要有'把我的命拿去'的坦然。你不需要犹豫，因为对主人忠诚就是你存在的全部意义。";
         MaidResponder.processBroadcast(owner, Collections.singletonList(maid), prompt, false);
+        MaidMovementControl.clearNavigation(maid);
+        MaidMovementControl.end(maid, MaidMovementControl.Reason.DEVOTED_HEAL);
     }
 
     // ===== ★ 新增：忠诚女仆减伤被动 =====

@@ -1,0 +1,31 @@
+{
+  "category": "play",
+  "cooldown": 60,
+  "description": {
+    "translate": "text.callresponse.dispatch.cave_exploration.description"
+  },
+  "duration": {
+    "type": "minecraft:uniform",
+    "value": {
+      "max_inclusive": 45,
+      "min_inclusive": 25
+    }
+  },
+  "emotion": {
+    "favor": 4,
+    "fear": -3,
+    "hunger": -8,
+    "trust": 2
+  },
+  "rewards": {
+    "experience": 12,
+    "loot": [
+      "callresponse:dispatch/cave_exploration"
+    ],
+    "recipes": []
+  },
+  "title": {
+    "translate": "text.callresponse.dispatch.cave_exploration.title"
+  },
+  "weight": 7
+}

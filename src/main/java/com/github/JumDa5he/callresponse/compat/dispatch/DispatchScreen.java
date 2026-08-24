@@ -59,10 +59,10 @@ public final class DispatchScreen extends Screen {
             for (int i = from; i < to; i++) { int index = i, row = i - from; addButton(Component.translatable("gui.callresponse.dispatch.recall"), cx + 69, top + 104 + row * 28, 70, 20, b -> recall(active.get(index).dispatchId())); }
             addPaging(cx, top, active.size(), 4);
         } else {
-            addButton(Component.literal("← " + Component.translatable("gui.back").getString()), cx - 150, top + 5, 60, 20, b -> { page = page == Page.MAIDS ? Page.EVENTS : Page.HOME; scroll = 0; rebuild(); });
+            addButton(Component.translatable("gui.callresponse.dispatch.back"), cx - 150, top + 5, 60, 20, b -> { page = page == Page.MAIDS ? Page.EVENTS : Page.HOME; scroll = 0; rebuild(); });
             if (page == Page.EVENTS) {
                 List<OpenDispatchScreenS2CPacket.EventInfo> shown = events.stream().filter(e -> e.category().equals(category)).toList(); int from = Math.min(shown.size(), scroll * 5), to = Math.min(shown.size(), from + 5);
-                for (int i = from; i < to; i++) { var event = shown.get(i); int row = i - from; addButton(Component.literal(event.title()), cx - 142, top + 34 + row * 34, 284, 28, b -> { selected = event; page = Page.MAIDS; scroll = 0; rebuild(); }); }
+                for (int i = from; i < to; i++) { var event = shown.get(i); int row = i - from; addButton(event.title(), cx - 142, top + 34 + row * 34, 284, 28, b -> { selected = event; page = Page.MAIDS; scroll = 0; rebuild(); }); }
                 addPaging(cx, top, shown.size(), 5);
             } else {
                 int from = Math.min(maids.size(), scroll * 5), to = Math.min(maids.size(), from + 5);
@@ -86,9 +86,9 @@ public final class DispatchScreen extends Screen {
         graphics.blit(BACKGROUND, cx - 160, top - 8, 0, 0, PANEL_WIDTH, PANEL_HEIGHT, PANEL_WIDTH, PANEL_HEIGHT);
         Component header = title;
         if (page == Page.EVENTS) {
-            header = Component.literal(category.equals("work") ? "打工委托" : "外出游玩");
+            header = Component.translatable(category.equals("work") ? "gui.callresponse.dispatch.header.work" : "gui.callresponse.dispatch.header.play");
         } else if (page == Page.MAIDS && selected != null) {
-            header = Component.literal("选择执行“" + selected.title() + "”的女仆");
+            header = Component.translatable("gui.callresponse.dispatch.choose_maid", selected.title());
         }
         drawHeader(graphics, header, cx, top + 3);
         super.render(graphics, mouseX, mouseY, partial);
@@ -98,13 +98,13 @@ public final class DispatchScreen extends Screen {
             graphics.drawCenteredString(font, Component.translatable("gui.callresponse.dispatch.choose"), cx, top + 27, TEXT_COLOR);
             graphics.drawString(font, Component.translatable("gui.callresponse.dispatch.active", active.size(), limit), cx - 142, top + 93, TEXT_COLOR);
             int from = Math.min(active.size(), scroll * 4), to = Math.min(active.size(), from + 4);
-            for (int i = from; i < to; i++) { var info = active.get(i); long seconds = Math.max(0, (info.finishAt() - System.currentTimeMillis()) / 1000); graphics.drawString(font, info.name() + " · " + info.title() + " · " + format(seconds), cx - 137, top + 111 + (i - from) * 28, SUB_TEXT_COLOR); }
+            for (int i = from; i < to; i++) { var info = active.get(i); long seconds = Math.max(0, (info.finishAt() - System.currentTimeMillis()) / 1000); graphics.drawString(font, Component.translatable("gui.callresponse.dispatch.active_line", info.name().getString(), info.title().getString(), format(seconds)), cx - 137, top + 111 + (i - from) * 28, SUB_TEXT_COLOR); }
         } else if (page == Page.EVENTS) {
             List<OpenDispatchScreenS2CPacket.EventInfo> shown = events.stream().filter(e -> e.category().equals(category)).toList();
             int from = Math.min(shown.size(), scroll * 5), to = Math.min(shown.size(), from + 5);
-            for (int i = from; i < to; i++) { var event = shown.get(i); int y = top + 34 + (i - from) * 34; if (mouseX >= cx - 142 && mouseX < cx + 142 && mouseY >= y && mouseY < y + 28) hoveredDescription = Component.literal(event.description()); graphics.drawString(font, event.durationMin() + "~" + event.durationMax() + "分钟", cx + 64, y + 9, 0xFF8A735F); int x = cx - 103; for (ItemStack stack : event.rewards()) { graphics.renderItem(stack, x, y + 6); if (mouseX >= x && mouseX < x + 16 && mouseY >= y + 6 && mouseY < y + 22) hoveredStack = stack; x += 18; } }
+            for (int i = from; i < to; i++) { var event = shown.get(i); int y = top + 34 + (i - from) * 34; if (mouseX >= cx - 142 && mouseX < cx + 142 && mouseY >= y && mouseY < y + 28) hoveredDescription = event.description(); graphics.drawString(font, Component.translatable("gui.callresponse.dispatch.duration", event.durationMin(), event.durationMax()), cx + 64, y + 9, 0xFF8A735F); int x = cx - 103; for (ItemStack stack : event.rewards()) { graphics.renderItem(stack, x, y + 6); if (mouseX >= x && mouseX < x + 16 && mouseY >= y + 6 && mouseY < y + 22) hoveredStack = stack; x += 18; } }
         } else if (selected != null) {
-            graphics.drawString(font, Component.literal(selected.description()), cx - 145, top + 198, SUB_TEXT_COLOR);
+            graphics.drawString(font, selected.description(), cx - 145, top + 198, SUB_TEXT_COLOR);
             if (!maids.isEmpty() && minecraft != null && minecraft.level != null) {
                 int from = Math.min(maids.size(), scroll * 5), to = Math.min(maids.size(), from + 5);
                 for (int i = from; i < to; i++) { var info = maids.get(i); int y = top + 35 + (i - from) * 32; EntityMaid preview = InitEntities.MAID.get().create(minecraft.level);

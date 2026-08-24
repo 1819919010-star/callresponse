@@ -1,0 +1,31 @@
+{
+  "category": "play",
+  "cooldown": 30,
+  "description": {
+    "translate": "text.callresponse.dispatch.fishing_day.description"
+  },
+  "duration": {
+    "type": "minecraft:uniform",
+    "value": {
+      "max_inclusive": 20,
+      "min_inclusive": 10
+    }
+  },
+  "emotion": {
+    "favor": 2,
+    "fear": -1,
+    "hunger": -4,
+    "trust": 1
+  },
+  "rewards": {
+    "experience": 0,
+    "loot": [
+      "callresponse:dispatch/fishing_day"
+    ],
+    "recipes": []
+  },
+  "title": {
+    "translate": "text.callresponse.dispatch.fishing_day.title"
+  },
+  "weight": 9
+}

@@ -2,6 +2,8 @@ package com.github.JumDa5he.callresponse.mixin;
 
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerData;
+import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
+import com.github.JumDa5he.callresponse.compat.state.MaidPathRepair;
 import com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidData;
 import com.github.JumDa5he.callresponse.compat.trade.TradingMaidData;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
@@ -34,6 +36,7 @@ public abstract class MixinMaidSyncedData extends Mob {
         data.put("Emotions", this.getEntityData().get(EmotionData.EMOTION_KEY));
         data.putFloat("Hunger", this.getEntityData().get(HungerData.HUNGER_KEY));
         tag.put(SAVE_KEY, data);
+        MaidMovementControl.sanitizeSave((EntityMaid) (Object) this, tag);
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
@@ -45,5 +48,8 @@ public abstract class MixinMaidSyncedData extends Mob {
         }
         WanderingMaidData.restoreSyncedFlag((EntityMaid) (Object) this);
         TradingMaidData.restoreSyncedFlag((EntityMaid) (Object) this);
+        MaidPathRepair.cleanupKnownSpeedPollution((EntityMaid) (Object) this,
+                tag.contains(SAVE_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND), true);
+        MaidMovementControl.recoverOnLoad((EntityMaid) (Object) this);
     }
 }

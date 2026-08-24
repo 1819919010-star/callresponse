@@ -10,3 +10,30 @@
 	#Range: -10 ~ 10
 	sitFearChange = -2
 
+#流浪女仆事件配置
+[wandering_maid]
+	#每隔多少分钟尝试触发一次流浪女仆事件（范围 5~30 分钟）
+	#Range: 5 ~ 30
+	spawnIntervalMinutes = 5
+	#每名玩家在一次流浪事件中生成的女仆数量（范围 1~10）
+	#Range: 1 ~ 10
+	maidsPerPlayer = 1
+	#流浪女仆死亡掉落与收留赠礼的物品黑名单。填写完整物品 ID，例如 minecraft:bedrock；可无限添加，黑名单优先于白名单
+	dropBlacklist = []
+	#流浪女仆死亡掉落与收留赠礼的物品白名单。留空时允许所有非黑名单物品；填写后只会随机其中的物品，例如 minecraft:diamond
+	dropWhitelist = []
+
+#流浪商人女仆交易配置
+[wandering_trader_maid_trade]
+	#整套流浪商人女仆交易的总开关。关闭后不生成待售女仆、不添加呼应物品交易，也不显示交易女仆按钮
+	enabled = true
+
+#溺爱女仆占有欲配置
+[doting_possessive]
+	#溺爱女仆多久尝试一次赶走主人身边的其他女仆（范围 0~10 分钟；0 为只要附近有其他女仆就持续追赶）
+	#Range: 0 ~ 10
+	intervalMinutes = 1
+	#每次占有欲发作后持续赶走其他女仆的时间（范围 10~120 秒）
+	#Range: 10 ~ 120
+	durationSeconds = 20
+

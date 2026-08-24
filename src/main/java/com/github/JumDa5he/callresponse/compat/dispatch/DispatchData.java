@@ -1,13 +1,16 @@
 package com.github.JumDa5he.callresponse.compat.dispatch;
 
+import com.github.JumDa5he.callresponse.CallResponseMod;
+import com.google.gson.JsonParser;
+import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.ArrayList;
@@ -82,7 +85,9 @@ public final class DispatchData extends SavedData {
         return List.copyOf(records.getOrDefault(owner, List.of()));
     }
 
-    public Set<UUID> owners() { return Set.copyOf(records.keySet()); }
+    public Set<UUID> owners() {
+        return Set.copyOf(records.keySet());
+    }
 
     public boolean isDispatched(UUID maid) {
         return records.values().stream().flatMap(List::stream).anyMatch(record -> record.maidId().equals(maid));
@@ -99,11 +104,15 @@ public final class DispatchData extends SavedData {
 
     public Optional<DispatchRecord> remove(UUID owner, UUID dispatchId) {
         List<DispatchRecord> list = records.get(owner);
-        if (list == null) return Optional.empty();
+        if (list == null) {
+            return Optional.empty();
+        }
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).dispatchId().equals(dispatchId)) {
                 DispatchRecord removed = list.remove(i);
-                if (list.isEmpty()) records.remove(owner);
+                if (list.isEmpty()) {
+                    records.remove(owner);
+                }
                 setDirty();
                 return Optional.of(removed);
             }
@@ -150,9 +159,12 @@ public final class DispatchData extends SavedData {
             CompoundTag tag = new CompoundTag();
             tag.putUUID("Owner", ownerId);
             tag.putLong("RefreshAt", refreshAt);
-            ListTag workTag = new ListTag(); work.forEach(id -> workTag.add(StringTag.valueOf(id)));
-            ListTag playTag = new ListTag(); play.forEach(id -> playTag.add(StringTag.valueOf(id)));
-            tag.put("Work", workTag); tag.put("Play", playTag);
+            ListTag workTag = new ListTag();
+            work.forEach(id -> workTag.add(StringTag.valueOf(id)));
+            ListTag playTag = new ListTag();
+            play.forEach(id -> playTag.add(StringTag.valueOf(id)));
+            tag.put("Work", workTag);
+            tag.put("Play", playTag);
             return tag;
         }
 
@@ -163,7 +175,9 @@ public final class DispatchData extends SavedData {
         private static List<String> strings(CompoundTag tag, String key) {
             ListTag list = tag.getList(key, Tag.TAG_STRING);
             List<String> result = new ArrayList<>();
-            for (int i = 0; i < list.size(); i++) result.add(list.getString(i));
+            for (int i = 0; i < list.size(); i++) {
+                result.add(list.getString(i));
+            }
             return List.copyOf(result);
         }
     }
@@ -171,46 +185,90 @@ public final class DispatchData extends SavedData {
     public record BoxRef(UUID ownerId, String dimension, BlockPos pos) {
         CompoundTag save() {
             CompoundTag tag = new CompoundTag();
-            tag.putUUID("Owner", ownerId); tag.putString("Dimension", dimension); tag.putLong("Pos", pos.asLong());
+            tag.putUUID("Owner", ownerId);
+            tag.putString("Dimension", dimension);
+            tag.putLong("Pos", pos.asLong());
             return tag;
         }
+
         static BoxRef load(CompoundTag tag) {
             return new BoxRef(tag.getUUID("Owner"), tag.getString("Dimension"), BlockPos.of(tag.getLong("Pos")));
         }
     }
 
     public record DispatchRecord(UUID dispatchId, UUID ownerId, UUID maidId, CompoundTag maidNbt,
-                                 String eventId, String eventTitle, String eventDescription, String category,
+                                 String eventId, Component eventTitle, Component eventDescription, String category,
                                  long startAt, long finishAt, String originDimension, BlockPos originPos,
                                  String boxDimension, BlockPos boxPos, int trust, int fear, int favor, int hunger,
-                                 List<ItemStack> rewards, String modelId, String displayName) {
+                                 AdvancementRewards rewards, String modelId, Component displayName) {
         public CompoundTag save() {
             CompoundTag tag = new CompoundTag();
-            tag.putUUID("Dispatch", dispatchId); tag.putUUID("Owner", ownerId); tag.putUUID("Maid", maidId);
-            tag.put("MaidNbt", maidNbt.copy()); tag.putString("Event", eventId); tag.putString("Title", eventTitle);
-            tag.putString("Description", eventDescription); tag.putString("Category", category);
-            tag.putLong("StartAt", startAt); tag.putLong("FinishAt", finishAt);
-            tag.putString("OriginDimension", originDimension); tag.putLong("OriginPos", originPos.asLong());
+            tag.putUUID("Dispatch", dispatchId);
+            tag.putUUID("Owner", ownerId);
+            tag.putUUID("Maid", maidId);
+            tag.put("MaidNbt", maidNbt.copy());
+            tag.putString("Event", eventId);
+            putComponent(tag, "Title", eventTitle);
+            putComponent(tag, "Description", eventDescription);
+            tag.putString("Category", category);
+            tag.putLong("StartAt", startAt);
+            tag.putLong("FinishAt", finishAt);
+            tag.putString("OriginDimension", originDimension);
+            tag.putLong("OriginPos", originPos.asLong());
             tag.putString("BoxDimension", boxDimension == null ? "" : boxDimension);
             tag.putLong("BoxPos", boxPos == null ? 0L : boxPos.asLong());
-            tag.putInt("Trust", trust); tag.putInt("Fear", fear); tag.putInt("Favor", favor); tag.putInt("Hunger", hunger);
-            ListTag rewardTag = new ListTag(); rewards.forEach(stack -> rewardTag.add(stack.save(new CompoundTag())));
-            tag.put("Rewards", rewardTag); tag.putString("ModelId", modelId); tag.putString("DisplayName", displayName);
+            tag.putInt("Trust", trust);
+            tag.putInt("Fear", fear);
+            tag.putInt("Favor", favor);
+            tag.putInt("Hunger", hunger);
+            putAdvancementRewards(tag, "Rewards", rewards);
+            tag.putString("ModelId", modelId);
+            putComponent(tag, "DisplayName", displayName);
             return tag;
         }
 
         public static DispatchRecord load(CompoundTag tag) {
-            List<ItemStack> rewards = new ArrayList<>();
-            ListTag list = tag.getList("Rewards", Tag.TAG_COMPOUND);
-            for (int i = 0; i < list.size(); i++) rewards.add(ItemStack.of(list.getCompound(i)));
             String boxDimension = tag.getString("BoxDimension");
             BlockPos boxPos = boxDimension.isEmpty() ? null : BlockPos.of(tag.getLong("BoxPos"));
             return new DispatchRecord(tag.getUUID("Dispatch"), tag.getUUID("Owner"), tag.getUUID("Maid"),
-                    tag.getCompound("MaidNbt"), tag.getString("Event"), tag.getString("Title"),
-                    tag.getString("Description"), tag.getString("Category"), tag.getLong("StartAt"), tag.getLong("FinishAt"),
+                    tag.getCompound("MaidNbt"), tag.getString("Event"), getComponent(tag, "Title"),
+                    getComponent(tag, "Description"), tag.getString("Category"), tag.getLong("StartAt"), tag.getLong("FinishAt"),
                     tag.getString("OriginDimension"), BlockPos.of(tag.getLong("OriginPos")), boxDimension, boxPos,
                     tag.getInt("Trust"), tag.getInt("Fear"), tag.getInt("Favor"), tag.getInt("Hunger"),
-                    List.copyOf(rewards), tag.getString("ModelId"), tag.getString("DisplayName"));
+                    getAdvancementRewards(tag, "Rewards"), tag.getString("ModelId"), getComponent(tag, "DisplayName"));
+        }
+
+        public static void putComponent(CompoundTag tag, String key, Component component) {
+            if (component == null) {
+                return;
+            }
+            tag.putString(key, Component.Serializer.toJson(component));
+        }
+
+        public static Component getComponent(CompoundTag tag, String key) {
+            if (!tag.contains(key)) {
+                return null;
+            }
+            return Component.Serializer.fromJson(tag.getString(key));
+        }
+
+        public static void putAdvancementRewards(CompoundTag tag, String key, AdvancementRewards rewards) {
+            if (rewards == null) {
+                return;
+            }
+            tag.putString(key, DispatchEventDefinition.rewardsToJson(rewards).toString());
+        }
+
+        public static AdvancementRewards getAdvancementRewards(CompoundTag tag, String key) {
+            if (!tag.contains(key)) {
+                return null;
+            }
+            try {
+                return AdvancementRewards.deserialize(JsonParser.parseString(tag.getString(key)).getAsJsonObject());
+            } catch (Exception exception) {
+                CallResponseMod.LOGGER.error("读取时出现错误：{}", exception.getMessage());
+                return null;
+            }
         }
     }
 }

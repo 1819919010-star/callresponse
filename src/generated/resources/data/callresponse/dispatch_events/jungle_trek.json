@@ -1,0 +1,31 @@
+{
+  "category": "play",
+  "cooldown": 30,
+  "description": {
+    "translate": "text.callresponse.dispatch.jungle_trek.description"
+  },
+  "duration": {
+    "type": "minecraft:uniform",
+    "value": {
+      "max_inclusive": 30,
+      "min_inclusive": 15
+    }
+  },
+  "emotion": {
+    "favor": 6,
+    "fear": -1,
+    "hunger": -5,
+    "trust": 3
+  },
+  "rewards": {
+    "experience": 4,
+    "loot": [
+      "callresponse:dispatch/jungle_trek"
+    ],
+    "recipes": []
+  },
+  "title": {
+    "translate": "text.callresponse.dispatch.jungle_trek.title"
+  },
+  "weight": 9
+}

@@ -1,0 +1,30 @@
+{
+  "cooldown": 90,
+  "description": {
+    "translate": "text.callresponse.dispatch.maiddoll_model.description"
+  },
+  "duration": {
+    "type": "minecraft:uniform",
+    "value": {
+      "max_inclusive": 50,
+      "min_inclusive": 30
+    }
+  },
+  "emotion": {
+    "favor": 2,
+    "fear": 1,
+    "hunger": -10,
+    "trust": 2
+  },
+  "rewards": {
+    "experience": 0,
+    "loot": [
+      "callresponse:dispatch/maiddoll_model"
+    ],
+    "recipes": []
+  },
+  "title": {
+    "translate": "text.callresponse.dispatch.maiddoll_model.title"
+  },
+  "weight": 6
+}

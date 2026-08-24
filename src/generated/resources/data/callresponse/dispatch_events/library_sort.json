@@ -1,0 +1,30 @@
+{
+  "cooldown": 20,
+  "description": {
+    "translate": "text.callresponse.dispatch.library_sort.description"
+  },
+  "duration": {
+    "type": "minecraft:uniform",
+    "value": {
+      "max_inclusive": 40,
+      "min_inclusive": 20
+    }
+  },
+  "emotion": {
+    "favor": 3,
+    "fear": -2,
+    "hunger": -5,
+    "trust": 1
+  },
+  "rewards": {
+    "experience": 0,
+    "loot": [
+      "callresponse:dispatch/library_sort"
+    ],
+    "recipes": []
+  },
+  "title": {
+    "translate": "text.callresponse.dispatch.library_sort.title"
+  },
+  "weight": 9
+}

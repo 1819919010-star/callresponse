@@ -1,22 +1,75 @@
 package com.github.JumDa5he.callresponse.compat.dispatch;
 
+import com.github.JumDa5he.callresponse.mixin.accessor.AdvancementRewardsAccessor;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.advancements.AdvancementRewards;
+import net.minecraft.commands.CommandFunction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.EnchantedBookItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentInstance;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.util.valueproviders.IntProvider;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+public record DispatchEventDefinition(Category category, Component title, Component description,
+                                      IntProvider duration, Emotion emotion, int weight,
+                                      int cooldownMin, AdvancementRewards rewards) {
+    /** 1.20.1 没有 ComponentSerialization，用组件 JSON 字符串做中转。 */
+    private static final Codec<Component> COMPONENT_CODEC = Codec.PASSTHROUGH.xmap(
+            dynamic -> (Component) Component.Serializer.fromJson(dynamic.convert(JsonOps.INSTANCE).getValue()),
+            component -> new Dynamic<>(JsonOps.INSTANCE,
+                    JsonParser.parseString(Component.Serializer.toJson(component))));
 
-public record DispatchEventDefinition(String id, Category category, String title, String description,
-                                      int durationMin, int durationMax, Emotion emotion, int weight,
-                                      int cooldownMin, List<Reward> rewards) {
+    /** 1.20.1 的 AdvancementRewards 没有 Codec，且 serializeToJson 在 function 为 null 时崩溃，自写安全序列化。 */
+    private static final Codec<AdvancementRewards> REWARDS_CODEC = Codec.PASSTHROUGH.xmap(
+            dynamic -> AdvancementRewards.deserialize(dynamic.convert(JsonOps.INSTANCE).getValue().getAsJsonObject()),
+            rewards -> new Dynamic<>(JsonOps.INSTANCE, rewardsToJson(rewards)));
+
+    public static JsonObject rewardsToJson(AdvancementRewards rewards) {
+        AdvancementRewardsAccessor accessor = (AdvancementRewardsAccessor) rewards;
+        JsonObject json = new JsonObject();
+        json.addProperty("experience", accessor.callresponse$experience());
+        JsonArray loot = new JsonArray();
+        for (ResourceLocation location : accessor.callresponse$loot()) {
+            loot.add(location.toString());
+        }
+        json.add("loot", loot);
+        JsonArray recipes = new JsonArray();
+        for (ResourceLocation location : accessor.callresponse$recipes()) {
+            recipes.add(location.toString());
+        }
+        json.add("recipes", recipes);
+        CommandFunction.CacheableFunction function = accessor.callresponse$function();
+        if (function != null && function.getId() != null) {
+            json.addProperty("function", function.getId().toString());
+        }
+        return json;
+    }
+
+    public static final Codec<DispatchEventDefinition> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Category.CODEC.optionalFieldOf("category", Category.WORK).forGetter(DispatchEventDefinition::category),
+            COMPONENT_CODEC.fieldOf("title").forGetter(DispatchEventDefinition::title),
+            COMPONENT_CODEC.fieldOf("description").forGetter(DispatchEventDefinition::description),
+            IntProvider.CODEC.fieldOf("duration").forGetter(DispatchEventDefinition::duration),
+            Emotion.CODEC.optionalFieldOf("emotion", new Emotion(0, 0, 0, 0)).forGetter(DispatchEventDefinition::emotion),
+            Codec.INT.optionalFieldOf("weight", 1).forGetter(DispatchEventDefinition::weight),
+            Codec.INT.optionalFieldOf("cooldown", 0).forGetter(DispatchEventDefinition::cooldownMin),
+            REWARDS_CODEC.optionalFieldOf("rewards", AdvancementRewards.EMPTY).forGetter(DispatchEventDefinition::rewards)
+    ).apply(instance, DispatchEventDefinition::new));
+
+    public DispatchEventDefinition {
+        weight = Math.max(1, weight);
+        cooldownMin = Math.max(0, cooldownMin);
+    }
+
     public enum Category {
         WORK, PLAY;
+
+        public static final Codec<Category> CODEC = Codec.STRING.xmap(Category::parse, Category::serializedName);
 
         public static Category parse(String value) {
             return "play".equalsIgnoreCase(value) ? PLAY : WORK;
@@ -28,61 +81,16 @@ public record DispatchEventDefinition(String id, Category category, String title
     }
 
     public record Emotion(int trust, int fear, int favor, int hunger) {
-    }
-
-    public record Reward(String type, String itemId, String enchantId, int countMin, int countMax,
-                         int levelMin, int levelMax, int weight) {
-        public ItemStack create(RandomSource random) {
-            if ("enchant_book".equals(type)) {
-                Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(enchantId));
-                if (enchantment == null) return ItemStack.EMPTY;
-                int level = between(random, levelMin, levelMax);
-                return EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, level));
-            }
-            var item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemId));
-            if (item == null || item.getDefaultInstance().isEmpty()) return ItemStack.EMPTY;
-            ItemStack stack = new ItemStack(item);
-            stack.setCount(Math.min(stack.getMaxStackSize(), between(random, countMin, countMax)));
-            return stack;
-        }
-
-        public ItemStack preview() {
-            return create(RandomSource.create(31L * hashCode()));
-        }
-
-        private static int between(RandomSource random, int min, int max) {
-            int low = Math.max(1, Math.min(min, max));
-            int high = Math.max(low, Math.max(min, max));
-            return low + random.nextInt(high - low + 1);
-        }
+        public static final Codec<Emotion> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.INT.optionalFieldOf("trust", 0).forGetter(Emotion::trust),
+                Codec.INT.optionalFieldOf("fear", 0).forGetter(Emotion::fear),
+                Codec.INT.optionalFieldOf("favor", 0).forGetter(Emotion::favor),
+                Codec.INT.optionalFieldOf("hunger", 0).forGetter(Emotion::hunger)
+        ).apply(instance, Emotion::new));
     }
 
     public long rollDurationMillis(RandomSource random) {
-        int low = Math.max(10, Math.min(durationMin, durationMax));
-        int high = Math.min(60, Math.max(durationMin, durationMax));
-        return (long) (low + random.nextInt(Math.max(1, high - low + 1))) * 60_000L;
-    }
-
-    public List<ItemStack> rollRewards(RandomSource random) {
-        if (rewards.isEmpty()) return List.of();
-        List<Reward> available = new ArrayList<>(rewards);
-        List<ItemStack> result = new ArrayList<>();
-        int count = Math.min(available.size(), 1 + random.nextInt(3));
-        for (int i = 0; i < count && !available.isEmpty(); i++) {
-            int total = available.stream().mapToInt(r -> Math.max(1, r.weight())).sum();
-            int roll = random.nextInt(total);
-            Reward selected = available.get(0);
-            for (Reward reward : available) {
-                roll -= Math.max(1, reward.weight());
-                if (roll < 0) {
-                    selected = reward;
-                    break;
-                }
-            }
-            available.remove(selected);
-            ItemStack stack = selected.create(random);
-            if (!stack.isEmpty()) result.add(stack);
-        }
-        return Collections.unmodifiableList(result);
+        // 派遣界面与配置约定均为 10～60 分钟，不能沿用高版本移植时误写的 10 分钟上限。
+        return Math.max(10, Math.min(duration.sample(random), 60)) * 60_000L;
     }
 }

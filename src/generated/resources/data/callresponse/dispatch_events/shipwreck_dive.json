@@ -1,0 +1,31 @@
+{
+  "category": "play",
+  "cooldown": 60,
+  "description": {
+    "translate": "text.callresponse.dispatch.shipwreck_dive.description"
+  },
+  "duration": {
+    "type": "minecraft:uniform",
+    "value": {
+      "max_inclusive": 45,
+      "min_inclusive": 25
+    }
+  },
+  "emotion": {
+    "favor": 3,
+    "fear": 1,
+    "hunger": -8,
+    "trust": 2
+  },
+  "rewards": {
+    "experience": 10,
+    "loot": [
+      "callresponse:dispatch/shipwreck_dive"
+    ],
+    "recipes": []
+  },
+  "title": {
+    "translate": "text.callresponse.dispatch.shipwreck_dive.title"
+  },
+  "weight": 8
+}

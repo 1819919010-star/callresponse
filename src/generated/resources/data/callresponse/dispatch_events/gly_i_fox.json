@@ -1,0 +1,30 @@
+{
+  "cooldown": 60,
+  "description": {
+    "translate": "text.callresponse.dispatch.gly_i_fox.description"
+  },
+  "duration": {
+    "type": "minecraft:uniform",
+    "value": {
+      "max_inclusive": 10,
+      "min_inclusive": 5
+    }
+  },
+  "emotion": {
+    "favor": 10,
+    "fear": 10,
+    "hunger": -5,
+    "trust": -10
+  },
+  "rewards": {
+    "experience": 100,
+    "loot": [
+      "callresponse:dispatch/gly_i_fox"
+    ],
+    "recipes": []
+  },
+  "title": {
+    "translate": "text.callresponse.dispatch.gly_i_fox.title"
+  },
+  "weight": 5
+}

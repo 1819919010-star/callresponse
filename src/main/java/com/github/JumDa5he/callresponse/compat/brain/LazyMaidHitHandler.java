@@ -4,7 +4,6 @@ import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
@@ -33,15 +32,18 @@ public class LazyMaidHitHandler {
 
         if (!isLazyMode(maid)) return;
 
+        // Mixin 会在伤害管线开始前保留旧有的立即逃跑反馈；原始 DamageSource 进入
+        // LivingDamageEvent 后不要在同一 tick 再触发一次对话和情感变化。
+        if (maid.getPersistentData().contains(KEY_ESCAPE_TICK)
+                && maid.getPersistentData().getLong(KEY_ESCAPE_TICK) == maid.level().getGameTime()) return;
+
         if (maid.getOwner() instanceof ServerPlayer sp) {
             triggerEscape(maid, sp);
         }
     }
 
     public static boolean isLazyMode(EntityMaid maid) {
-        CompoundTag nbt = new CompoundTag();
-        maid.addAdditionalSaveData(nbt);
-        return "callresponse:lazy".equals(nbt.getString("MaidTask"));
+        return "callresponse:lazy".equals(maid.getTask().getUid().toString());
     }
 
     public static void triggerEscape(EntityMaid maid, ServerPlayer player) {

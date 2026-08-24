@@ -71,7 +71,7 @@ public class MoreEatBauble extends Item implements IMaidBauble {
     private void applyBuffs(EntityMaid maid) {
         AttributeInstance speedAttr = maid.getAttribute(Attributes.MOVEMENT_SPEED);
         if (speedAttr != null && speedAttr.getModifier(SPEED_MODIFIER_UUID) == null) {
-            speedAttr.addPermanentModifier(new AttributeModifier(
+            speedAttr.addTransientModifier(new AttributeModifier(
                     SPEED_MODIFIER_UUID,
                     "More Eat Speed Penalty",
                     SPEED_PENALTY,

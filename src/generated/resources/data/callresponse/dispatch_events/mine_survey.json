@@ -1,0 +1,30 @@
+{
+  "cooldown": 60,
+  "description": {
+    "translate": "text.callresponse.dispatch.mine_survey.description"
+  },
+  "duration": {
+    "type": "minecraft:uniform",
+    "value": {
+      "max_inclusive": 40,
+      "min_inclusive": 20
+    }
+  },
+  "emotion": {
+    "favor": 2,
+    "fear": 1,
+    "hunger": -15,
+    "trust": 1
+  },
+  "rewards": {
+    "experience": 0,
+    "loot": [
+      "callresponse:dispatch/mine_survey"
+    ],
+    "recipes": []
+  },
+  "title": {
+    "translate": "text.callresponse.dispatch.mine_survey.title"
+  },
+  "weight": 8
+}

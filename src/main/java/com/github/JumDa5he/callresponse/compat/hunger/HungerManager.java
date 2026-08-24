@@ -3,20 +3,19 @@ package com.github.JumDa5he.callresponse.compat.hunger;
 import com.github.JumDa5he.callresponse.compat.bauble.BaubleDetector;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
+import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.JumDa5he.callresponse.compat.talk.TalkEventManager;
 import com.github.tartaricacid.touhoulittlemaid.api.event.MaidAndItemTransformEvent;
-import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.SchedulePos;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -26,6 +25,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
@@ -56,6 +57,7 @@ public class HungerManager {
     private static final float SPEED_PENALTY_HIGH = -0.15f;
     private static final float SPEED_PENALTY_MEDIUM = -0.1f;
     private static final float SPEED_BONUS = 0.2f;
+    public static final UUID SPEED_EFFECT_UUID = UUID.fromString("c6b6f7ee-df89-4d2f-aec8-1f1471691142");
 
     // ===== 回血（原有区间回血） =====
     private static final int HEAL_INTERVAL = 20;   // 1秒
@@ -360,13 +362,6 @@ public class HungerManager {
         int inspectedCount = 0;
         double closestDistanceSqr = Double.MAX_VALUE;
         long lastProgressTick = 0;
-        boolean wasFollowing = false;               // 讨食前是否处于跟随模式（结束后要恢复）
-        // 讨食前保存的原家的位置（跟随模式临时开启 home mode 用，结束时恢复）
-        BlockPos oldWorkPos = null;
-        BlockPos oldIdlePos = null;
-        BlockPos oldSleepPos = null;
-        ResourceLocation oldDimension = null;
-
         StealState(EntityMaid maid) {
             this.maidInstance = maid;
         }
@@ -398,18 +393,8 @@ public class HungerManager {
             // 先退出谈话并恢复真正的原日程，再让讨食系统保存自己的恢复点。
             TalkEventManager.leaveForFood(maid);
             state = new StealState(maid);
-            // 讨食期间禁止 TLM 跟随任务把女仆拉回玩家身边：跟随模式临时开启 home mode。
-            // 原来的日程位置只保存不立即覆盖；选定目标后会每 tick 把临时日程中心对准目标，
-            // 避免 SchedulePos 与 MaidAwaitTask 把讨食路径改回原地。
-            state.wasFollowing = !maid.isHomeModeEnable();
-            SchedulePos schedule = maid.getSchedulePos();
-            state.oldWorkPos = schedule.getWorkPos();
-            state.oldIdlePos = schedule.getIdlePos();
-            state.oldSleepPos = schedule.getSleepPos();
-            state.oldDimension = schedule.getDimension();
-            if (state.wasFollowing) {
-                maid.setHomeModeEnable(true);
-            }
+            MaidMovementControl.begin(maid, MaidMovementControl.Reason.BEGGING,
+                    java.util.EnumSet.of(MaidMovementControl.Field.PATH, MaidMovementControl.Field.SCHEDULE));
             stealStates.put(maidId, state);
         }
 
@@ -451,13 +436,8 @@ public class HungerManager {
                     continue;
                 }
                 BlockPos targetPos = target.blockPosition();
-                // 临时日程位置、活动范围、Brain 目标与原生导航全部指向同一个候选。
-                // 这样无论原先是跟随还是居家模式，本体 AI 都不会把讨食路径覆盖成原地等待。
-                SchedulePos schedule = maid.getSchedulePos();
-                schedule.setWorkPos(targetPos);
-                schedule.setIdlePos(targetPos);
-                schedule.setSleepPos(targetPos);
-                schedule.setDimension(maid.level().dimension().location());
+                // 不改 TLM 的 home/schedule；统一控制器暂停 Await/Follow/SchedulePos 的竞争。
+                // restriction 不是持久字段，结束时按原 home/schedule 语义重建。
                 maid.restrictTo(targetPos, STEAL_SEARCH_RADIUS + 2);
                 maid.getBrain().eraseMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
                 maid.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(targetPos));
@@ -518,20 +498,12 @@ public class HungerManager {
         return null;
     }
 
-    // 讨食结束（成功或失败）：恢复讨食前保存的原家的位置，并恢复 TLM 跟随主人的状态
+    // 讨食结束（成功或失败）：统一恢复接管前的 restriction，并清理路径。
     private static void finishStealFood(EntityMaid maid) {
         StealState state = stealStates.remove(maid.getUUID());
         if (state != null && state.maidInstance == maid) {
             clearStealNavigation(maid);
-            SchedulePos schedule = maid.getSchedulePos();
-            schedule.setWorkPos(state.oldWorkPos);
-            schedule.setIdlePos(state.oldIdlePos);
-            schedule.setSleepPos(state.oldSleepPos);
-            schedule.setDimension(state.oldDimension);
-            if (state.wasFollowing) {
-                maid.restrictTo(BlockPos.ZERO, MaidConfig.MAID_NON_HOME_RANGE.get());
-                maid.setHomeModeEnable(false);
-            }
+            MaidMovementControl.end(maid, MaidMovementControl.Reason.BEGGING);
         }
     }
 
@@ -626,7 +598,28 @@ public class HungerManager {
             targetSpeed = BASE_SPEED;
         }
 
-        speedAttr.setBaseValue(targetSpeed);
+        speedAttr.removeModifier(SPEED_EFFECT_UUID);
+        double additive = calculateAdditionForTarget(speedAttr, targetSpeed);
+        if (Math.abs(additive) > 1.0E-6D) {
+            speedAttr.addTransientModifier(new AttributeModifier(SPEED_EFFECT_UUID,
+                    "CallResponse hunger speed", additive, AttributeModifier.Operation.ADDITION));
+        }
+    }
+
+    private static double calculateAdditionForTarget(AttributeInstance attribute, double target) {
+        double addition = attribute.getModifiers(AttributeModifier.Operation.ADDITION).stream()
+                .filter(modifier -> !modifier.getId().equals(SPEED_EFFECT_UUID))
+                .mapToDouble(AttributeModifier::getAmount).sum();
+        double multiplyBase = 1.0D + attribute.getModifiers(AttributeModifier.Operation.MULTIPLY_BASE).stream()
+                .mapToDouble(AttributeModifier::getAmount).sum();
+        double multiplyTotal = attribute.getModifiers(AttributeModifier.Operation.MULTIPLY_TOTAL).stream()
+                .mapToDouble(modifier -> 1.0D + modifier.getAmount())
+                .reduce(1.0D, (left, right) -> left * right);
+        double factor = multiplyBase * multiplyTotal;
+        if (Math.abs(factor) < 1.0E-6D) {
+            return 0.0D;
+        }
+        return target / factor - attribute.getBaseValue() - addition;
     }
 
     // ===== 获取饱食度描述 =====
@@ -651,6 +644,9 @@ public class HungerManager {
     @SubscribeEvent
     public void onMaidDeath(LivingDeathEvent event) {
         if (!(event.getEntity() instanceof EntityMaid maid)) return;
+        finishStealFood(maid);
+        AttributeInstance speed = maid.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (speed != null) speed.removeModifier(SPEED_EFFECT_UUID);
         HungerEatingGuard.clear(maid);
         if (!maid.getPersistentData().getBoolean(OVERFED_DEATH_TAG)) return;
         if (maid.getPersistentData().getBoolean("DevotedSacrifice")) return;
@@ -666,5 +662,21 @@ public class HungerManager {
         String maidName = maid.getDisplayName().getString();
         Component deathMsg = Component.literal(maidName + "被撑死了");
         maid.level().players().forEach(p -> p.sendSystemMessage(deathMsg));
+    }
+
+    @SubscribeEvent
+    public void onMaidLeave(EntityLeaveLevelEvent event) {
+        if (event.getEntity() instanceof EntityMaid maid && !event.getLevel().isClientSide()) {
+            StealState state = stealStates.remove(maid.getUUID());
+            if (state != null && state.maidInstance == maid) {
+                MaidMovementControl.clearNavigation(maid);
+                MaidMovementControl.end(maid, MaidMovementControl.Reason.BEGGING);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onServerStopping(ServerStoppingEvent event) {
+        stealStates.clear();
     }
 }

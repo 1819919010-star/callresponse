@@ -1,0 +1,31 @@
+{
+  "category": "play",
+  "cooldown": 60,
+  "description": {
+    "translate": "text.callresponse.dispatch.snow_view.description"
+  },
+  "duration": {
+    "type": "minecraft:uniform",
+    "value": {
+      "max_inclusive": 30,
+      "min_inclusive": 15
+    }
+  },
+  "emotion": {
+    "favor": 6,
+    "fear": -1,
+    "hunger": -8,
+    "trust": 3
+  },
+  "rewards": {
+    "experience": 0,
+    "loot": [
+      "callresponse:dispatch/snow_view"
+    ],
+    "recipes": []
+  },
+  "title": {
+    "translate": "text.callresponse.dispatch.snow_view.title"
+  },
+  "weight": 7
+}

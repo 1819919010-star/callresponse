@@ -17,4 +17,20 @@
 	#最多同时回应的女仆数量（防止API调用过多）
 	#Range: 1 ~ 20
 	maxResponders = 5
+	#《呼应》每分钟最多发起多少次 AI 请求；0 表示不限额。只限制广播、主动对话和女仆谈话，不影响 TLM 本体普通聊天
+	#Range: 0 ~ 300
+	apiCallsPerMinute = 20
+	#是否允许主人使用原始伤害来源绕过自己女仆的护甲、护符、图腾、盾牌和枪械友伤保护；关闭后完全走正常 TLM/模组伤害逻辑
+	ownerDamageBypassEnabled = true
+
+#女仆谈话事件配置
+[talk_event]
+	#是否启用女仆自动聚集谈话事件。关闭后不会自动触发，也不能用指令强制开启
+	enabled = true
+	#同一主人在同一区块内至少需要多少只符合条件的女仆才会开始谈话（范围 2~10）
+	#Range: 2 ~ 10
+	minMaids = 5
+	#谈话中一名女仆说完后，下一名女仆最少等待多少秒再回话（范围 1~20 秒）
+	#Range: 1 ~ 20
+	replyIntervalSeconds = 1
 

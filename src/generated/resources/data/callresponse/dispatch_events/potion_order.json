@@ -1,0 +1,30 @@
+{
+  "cooldown": 40,
+  "description": {
+    "translate": "text.callresponse.dispatch.potion_order.description"
+  },
+  "duration": {
+    "type": "minecraft:uniform",
+    "value": {
+      "max_inclusive": 35,
+      "min_inclusive": 20
+    }
+  },
+  "emotion": {
+    "favor": 3,
+    "fear": -2,
+    "hunger": -6,
+    "trust": 1
+  },
+  "rewards": {
+    "experience": 6,
+    "loot": [
+      "callresponse:dispatch/potion_order"
+    ],
+    "recipes": []
+  },
+  "title": {
+    "translate": "text.callresponse.dispatch.potion_order.title"
+  },
+  "weight": 8
+}
