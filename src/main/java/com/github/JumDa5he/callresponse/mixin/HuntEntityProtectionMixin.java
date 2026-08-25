@@ -1,6 +1,8 @@
 package com.github.JumDa5he.callresponse.mixin;
 
+import com.github.JumDa5he.callresponse.compat.damage.OwnerDamageContext;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderManager;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,7 +17,9 @@ public abstract class HuntEntityProtectionMixin {
     private void callresponse$allowHuntDamageSource(DamageSource source,
                                                      CallbackInfoReturnable<Boolean> cir) {
         Entity target = (Entity) (Object) this;
-        if (HuntOrderManager.isHuntDamage(target, source)) {
+        if (HuntOrderManager.isHuntDamage(target, source)
+                || target instanceof EntityMaid maid
+                && OwnerDamageContext.hasActiveDamage(maid, source)) {
             cir.setReturnValue(false);
         }
     }

@@ -76,14 +76,16 @@ public abstract class DispatchEventProvider extends JsonCodecProvider<DispatchEv
         LootTable table = LootTable.lootTable()
                 .setParamSet(LootContextParamSets.ADVANCEMENT_REWARD)
                 .setRandomSequence(builder.lootKey().location())
-                .withPool(pool(builder.rewards(), registries))
+                .withPool(pool(builder.rewards(), builder.rollsMin(), builder.rollsMax(), registries))
                 .build();
         Path path = lootPathProvider.json(builder.lootKey().location());
         return DataProvider.saveStable(cache, registries, LootTable.DIRECT_CODEC, table, path);
     }
 
-    private LootPool.Builder pool(List<RewardEntry> rewards, HolderLookup.Provider registries) {
-        LootPool.Builder pool = LootPool.lootPool().setRolls(ConstantValue.exactly(1));
+    private LootPool.Builder pool(List<RewardEntry> rewards, int rollsMin, int rollsMax,
+                                  HolderLookup.Provider registries) {
+        LootPool.Builder pool = LootPool.lootPool()
+                .setRolls(UniformGenerator.between(rollsMin, rollsMax));
         rewards.forEach(reward -> {
             var entry = entry(reward, registries);
             if (entry != null) {

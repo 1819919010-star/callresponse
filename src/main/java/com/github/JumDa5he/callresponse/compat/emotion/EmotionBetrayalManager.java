@@ -3,6 +3,7 @@ package com.github.JumDa5he.callresponse.compat.emotion;
 import com.github.JumDa5he.callresponse.compat.api.event.emotion.MaidEmotionEvent;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderManager;
+import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
 import net.minecraft.core.BlockPos;
@@ -56,6 +57,12 @@ public class EmotionBetrayalManager {
     private static final Map<UUID, Integer> attackCooldown = new ConcurrentHashMap<>();
     private static final Map<UUID, Integer> attackCountMap = new ConcurrentHashMap<>();
     private static final Map<UUID, Long> lastReplyTimeMap = new ConcurrentHashMap<>();
+    private static final Map<UUID, VictimFleeState> victimFleeStates = new ConcurrentHashMap<>();
+    private static final long VICTIM_FLEE_TICKS = 20L * 20L;
+    private static final double VICTIM_SAFE_DISTANCE_SQR = 16.0D * 16.0D;
+
+    private record VictimFleeState(EntityMaid victim, UUID attackerId, long until) {
+    }
 
     // ===== 检查背叛状态（先内存，再从NBT恢复） =====
     public static boolean isBetraying(EntityMaid maid) {
@@ -82,6 +89,12 @@ public class EmotionBetrayalManager {
 
         UUID victimId = victim.getUUID();
         long now = victim.level().getGameTime();
+        MaidMovementControl.begin(victim, MaidMovementControl.Reason.BETRAYAL_VICTIM_FLEE,
+                java.util.EnumSet.of(MaidMovementControl.Field.PATH, MaidMovementControl.Field.POSE));
+        victim.setInSittingPose(false);
+        victimFleeStates.put(victimId, new VictimFleeState(victim, betrayer.getUUID(), now + VICTIM_FLEE_TICKS));
+        updateVictimFleeTarget(victim, betrayer);
+
         Long lastReply = lastReplyTimeMap.get(victimId);
         if (lastReply != null && now - lastReply < BETRAYAL_REPLY_COOLDOWN) return;
 
@@ -116,12 +129,13 @@ public class EmotionBetrayalManager {
             victim.getChatBubbleManager().addTextChatBubble("谁来救救我...");
         }
 
-        // 强制逃跑（不反击）
+        // 逃跑路径由服务器 tick 持续维护，不能坐下，否则 canBrainMoving() 会立刻阻止 WALK_TARGET。
+        lastReplyTimeMap.put(victimId, now);
+    }
+
+    private static void updateVictimFleeTarget(EntityMaid victim, EntityMaid betrayer) {
         victim.setTarget(null);
         victim.getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET);
-        victim.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
-        victim.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
-
         BlockPos betrayerPos = betrayer.blockPosition();
         BlockPos victimPos = victim.blockPosition();
         double dx = victimPos.getX() - betrayerPos.getX();
@@ -134,13 +148,33 @@ public class EmotionBetrayalManager {
             victim.getBrain().setMemory(MemoryModuleType.WALK_TARGET,
                     new WalkTarget(new BlockPosTracker(fleePos), 1.3f, 1));
         }
-        victim.setInSittingPose(true);
-        lastReplyTimeMap.put(victimId, now);
+    }
+
+    private static void tickVictimFleeStates() {
+        for (VictimFleeState state : List.copyOf(victimFleeStates.values())) {
+            EntityMaid victim = state.victim();
+            LivingEntity attacker = victim.level() instanceof ServerLevel level
+                    ? level.getEntity(state.attackerId()) instanceof LivingEntity living ? living : null : null;
+            long now = victim.level().getGameTime();
+            if (!victim.isAlive() || victim.isRemoved() || attacker == null || !attacker.isAlive()
+                    || attacker.level() != victim.level() || now >= state.until()
+                    || victim.distanceToSqr(attacker) >= VICTIM_SAFE_DISTANCE_SQR) {
+                victimFleeStates.remove(victim.getUUID(), state);
+                MaidMovementControl.clearNavigation(victim);
+                MaidMovementControl.end(victim, MaidMovementControl.Reason.BETRAYAL_VICTIM_FLEE);
+                continue;
+            }
+            if (attacker instanceof EntityMaid betrayer) {
+                updateVictimFleeTarget(victim, betrayer);
+            }
+        }
     }
 
     // ===== 定时检查 =====
     @SubscribeEvent
     public void onServerTick(ServerTickEvent.Post event) {
+
+        tickVictimFleeStates();
 
         for (ServerPlayer player : event.getServer().getPlayerList().getPlayers()) {
             player.level().getEntitiesOfClass(EntityMaid.class,
@@ -188,6 +222,9 @@ public class EmotionBetrayalManager {
 
         isBetraying.put(maidId, true);
         maid.getPersistentData().putBoolean(BETRAYAL_NBT_TAG, true); // 持久化
+        MaidMovementControl.begin(maid, MaidMovementControl.Reason.BETRAYAL,
+                java.util.EnumSet.of(MaidMovementControl.Field.PATH, MaidMovementControl.Field.POSE,
+                        MaidMovementControl.Field.TASK, MaidMovementControl.Field.OWNER));
 
         dangerTimer.remove(maidId);
         attackCooldown.remove(maidId);
@@ -448,5 +485,10 @@ public class EmotionBetrayalManager {
         maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
         maid.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
         maid.getBrain().eraseMemory(MemoryModuleType.PATH);
+        MaidMovementControl.end(maid, MaidMovementControl.Reason.BETRAYAL);
+        VictimFleeState flee = victimFleeStates.remove(maidId);
+        if (flee != null) {
+            MaidMovementControl.end(maid, MaidMovementControl.Reason.BETRAYAL_VICTIM_FLEE);
+        }
     }
 }

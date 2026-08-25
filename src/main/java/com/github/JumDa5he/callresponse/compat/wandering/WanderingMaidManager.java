@@ -2,6 +2,7 @@ package com.github.JumDa5he.callresponse.compat.wandering;
 
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
+import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.JumDa5he.callresponse.network.OpenWanderingMaidRequestS2CPacket;
 import com.github.JumDa5he.callresponse.config.EmotionPassiveConfig;
 import com.github.JumDa5he.callresponse.mixin.accessor.EntityMaidTameInvoker;
@@ -89,6 +90,9 @@ public final class WanderingMaidManager {
         tickAllWanderingMaids(level, data, gameTime);
 
         long interval = configuredIntervalTicks();
+        if (interval <= 0) {
+            return;
+        }
         if (data.nextAttemptTick() <= 0 || data.nextAttemptTick() > gameTime + interval) {
             data.setNextAttemptTick(gameTime + interval);
         }
@@ -100,7 +104,7 @@ public final class WanderingMaidManager {
         if (!level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
             return;
         }
-        if (level.getRandom().nextInt(100) >= data.spawnChance()) {
+        if (level.getRandom().nextInt(100) >= EmotionPassiveConfig.WANDERING_MAID_SPAWN_CHANCE.get()) {
             data.recordSpawnResult(false);
             return;
         }
@@ -170,6 +174,8 @@ public final class WanderingMaidManager {
         if (!level.addFreshEntity(maid)) {
             return false;
         }
+        MaidMovementControl.begin(maid, MaidMovementControl.Reason.WANDERING_WAIT,
+                java.util.EnumSet.of(MaidMovementControl.Field.PATH, MaidMovementControl.Field.POSE));
         if (commandTriggered) {
             player.sendSystemMessage(Component.translatable("message.callresponse.wandering.spawned"));
         }
@@ -328,6 +334,7 @@ public final class WanderingMaidManager {
 
     private static void rejectPermanently(EntityMaid maid, WanderingMaidSavedData savedData, long gameTime) {
         stopNavigation(maid);
+        MaidMovementControl.end(maid, MaidMovementControl.Reason.WANDERING_WAIT);
         maid.setInSittingPose(false);
         maid.setBegging(false);
         WanderingMaidData.setAcceptAuthorized(maid, false);
@@ -409,6 +416,7 @@ public final class WanderingMaidManager {
             return;
         }
         stopNavigation(maid);
+        MaidMovementControl.end(maid, MaidMovementControl.Reason.WANDERING_WAIT);
         maid.setInSittingPose(false);
         maid.setBegging(false);
         EmotionData.set(maid, player.getUUID(), 35, 15);
@@ -504,6 +512,13 @@ public final class WanderingMaidManager {
             return;
         }
         enforceWildState(maid);
+        if (WanderingMaidData.state(maid) != WanderingMaidState.REJECTED
+                && !MaidMovementControl.isActive(maid, MaidMovementControl.Reason.WANDERING_WAIT)) {
+            // 旧版本可能把等待坐姿直接写入 Sitting；这是明确的附属临时状态，可安全归零后建立基线。
+            maid.setInSittingPose(false);
+            MaidMovementControl.begin(maid, MaidMovementControl.Reason.WANDERING_WAIT,
+                    java.util.EnumSet.of(MaidMovementControl.Field.PATH, MaidMovementControl.Field.POSE));
+        }
     }
 
     @SubscribeEvent

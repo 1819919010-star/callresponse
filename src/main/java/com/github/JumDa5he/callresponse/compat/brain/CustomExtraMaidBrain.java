@@ -1,5 +1,7 @@
 package com.github.JumDa5he.callresponse.compat.brain;
 
+import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
+
 import com.github.JumDa5he.callresponse.compat.bauble.BaubleDetector;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.ai.IExtraMaidBrain;
@@ -194,9 +196,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
         private boolean isLazyMode(EntityMaid maid) {
             if (--lazyModeCheckTimer > 0) return cachedLazyMode;
             lazyModeCheckTimer = 20;
-            CompoundTag nbt = new CompoundTag();
-            maid.addAdditionalSaveData(nbt);
-            cachedLazyMode = "callresponse:lazy".equals(nbt.getString("MaidTask"));
+            cachedLazyMode = "callresponse:lazy".equals(maid.getTask().getUid().toString());
             return cachedLazyMode;
         }
 
@@ -218,11 +218,15 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
         }
 
         private void standUp(EntityMaid maid) {
-            maid.setInSittingPose(false);
+            if (MaidMovementControl.isActive(maid, MaidMovementControl.Reason.LAZY_POSE)) {
+                MaidMovementControl.end(maid, MaidMovementControl.Reason.LAZY_POSE);
+            }
             maid.setXRot(0);
         }
 
         private void sitDown(EntityMaid maid) {
+            MaidMovementControl.begin(maid, MaidMovementControl.Reason.LAZY_POSE,
+                    java.util.EnumSet.of(MaidMovementControl.Field.POSE));
             maid.setInSittingPose(true);
         }
 
@@ -244,9 +248,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
         private boolean isWorkTime(EntityMaid maid) {
             if (--workCheckTimer > 0) return cachedWorkTime;
             workCheckTimer = 20;
-            CompoundTag nbt = new CompoundTag();
-            maid.addAdditionalSaveData(nbt);
-            String scheduleMode = nbt.getString("MaidScheduleMode");
+            String scheduleMode = maid.getSchedule().name();
             long dayTime = maid.level().getDayTime() % 24000;
             if ("NIGHT".equals(scheduleMode)) {
                 cachedWorkTime = dayTime >= 13000 || dayTime <= 6000;
@@ -420,9 +422,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
         }
 
         private void checkDropFoodOnHit(EntityMaid maid) {
-            CompoundTag nbt = new CompoundTag();
-            maid.addAdditionalSaveData(nbt);
-            short hurtTime = nbt.getShort("HurtTime");
+            int hurtTime = maid.hurtTime;
             if (hurtTime > 0 && hurtTime != lastHurtTick) {
                 lastHurtTick = hurtTime;
                 ItemStack mainHand = maid.getMainHandItem();
@@ -992,6 +992,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
 
         @Override
         protected void stop(ServerLevel level, EntityMaid maid, long gameTime) {
+            MaidMovementControl.end(maid, MaidMovementControl.Reason.LAZY_POSE);
             saveState(maid);
             maid.setXRot(0);
             hasRepliedHit = false;

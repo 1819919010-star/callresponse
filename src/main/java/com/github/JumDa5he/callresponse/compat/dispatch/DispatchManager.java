@@ -4,6 +4,7 @@ import com.github.JumDa5he.callresponse.compat.block.RewardBoxBlockEntity;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerData;
+import com.github.JumDa5he.callresponse.compat.state.MaidPathCommand;
 import com.github.JumDa5he.callresponse.config.DispatchConfig;
 import com.github.JumDa5he.callresponse.mixin.accessor.CompositeEntryBaseAccessor;
 import com.github.JumDa5he.callresponse.mixin.accessor.LootItemAccessor;
@@ -70,6 +71,7 @@ public final class DispatchManager {
     @SubscribeEvent
     public static void registerCommands(RegisterCommandsEvent event) {
         event.getDispatcher().register(Commands.literal("callresponse")
+                .then(MaidPathCommand.node())
                 .then(Commands.literal("dispatch")
                         .then(Commands.literal("finish")
                                 .requires(source -> source.hasPermission(2))
@@ -191,6 +193,8 @@ public final class DispatchManager {
         data.setCooldown(player.getUUID(), eventId, now + (long) event.cooldownMin() * 60_000L);
         maid.discard();
         player.sendSystemMessage(Component.translatable("message.callresponse.dispatch.started", record.displayName().getString(), record.eventTitle().getString()));
+        // 派出去后立即换一批事件，避免界面一直停留在同一批（刚派过的事件处于冷却，不会立刻重复出现）
+        refreshPool(data, player);
         open(player);
     }
 
@@ -510,9 +514,20 @@ public final class DispatchManager {
     private static DispatchData.EventPool ensurePool(DispatchData data, ServerPlayer player) {
         long now = System.currentTimeMillis();
         DispatchData.EventPool existing = data.pool(player.getUUID());
-        if (existing != null && existing.refreshAt() > now) {
+        int min = DispatchConfig.EVENT_COUNT_MIN.get();
+        int max = Math.max(min, DispatchConfig.EVENT_COUNT_MAX.get());
+        // 未到刷新时间，但池子数量与当前配置不符（例如玩家改了配置）时也立即重建
+        if (existing != null && existing.refreshAt() > now
+                && existing.work().size() >= min && existing.work().size() <= max
+                && existing.play().size() >= min && existing.play().size() <= max) {
             return existing;
         }
+        return refreshPool(data, player);
+    }
+
+    /** 立即重新抽取一批事件（忽略旧池的刷新时间）。 */
+    private static DispatchData.EventPool refreshPool(DispatchData data, ServerPlayer player) {
+        long now = System.currentTimeMillis();
         int min = DispatchConfig.EVENT_COUNT_MIN.get();
         int max = Math.max(min, DispatchConfig.EVENT_COUNT_MAX.get());
         RandomSource random = player.getRandom();

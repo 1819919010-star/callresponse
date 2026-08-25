@@ -31,6 +31,8 @@ public final class DispatchEventBuilder {
     private int weight = 1;
     private int cooldown = 0;
     private int experience = 0;
+    private int rollsMin = 5;
+    private int rollsMax = 10;
     private final List<ResourceKey<LootTable>> extraLoot = new ArrayList<>();
     private final List<RewardEntry> rewards = new ArrayList<>();
 
@@ -104,6 +106,21 @@ public final class DispatchEventBuilder {
     public DispatchEventBuilder experience(int experience) {
         this.experience = experience;
         return this;
+    }
+
+    /** 每次结算的抽奖次数（允许重复），默认 5~10 次。 */
+    public DispatchEventBuilder rolls(int min, int max) {
+        this.rollsMin = Math.max(1, min);
+        this.rollsMax = Math.max(this.rollsMin, max);
+        return this;
+    }
+
+    public int rollsMin() {
+        return rollsMin;
+    }
+
+    public int rollsMax() {
+        return rollsMax;
     }
 
     public DispatchEventBuilder command(ResourceLocation command) {

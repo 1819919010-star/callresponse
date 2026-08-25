@@ -10,6 +10,7 @@ public class EmotionPassiveConfig {
     public static final ModConfigSpec.IntValue SIT_TRUST_CHANGE;
     public static final ModConfigSpec.IntValue SIT_FEAR_CHANGE;
     public static final ModConfigSpec.IntValue WANDERING_MAID_INTERVAL_MINUTES;
+    public static final ModConfigSpec.IntValue WANDERING_MAID_SPAWN_CHANCE;
     public static final ModConfigSpec.IntValue WANDERING_MAID_COUNT;
     public static final ModConfigSpec.ConfigValue<List<? extends String>> WANDERING_MAID_DROP_BLACKLIST;
     public static final ModConfigSpec.ConfigValue<List<? extends String>> WANDERING_MAID_DROP_WHITELIST;
@@ -42,9 +43,13 @@ public class EmotionPassiveConfig {
         builder.comment("流浪女仆事件配置")
                 .translation("callresponse.configuration.wanderingMaid").push("wandering_maid");
         WANDERING_MAID_INTERVAL_MINUTES = builder
-                .comment("每隔多少分钟尝试触发一次流浪女仆事件（范围 5~30 分钟）")
+                .comment("每隔多少分钟尝试触发一次流浪女仆事件（范围 0~60 分钟；0 表示关闭自动触发，指令触发不受影响）")
                 .translation("callresponse.configuration.wanderingMaidInterval")
-                .defineInRange("spawnIntervalMinutes", 5, 5, 30);
+                .defineInRange("spawnIntervalMinutes", 5, 0, 60);
+        WANDERING_MAID_SPAWN_CHANCE = builder
+                .comment("每次到达触发时间后，实际生成流浪女仆事件的概率（范围 0%~100%）")
+                .translation("callresponse.configuration.wanderingMaidSpawnChance")
+                .defineInRange("spawnChancePercent", 25, 0, 100);
         WANDERING_MAID_COUNT = builder
                 .comment("每名玩家在一次流浪事件中生成的女仆数量（范围 1~10）")
                 .translation("callresponse.configuration.wanderingMaidCount")

@@ -1,5 +1,6 @@
 package com.github.JumDa5he.callresponse.mixin;
 
+import com.github.JumDa5he.callresponse.compat.damage.OwnerDamageSource;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntEventIntrospection;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -13,7 +14,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public interface HuntForgeEventMixin {
     @Inject(method = "setCanceled", at = @At("HEAD"), cancellable = true, remap = false)
     private void callresponse$keepHuntEventUncancelled(boolean cancel, CallbackInfo ci) {
-        if (cancel && HuntEventIntrospection.belongsToHuntDamage((Event) (Object) this)) {
+        Event event = (Event) (Object) this;
+        if (cancel && (HuntEventIntrospection.belongsToHuntDamage(event)
+                || OwnerDamageSource.belongsToOwnerDamageEvent(event))) {
             ci.cancel();
         }
     }

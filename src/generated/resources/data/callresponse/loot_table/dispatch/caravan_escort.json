@@ -71,7 +71,11 @@
           "weight": 3
         }
       ],
-      "rolls": 1.0
+      "rolls": {
+        "type": "minecraft:uniform",
+        "max": 10.0,
+        "min": 5.0
+      }
     }
   ],
   "random_sequence": "callresponse:dispatch/caravan_escort"

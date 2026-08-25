@@ -1,7 +1,10 @@
 package com.github.JumDa5he.callresponse.mixin;
 
+import com.github.JumDa5he.callresponse.compat.damage.OwnerDamageContext;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntDamageContext;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderManager;
+import com.github.JumDa5he.callresponse.compat.hunt.HuntRawHealth;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -9,6 +12,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * 在 LivingEntity 基础层建立原始伤害凭证，并关闭无敌帧、盾牌和图腾。
@@ -24,10 +28,19 @@ public abstract class HuntLivingEntityProtectionMixin {
                                                CallbackInfoReturnable<Boolean> cir) {
         LivingEntity target = (LivingEntity) (Object) this;
         HuntDamageContext.enterNativeHurt(target, source, amount);
-        if (HuntOrderManager.isHuntDamage(target, source)) {
+        if (isProtectedBypass(target, source)) {
             target.invulnerableTime = 0;
             target.hurtTime = 0;
             this.lastHurt = 0.0F;
+        }
+    }
+
+    @Inject(method = "setHealth", at = @At("HEAD"), cancellable = true)
+    private void callresponse$writeOwnerDamageHealth(float health, CallbackInfo ci) {
+        if ((Object) this instanceof EntityMaid maid && OwnerDamageContext.hasActiveDamage(maid)) {
+            HuntRawHealth.write(maid, Math.min(health,
+                    OwnerDamageContext.desiredHealth(maid, health)));
+            ci.cancel();
         }
     }
 
@@ -42,7 +55,7 @@ public abstract class HuntLivingEntityProtectionMixin {
     @Inject(method = "checkTotemDeathProtection", at = @At("HEAD"), cancellable = true)
     private void callresponse$disableHuntTotem(DamageSource source,
                                                 CallbackInfoReturnable<Boolean> cir) {
-        if (HuntOrderManager.isHuntDamage((LivingEntity) (Object) this, source)) {
+        if (isProtectedBypass((LivingEntity) (Object) this, source)) {
             cir.setReturnValue(false);
         }
     }
@@ -50,8 +63,14 @@ public abstract class HuntLivingEntityProtectionMixin {
     @Inject(method = "isDamageSourceBlocked", at = @At("HEAD"), cancellable = true)
     private void callresponse$disableHuntShield(DamageSource source,
                                                  CallbackInfoReturnable<Boolean> cir) {
-        if (HuntOrderManager.isHuntDamage((LivingEntity) (Object) this, source)) {
+        if (isProtectedBypass((LivingEntity) (Object) this, source)) {
             cir.setReturnValue(false);
         }
+    }
+
+    private static boolean isProtectedBypass(LivingEntity target, DamageSource source) {
+        return HuntOrderManager.isHuntDamage(target, source)
+                || target instanceof EntityMaid maid
+                && OwnerDamageContext.hasActiveDamage(maid, source);
     }
 }

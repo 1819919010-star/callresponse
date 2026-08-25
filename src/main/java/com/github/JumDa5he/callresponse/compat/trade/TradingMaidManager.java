@@ -4,6 +4,7 @@ import com.github.JumDa5he.callresponse.CallResponseMod;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.item.ModItems;
+import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidData;
 import com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidSavedData;
 import com.github.JumDa5he.callresponse.config.EmotionPassiveConfig;
@@ -62,6 +63,7 @@ public final class TradingMaidManager {
     private static final int TRADER_SCAN_RADIUS = 96;
     private static final int TRADE_RADIUS = 12;
     private static final int SELL_RADIUS = 32;
+    private static final long PURCHASE_MOVE_TIMEOUT = 20L * 60L;
 
     private int tickCounter;
 
@@ -276,7 +278,13 @@ public final class TradingMaidManager {
                     player.getBoundingBox().inflate(64), m -> m.getPersistentData().hasUUID(PURCHASE_MOVING))) {
                 UUID ownerId = maid.getPersistentData().getUUID(PURCHASE_MOVING);
                 Player owner = level.getPlayerByUUID(ownerId);
-                if (owner == null) {
+                long deadline = MaidMovementControl.getDeadline(maid, MaidMovementControl.Reason.PURCHASE_MOVING);
+                if (owner == null || !maid.isAlive() || !maid.isTame()
+                        || !ownerId.equals(maid.getOwnerUUID()) || level.getGameTime() >= deadline) {
+                    maid.setBegging(false);
+                    MaidMovementControl.clearNavigation(maid);
+                    MaidMovementControl.end(maid, MaidMovementControl.Reason.PURCHASE_MOVING);
+                    maid.getPersistentData().remove(PURCHASE_MOVING);
                     continue;
                 }
                 if (maid.distanceToSqr(owner) > 2.25) {
@@ -285,6 +293,7 @@ public final class TradingMaidManager {
                 } else {
                     maid.setBegging(false);
                     maid.getNavigation().stop();
+                    MaidMovementControl.end(maid, MaidMovementControl.Reason.PURCHASE_MOVING);
                     maid.setInSittingPose(true);
                     maid.getPersistentData().remove(PURCHASE_MOVING);
                     maid.getChatBubbleManager().addTextChatBubble("今后就请多多指教啦");
@@ -415,9 +424,13 @@ public final class TradingMaidManager {
         }
         maid.dropLeash(true, false);
         TradingMaidData.clear(maid);
+        MaidMovementControl.begin(maid, MaidMovementControl.Reason.PURCHASE_MOVING,
+                java.util.EnumSet.of(MaidMovementControl.Field.PATH, MaidMovementControl.Field.POSE));
         maid.setInSittingPose(false);
         maid.setBegging(true);
         maid.getPersistentData().putUUID(PURCHASE_MOVING, buyer.getUUID());
+        MaidMovementControl.setDeadline(maid, MaidMovementControl.Reason.PURCHASE_MOVING,
+                maid.level().getGameTime() + PURCHASE_MOVE_TIMEOUT);
         BehaviorUtils.setWalkAndLookTargetMemories(maid, buyer, 0.6F, 1);
         buyer.sendSystemMessage(Component.translatable("message.callresponse.trade.bought", price));
         maid.getChatBubbleManager().addTextChatBubble("新主人！");

@@ -1,6 +1,7 @@
 package com.github.JumDa5he.callresponse.compat.emotion;
 
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
+import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -9,9 +10,13 @@ import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -54,6 +59,14 @@ public class FearPanicManager {
                         UUID maidId = maid.getUUID();
                         long tick = maid.level().getGameTime();
 
+                        if (MaidMovementControl.isActive(maid, MaidMovementControl.Reason.PANIC_HOLD)) {
+                            long until = MaidMovementControl.getDeadline(maid, MaidMovementControl.Reason.PANIC_HOLD);
+                            if (tick >= until || maid.getOwner() == null || !maid.isTame()) {
+                                MaidMovementControl.end(maid, MaidMovementControl.Reason.PANIC_HOLD);
+                            }
+                            return;
+                        }
+
                         // 1. 远离进行中：持续设置 WALK_TARGET 朝远离点走
                         //    CORE 行为里 walkToTarget(优先级2) 高于 followOwner(3)，只要 WALK_TARGET 在，
                         //    跟随任务就不会把女仆拉回主人身边
@@ -61,16 +74,15 @@ public class FearPanicManager {
                         if (flee != null) {
                             if (tick - flee.startTick > FLEE_TIMEOUT
                                     || maid.blockPosition().distSqr(flee.target) < FLEE_ARRIVE_DISTANCE * FLEE_ARRIVE_DISTANCE) {
-                                // 走到或走不到都结束：开 home mode 保持不跟随，恢复正常逻辑
+                                // 走到或走不到都进入3分钟滞留；只暂停跟随，不改 home/schedule。
                                 fleeStates.remove(maidId);
-                                maid.getSchedulePos().setHomeModeEnable(maid, maid.blockPosition());
-                                maid.setHomeModeEnable(true);
+                                MaidMovementControl.end(maid, MaidMovementControl.Reason.PANIC_FLEE);
+                                MaidMovementControl.begin(maid, MaidMovementControl.Reason.PANIC_HOLD,
+                                        EnumSet.of(MaidMovementControl.Field.PATH));
+                                MaidMovementControl.setDeadline(maid, MaidMovementControl.Reason.PANIC_HOLD,
+                                        tick + PANIC_COOLDOWN_TICKS);
                                 maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
                             } else {
-                                // TLM 1.21 的 MaidAwaitTask(优先级1) 会清除活动范围外的 WALK_TARGET，
-                                // 关闭跟随(开 home mode)时活动范围只有 6 格，逃离点必然超范围导致女仆站住不动。
-                                // 逃离期间把 restriction 中心临时钉在逃离点上，防止被清除；结束时恢复 home mode 会重置回原位。
-                                maid.restrictTo(flee.target, RETREAT_MAX_DISTANCE + 2);
                                 maid.getBrain().setMemory(MemoryModuleType.WALK_TARGET,
                                         new WalkTarget(new BlockPosTracker(flee.target), 0.7f, 1));
                             }
@@ -96,6 +108,8 @@ public class FearPanicManager {
                         lastPanicTime.put(maidId, tick);
 
                         // 3.1 站起来（防止本来是坐着）
+                        MaidMovementControl.begin(maid, MaidMovementControl.Reason.PANIC_FLEE,
+                                EnumSet.of(MaidMovementControl.Field.PATH, MaidMovementControl.Field.POSE));
                         if (maid.isInSittingPose()) {
                             maid.setInSittingPose(false);
                         }
@@ -135,5 +149,27 @@ public class FearPanicManager {
     public static void resetPanic(EntityMaid maid) {
         lastPanicTime.remove(maid.getUUID());
         fleeStates.remove(maid.getUUID());
+        MaidMovementControl.end(maid, MaidMovementControl.Reason.PANIC_FLEE);
+        MaidMovementControl.end(maid, MaidMovementControl.Reason.PANIC_HOLD);
+    }
+
+    @SubscribeEvent
+    public void onMaidDeath(LivingDeathEvent event) {
+        if (event.getEntity() instanceof EntityMaid maid) {
+            resetPanic(maid);
+        }
+    }
+
+    @SubscribeEvent
+    public void onMaidLeave(EntityLeaveLevelEvent event) {
+        if (event.getEntity() instanceof EntityMaid maid && !event.getLevel().isClientSide()) {
+            fleeStates.remove(maid.getUUID());
+        }
+    }
+
+    @SubscribeEvent
+    public void onServerStopping(ServerStoppingEvent event) {
+        fleeStates.clear();
+        lastPanicTime.clear();
     }
 }
