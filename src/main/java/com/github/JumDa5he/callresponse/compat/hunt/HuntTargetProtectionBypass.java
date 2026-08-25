@@ -126,25 +126,29 @@ public final class HuntTargetProtectionBypass {
 
     /**
      * 部分兼容层不是取消伤害事件，而是直接把友方从爆炸实体列表移除。
-     * 在通用 Forge ExplosionEvent 的首尾保存并恢复狩猎目标，不检查爆炸物或附属类型。
+     * 在通用 Forge ExplosionEvent 的首尾保存并恢复狩猎目标和主人自己的女仆。
      */
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void captureExplosionTargets(ExplosionEvent.Detonate event) {
-        List<Entity> protectedTargets = new ArrayList<>();
+        List<Entity> restoreTargets = new ArrayList<>();
         Entity directSource = event.getExplosion().getDirectSourceEntity();
         for (Entity entity : event.getAffectedEntities()) {
-            if (entity instanceof LivingEntity target
-                    && (HuntOrderManager.isHuntDamage(target, event.getExplosion().getDamageSource())
-                    || target instanceof EntityMaid maid
-                    && OwnerDamageSource.isCurrentOwnerDamage(
-                    maid, event.getExplosion().getDamageSource())
-                    || target instanceof EntityMaid maid
-                    && OwnerDamageSource.isCurrentOwnerEntity(maid, directSource))) {
-                protectedTargets.add(entity);
+            if (!(entity instanceof LivingEntity target)) {
+                continue;
+            }
+            boolean restore = HuntOrderManager.isHuntDamage(
+                    target, event.getExplosion().getDamageSource());
+            if (target instanceof EntityMaid maid) {
+                restore |= OwnerDamageSource.isCurrentOwnerDamage(
+                        maid, event.getExplosion().getDamageSource());
+                restore |= OwnerDamageSource.isCurrentOwnerEntity(maid, directSource);
+            }
+            if (restore) {
+                restoreTargets.add(entity);
             }
         }
-        if (!protectedTargets.isEmpty()) {
-            EXPLOSION_TARGETS.get().put(event.getExplosion(), protectedTargets);
+        if (!restoreTargets.isEmpty()) {
+            EXPLOSION_TARGETS.get().put(event.getExplosion(), restoreTargets);
         }
     }
 
@@ -169,4 +173,5 @@ public final class HuntTargetProtectionBypass {
         return target instanceof EntityMaid maid
                 && OwnerDamageContext.hasActiveDamage(maid, source);
     }
+
 }

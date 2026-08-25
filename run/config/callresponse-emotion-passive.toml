@@ -12,8 +12,8 @@
 
 #流浪女仆事件配置
 [wandering_maid]
-	#每隔多少分钟尝试触发一次流浪女仆事件（范围 5~30 分钟）
-	#Range: 5 ~ 30
+	#每隔多少分钟尝试触发一次流浪女仆事件（范围 0~60 分钟；0 表示关闭自动触发，指令触发不受影响）
+	#Range: 0 ~ 60
 	spawnIntervalMinutes = 5
 	#每名玩家在一次流浪事件中生成的女仆数量（范围 1~10）
 	#Range: 1 ~ 10
@@ -22,6 +22,9 @@
 	dropBlacklist = []
 	#流浪女仆死亡掉落与收留赠礼的物品白名单。留空时允许所有非黑名单物品；填写后只会随机其中的物品，例如 minecraft:diamond
 	dropWhitelist = []
+	#每次到达触发时间后，实际生成流浪女仆事件的概率（范围 0%~100%）
+	#Range: 0 ~ 100
+	spawnChancePercent = 25
 
 #流浪商人女仆交易配置
 [wandering_trader_maid_trade]

@@ -1,152 +1,173 @@
-[248月2026 13:09:21.910] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeserveruserdev, --gameDir, ., --fml.forgeVersion, 47.4.0, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --nogui, --mixin.config, mixins.callresponse.json]
-[248月2026 13:09:21.915] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.19 by Oracle Corporation; OS Windows 11 arch amd64 version 10.0
-[248月2026 13:09:22.285] [main/INFO] [net.minecraftforge.fml.loading.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgeserveruserdev
-[248月2026 13:09:22.328] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/D:/车万女仆/呼应/TLMAdditionExample-master/.gradle-user-home/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23128!/ Service=ModLauncher Env=SERVER
-[248月2026 13:09:22.544] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file D:\车万女仆\呼应\TLMAdditionExample-master\.gradle-user-home\caches\modules-2\files-2.1\net.minecraftforge\javafmllanguage\1.20.1-47.4.0\f0c0b352173d0a378cbdcec9cfc4ba65899a721\javafmllanguage-1.20.1-47.4.0.jar is missing mods.toml file
-[248月2026 13:09:22.546] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file D:\车万女仆\呼应\TLMAdditionExample-master\.gradle-user-home\caches\modules-2\files-2.1\net.minecraftforge\lowcodelanguage\1.20.1-47.4.0\e862740d8c84d08dbfedea412bef88fe42e727c5\lowcodelanguage-1.20.1-47.4.0.jar is missing mods.toml file
-[248月2026 13:09:22.548] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file D:\车万女仆\呼应\TLMAdditionExample-master\.gradle-user-home\caches\modules-2\files-2.1\net.minecraftforge\mclanguage\1.20.1-47.4.0\5719b3a297a33f877ed5dde4cb4bd75c859096af\mclanguage-1.20.1-47.4.0.jar is missing mods.toml file
-[248月2026 13:09:22.549] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file D:\车万女仆\呼应\TLMAdditionExample-master\.gradle-user-home\caches\modules-2\files-2.1\net.minecraftforge\fmlcore\1.20.1-47.4.0\235975dafa4309945b59c56b53f31dc5b65a6051\fmlcore-1.20.1-47.4.0.jar is missing mods.toml file
-[248月2026 13:09:22.751] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: Found 6 dependencies adding them to mods collection
-[248月2026 13:09:23.987] [main/INFO] [mixin/]: Compatibility level set to JAVA_17
-[248月2026 13:09:24.001] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeserveruserdev' with arguments [--gameDir, ., --nogui]
-[248月2026 13:09:32.054] [main/WARN] [mixin/]: Reference map 'mixins.callresponse.refmap.json' for mixins.callresponse.json could not be read. If this is a development environment you can ignore this message
-[248月2026 13:09:32.190] [main/INFO] [mixin/]: Remapping refMap tacz.refmap.json using D:\车万女仆\呼应\TLMAdditionExample-master/build/createSrgToMcp/output.srg
-[248月2026 13:09:32.241] [main/INFO] [mixin/]: Remapping refMap touhou_little_maid.refmap.json using D:\车万女仆\呼应\TLMAdditionExample-master/build/createSrgToMcp/output.srg
-[248月2026 13:09:32.242] [main/INFO] [mixin/]: Remapping refMap jade.refmap.json using D:\车万女仆\呼应\TLMAdditionExample-master/build/createSrgToMcp/output.srg
-[248月2026 13:09:33.024] [main/WARN] [oshi.util.platform.windows.WmiQueryHandler/]: COM exception querying Win32_Processor, which might not be on your system. Will not attempt to query it again. Error was -2147217405: (HRESULT: 80041003)
-[248月2026 13:09:33.060] [main/WARN] [oshi.util.platform.windows.WmiQueryHandler/]: COM exception querying Win32_Processor, which might not be on your system. Will not attempt to query it again. Error was -2147217405: (HRESULT: 80041003)
-[248月2026 13:09:33.073] [main/WARN] [oshi.util.platform.windows.WmiQueryHandler/]: COM exception querying Win32_VideoController, which might not be on your system. Will not attempt to query it again. Error was -2147217405: (HRESULT: 80041003)
-[248月2026 13:09:33.081] [main/WARN] [oshi.util.platform.windows.WmiQueryHandler/]: COM exception querying Win32_PhysicalMemory, which might not be on your system. Will not attempt to query it again. Error was -2147217405: (HRESULT: 80041003)
-[248月2026 13:09:34.025] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.3.6).
-[248月2026 13:09:36.971] [modloading-worker-0/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 47.4.0, for MC 1.20.1 with MCP 20230612.114412
-[248月2026 13:09:36.971] [modloading-worker-0/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v47.4.0 Initialized
-[248月2026 13:09:37.022] [modloading-worker-0/INFO] [callresponse/]: ? CallResponse mod 初始化完成！
-[248月2026 13:09:37.093] [modloading-worker-0/INFO] [touhou_little_maid/]: common default pack init start...
-[248月2026 13:09:37.825] [modloading-worker-0/INFO] [touhou_little_maid/]: common default pack init finished, cost time: 728.671 ms
-[248月2026 13:09:38.112] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Configuration file D:\车万女仆\呼应\TLMAdditionExample-master\run\config\tacz-common.toml is not correct. Correcting
-[248月2026 13:09:38.114] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key gun was corrected from null to its default, SimpleCommentedConfig:{}. 
-[248月2026 13:09:38.114] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key gun.DefaultGunFireSoundDistance was corrected from null to its default, 64. 
-[248月2026 13:09:38.114] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key gun.DefaultGunSilenceSoundDistance was corrected from null to its default, 16. 
-[248月2026 13:09:38.114] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key gun.DefaultGunOtherSoundDistance was corrected from null to its default, 16. 
-[248月2026 13:09:38.114] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key gun.CreativePlayerConsumeAmmo was corrected from null to its default, true. 
-[248月2026 13:09:38.114] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key gun.AutoReloadWhenRespawn was corrected from null to its default, false. 
-[248月2026 13:09:38.115] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key ammo was corrected from null to its default, SimpleCommentedConfig:{}. 
-[248月2026 13:09:38.115] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key ammo.ExplosiveAmmoDestroysBlock was corrected from null to its default, true. 
-[248月2026 13:09:38.115] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key ammo.ExplosiveAmmoFire was corrected from null to its default, false. 
-[248月2026 13:09:38.115] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key ammo.ExplosiveAmmoKnockBack was corrected from null to its default, true. 
-[248月2026 13:09:38.115] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key ammo.ExplosiveAmmoVisibleDistance was corrected from null to its default, 192. 
-[248月2026 13:09:38.115] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key ammo.PassThroughBlocks was corrected from null to its default, []. 
-[248月2026 13:09:38.115] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key ammo.DestroyGlass was corrected from null to its default, true. 
-[248月2026 13:09:38.115] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key ammo.IgniteBlock was corrected from null to its default, true. 
-[248月2026 13:09:38.116] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key ammo.IgniteEntity was corrected from null to its default, true. 
-[248月2026 13:09:38.116] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key other was corrected from null to its default, SimpleCommentedConfig:{}. 
-[248月2026 13:09:38.116] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key other.DefaultPackDebug was corrected from null to its default, false. 
-[248月2026 13:09:38.116] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key other.TargetSoundDistance was corrected from null to its default, 128. 
-[248月2026 13:09:38.116] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key other.ServerHitboxOffset was corrected from null to its default, 3.0. 
-[248月2026 13:09:38.116] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key other.ServerHitboxLatencyFix was corrected from null to its default, true. 
-[248月2026 13:09:38.117] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key other.ServerHitboxLatencyMaxSaveMs was corrected from null to its default, 1000.0. 
-[248月2026 13:09:38.266] [Forge Version Check/INFO] [net.minecraftforge.fml.VersionChecker/]: [forge] Starting version check at https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json
-[248月2026 13:09:38.296] [Forge Version Check/WARN] [net.minecraftforge.fml.VersionChecker/]: Failed to process update information
-java.net.ConnectException: Permission denied: no further information
-	at jdk.internal.net.http.HttpClientImpl.send(HttpClientImpl.java:897) ~[java.net.http:?]
-	at jdk.internal.net.http.HttpClientFacade.send(HttpClientFacade.java:133) ~[java.net.http:?]
-	at net.minecraftforge.fml.VersionChecker$1.openUrlString(VersionChecker.java:142) ~[fmlcore-1.20.1-47.4.0.jar%23197!/:?]
-	at net.minecraftforge.fml.VersionChecker$1.process(VersionChecker.java:180) ~[fmlcore-1.20.1-47.4.0.jar%23197!/:?]
-	at java.lang.Iterable.forEach(Iterable.java:75) ~[?:?]
-	at net.minecraftforge.fml.VersionChecker$1.run(VersionChecker.java:117) ~[fmlcore-1.20.1-47.4.0.jar%23197!/:?]
-Caused by: java.net.ConnectException: Permission denied: no further information
-	at jdk.internal.net.http.common.Utils.toConnectException(Utils.java:1107) ~[java.net.http:?]
-	at jdk.internal.net.http.PlainHttpConnection$ConnectEvent.handle(PlainHttpConnection.java:153) ~[java.net.http:?]
-	at jdk.internal.net.http.HttpClientImpl$SelectorManager.handleEvent(HttpClientImpl.java:1397) ~[java.net.http:?]
-	at jdk.internal.net.http.HttpClientImpl$SelectorManager.lambda$run$3(HttpClientImpl.java:1342) ~[java.net.http:?]
-	at java.util.ArrayList.forEach(ArrayList.java:1511) ~[?:?]
-	at jdk.internal.net.http.HttpClientImpl$SelectorManager.run(HttpClientImpl.java:1342) ~[java.net.http:?]
-Caused by: java.net.SocketException: Permission denied: no further information
-	at sun.nio.ch.Net.pollConnect(Native Method) ~[?:?]
-	at sun.nio.ch.Net.pollConnectNow(Net.java:684) ~[?:?]
-	at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:946) ~[?:?]
-	at jdk.internal.net.http.PlainHttpConnection$ConnectEvent.handle(PlainHttpConnection.java:138) ~[java.net.http:?]
-	at jdk.internal.net.http.HttpClientImpl$SelectorManager.handleEvent(HttpClientImpl.java:1397) ~[java.net.http:?]
-	at jdk.internal.net.http.HttpClientImpl$SelectorManager.lambda$run$3(HttpClientImpl.java:1342) ~[java.net.http:?]
-	at java.util.ArrayList.forEach(ArrayList.java:1511) ~[?:?]
-	at jdk.internal.net.http.HttpClientImpl$SelectorManager.run(HttpClientImpl.java:1342) ~[java.net.http:?]
-[248月2026 13:09:38.361] [main/INFO] [tacz/SYNCED_ENTITY_DATA_TAC_COPY]: Registered synced data key tacz:shoot_cool_down for minecraft:living_entity
-[248月2026 13:09:38.362] [main/INFO] [tacz/SYNCED_ENTITY_DATA_TAC_COPY]: Registered synced data key tacz:melee_cool_down for minecraft:living_entity
-[248月2026 13:09:38.362] [main/INFO] [tacz/SYNCED_ENTITY_DATA_TAC_COPY]: Registered synced data key tacz:reload_state for minecraft:living_entity
-[248月2026 13:09:38.362] [main/INFO] [tacz/SYNCED_ENTITY_DATA_TAC_COPY]: Registered synced data key tacz:aiming_progress for minecraft:living_entity
-[248月2026 13:09:38.362] [main/INFO] [tacz/SYNCED_ENTITY_DATA_TAC_COPY]: Registered synced data key tacz:draw_cool_down for minecraft:living_entity
-[248月2026 13:09:38.362] [main/INFO] [tacz/SYNCED_ENTITY_DATA_TAC_COPY]: Registered synced data key tacz:is_aiming for minecraft:living_entity
-[248月2026 13:09:38.362] [main/INFO] [tacz/SYNCED_ENTITY_DATA_TAC_COPY]: Registered synced data key tacz:sprint_time for minecraft:living_entity
-[248月2026 13:09:38.362] [main/INFO] [tacz/SYNCED_ENTITY_DATA_TAC_COPY]: Registered synced data key tacz:is_bolting for minecraft:living_entity
-[248月2026 13:09:38.362] [main/INFO] [tacz/SYNCED_ENTITY_DATA_TAC_COPY]: Registered synced data key tacz:throwable_using for minecraft:living_entity
-[248月2026 13:09:38.480] [main/INFO] [callresponse/]: 已启用狩猎枪械命中桥接：tacz
-[248月2026 13:09:38.662] [modloading-worker-0/INFO] [Jade/]: Start loading plugin at com.github.tartaricacid.touhoulittlemaid.compat.jade.JadePlugin
-[248月2026 13:09:38.675] [modloading-worker-0/INFO] [Jade/]: Start loading plugin at com.github.JumDa5he.callresponse.compat.jade.CallResponseJadePlugin
-[248月2026 13:09:38.676] [modloading-worker-0/INFO] [Jade/]: Start loading plugin at snownee.jade.addon.vanilla.VanillaPlugin
-[248月2026 13:09:38.685] [modloading-worker-0/INFO] [Jade/]: Start loading plugin at snownee.jade.addon.universal.UniversalPlugin
-[248月2026 13:09:38.687] [modloading-worker-0/INFO] [Jade/]: Start loading plugin at snownee.jade.addon.core.CorePlugin
-[248月2026 13:09:38.689] [modloading-worker-0/INFO] [Jade/]: Dev environment detected, loading test plugin
-[248月2026 13:09:39.233] [main/INFO] [com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService/]: Environment: authHost='https://authserver.mojang.com', accountsHost='https://api.mojang.com', sessionHost='https://sessionserver.mojang.com', servicesHost='https://api.minecraftservices.com', name='PROD'
-[248月2026 13:09:39.246] [Yggdrasil Key Fetcher/ERROR] [com.mojang.authlib.yggdrasil.YggdrasilServicesKeyInfo/]: Failed to request yggdrasil public key
-com.mojang.authlib.exceptions.AuthenticationUnavailableException: Cannot contact authentication server
-	at com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService.makeRequest(YggdrasilAuthenticationService.java:119) ~[authlib-4.0.43.jar%23133!/:?]
-	at com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService.makeRequest(YggdrasilAuthenticationService.java:91) ~[authlib-4.0.43.jar%23133!/:?]
-	at com.mojang.authlib.yggdrasil.YggdrasilServicesKeyInfo.fetch(YggdrasilServicesKeyInfo.java:94) ~[authlib-4.0.43.jar%23133!/:?]
-	at com.mojang.authlib.yggdrasil.YggdrasilServicesKeyInfo.lambda$get$1(YggdrasilServicesKeyInfo.java:81) ~[authlib-4.0.43.jar%23133!/:?]
-	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539) ~[?:?]
-	at java.util.concurrent.FutureTask.runAndReset(FutureTask.java:305) ~[?:?]
-	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:305) ~[?:?]
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) ~[?:?]
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) ~[?:?]
-	at java.lang.Thread.run(Thread.java:842) ~[?:?]
-Caused by: java.net.SocketException: Permission denied: no further information
-	at sun.nio.ch.Net.pollConnect(Native Method) ~[?:?]
-	at sun.nio.ch.Net.pollConnectNow(Net.java:684) ~[?:?]
-	at sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:547) ~[?:?]
-	at sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:602) ~[?:?]
-	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[?:?]
-	at java.net.Socket.connect(Socket.java:633) ~[?:?]
-	at sun.security.ssl.SSLSocketImpl.connect(SSLSocketImpl.java:304) ~[?:?]
-	at sun.net.NetworkClient.doConnect(NetworkClient.java:178) ~[?:?]
-	at sun.net.www.http.HttpClient.openServer(HttpClient.java:534) ~[?:?]
-	at sun.net.www.http.HttpClient.openServer(HttpClient.java:639) ~[?:?]
-	at sun.net.www.protocol.https.HttpsClient.<init>(HttpsClient.java:266) ~[?:?]
-	at sun.net.www.protocol.https.HttpsClient.New(HttpsClient.java:380) ~[?:?]
-	at sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.getNewHttpClient(AbstractDelegateHttpsURLConnection.java:193) ~[?:?]
-	at sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1303) ~[?:?]
-	at sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1144) ~[?:?]
-	at sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.connect(AbstractDelegateHttpsURLConnection.java:179) ~[?:?]
-	at sun.net.www.protocol.http.HttpURLConnection.getInputStream0(HttpURLConnection.java:1703) ~[?:?]
-	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1627) ~[?:?]
-	at sun.net.www.protocol.https.HttpsURLConnectionImpl.getInputStream(HttpsURLConnectionImpl.java:224) ~[?:?]
-	at com.mojang.authlib.HttpAuthenticationService.performGetRequest(HttpAuthenticationService.java:140) ~[authlib-4.0.43.jar%23133!/:?]
-	at com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService.makeRequest(YggdrasilAuthenticationService.java:96) ~[authlib-4.0.43.jar%23133!/:?]
-	... 9 more
-[248月2026 13:09:39.251] [main/ERROR] [net.minecraft.server.Main/FATAL]: Failed to start the minecraft server
-java.io.IOException: 另一个程序已锁定文件的一部分，进程无法访问。
-	at sun.nio.ch.FileDispatcherImpl.write0(Native Method) ~[?:?]
-	at sun.nio.ch.FileDispatcherImpl.write(FileDispatcherImpl.java:68) ~[?:?]
-	at sun.nio.ch.IOUtil.writeFromNativeBuffer(IOUtil.java:132) ~[?:?]
-	at sun.nio.ch.IOUtil.write(IOUtil.java:76) ~[?:?]
-	at sun.nio.ch.IOUtil.write(IOUtil.java:67) ~[?:?]
-	at sun.nio.ch.FileChannelImpl.write(FileChannelImpl.java:288) ~[?:?]
-	at net.minecraft.util.DirectoryLock.create(DirectoryLock.java:26) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar:?]
-	at net.minecraft.world.level.storage.LevelStorageSource$LevelStorageAccess.<init>(LevelStorageSource.java:410) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar:?]
-	at net.minecraft.world.level.storage.LevelStorageSource.validateAndCreateAccess(LevelStorageSource.java:348) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar:?]
-	at net.minecraft.server.Main.main(Main.java:141) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar:?]
-	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
-	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
-	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
-	at java.lang.reflect.Method.invoke(Method.java:568) ~[?:?]
-	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.4.0.jar:?]
-	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.serverService(CommonLaunchHandler.java:103) ~[fmlloader-1.20.1-47.4.0.jar:?]
-	at net.minecraftforge.fml.loading.targets.ForgeServerUserdevLaunchHandler.devService(ForgeServerUserdevLaunchHandler.java:16) ~[fmlloader-1.20.1-47.4.0.jar:?]
-	at net.minecraftforge.fml.loading.targets.CommonDevLaunchHandler.lambda$makeService$7(CommonDevLaunchHandler.java:135) ~[fmlloader-1.20.1-47.4.0.jar:?]
-	at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?]
-	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?]
-	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?]
-	at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?]
-	at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?]
-	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?]
-	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?]
-	at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?]
+[258月2026 12:34:48.567] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeserveruserdev, --gameDir, ., --fml.forgeVersion, 47.4.0, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --nogui, --mixin.config, mixins.callresponse.json]
+[258月2026 12:34:48.574] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.19 by Oracle Corporation; OS Windows 11 arch amd64 version 10.0
+[258月2026 12:34:48.798] [main/INFO] [net.minecraftforge.fml.loading.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgeserveruserdev
+[258月2026 12:34:48.862] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/D:/车万女仆/呼应/TLMAdditionExample-master/.gradle-user-home/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23128!/ Service=ModLauncher Env=SERVER
+[258月2026 12:34:49.130] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file D:\车万女仆\呼应\TLMAdditionExample-master\.gradle-user-home\caches\modules-2\files-2.1\net.minecraftforge\javafmllanguage\1.20.1-47.4.0\f0c0b352173d0a378cbdcec9cfc4ba65899a721\javafmllanguage-1.20.1-47.4.0.jar is missing mods.toml file
+[258月2026 12:34:49.132] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file D:\车万女仆\呼应\TLMAdditionExample-master\.gradle-user-home\caches\modules-2\files-2.1\net.minecraftforge\lowcodelanguage\1.20.1-47.4.0\e862740d8c84d08dbfedea412bef88fe42e727c5\lowcodelanguage-1.20.1-47.4.0.jar is missing mods.toml file
+[258月2026 12:34:49.135] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file D:\车万女仆\呼应\TLMAdditionExample-master\.gradle-user-home\caches\modules-2\files-2.1\net.minecraftforge\mclanguage\1.20.1-47.4.0\5719b3a297a33f877ed5dde4cb4bd75c859096af\mclanguage-1.20.1-47.4.0.jar is missing mods.toml file
+[258月2026 12:34:49.138] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file D:\车万女仆\呼应\TLMAdditionExample-master\.gradle-user-home\caches\modules-2\files-2.1\net.minecraftforge\fmlcore\1.20.1-47.4.0\235975dafa4309945b59c56b53f31dc5b65a6051\fmlcore-1.20.1-47.4.0.jar is missing mods.toml file
+[258月2026 12:34:49.372] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: Found 6 dependencies adding them to mods collection
+[258月2026 12:34:50.799] [main/INFO] [mixin/]: Compatibility level set to JAVA_17
+[258月2026 12:34:50.821] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeserveruserdev' with arguments [--gameDir, ., --nogui]
+[258月2026 12:34:58.883] [main/WARN] [mixin/]: Reference map 'mixins.callresponse.refmap.json' for mixins.callresponse.json could not be read. If this is a development environment you can ignore this message
+[258月2026 12:34:59.029] [main/INFO] [mixin/]: Remapping refMap tacz.refmap.json using D:\车万女仆\呼应\TLMAdditionExample-master/build/createSrgToMcp/output.srg
+[258月2026 12:34:59.094] [main/INFO] [mixin/]: Remapping refMap touhou_little_maid.refmap.json using D:\车万女仆\呼应\TLMAdditionExample-master/build/createSrgToMcp/output.srg
+[258月2026 12:34:59.095] [main/INFO] [mixin/]: Remapping refMap jade.refmap.json using D:\车万女仆\呼应\TLMAdditionExample-master/build/createSrgToMcp/output.srg
+[258月2026 12:35:00.121] [main/WARN] [oshi.util.platform.windows.WmiQueryHandler/]: COM exception querying Win32_Processor, which might not be on your system. Will not attempt to query it again. Error was -2147217405: (HRESULT: 80041003)
+[258月2026 12:35:00.155] [main/WARN] [oshi.util.platform.windows.WmiQueryHandler/]: COM exception querying Win32_Processor, which might not be on your system. Will not attempt to query it again. Error was -2147217405: (HRESULT: 80041003)
+[258月2026 12:35:00.174] [main/WARN] [oshi.util.platform.windows.WmiQueryHandler/]: COM exception querying Win32_VideoController, which might not be on your system. Will not attempt to query it again. Error was -2147217405: (HRESULT: 80041003)
+[258月2026 12:35:00.190] [main/WARN] [oshi.util.platform.windows.WmiQueryHandler/]: COM exception querying Win32_PhysicalMemory, which might not be on your system. Will not attempt to query it again. Error was -2147217405: (HRESULT: 80041003)
+[258月2026 12:35:00.504] [main/INFO] [MixinExtras|Service/]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.3.6).
+[258月2026 12:35:04.622] [modloading-worker-0/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 47.4.0, for MC 1.20.1 with MCP 20230612.114412
+[258月2026 12:35:04.622] [modloading-worker-0/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v47.4.0 Initialized
+[258月2026 12:35:04.686] [modloading-worker-0/INFO] [callresponse/]: ? CallResponse mod 初始化完成！
+[258月2026 12:35:04.768] [modloading-worker-0/INFO] [touhou_little_maid/]: common default pack init start...
+[258月2026 12:35:05.793] [modloading-worker-0/INFO] [touhou_little_maid/]: common default pack init finished, cost time: 1023.856 ms
+[258月2026 12:35:06.401] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Configuration file D:\车万女仆\呼应\TLMAdditionExample-master\run\config\callresponse-emotion-passive.toml is not correct. Correcting
+[258月2026 12:35:06.402] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key wandering_maid.spawnChancePercent was corrected from null to its default, 25. 
+[258月2026 12:35:06.583] [Forge Version Check/INFO] [net.minecraftforge.fml.VersionChecker/]: [forge] Starting version check at https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json
+[258月2026 12:35:06.739] [main/INFO] [tacz/SYNCED_ENTITY_DATA_TAC_COPY]: Registered synced data key tacz:shoot_cool_down for minecraft:living_entity
+[258月2026 12:35:06.739] [main/INFO] [tacz/SYNCED_ENTITY_DATA_TAC_COPY]: Registered synced data key tacz:melee_cool_down for minecraft:living_entity
+[258月2026 12:35:06.739] [main/INFO] [tacz/SYNCED_ENTITY_DATA_TAC_COPY]: Registered synced data key tacz:reload_state for minecraft:living_entity
+[258月2026 12:35:06.741] [main/INFO] [tacz/SYNCED_ENTITY_DATA_TAC_COPY]: Registered synced data key tacz:aiming_progress for minecraft:living_entity
+[258月2026 12:35:06.741] [main/INFO] [tacz/SYNCED_ENTITY_DATA_TAC_COPY]: Registered synced data key tacz:draw_cool_down for minecraft:living_entity
+[258月2026 12:35:06.741] [main/INFO] [tacz/SYNCED_ENTITY_DATA_TAC_COPY]: Registered synced data key tacz:is_aiming for minecraft:living_entity
+[258月2026 12:35:06.741] [main/INFO] [tacz/SYNCED_ENTITY_DATA_TAC_COPY]: Registered synced data key tacz:sprint_time for minecraft:living_entity
+[258月2026 12:35:06.741] [main/INFO] [tacz/SYNCED_ENTITY_DATA_TAC_COPY]: Registered synced data key tacz:is_bolting for minecraft:living_entity
+[258月2026 12:35:06.741] [main/INFO] [tacz/SYNCED_ENTITY_DATA_TAC_COPY]: Registered synced data key tacz:throwable_using for minecraft:living_entity
+[258月2026 12:35:06.906] [main/INFO] [callresponse/]: 已启用狩猎枪械命中桥接：tacz
+[258月2026 12:35:07.127] [modloading-worker-0/INFO] [Jade/]: Start loading plugin at com.github.tartaricacid.touhoulittlemaid.compat.jade.JadePlugin
+[258月2026 12:35:07.150] [modloading-worker-0/INFO] [Jade/]: Start loading plugin at com.github.JumDa5he.callresponse.compat.jade.CallResponseJadePlugin
+[258月2026 12:35:07.151] [modloading-worker-0/INFO] [Jade/]: Start loading plugin at snownee.jade.addon.vanilla.VanillaPlugin
+[258月2026 12:35:07.157] [Forge Version Check/INFO] [net.minecraftforge.fml.VersionChecker/]: [forge] Found status: OUTDATED Current: 47.4.0 Target: 47.4.10
+[258月2026 12:35:07.173] [modloading-worker-0/INFO] [Jade/]: Start loading plugin at snownee.jade.addon.universal.UniversalPlugin
+[258月2026 12:35:07.177] [modloading-worker-0/INFO] [Jade/]: Start loading plugin at snownee.jade.addon.core.CorePlugin
+[258月2026 12:35:07.180] [modloading-worker-0/INFO] [Jade/]: Dev environment detected, loading test plugin
+[258月2026 12:35:07.901] [main/INFO] [com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService/]: Environment: authHost='https://authserver.mojang.com', accountsHost='https://api.mojang.com', sessionHost='https://sessionserver.mojang.com', servicesHost='https://api.minecraftservices.com', name='PROD'
+[258月2026 12:35:07.965] [main/WARN] [net.minecraftforge.common.ForgeHooks/WP]: The following mods have version differences that were not resolved:
+callresponse (version 2.0.6 -> 2.0.7)
+Things may not work well.
+[258月2026 12:35:07.980] [main/INFO] [net.minecraftforge.registries.GameData/REGISTRIES]: Injecting existing registry data into this CLIENT instance
+[258月2026 12:35:08.027] [main/WARN] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:block: Object did not get ID it asked for. Name: tacz:gun_smith_table Expected: 1003 Got: 1021
+[258月2026 12:35:08.027] [main/WARN] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:block: Object did not get ID it asked for. Name: tacz:workbench_a Expected: 1004 Got: 1022
+[258月2026 12:35:08.028] [main/WARN] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:block: Object did not get ID it asked for. Name: tacz:workbench_b Expected: 1005 Got: 1023
+[258月2026 12:35:08.028] [main/WARN] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:block: Object did not get ID it asked for. Name: tacz:workbench_c Expected: 1006 Got: 1024
+[258月2026 12:35:08.028] [main/WARN] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:block: Object did not get ID it asked for. Name: tacz:target Expected: 1007 Got: 1025
+[258月2026 12:35:08.028] [main/WARN] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:block: Object did not get ID it asked for. Name: tacz:statue Expected: 1008 Got: 1026
+[258月2026 12:35:08.029] [main/WARN] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:item: Object did not get ID it asked for. Name: tacz:modern_kinetic_gun Expected: 1255 Got: 1338
+[258月2026 12:35:08.029] [main/WARN] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:item: Object did not get ID it asked for. Name: tacz:ammo Expected: 1256 Got: 1339
+[258月2026 12:35:08.030] [main/WARN] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:item: Object did not get ID it asked for. Name: tacz:attachment Expected: 1257 Got: 1340
+[258月2026 12:35:08.030] [main/WARN] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:item: Object did not get ID it asked for. Name: tacz:gun_smith_table Expected: 1258 Got: 1341
+[258月2026 12:35:08.030] [main/WARN] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:item: Object did not get ID it asked for. Name: tacz:workbench_a Expected: 1259 Got: 1342
+[258月2026 12:35:08.030] [main/WARN] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:item: Object did not get ID it asked for. Name: tacz:workbench_b Expected: 1260 Got: 1343
+[258月2026 12:35:08.030] [main/WARN] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:item: Object did not get ID it asked for. Name: tacz:workbench_c Expected: 1261 Got: 1344
+[258月2026 12:35:08.030] [main/WARN] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:item: Object did not get ID it asked for. Name: tacz:target Expected: 1262 Got: 1345
+[258月2026 12:35:08.030] [main/WARN] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:item: Object did not get ID it asked for. Name: tacz:statue Expected: 1263 Got: 1346
+[258月2026 12:35:08.030] [main/WARN] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:item: Object did not get ID it asked for. Name: tacz:ammo_box Expected: 1264 Got: 1347
+[258月2026 12:35:08.030] [main/WARN] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:item: Object did not get ID it asked for. Name: tacz:target_minecart Expected: 1265 Got: 1348
+[258月2026 12:35:08.031] [main/WARN] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:sound_event: Object did not get ID it asked for. Name: tacz:gun Expected: 1474 Got: 1517
+[258月2026 12:35:08.031] [main/WARN] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:sound_event: Object did not get ID it asked for. Name: tacz:target_block_hit Expected: 1475 Got: 1518
+[258月2026 12:35:08.031] [main/WARN] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:entity_type: Object did not get ID it asked for. Name: tacz:bullet Expected: 124 Got: 136
+[258月2026 12:35:08.031] [main/WARN] [net.minecraftforge.registries.ForgeRegistry/REGISTRIES]: Registry minecraft:entity_type: Object did not get ID it asked for. Name: tacz:target_minecart Expected: 125 Got: 137
+[258月2026 12:35:08.401] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/D:/车万女仆/呼应/TLMAdditionExample-master/.gradle-user-home/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1/forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/assets/.mcassetsroot' uses unexpected schema
+[258月2026 12:35:08.401] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/D:/车万女仆/呼应/TLMAdditionExample-master/.gradle-user-home/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1/forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/data/.mcassetsroot' uses unexpected schema
+[258月2026 12:35:08.446] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Configuration file D:\车万女仆\呼应\TLMAdditionExample-master\run\tacz\tacz-pre.toml is not correct. Correcting
+[258月2026 12:35:08.447] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key gunpack was corrected from null to its default, SimpleCommentedConfig:{}. 
+[258月2026 12:35:08.447] [main/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key gunpack.DefaultPackDebug was corrected from null to its default, false. 
+[258月2026 12:35:09.717] [main/INFO] [net.minecraft.server.MinecraftServer/]: Found new data pack tacz_resources, loading it automatically
+[258月2026 12:35:10.868] [Worker-Main-22/ERROR] [net.minecraftforge.common.ForgeHooks/]: Couldn't parse element loot_tables:touhou_little_maid:grant_book_on_first_join
+com.google.gson.JsonSyntaxException: Expected name to be an item, was unknown string 'patchouli:guide_book'
+	at net.minecraft.util.GsonHelper.lambda$convertToItem$0(GsonHelper.java:143) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/:?]
+	at java.util.Optional.orElseThrow(Optional.java:403) ~[?:?]
+	at net.minecraft.util.GsonHelper.convertToItem(GsonHelper.java:142) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/:?]
+	at net.minecraft.util.GsonHelper.getAsItem(GsonHelper.java:152) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/:?]
+	at net.minecraft.world.level.storage.loot.entries.LootItem$Serializer.deserialize(LootItem.java:59) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/:?]
+	at net.minecraft.world.level.storage.loot.entries.LootItem$Serializer.deserialize(LootItem.java:47) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/:?]
+	at net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer$Serializer.deserializeCustom(LootPoolSingletonContainer.java:165) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/:?]
+	at net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer$Serializer.deserializeCustom(LootPoolSingletonContainer.java:145) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/:?]
+	at net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer$Serializer.deserialize(LootPoolEntryContainer.java:94) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/:?]
+	at net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer$Serializer.deserialize(LootPoolEntryContainer.java:77) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/:?]
+	at net.minecraft.world.level.storage.loot.GsonAdapterFactory$JsonAdapter.deserialize(GsonAdapterFactory.java:113) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/:?]
+	at com.google.gson.internal.bind.TreeTypeAdapter.read(TreeTypeAdapter.java:76) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.internal.bind.TypeAdapterRuntimeTypeWrapper.read(TypeAdapterRuntimeTypeWrapper.java:40) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.internal.bind.ArrayTypeAdapter.read(ArrayTypeAdapter.java:72) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1214) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1319) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1290) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.internal.bind.TreeTypeAdapter$GsonContextImpl.deserialize(TreeTypeAdapter.java:179) ~[gson-2.10.jar%23130!/:?]
+	at net.minecraft.util.GsonHelper.convertToObject(GsonHelper.java:468) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/:?]
+	at net.minecraft.util.GsonHelper.getAsObject(GsonHelper.java:476) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/:?]
+	at net.minecraft.world.level.storage.loot.LootPool$Serializer.deserialize(LootPool.java:201) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/:?]
+	at net.minecraft.world.level.storage.loot.LootPool$Serializer.deserialize(LootPool.java:198) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/:?]
+	at com.google.gson.internal.bind.TreeTypeAdapter.read(TreeTypeAdapter.java:76) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.internal.bind.TypeAdapterRuntimeTypeWrapper.read(TypeAdapterRuntimeTypeWrapper.java:40) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.internal.bind.ArrayTypeAdapter.read(ArrayTypeAdapter.java:72) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1214) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1319) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1290) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.internal.bind.TreeTypeAdapter$GsonContextImpl.deserialize(TreeTypeAdapter.java:179) ~[gson-2.10.jar%23130!/:?]
+	at net.minecraft.util.GsonHelper.convertToObject(GsonHelper.java:468) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/:?]
+	at net.minecraft.util.GsonHelper.getAsObject(GsonHelper.java:485) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/:?]
+	at net.minecraft.world.level.storage.loot.LootTable$Serializer.deserialize(LootTable.java:312) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/:?]
+	at net.minecraft.world.level.storage.loot.LootTable$Serializer.deserialize(LootTable.java:309) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/:?]
+	at com.google.gson.internal.bind.TreeTypeAdapter.read(TreeTypeAdapter.java:76) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1214) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1319) ~[gson-2.10.jar%23130!/:?]
+	at com.google.gson.Gson.fromJson(Gson.java:1261) ~[gson-2.10.jar%23130!/:?]
+	at net.minecraftforge.common.ForgeHooks.loadLootTable(ForgeHooks.java:873) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23192%23199!/:?]
+	at net.minecraftforge.common.ForgeHooks.lambda$getLootTableDeserializer$3(ForgeHooks.java:850) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23192%23199!/:?]
+	at net.minecraft.world.level.storage.loot.LootDataType.deserialize(LootDataType.java:45) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/:?]
+	at net.minecraft.world.level.storage.loot.LootDataManager.lambda$scheduleElementParse$4(LootDataManager.java:56) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/:?]
+	at java.util.HashMap.forEach(HashMap.java:1421) ~[?:?]
+	at net.minecraft.world.level.storage.loot.LootDataManager.lambda$scheduleElementParse$5(LootDataManager.java:55) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23193!/:?]
+	at java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804) ~[?:?]
+	at java.util.concurrent.CompletableFuture$AsyncRun.exec(CompletableFuture.java:1796) ~[?:?]
+	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:373) ~[?:?]
+	at java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1182) ~[?:?]
+	at java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1655) ~[?:?]
+	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1622) ~[?:?]
+	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:165) ~[?:?]
+[258月2026 12:35:12.904] [main/INFO] [net.minecraft.world.item.crafting.RecipeManager/]: Skipping loading recipe touhou_little_maid:memorizable_gensokyo as it's serializer returned null
+[258月2026 12:35:12.915] [main/INFO] [net.minecraft.world.item.crafting.RecipeManager/]: Loaded 9 recipes
+[258月2026 12:35:12.977] [main/INFO] [net.minecraft.advancements.AdvancementList/]: Loaded 1324 advancements
+[258月2026 12:35:12.986] [main/INFO] [callresponse/]: 已加载 23 个派遣事件
+[258月2026 12:35:13.435] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Starting minecraft server version 1.20.1
+[258月2026 12:35:13.435] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Loading properties
+[258月2026 12:35:13.435] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Default game type: SURVIVAL
+[258月2026 12:35:13.436] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Generating keypair
+[258月2026 12:35:13.482] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Starting Minecraft server on *:25565
+[258月2026 12:35:13.495] [Server thread/INFO] [net.minecraft.server.network.ServerConnectionListener/]: Using default channel type
+[258月2026 12:35:13.698] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Configuration file .\world\serverconfig\tacz-server.toml is not correct. Correcting
+[258月2026 12:35:13.699] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key interact_key was corrected from null to its default, SimpleCommentedConfig:{}. 
+[258月2026 12:35:13.699] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key interact_key.InteractKeyWhitelistBlocks was corrected from null to its default, []. 
+[258月2026 12:35:13.699] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key interact_key.InteractKeyWhitelistEntities was corrected from null to its default, []. 
+[258月2026 12:35:13.699] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key interact_key.InteractKeyBlacklistBlocks was corrected from null to its default, []. 
+[258月2026 12:35:13.699] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key interact_key.InteractKeyBlacklistEntities was corrected from null to its default, []. 
+[258月2026 12:35:13.699] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key base_multiplier was corrected from null to its default, SimpleCommentedConfig:{}. 
+[258月2026 12:35:13.700] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key base_multiplier.DamageBaseMultiplier was corrected from null to its default, 1.0. 
+[258月2026 12:35:13.700] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key base_multiplier.ArmorIgnoreBaseMultiplier was corrected from null to its default, 1.0. 
+[258月2026 12:35:13.700] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key base_multiplier.HeadShotBaseMultiplier was corrected from null to its default, 1.0. 
+[258月2026 12:35:13.700] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key base_multiplier.WeightSpeedMultiplier was corrected from null to its default, 0.015. 
+[258月2026 12:35:13.701] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key misc was corrected from null to its default, SimpleCommentedConfig:{}. 
+[258月2026 12:35:13.701] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key misc.HeadShotAABB was corrected from null to its default, []. 
+[258月2026 12:35:13.701] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key misc.AmmoBoxStackSize was corrected from null to its default, 3. 
+[258月2026 12:35:13.701] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key misc.ClientGunPackDownloadUrls was corrected from null to its default, []. 
+[258月2026 12:35:13.701] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key misc.EnableCrawl was corrected from null to its default, true. 
+[258月2026 12:35:13.701] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key misc.EnableDefaultGunSmithTableFilter was corrected from null to its default, true. 
+[258月2026 12:35:13.701] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key misc.ServerShootNetworkCheck was corrected from null to its default, true. 
+[258月2026 12:35:13.701] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key misc.ServerShootCooldownCheck was corrected from null to its default, true. 
+[258月2026 12:35:13.731] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Preparing level "world"
+[258月2026 12:35:14.303] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Preparing start region for dimension minecraft:overworld
+[258月2026 12:35:15.832] [Worker-Main-17/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 0%
+[258月2026 12:35:15.832] [Worker-Main-7/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 0%
+[258月2026 12:35:15.850] [Worker-Main-7/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 0%
+[258月2026 12:35:15.853] [Worker-Main-12/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 0%
+[258月2026 12:35:16.304] [Worker-Main-22/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 6%
+[258月2026 12:35:16.510] [Server thread/WARN] [net.minecraft.network.syncher.SynchedEntityData/]: defineId called for: class com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid from class com.github.JumDa5he.callresponse.compat.emotion.EmotionData
+[258月2026 12:35:16.511] [Server thread/WARN] [net.minecraft.network.syncher.SynchedEntityData/]: defineId called for: class com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid from class com.github.JumDa5he.callresponse.compat.hunger.HungerData
+[258月2026 12:35:16.512] [Server thread/WARN] [net.minecraft.network.syncher.SynchedEntityData/]: defineId called for: class com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid from class com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidData
+[258月2026 12:35:16.514] [Server thread/WARN] [net.minecraft.network.syncher.SynchedEntityData/]: defineId called for: class com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid from class com.github.JumDa5he.callresponse.compat.trade.TradingMaidData
+[258月2026 12:35:16.720] [Server thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Time elapsed: 2418 ms
+[258月2026 12:35:16.721] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Done (3.024s)! For help, type "help"
+[258月2026 12:35:16.748] [Server thread/INFO] [net.minecraftforge.gametest.ForgeGameTestHooks/]: Enabled Gametest Namespaces: [callresponse]
+[258月2026 12:35:16.763] [Server thread/INFO] [net.minecraftforge.server.permission.PermissionAPI/]: Successfully initialized permission handler forge:default_handler

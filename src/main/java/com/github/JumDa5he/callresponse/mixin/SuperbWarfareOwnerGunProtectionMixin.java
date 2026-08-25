@@ -1,6 +1,8 @@
 package com.github.JumDa5he.callresponse.mixin;
 
 import com.github.JumDa5he.callresponse.compat.damage.OwnerDamageSource;
+import com.github.JumDa5he.callresponse.compat.damage.OwnerGunExplosionProtection;
+import net.minecraftforge.event.level.ExplosionEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,6 +21,14 @@ public abstract class SuperbWarfareOwnerGunProtectionMixin {
     @Inject(method = "onGunHurt", at = @At("HEAD"), cancellable = true, require = 0, remap = false)
     private void callresponse$allowOwnerGunHit(@Coerce Object event, CallbackInfo ci) {
         if (OwnerDamageSource.belongsToOwnerDamageEvent(event)) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "onExplosionDetonateEvent", at = @At("HEAD"), cancellable = true,
+            require = 0, remap = false)
+    private void callresponse$filterExplosionProtection(ExplosionEvent.Detonate event, CallbackInfo ci) {
+        if (OwnerGunExplosionProtection.filterProtectedMaids(event)) {
             ci.cancel();
         }
     }
