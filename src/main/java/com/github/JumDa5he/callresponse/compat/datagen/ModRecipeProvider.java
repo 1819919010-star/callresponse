@@ -70,5 +70,10 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(Items.PUFFERFISH)
                 .unlockedBy("has_rotten_flesh", has(Items.ROTTEN_FLESH))
                 .save(output, ResourceLocation.fromNamespaceAndPath(CallResponseMod.MOD_ID, "noeat_bauble"));
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.FACILITY_CAPACITY_TOOL.get())
+                .requires(Items.AMETHYST_SHARD)
+                .unlockedBy("get", has(Items.AMETHYST_SHARD))
+                .save(output);
     }
 }
