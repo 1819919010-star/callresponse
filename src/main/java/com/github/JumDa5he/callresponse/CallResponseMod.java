@@ -27,6 +27,8 @@ import com.github.JumDa5he.callresponse.config.EmotionPassiveConfig;
 import com.github.JumDa5he.callresponse.config.DispatchConfig;
 import com.github.JumDa5he.callresponse.compat.dispatch.OpenDispatchScreenS2CPacket;
 import com.github.JumDa5he.callresponse.compat.dispatch.DispatchActionC2SPacket;
+import com.github.JumDa5he.callresponse.compat.npc.NpcEventChoiceC2SPacket;
+import com.github.JumDa5he.callresponse.compat.npc.OpenNpcEventS2CPacket;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.block.IMaidEdibleBlock;
@@ -155,6 +157,14 @@ public class CallResponseMod {
                 DispatchActionC2SPacket::encode,
                 DispatchActionC2SPacket::new,
                 DispatchActionC2SPacket::handle);
+        CHANNEL.registerMessage(id++, OpenNpcEventS2CPacket.class,
+                OpenNpcEventS2CPacket::encode,
+                OpenNpcEventS2CPacket::new,
+                OpenNpcEventS2CPacket::handle);
+        CHANNEL.registerMessage(id++, NpcEventChoiceC2SPacket.class,
+                NpcEventChoiceC2SPacket::encode,
+                NpcEventChoiceC2SPacket::new,
+                NpcEventChoiceC2SPacket::handle);
 
         // ===== 3. 注册 ILittleMaid 扩展（在 MaidEdibleBlockManager.init() 之前执行） =====
         // 这个扩展会包装所有方块食物，增加饱食度同步逻辑

@@ -10,6 +10,7 @@ import com.github.JumDa5he.callresponse.compat.broadcast.BroadcastTools;
 import com.github.JumDa5he.callresponse.compat.broadcast.ChatEventListener;
 import com.github.JumDa5he.callresponse.compat.broadcast.actions.BroadcastMovementScheduler;
 import com.github.JumDa5he.callresponse.compat.emotion.*;
+import com.github.JumDa5he.callresponse.compat.facility.FacilityCapacityManager;
 import com.github.JumDa5he.callresponse.compat.hunger.CustomCakeEdible;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerManager;
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementLifecycle;
@@ -20,6 +21,7 @@ import com.github.JumDa5he.callresponse.compat.hunt.HuntGunEventBridge;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderManager;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntTargetProtectionBypass;
 import com.github.JumDa5he.callresponse.compat.item.ModItems;
+import com.github.JumDa5he.callresponse.compat.npc.NpcEventManager;
 import com.github.JumDa5he.callresponse.compat.task.LazyMaidTask;
 import com.github.JumDa5he.callresponse.compat.talk.TalkEventManager;
 import com.github.JumDa5he.callresponse.compat.trade.TradingMaidManager;
@@ -78,6 +80,8 @@ public class LittleMaidCompat implements ILittleMaid {
         MinecraftForge.EVENT_BUS.register(new WanderingMaidManager());
         MinecraftForge.EVENT_BUS.register(new TradingMaidManager());
         MinecraftForge.EVENT_BUS.register(new TalkEventManager());
+        MinecraftForge.EVENT_BUS.register(new NpcEventManager());
+        MinecraftForge.EVENT_BUS.register(new FacilityCapacityManager());
         HuntGunEventBridge.register();
         MinecraftForge.EVENT_BUS.register(NoEatBauble.class);
     }

@@ -3,6 +3,7 @@ package com.github.JumDa5he.callresponse.compat.hunger;
 import com.github.JumDa5he.callresponse.compat.bauble.BaubleDetector;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
+import com.github.JumDa5he.callresponse.compat.npc.NpcEventManager;
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.JumDa5he.callresponse.compat.talk.TalkEventManager;
 import com.github.tartaricacid.touhoulittlemaid.api.event.MaidAndItemTransformEvent;
@@ -113,6 +114,9 @@ public class HungerManager {
         ItemStack stack = event.getItem();
         FoodProperties food = stack.getFoodProperties(maid);
         if (food == null) return;
+
+        // NPC 日常事件只旁路记录已吃下的物品种类，不改变原进食流程。
+        NpcEventManager.recordFood(maid, stack);
 
         int nutrition = food.getNutrition();
 

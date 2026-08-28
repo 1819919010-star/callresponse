@@ -32,7 +32,10 @@
         "WanderingMaidInteractionMixin",
         "WanderingMaidVanillaTameMixin",
         "TalkLLMCallbackMixin",
-        "TalkMaidAIChatManagerMixin"
+        "TalkMaidAIChatManagerMixin",
+        "MaidFindHomeMealCapacityMixin",
+        "MaidJoyCapacityMixin",
+        "MaidBedCapacityMixin"
     ],
     "client": [
         "client.AbstractContainerScreenAccessor"
