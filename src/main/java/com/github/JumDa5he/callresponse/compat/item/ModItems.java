@@ -4,6 +4,7 @@ import com.github.JumDa5he.callresponse.CallResponseMod;
 import com.github.JumDa5he.callresponse.compat.bauble.MoreEatBauble;
 import com.github.JumDa5he.callresponse.compat.bauble.NoEatBauble;
 import com.github.JumDa5he.callresponse.compat.block.ModBlocks;
+import com.github.JumDa5he.callresponse.compat.facility.FacilityCapacityToolItem;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -44,6 +45,8 @@ public class ModItems {
             () -> new DispatchBookItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
     public static final Supplier<Item> REWARD_BOX = ITEMS.register("reward_box",
             () -> new BlockItem(ModBlocks.REWARD_BOX.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final Supplier<Item> FACILITY_CAPACITY_TOOL = ITEMS.register("facility_capacity_tool",
+            () -> new FacilityCapacityToolItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
 
     // ===== 创造模式物品栏：专属栏位 =====
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CallResponseMod.MOD_ID);
@@ -62,6 +65,7 @@ public class ModItems {
                         output.accept(DISPOSABLE_FAVORABILITY_TOOL_ADD.get());
                         output.accept(DISPATCH_BOOK.get());
                         output.accept(REWARD_BOX.get());
+                        output.accept(FACILITY_CAPACITY_TOOL.get());
                     })
                     .build());
 }

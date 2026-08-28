@@ -7,6 +7,8 @@ import com.github.JumDa5he.callresponse.compat.trade.RequestTradingMaidScreenC2S
 import com.github.JumDa5he.callresponse.compat.trade.TradingMaidActionC2SPacket;
 import com.github.JumDa5he.callresponse.compat.dispatch.DispatchActionC2SPacket;
 import com.github.JumDa5he.callresponse.compat.dispatch.OpenDispatchScreenS2CPacket;
+import com.github.JumDa5he.callresponse.compat.npc.NpcEventChoiceC2SPacket;
+import com.github.JumDa5he.callresponse.compat.npc.OpenNpcEventS2CPacket;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -25,6 +27,7 @@ public class NetworkRegistryHandler {
         registrar.playToServer(RequestTradingMaidScreenC2SPacket.TYPE, RequestTradingMaidScreenC2SPacket.STREAM_CODEC, RequestTradingMaidScreenC2SPacket::handle);
         registrar.playToServer(TradingMaidActionC2SPacket.TYPE, TradingMaidActionC2SPacket.STREAM_CODEC, TradingMaidActionC2SPacket::handle);
         registrar.playToServer(DispatchActionC2SPacket.TYPE, DispatchActionC2SPacket.STREAM_CODEC, DispatchActionC2SPacket::handle);
+        registrar.playToServer(NpcEventChoiceC2SPacket.TYPE, NpcEventChoiceC2SPacket.STREAM_CODEC, NpcEventChoiceC2SPacket::handle);
 
         // 防服务端崩溃
         if(FMLEnvironment.dist.isClient()){
@@ -37,6 +40,7 @@ public class NetworkRegistryHandler {
             registrar.playToClient(EnableTradingMaidButtonS2CPacket.TYPE, EnableTradingMaidButtonS2CPacket.STREAM_CODEC, EnableTradingMaidButtonS2CPacket::handle);
             registrar.playToClient(OpenTradingMaidScreenS2CPacket.TYPE, OpenTradingMaidScreenS2CPacket.STREAM_CODEC, OpenTradingMaidScreenS2CPacket::handle);
             registrar.playToClient(OpenDispatchScreenS2CPacket.TYPE, OpenDispatchScreenS2CPacket.STREAM_CODEC, OpenDispatchScreenS2CPacket::handle);
+            registrar.playToClient(OpenNpcEventS2CPacket.TYPE, OpenNpcEventS2CPacket.STREAM_CODEC, OpenNpcEventS2CPacket::handle);
         }else {
             registrar.playToClient(OpenEmotionBookScreenS2CPacket.TYPE, OpenEmotionBookScreenS2CPacket.STREAM_CODEC, (openEmotionBookScreenS2CPacket, iPayloadContext) -> {});
             registrar.playToClient(CopyEntityUuidS2CPacket.TYPE, CopyEntityUuidS2CPacket.STREAM_CODEC, (copyEntityUuidS2CPacket, iPayloadContext) -> {});
@@ -47,6 +51,7 @@ public class NetworkRegistryHandler {
             registrar.playToClient(EnableTradingMaidButtonS2CPacket.TYPE, EnableTradingMaidButtonS2CPacket.STREAM_CODEC, (enableTradingMaidButtonS2CPacket, iPayloadContext) -> {});
             registrar.playToClient(OpenTradingMaidScreenS2CPacket.TYPE, OpenTradingMaidScreenS2CPacket.STREAM_CODEC, (openTradingMaidScreenS2CPacket, iPayloadContext) -> {});
             registrar.playToClient(OpenDispatchScreenS2CPacket.TYPE, OpenDispatchScreenS2CPacket.STREAM_CODEC, (openDispatchScreenS2CPacket, iPayloadContext) -> {});
+            registrar.playToClient(OpenNpcEventS2CPacket.TYPE, OpenNpcEventS2CPacket.STREAM_CODEC, (openNpcEventS2CPacket, iPayloadContext) -> {});
         }
     }
 }

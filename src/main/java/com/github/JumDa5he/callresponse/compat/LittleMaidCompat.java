@@ -11,6 +11,7 @@ import com.github.JumDa5he.callresponse.compat.broadcast.ChatEventListener;
 import com.github.JumDa5he.callresponse.compat.dispatch.DispatchEventLoader;
 import com.github.JumDa5he.callresponse.compat.dispatch.DispatchManager;
 import com.github.JumDa5he.callresponse.compat.emotion.*;
+import com.github.JumDa5he.callresponse.compat.facility.FacilityCapacityManager;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntGunEventBridge;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderInteractListener;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderManager;
@@ -19,6 +20,8 @@ import com.github.JumDa5he.callresponse.compat.hunger.HungerManager;
 import com.github.JumDa5he.callresponse.compat.hunger.MaidHungerGuiDisplay;
 import com.github.JumDa5he.callresponse.compat.hunger.NoEatAwareMaidMeal;
 import com.github.JumDa5he.callresponse.compat.item.ModItems;
+import com.github.JumDa5he.callresponse.compat.npc.NpcEventLoader;
+import com.github.JumDa5he.callresponse.compat.npc.NpcEventManager;
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementLifecycle;
 import com.github.JumDa5he.callresponse.compat.task.LazyMaidTask;
 import com.github.JumDa5he.callresponse.compat.talk.TalkEventManager;
@@ -69,6 +72,9 @@ public class LittleMaidCompat implements ILittleMaid {
         NeoForge.EVENT_BUS.register(new TalkEventManager());
         NeoForge.EVENT_BUS.register(DispatchManager.class);
         NeoForge.EVENT_BUS.register(DispatchEventLoader.class);
+        NeoForge.EVENT_BUS.register(new NpcEventManager());
+        NeoForge.EVENT_BUS.register(new FacilityCapacityManager());
+        NeoForge.EVENT_BUS.register(NpcEventLoader.class);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.github.JumDa5he.callresponse.compat.broadcast;
 
 import com.github.JumDa5he.callresponse.config.BroadcastConfig;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionActiveDialogue;
+import com.github.JumDa5he.callresponse.compat.npc.NpcEventManager;
 import com.github.JumDa5he.callresponse.compat.talk.TalkEventManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.network.chat.Component;
@@ -46,6 +47,9 @@ public class ChatEventListener {
                 EntityMaid.class, area,
                 (maid) -> maid.isAlive() && maid.getOwnerUUID() != null
         );
+        // 只记录玩家主动发出的广播，不改变 MaidResponder 的选择与 AI 回应流程。
+        maids.stream().filter(maid -> maid.isOwnedBy(event.getPlayer()))
+                .forEach(maid -> NpcEventManager.recordOwnerInteraction(maid, event.getPlayer()));
         int foundBeforeTalkRouting = maids.size();
         maids = TalkEventManager.routeBroadcastCommand(event.getPlayer(), maids, command);
 
