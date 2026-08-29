@@ -11,6 +11,7 @@ import com.github.JumDa5he.callresponse.compat.broadcast.ChatEventListener;
 import com.github.JumDa5he.callresponse.compat.broadcast.actions.BroadcastMovementScheduler;
 import com.github.JumDa5he.callresponse.compat.emotion.*;
 import com.github.JumDa5he.callresponse.compat.facility.FacilityCapacityManager;
+import com.github.JumDa5he.callresponse.compat.game.BoardGameManager;
 import com.github.JumDa5he.callresponse.compat.hunger.CustomCakeEdible;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerManager;
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementLifecycle;
@@ -82,6 +83,7 @@ public class LittleMaidCompat implements ILittleMaid {
         MinecraftForge.EVENT_BUS.register(new TalkEventManager());
         MinecraftForge.EVENT_BUS.register(new NpcEventManager());
         MinecraftForge.EVENT_BUS.register(new FacilityCapacityManager());
+        MinecraftForge.EVENT_BUS.register(new BoardGameManager());
         HuntGunEventBridge.register();
         MinecraftForge.EVENT_BUS.register(NoEatBauble.class);
     }

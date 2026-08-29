@@ -1,6 +1,7 @@
 package com.github.JumDa5he.callresponse.compat.brain;
 
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
+import com.github.JumDa5he.callresponse.compat.game.WatchBoardGameBehavior;
 
 import com.github.JumDa5he.callresponse.compat.bauble.BaubleDetector;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
@@ -67,7 +68,10 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
 
     @Override
     public List<Pair<Integer, BehaviorControl<? super EntityMaid>>> getCoreBehaviors() {
-        return List.of(Pair.of(1, new LazyLoopBehavior()));
+        return List.of(
+                Pair.of(1, new LazyLoopBehavior()),
+                Pair.of(10, new WatchBoardGameBehavior())
+        );
     }
 
     private static class LazyLoopBehavior extends Behavior<EntityMaid> {

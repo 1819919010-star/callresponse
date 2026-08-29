@@ -497,7 +497,7 @@ public class EmotionPassiveManager {
                         }
 
                         // ===== 亮度检测 =====
-                        int rawBrightness = maid.level().getRawBrightness(maid.blockPosition(), 0);
+                        int rawBrightness = MaidEnvironmentLight.getEffectiveLightLevel(maid);
                         if (rawBrightness < DARKNESS_THRESHOLD) {
                             int darkTime = darknessTimer.getOrDefault(maidId, 0) + 1;
                             darknessTimer.put(maidId, darkTime);
