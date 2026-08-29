@@ -40,7 +40,6 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -237,7 +236,6 @@ public final class NpcEventManager {
             // 梦境由真实睡眠状态下的统一抽取处理，不能再被通用条件循环重复生成。
             case "nightmare", "good_dream" -> false;
             case "battle_praise" -> NpcEventData.flag(maid, "battle_praise");
-            case "mistake" -> NpcEventData.flag(maid, "mistake");
             case "hunger_high" -> HungerData.get(maid) >= positiveOr(first, 90.0D);
             case "long_time_no_interaction" -> longTimeNoInteraction(maid, gameTime,
                     (long) positiveOr(first, 72_000.0D));
@@ -393,7 +391,7 @@ public final class NpcEventManager {
         switch (condition) {
             case "overwork" -> NpcEventData.resetWorkTicks(maid);
             case "food_variety" -> NpcEventData.resetFoodStats(maid);
-            case "battle_praise", "mistake", "owner_hurt_nearby", "player_hurt_maid" ->
+            case "battle_praise", "owner_hurt_nearby", "player_hurt_maid" ->
                     NpcEventData.setFlag(maid, condition, false);
             default -> {
             }
@@ -523,17 +521,6 @@ public final class NpcEventManager {
         }
         if (event.getEntity() instanceof EntityMaid deadMaid) {
             NpcEventData.remove(deadMaid);
-        }
-    }
-
-    @SubscribeEvent
-    public void onLivingHurt(LivingHurtEvent event) {
-        if (event.getEntity().level().isClientSide) return;
-        Entity attacker = event.getSource().getEntity();
-        LivingEntity victim = event.getEntity();
-        if (attacker instanceof EntityMaid maid && eligible(maid)
-                && maid.isOwnedBy(victim)) {
-            NpcEventData.setFlag(maid, "mistake", true);
         }
     }
 

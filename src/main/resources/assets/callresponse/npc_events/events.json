@@ -156,11 +156,11 @@
   },
   {
     "id": "mistake",
-    "type": "conditional",
-    "condition": "mistake",
+    "type": "random",
     "priority": 100,
     "category": "special",
     "cooldownTicks": 12000,
+    "weight": 4,
     "title": "event.callresponse.mistake.title",
     "description": "event.callresponse.mistake.description",
     "options": [
