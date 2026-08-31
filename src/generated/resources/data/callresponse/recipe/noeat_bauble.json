@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:rotten_flesh",
+    "minecraft:spider_eye",
+    "minecraft:pufferfish"
+  ],
+  "result": {
+    "id": "callresponse:noeat_bauble"
+  }
+}

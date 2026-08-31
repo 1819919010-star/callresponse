@@ -1,0 +1,265 @@
+[
+  {
+    "id": "overwork",
+    "type": "conditional",
+    "condition": "overwork",
+    "conditionValue": 72000,
+    "priority": 50,
+    "category": "health",
+    "cooldownTicks": 72000,
+    "title": "event.callresponse.overwork.title",
+    "description": "event.callresponse.overwork.description",
+    "options": [
+      {"text": "event.callresponse.overwork.option.rest", "trust": 5, "fear": -3, "favor": 2, "hunger": 0, "response": "event.callresponse.overwork.response.rest", "action": "rest_schedule"},
+      {"text": "event.callresponse.overwork.option.encourage", "trust": 2, "fear": -1, "favor": 1, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.overwork.option.continue", "trust": -3, "fear": 4, "favor": -1, "hunger": 0, "response": "event.callresponse.overwork.response.continue"}
+    ]
+  },
+  {
+    "id": "nutrition_shortage",
+    "type": "conditional",
+    "condition": "nutrition_shortage",
+    "conditionValue": 20,
+    "priority": 50,
+    "category": "health",
+    "cooldownTicks": 24000,
+    "title": "event.callresponse.nutrition_shortage.title",
+    "description": "event.callresponse.nutrition_shortage.description",
+    "options": [
+      {"text": "event.callresponse.nutrition_shortage.option.meal", "trust": 4, "fear": -2, "favor": 1, "hunger": 0, "response": "event.callresponse.nutrition_shortage.response.request_food", "action": "wait_food"},
+      {"text": "event.callresponse.nutrition_shortage.option.snack", "trust": 2, "fear": 0, "favor": 0, "hunger": 0, "response": "event.callresponse.nutrition_shortage.response.request_food", "action": "wait_food"},
+      {"text": "event.callresponse.nutrition_shortage.option.ignore", "trust": -2, "fear": 2, "favor": -1, "hunger": 0, "response": "event.callresponse.nutrition_shortage.response.ignore"}
+    ]
+  },
+  {
+    "id": "food_variety",
+    "type": "conditional",
+    "condition": "food_variety",
+    "conditionValue": 6,
+    "conditionValue2": 2,
+    "priority": 30,
+    "category": "daily",
+    "cooldownTicks": 48000,
+    "title": "event.callresponse.food_variety.title",
+    "description": "event.callresponse.food_variety.description",
+    "options": [
+      {"text": "event.callresponse.food_variety.option.change", "trust": 3, "fear": -1, "favor": 2, "hunger": 0, "response": "event.callresponse.food_variety.response.request_new", "action": "wait_food_variety"},
+      {"text": "event.callresponse.food_variety.option.favorite", "trust": 1, "fear": 0, "favor": 1, "hunger": 0, "response": "event.callresponse.food_variety.response.favorite"},
+      {"text": "event.callresponse.food_variety.option.endure", "trust": -2, "fear": 2, "favor": -1, "hunger": 0, "response": "event.callresponse.food_variety.response.endure"}
+    ]
+  },
+  {
+    "id": "nightmare",
+    "type": "conditional",
+    "condition": "nightmare",
+    "priority": 50,
+    "category": "emotion",
+    "cooldownTicks": 48000,
+    "title": "event.callresponse.nightmare.title",
+    "description": "event.callresponse.nightmare.description",
+    "options": [
+      {"text": "event.callresponse.nightmare.option.comfort", "trust": 4, "fear": -4, "favor": 2, "hunger": 0, "response": "", "aiResponse": false, "action": "dream_heart"},
+      {"text": "event.callresponse.nightmare.option.wait", "trust": 1, "fear": -1, "favor": 0, "hunger": 0, "response": "", "aiResponse": false},
+      {"text": "event.callresponse.nightmare.option.wake", "trust": -4, "fear": 5, "favor": -2, "hunger": 0, "response": "", "action": "wake_nightmare"}
+    ]
+  },
+  {
+    "id": "good_dream",
+    "type": "conditional",
+    "condition": "good_dream",
+    "priority": 30,
+    "category": "emotion",
+    "cooldownTicks": 48000,
+    "title": "event.callresponse.good_dream.title",
+    "description": "event.callresponse.good_dream.description",
+    "options": [
+      {"text": "event.callresponse.good_dream.option.pet", "trust": 3, "fear": -1, "favor": 2, "hunger": 0, "response": "", "aiResponse": false, "action": "dream_heart"},
+      {"text": "event.callresponse.good_dream.option.watch", "trust": 1, "fear": 0, "favor": 1, "hunger": 0, "response": "", "aiResponse": false},
+      {"text": "event.callresponse.good_dream.option.wake", "trust": -4, "fear": 3, "favor": -2, "hunger": 0, "response": "", "action": "wake_good_dream"}
+    ]
+  },
+  {
+    "id": "long_time_no_interaction",
+    "type": "conditional",
+    "condition": "long_time_no_interaction",
+    "conditionValue": 72000,
+    "priority": 30,
+    "category": "emotion",
+    "cooldownTicks": 72000,
+    "title": "event.callresponse.long_time_no_interaction.title",
+    "description": "event.callresponse.long_time_no_interaction.description",
+    "options": [
+      {"text": "event.callresponse.long_time_no_interaction.option.kind", "trust": 5, "fear": -2, "favor": 2, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.long_time_no_interaction.option.neutral", "trust": 1, "fear": 0, "favor": 0, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.long_time_no_interaction.option.cold", "trust": -4, "fear": 2, "favor": -2, "hunger": 0, "response": ""}
+    ]
+  },
+  {
+    "id": "owner_hurt_nearby",
+    "type": "conditional",
+    "condition": "owner_hurt_nearby",
+    "priority": 50,
+    "category": "emotion",
+    "cooldownTicks": 24000,
+    "title": "event.callresponse.owner_hurt_nearby.title",
+    "description": "event.callresponse.owner_hurt_nearby.description",
+    "options": [
+      {"text": "event.callresponse.owner_hurt_nearby.option.kind", "trust": 4, "fear": -3, "favor": 2, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.owner_hurt_nearby.option.neutral", "trust": 1, "fear": -1, "favor": 0, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.owner_hurt_nearby.option.cold", "trust": -3, "fear": 3, "favor": -2, "hunger": 0, "response": ""}
+    ]
+  },
+  {
+    "id": "battle_praise",
+    "type": "conditional",
+    "condition": "battle_praise",
+    "priority": 30,
+    "category": "emotion",
+    "cooldownTicks": 12000,
+    "title": "event.callresponse.battle_praise.title",
+    "description": "event.callresponse.battle_praise.description",
+    "options": [
+      {"text": "event.callresponse.battle_praise.option.praise", "trust": 4, "fear": -1, "favor": 2, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.battle_praise.option.caution", "trust": 2, "fear": 0, "favor": 1, "hunger": 0, "response": "event.callresponse.battle_praise.response.caution"},
+      {"text": "event.callresponse.battle_praise.option.normal", "trust": -1, "fear": 1, "favor": 0, "hunger": 0, "response": "event.callresponse.battle_praise.response.normal"}
+    ]
+  },
+  {
+    "id": "thunder_fear",
+    "type": "conditional",
+    "condition": "thunderstorm",
+    "priority": 50,
+    "category": "daily",
+    "cooldownTicks": 24000,
+    "title": "event.callresponse.thunder_fear.title",
+    "description": "event.callresponse.thunder_fear.description",
+    "options": [
+      {"text": "event.callresponse.thunder_fear.option.comfort", "trust": 4, "fear": -4, "favor": 2, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.thunder_fear.option.neutral", "trust": 1, "fear": -1, "favor": 0, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.thunder_fear.option.cruel", "trust": -4, "fear": 5, "favor": -2, "hunger": 0, "response": "", "action": "throw_into_storm"}
+    ]
+  },
+  {
+    "id": "player_hurt_maid",
+    "type": "conditional",
+    "condition": "player_hurt_maid",
+    "priority": 100,
+    "category": "emotion",
+    "cooldownTicks": 6000,
+    "title": "event.callresponse.player_hurt_maid.title",
+    "description": "event.callresponse.player_hurt_maid.description",
+    "options": [
+      {"text": "event.callresponse.player_hurt_maid.option.apologize", "trust": 3, "fear": -2, "favor": 2, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.player_hurt_maid.option.dismiss", "trust": -1, "fear": 2, "favor": -1, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.player_hurt_maid.option.cruel", "trust": -5, "fear": 6, "favor": -3, "hunger": 0, "response": ""}
+    ]
+  },
+  {
+    "id": "mistake",
+    "type": "random",
+    "priority": 100,
+    "category": "special",
+    "cooldownTicks": 12000,
+    "weight": 4,
+    "title": "event.callresponse.mistake.title",
+    "description": "event.callresponse.mistake.description",
+    "options": [
+      {"text": "event.callresponse.mistake.option.forgive", "trust": 4, "fear": -4, "favor": 1, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.mistake.option.warn", "trust": 0, "fear": 3, "favor": 0, "hunger": 0, "response": "event.callresponse.mistake.response.warn"},
+      {"text": "event.callresponse.mistake.option.scold", "trust": -3, "fear": 6, "favor": -2, "hunger": 0, "response": "event.callresponse.mistake.response.scold"},
+      {"text": "event.callresponse.mistake.option.punish", "trust": -5, "fear": 10, "favor": -3, "hunger": 0, "response": ""}
+    ]
+  },
+  {
+    "id": "overfed",
+    "type": "conditional",
+    "condition": "hunger_high",
+    "conditionValue": 90,
+    "priority": 50,
+    "category": "health",
+    "cooldownTicks": 24000,
+    "title": "event.callresponse.overfed.title",
+    "description": "event.callresponse.overfed.description",
+    "options": [
+      {"text": "event.callresponse.overfed.option.rest", "trust": 2, "fear": -1, "favor": 0, "hunger": -8, "response": "event.callresponse.overfed.response.rest"},
+      {"text": "event.callresponse.overfed.option.tease", "trust": 0, "fear": 1, "favor": 0, "hunger": -4, "response": ""}
+    ]
+  },
+  {
+    "id": "quiet_chat",
+    "type": "random",
+    "priority": 10,
+    "category": "daily",
+    "cooldownTicks": 24000,
+    "weight": 5,
+    "title": "event.callresponse.quiet_chat.title",
+    "description": "event.callresponse.quiet_chat.description",
+    "options": [
+      {"text": "event.callresponse.quiet_chat.option.listen", "trust": 2, "fear": -1, "favor": 1, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.quiet_chat.option.busy", "trust": -1, "fear": 1, "favor": 0, "hunger": 0, "response": "event.callresponse.quiet_chat.response.busy"}
+    ]
+  },
+  {
+    "id": "share_food",
+    "type": "random",
+    "condition": "has_shareable_food",
+    "priority": 10,
+    "category": "daily",
+    "cooldownTicks": 24000,
+    "weight": 3,
+    "title": "event.callresponse.share_food.title",
+    "description": "event.callresponse.share_food.description",
+    "options": [
+      {"text": "event.callresponse.share_food.option.accept", "trust": 3, "fear": -1, "favor": 1, "hunger": 0, "response": "", "action": "share_food"},
+      {"text": "event.callresponse.share_food.option.later", "trust": 1, "fear": 0, "favor": 0, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.share_food.option.refuse", "trust": -3, "fear": 2, "favor": -1, "hunger": 0, "response": ""}
+    ]
+  },
+  {
+    "id": "little_gift",
+    "type": "random",
+    "priority": 10,
+    "category": "emotion",
+    "cooldownTicks": 36000,
+    "weight": 3,
+    "emotionCondition": {"type": "trust", "min": 60, "max": 100},
+    "title": "event.callresponse.little_gift.title",
+    "description": "event.callresponse.little_gift.description",
+    "options": [
+      {"text": "event.callresponse.little_gift.option.accept", "trust": 3, "fear": -1, "favor": 2, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.little_gift.option.return", "trust": -1, "fear": 1, "favor": 0, "hunger": 0, "response": "event.callresponse.little_gift.response.return"}
+    ]
+  },
+  {
+    "id": "nervous_question",
+    "type": "random",
+    "priority": 10,
+    "category": "emotion",
+    "cooldownTicks": 36000,
+    "weight": 2,
+    "emotionCondition": {"type": "fear", "min": 60, "max": 100},
+    "title": "event.callresponse.nervous_question.title",
+    "description": "event.callresponse.nervous_question.description",
+    "options": [
+      {"text": "event.callresponse.nervous_question.option.reassure", "trust": 3, "fear": -5, "favor": 1, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.nervous_question.option.avoid", "trust": -2, "fear": 3, "favor": -1, "hunger": 0, "response": "event.callresponse.nervous_question.response.avoid"}
+    ]
+  },
+  {
+    "id": "self_worth",
+    "type": "conditional",
+    "condition": "self_worth",
+    "conditionValue": 120000,
+    "priority": 80,
+    "category": "special",
+    "cooldownTicks": 120000,
+    "title": "event.callresponse.self_worth.title",
+    "description": "event.callresponse.self_worth.description",
+    "options": [
+      {"text": "event.callresponse.self_worth.option.treasure", "trust": 3, "fear": -3, "favor": 8, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.self_worth.option.partner", "trust": 2, "fear": -1, "favor": 5, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.self_worth.option.labor", "trust": -1, "fear": 1, "favor": 0, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.self_worth.option.nothing", "trust": -3, "fear": 3, "favor": 0, "hunger": 0, "response": ""}
+    ]
+  }
+]

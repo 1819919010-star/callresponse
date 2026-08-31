@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:nether_star",
+    "minecraft:diamond_sword",
+    "minecraft:shield",
+    "minecraft:book",
+    "minecraft:book"
+  ],
+  "result": {
+    "id": "callresponse:hunt_order"
+  }
+}

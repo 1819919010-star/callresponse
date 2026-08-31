@@ -1,0 +1,53 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "com.github.JumDa5he.callresponse.mixin",
+    "compatibilityLevel": "JAVA_25",
+    "mixins": [
+        "MixinCakeEdible",
+        "MixinEntityMaid",
+        "MaidMiscTamingMixin",
+        "MaidFollowOwnerTaskMixin",
+        "MaidAwaitTaskMixin",
+        "SchedulePosMixin",
+        "MixinMaidEdibleBlockManager",
+        "BaubleItemHandlerMixin",
+        "HuntEntityProtectionMixin",
+        "HuntForgeEventMixin",
+        "HuntForgeHooksMixin",
+        "HuntLivingEntityProtectionMixin",
+        "TaczOwnerGunProtectionMixin",
+        "SuperbWarfareOwnerGunProtectionMixin",
+        "HuntTamableAllianceMixin",
+        "HuntTargetingConditionsMixin",
+        "accessor.LivingEntityHealthAccessorMixin",
+        "accessor.SynchedEntityDataAccessorMixin",
+        "accessor.EntityMaidTameInvoker",
+        "accessor.LootTableAccessor",
+        "accessor.LootPoolAccessor",
+        "accessor.LootItemAccessor",
+        "accessor.TagEntryAccessor",
+        "accessor.NestedLootTableAccessor",
+        "accessor.CompositeEntryBaseAccessor",
+        "accessor.AdvancementRewardsAccessor",
+        "WanderingMaidInteractionMixin",
+        "WanderingMaidVanillaTameMixin",
+        "TalkLLMCallbackMixin",
+        "TalkMaidAIChatManagerMixin",
+        "MaidFindHomeMealCapacityMixin",
+        "MaidJoyCapacityMixin",
+        "MaidBedCapacityMixin",
+        "MaidBoardGameTaskMixin",
+        "BoardGameBlockMixin",
+        "EntitySitSpectatorMixin"
+    ],
+    "client": [
+        "client.AbstractContainerScreenAccessor",
+        "client.GomokuWinnerTextMixin",
+        "client.CChessWinnerTextMixin",
+        "client.WChessWinnerTextMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

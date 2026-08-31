@@ -1,0 +1,27 @@
+{
+  "cooldown": 90,
+  "description": {
+    "translate": "text.callresponse.dispatch.caravan_escort.description"
+  },
+  "duration": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 60,
+    "min_inclusive": 40
+  },
+  "emotion": {
+    "favor": 5,
+    "fear": -4,
+    "hunger": -10,
+    "trust": 2
+  },
+  "rewards": {
+    "experience": 15,
+    "loot": [
+      "callresponse:dispatch/caravan_escort"
+    ]
+  },
+  "title": {
+    "translate": "text.callresponse.dispatch.caravan_escort.title"
+  },
+  "weight": 6
+}

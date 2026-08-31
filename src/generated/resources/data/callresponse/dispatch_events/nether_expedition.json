@@ -1,0 +1,26 @@
+{
+  "cooldown": 90,
+  "description": {
+    "translate": "text.callresponse.dispatch.nether_expedition.description"
+  },
+  "duration": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 60,
+    "min_inclusive": 45
+  },
+  "emotion": {
+    "favor": 4,
+    "fear": 3,
+    "hunger": -14,
+    "trust": 2
+  },
+  "rewards": {
+    "loot": [
+      "callresponse:dispatch/nether_expedition"
+    ]
+  },
+  "title": {
+    "translate": "text.callresponse.dispatch.nether_expedition.title"
+  },
+  "weight": 6
+}

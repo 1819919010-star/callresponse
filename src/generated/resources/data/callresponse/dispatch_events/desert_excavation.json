@@ -1,0 +1,27 @@
+{
+  "category": "play",
+  "cooldown": 50,
+  "description": {
+    "translate": "text.callresponse.dispatch.desert_excavation.description"
+  },
+  "duration": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 40,
+    "min_inclusive": 20
+  },
+  "emotion": {
+    "favor": 5,
+    "hunger": -6,
+    "trust": 2
+  },
+  "rewards": {
+    "experience": 6,
+    "loot": [
+      "callresponse:dispatch/desert_excavation"
+    ]
+  },
+  "title": {
+    "translate": "text.callresponse.dispatch.desert_excavation.title"
+  },
+  "weight": 7
+}

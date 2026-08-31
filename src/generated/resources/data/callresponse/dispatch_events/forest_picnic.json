@@ -1,0 +1,27 @@
+{
+  "category": "play",
+  "cooldown": 20,
+  "description": {
+    "translate": "text.callresponse.dispatch.forest_picnic.description"
+  },
+  "duration": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 25,
+    "min_inclusive": 15
+  },
+  "emotion": {
+    "favor": 12,
+    "fear": -3,
+    "hunger": 9,
+    "trust": 3
+  },
+  "rewards": {
+    "loot": [
+      "callresponse:dispatch/forest_picnic"
+    ]
+  },
+  "title": {
+    "translate": "text.callresponse.dispatch.forest_picnic.title"
+  },
+  "weight": 11
+}

@@ -1,0 +1,26 @@
+{
+  "cooldown": 90,
+  "description": {
+    "translate": "text.callresponse.dispatch.merchant_guard.description"
+  },
+  "duration": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 60,
+    "min_inclusive": 45
+  },
+  "emotion": {
+    "favor": 6,
+    "fear": -1,
+    "hunger": -15,
+    "trust": 2
+  },
+  "rewards": {
+    "loot": [
+      "callresponse:dispatch/merchant_guard"
+    ]
+  },
+  "title": {
+    "translate": "text.callresponse.dispatch.merchant_guard.title"
+  },
+  "weight": 7
+}

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:writable_book",
+    "minecraft:emerald"
+  ],
+  "result": {
+    "id": "callresponse:wandering_maid_book"
+  }
+}

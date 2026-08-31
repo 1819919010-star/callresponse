@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:cake",
+    "minecraft:golden_apple",
+    "minecraft:honey_bottle"
+  ],
+  "result": {
+    "id": "callresponse:moreeat_bauble"
+  }
+}
