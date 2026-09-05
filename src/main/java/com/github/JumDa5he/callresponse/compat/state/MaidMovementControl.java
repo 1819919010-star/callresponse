@@ -59,6 +59,7 @@ public final class MaidMovementControl {
         DEVOTED_COMBAT,
         DEVOTED_HEAL,
         IDLE_HURT_FLEE,
+        CAGE,
         WANDERING_WAIT,
         PURCHASE_MOVING
     }

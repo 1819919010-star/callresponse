@@ -1,159 +1,39 @@
-[298月2026 13:29:16.573] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeclientuserdev, --version, MOD_DEV, --assetIndex, 5, --assetsDir, D:\车万女仆\呼应\TLMAdditionExample-master\.gradle-user-home\caches\forge_gradle\assets, --gameDir, ., --fml.forgeVersion, 47.4.0, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --mixin.config, mixins.callresponse.json]
-[298月2026 13:29:16.583] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.19 by Oracle Corporation; OS Windows 11 arch amd64 version 10.0
-[298月2026 13:29:16.705] [main/INFO] [net.minecraftforge.fml.loading.ImmediateWindowHandler/]: Loading ImmediateWindowProvider fmlearlywindow
-[298月2026 13:29:16.779] [main/INFO] [EARLYDISPLAY/]: Trying GL version 4.6
-[298月2026 13:29:17.027] [main/INFO] [EARLYDISPLAY/]: Requested GL version 4.6 got version 4.6
-[298月2026 13:29:17.089] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/D:/车万女仆/呼应/TLMAdditionExample-master/.gradle-user-home/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23128!/ Service=ModLauncher Env=CLIENT
-[298月2026 13:29:17.106] [pool-2-thread-1/INFO] [EARLYDISPLAY/]: GL info: Intel(R) RaptorLake-S Mobile Graphics Controller GL version 4.6.0 - Build 31.0.101.5333, Intel
-[298月2026 13:29:17.366] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file D:\车万女仆\呼应\TLMAdditionExample-master\.gradle-user-home\caches\modules-2\files-2.1\net.minecraftforge\javafmllanguage\1.20.1-47.4.0\f0c0b352173d0a378cbdcec9cfc4ba65899a721\javafmllanguage-1.20.1-47.4.0.jar is missing mods.toml file
-[298月2026 13:29:17.370] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file D:\车万女仆\呼应\TLMAdditionExample-master\.gradle-user-home\caches\modules-2\files-2.1\net.minecraftforge\lowcodelanguage\1.20.1-47.4.0\e862740d8c84d08dbfedea412bef88fe42e727c5\lowcodelanguage-1.20.1-47.4.0.jar is missing mods.toml file
-[298月2026 13:29:17.372] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file D:\车万女仆\呼应\TLMAdditionExample-master\.gradle-user-home\caches\modules-2\files-2.1\net.minecraftforge\mclanguage\1.20.1-47.4.0\5719b3a297a33f877ed5dde4cb4bd75c859096af\mclanguage-1.20.1-47.4.0.jar is missing mods.toml file
-[298月2026 13:29:17.375] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file D:\车万女仆\呼应\TLMAdditionExample-master\.gradle-user-home\caches\modules-2\files-2.1\net.minecraftforge\fmlcore\1.20.1-47.4.0\235975dafa4309945b59c56b53f31dc5b65a6051\fmlcore-1.20.1-47.4.0.jar is missing mods.toml file
-[298月2026 13:29:17.481] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: No dependencies to load found. Skipping!
-[298月2026 13:29:18.934] [main/INFO] [mixin/]: Compatibility level set to JAVA_17
-[298月2026 13:29:18.946] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeclientuserdev' with arguments [--version, MOD_DEV, --gameDir, ., --assetsDir, D:\车万女仆\呼应\TLMAdditionExample-master\.gradle-user-home\caches\forge_gradle\assets, --assetIndex, 5]
-[298月2026 13:29:19.080] [main/WARN] [mixin/]: Reference map 'mixins.callresponse.refmap.json' for mixins.callresponse.json could not be read. If this is a development environment you can ignore this message
-[298月2026 13:29:19.391] [main/INFO] [mixin/]: Remapping refMap touhou_little_maid.refmap.json using D:\车万女仆\呼应\TLMAdditionExample-master/build/createSrgToMcp/output.srg
-[298月2026 13:29:19.393] [main/INFO] [mixin/]: Remapping refMap jade.refmap.json using D:\车万女仆\呼应\TLMAdditionExample-master/build/createSrgToMcp/output.srg
-[298月2026 13:29:23.925] [Datafixer Bootstrap/INFO] [com.mojang.datafixers.DataFixerBuilder/]: 188 Datafixer optimizations took 155 milliseconds
-[298月2026 13:29:25.424] [Render thread/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/D:/车万女仆/呼应/TLMAdditionExample-master/.gradle-user-home/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1/forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/assets/.mcassetsroot' uses unexpected schema
-[298月2026 13:29:25.424] [Render thread/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/D:/车万女仆/呼应/TLMAdditionExample-master/.gradle-user-home/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1/forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/data/.mcassetsroot' uses unexpected schema
-[298月2026 13:29:25.453] [Render thread/INFO] [com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService/]: Environment: authHost='https://authserver.mojang.com', accountsHost='https://api.mojang.com', sessionHost='https://sessionserver.mojang.com', servicesHost='https://api.minecraftservices.com', name='PROD'
-[298月2026 13:29:25.459] [Render thread/INFO] [net.minecraft.client.Minecraft/]: Setting user: Dev
-[298月2026 13:29:25.524] [Render thread/INFO] [net.minecraft.client.Minecraft/]: Backend library: LWJGL version 3.3.1 build 7
-[298月2026 13:29:25.889] [modloading-worker-0/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 47.4.0, for MC 1.20.1 with MCP 20230612.114412
-[298月2026 13:29:25.889] [modloading-worker-0/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v47.4.0 Initialized
-[298月2026 13:29:26.013] [modloading-worker-0/INFO] [callresponse/]: ? CallResponse mod 初始化完成！
-[298月2026 13:29:26.092] [modloading-worker-0/INFO] [touhou_little_maid/]: common default pack init start...
-[298月2026 13:29:26.719] [modloading-worker-0/INFO] [touhou_little_maid/]: common default pack init finished, cost time: 626.887 ms
-[298月2026 13:29:27.519] [Render thread/INFO] [net.minecraftforge.gametest.ForgeGameTestHooks/]: Enabled Gametest Namespaces: [callresponse]
-[298月2026 13:29:27.867] [Render thread/INFO] [net.minecraft.server.packs.resources.ReloadableResourceManager/]: Reloading ResourceManager: vanilla, mod_resources
-[298月2026 13:29:27.881] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/shrine.json
-[298月2026 13:29:27.902] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/altar.json
-[298月2026 13:29:27.932] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/backpack/tank_backpack.json
-[298月2026 13:29:27.934] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/maid_fairy.json
-[298月2026 13:29:27.942] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/backpack/small_backpack.json
-[298月2026 13:29:27.943] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/broom.json
-[298月2026 13:29:27.944] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/baby_maid_fairy.json
-[298月2026 13:29:27.947] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/maid_bed/black.json
-[298月2026 13:29:27.950] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/cchess.json
-[298月2026 13:29:27.952] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/gomoku.json
-[298月2026 13:29:27.954] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/maid_bed/yellow.json
-[298月2026 13:29:27.955] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/computer.json
-[298月2026 13:29:27.959] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/gomoku_piece.json
-[298月2026 13:29:27.959] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/bookshelf.json
-[298月2026 13:29:27.969] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/maid_bed/blue.json
-[298月2026 13:29:27.983] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/backpack/end_chest_backpack.json
-[298月2026 13:29:27.986] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/keyboard.json
-[298月2026 13:29:27.996] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/backpack/crafting_table_backpack.json
-[298月2026 13:29:27.998] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/picnic_mat.json
-[298月2026 13:29:28.006] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/snack_cabinet.json
-[298月2026 13:29:28.009] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/statue_base.json
-[298月2026 13:29:28.018] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/wchess.json
-[298月2026 13:29:28.018] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/picnic_basket.json
-[298月2026 13:29:28.018] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/maid_banner.json
-[298月2026 13:29:28.019] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/cchess_pieces.json
-[298月2026 13:29:28.081] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/maid_bed/purple.json
-[298月2026 13:29:28.083] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/tombstone.json
-[298月2026 13:29:28.085] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/cake_box.json
-[298月2026 13:29:28.091] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/backpack/middle_backpack.json
-[298月2026 13:29:28.094] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/new_maid_fairy.json
-[298月2026 13:29:28.104] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/backpack/big_backpack.json
-[298月2026 13:29:28.106] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/maid_bed/pink.json
-[298月2026 13:29:28.108] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/maid_bed/green.json
-[298月2026 13:29:28.110] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/marisa_yukkuri.json
-[298月2026 13:29:28.112] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/wchess_pieces.json
-[298月2026 13:29:28.113] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/backpack/furnace_backpack.json
-[298月2026 13:29:28.116] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/reimu_yukkuri.json
-[298月2026 13:29:28.117] [Worker-Main-1/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/maid_bed/white.json
-[298月2026 13:29:28.146] [Worker-Main-8/INFO] [net.minecraft.client.gui.font.providers.UnihexProvider/]: Found unifont_all_no_pua-15.0.06.hex, loading
-[298月2026 13:29:28.189] [Forge Version Check/INFO] [net.minecraftforge.fml.VersionChecker/]: [forge] Starting version check at https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json
-[298月2026 13:29:29.130] [Forge Version Check/INFO] [net.minecraftforge.fml.VersionChecker/]: [forge] Found status: OUTDATED Current: 47.4.0 Target: 47.4.10
-[298月2026 13:29:29.774] [Worker-Main-23/INFO] [Jade/]: Start loading plugin at com.github.tartaricacid.touhoulittlemaid.compat.jade.JadePlugin
-[298月2026 13:29:29.796] [Downloader 0/INFO] [touhou_little_maid/]: The download info file was successfully updated and loaded
-[298月2026 13:29:29.801] [Worker-Main-23/INFO] [Jade/]: Start loading plugin at com.github.JumDa5he.callresponse.compat.jade.CallResponseJadePlugin
-[298月2026 13:29:29.804] [Worker-Main-23/INFO] [Jade/]: Start loading plugin at snownee.jade.addon.vanilla.VanillaPlugin
-[298月2026 13:29:29.856] [Worker-Main-23/INFO] [Jade/]: Start loading plugin at snownee.jade.addon.universal.UniversalPlugin
-[298月2026 13:29:29.860] [Worker-Main-23/INFO] [Jade/]: Start loading plugin at snownee.jade.addon.core.CorePlugin
-[298月2026 13:29:29.866] [Worker-Main-23/INFO] [Jade/]: Dev environment detected, loading test plugin
-[298月2026 13:29:30.711] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/]: Missing sound for event: minecraft:item.goat_horn.play
-[298月2026 13:29:30.711] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
-[298月2026 13:29:30.746] [Render thread/INFO] [com.mojang.blaze3d.audio.Library/]: OpenAL initialized on device OpenAL Soft on 耳机 (EDIFIER H230P Type-C)
-[298月2026 13:29:30.747] [Render thread/INFO] [net.minecraft.client.sounds.SoundEngine/SOUNDS]: Sound engine started
-[298月2026 13:29:30.848] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 1024x1024x4 minecraft:textures/atlas/blocks.png-atlas
-[298月2026 13:29:30.917] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x4 minecraft:textures/atlas/signs.png-atlas
-[298月2026 13:29:30.917] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
-[298月2026 13:29:30.921] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
-[298月2026 13:29:30.923] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 1024x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
-[298月2026 13:29:30.945] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
-[298月2026 13:29:30.946] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
-[298月2026 13:29:30.947] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
-[298月2026 13:29:30.950] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
-[298月2026 13:29:31.044] [Render thread/WARN] [net.minecraft.client.renderer.ShaderInstance/]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
-[298月2026 13:29:31.105] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x0 minecraft:textures/atlas/particles.png-atlas
-[298月2026 13:29:31.124] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x0 minecraft:textures/atlas/paintings.png-atlas
-[298月2026 13:29:31.126] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 128x128x0 minecraft:textures/atlas/mob_effects.png-atlas
-[298月2026 13:29:33.863] [Render thread/INFO] [touhou_little_maid/]: Model loading time: 2734.247 ms
-[298月2026 13:29:45.790] [Render thread/INFO] [net.minecraft.server.packs.resources.ReloadableResourceManager/]: Reloading ResourceManager: vanilla, mod_resources
-[298月2026 13:29:45.790] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/shrine.json
-[298月2026 13:29:45.791] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/altar.json
-[298月2026 13:29:45.792] [Worker-Main-28/INFO] [net.minecraft.client.gui.font.providers.UnihexProvider/]: Found unifont_all_no_pua-15.0.06.hex, loading
-[298月2026 13:29:45.798] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/backpack/tank_backpack.json
-[298月2026 13:29:45.799] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/maid_fairy.json
-[298月2026 13:29:45.801] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/backpack/small_backpack.json
-[298月2026 13:29:45.801] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/broom.json
-[298月2026 13:29:45.803] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/baby_maid_fairy.json
-[298月2026 13:29:45.804] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/maid_bed/black.json
-[298月2026 13:29:45.804] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/cchess.json
-[298月2026 13:29:45.805] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/gomoku.json
-[298月2026 13:29:45.805] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/maid_bed/yellow.json
-[298月2026 13:29:45.806] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/computer.json
-[298月2026 13:29:45.808] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/gomoku_piece.json
-[298月2026 13:29:45.808] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/bookshelf.json
-[298月2026 13:29:45.813] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/maid_bed/blue.json
-[298月2026 13:29:45.834] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/backpack/end_chest_backpack.json
-[298月2026 13:29:45.837] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/keyboard.json
-[298月2026 13:29:45.840] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/backpack/crafting_table_backpack.json
-[298月2026 13:29:45.841] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/picnic_mat.json
-[298月2026 13:29:45.849] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/snack_cabinet.json
-[298月2026 13:29:45.850] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/statue_base.json
-[298月2026 13:29:45.852] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/wchess.json
-[298月2026 13:29:45.852] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/picnic_basket.json
-[298月2026 13:29:45.852] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/maid_banner.json
-[298月2026 13:29:45.853] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/cchess_pieces.json
-[298月2026 13:29:45.862] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/maid_bed/purple.json
-[298月2026 13:29:45.862] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/tombstone.json
-[298月2026 13:29:45.863] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/cake_box.json
-[298月2026 13:29:45.863] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/backpack/middle_backpack.json
-[298月2026 13:29:45.864] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/new_maid_fairy.json
-[298月2026 13:29:45.866] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/backpack/big_backpack.json
-[298月2026 13:29:45.867] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/maid_bed/pink.json
-[298月2026 13:29:45.868] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/maid_bed/green.json
-[298月2026 13:29:45.869] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/marisa_yukkuri.json
-[298月2026 13:29:45.869] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/wchess_pieces.json
-[298月2026 13:29:45.871] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/backpack/furnace_backpack.json
-[298月2026 13:29:45.871] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/entity/reimu_yukkuri.json
-[298月2026 13:29:45.872] [Worker-Main-27/INFO] [simplebedrockmodel/]: Loading bedrock model file: touhou_little_maid:models/bedrock/block/maid_bed/white.json
-[298月2026 13:29:47.046] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/]: Missing sound for event: minecraft:item.goat_horn.play
-[298月2026 13:29:47.046] [Render thread/WARN] [net.minecraft.client.sounds.SoundEngine/]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
-[298月2026 13:29:47.070] [Render thread/INFO] [com.mojang.blaze3d.audio.Library/]: OpenAL initialized on device OpenAL Soft on 耳机 (EDIFIER H230P Type-C)
-[298月2026 13:29:47.070] [Render thread/INFO] [net.minecraft.client.sounds.SoundEngine/SOUNDS]: Sound engine started
-[298月2026 13:29:47.126] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 1024x1024x4 minecraft:textures/atlas/blocks.png-atlas
-[298月2026 13:29:47.196] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x4 minecraft:textures/atlas/signs.png-atlas
-[298月2026 13:29:47.198] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
-[298月2026 13:29:47.200] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
-[298月2026 13:29:47.202] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 1024x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
-[298月2026 13:29:47.235] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
-[298月2026 13:29:47.235] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
-[298月2026 13:29:47.235] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
-[298月2026 13:29:47.237] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
-[298月2026 13:29:47.273] [Render thread/WARN] [net.minecraft.client.renderer.ShaderInstance/]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
-[298月2026 13:29:47.334] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x0 minecraft:textures/atlas/particles.png-atlas
-[298月2026 13:29:47.347] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 256x256x0 minecraft:textures/atlas/paintings.png-atlas
-[298月2026 13:29:47.349] [Render thread/INFO] [net.minecraft.client.renderer.texture.TextureAtlas/]: Created: 128x128x0 minecraft:textures/atlas/mob_effects.png-atlas
-[298月2026 13:29:49.460] [Render thread/INFO] [touhou_little_maid/]: Model loading time: 2108.191 ms
-[298月2026 13:29:57.472] [Realms Notification Availability checker #1/INFO] [com.mojang.realmsclient.client.RealmsClient/]: Could not authorize you against Realms server: java.lang.RuntimeException: Failed to parse into SignedJWT: 0
-[298月2026 13:29:59.174] [Worker-Main-26/ERROR] [net.minecraftforge.common.ForgeHooks/]: Couldn't parse element loot_tables:touhou_little_maid:grant_book_on_first_join
+[049月2026 12:58:55.511] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeserveruserdev, --gameDir, ., --fml.forgeVersion, 47.4.0, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --nogui, --mixin.config, mixins.callresponse.json]
+[049月2026 12:58:55.521] [main/INFO] [cpw.mods.modlauncher.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.19 by Oracle Corporation; OS Windows 11 arch amd64 version 10.0
+[049月2026 12:58:55.615] [main/INFO] [net.minecraftforge.fml.loading.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgeserveruserdev
+[049月2026 12:58:55.661] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/D:/车万女仆/呼应/TLMAdditionExample-master/.gradle-user-home/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23128!/ Service=ModLauncher Env=SERVER
+[049月2026 12:58:55.947] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file D:\车万女仆\呼应\TLMAdditionExample-master\.gradle-user-home\caches\modules-2\files-2.1\net.minecraftforge\javafmllanguage\1.20.1-47.4.0\f0c0b352173d0a378cbdcec9cfc4ba65899a721\javafmllanguage-1.20.1-47.4.0.jar is missing mods.toml file
+[049月2026 12:58:55.950] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file D:\车万女仆\呼应\TLMAdditionExample-master\.gradle-user-home\caches\modules-2\files-2.1\net.minecraftforge\lowcodelanguage\1.20.1-47.4.0\e862740d8c84d08dbfedea412bef88fe42e727c5\lowcodelanguage-1.20.1-47.4.0.jar is missing mods.toml file
+[049月2026 12:58:55.952] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file D:\车万女仆\呼应\TLMAdditionExample-master\.gradle-user-home\caches\modules-2\files-2.1\net.minecraftforge\mclanguage\1.20.1-47.4.0\5719b3a297a33f877ed5dde4cb4bd75c859096af\mclanguage-1.20.1-47.4.0.jar is missing mods.toml file
+[049月2026 12:58:55.954] [main/WARN] [net.minecraftforge.fml.loading.moddiscovery.ModFileParser/LOADING]: Mod file D:\车万女仆\呼应\TLMAdditionExample-master\.gradle-user-home\caches\modules-2\files-2.1\net.minecraftforge\fmlcore\1.20.1-47.4.0\235975dafa4309945b59c56b53f31dc5b65a6051\fmlcore-1.20.1-47.4.0.jar is missing mods.toml file
+[049月2026 12:58:56.046] [main/INFO] [net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator/]: No dependencies to load found. Skipping!
+[049月2026 12:58:57.381] [main/INFO] [mixin/]: Compatibility level set to JAVA_17
+[049月2026 12:58:57.387] [main/INFO] [cpw.mods.modlauncher.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeserveruserdev' with arguments [--gameDir, ., --nogui]
+[049月2026 12:59:05.444] [main/WARN] [mixin/]: Reference map 'mixins.callresponse.refmap.json' for mixins.callresponse.json could not be read. If this is a development environment you can ignore this message
+[049月2026 12:59:05.556] [main/INFO] [mixin/]: Remapping refMap touhou_little_maid.refmap.json using D:\车万女仆\呼应\TLMAdditionExample-master/build/createSrgToMcp/output.srg
+[049月2026 12:59:05.557] [main/INFO] [mixin/]: Remapping refMap jade.refmap.json using D:\车万女仆\呼应\TLMAdditionExample-master/build/createSrgToMcp/output.srg
+[049月2026 12:59:06.460] [main/WARN] [oshi.util.platform.windows.WmiQueryHandler/]: COM exception querying Win32_Processor, which might not be on your system. Will not attempt to query it again. Error was -2147217405: (HRESULT: 80041003)
+[049月2026 12:59:06.490] [main/WARN] [oshi.util.platform.windows.WmiQueryHandler/]: COM exception querying Win32_Processor, which might not be on your system. Will not attempt to query it again. Error was -2147217405: (HRESULT: 80041003)
+[049月2026 12:59:06.502] [main/WARN] [oshi.util.platform.windows.WmiQueryHandler/]: COM exception querying Win32_VideoController, which might not be on your system. Will not attempt to query it again. Error was -2147217405: (HRESULT: 80041003)
+[049月2026 12:59:06.511] [main/WARN] [oshi.util.platform.windows.WmiQueryHandler/]: COM exception querying Win32_PhysicalMemory, which might not be on your system. Will not attempt to query it again. Error was -2147217405: (HRESULT: 80041003)
+[049月2026 12:59:09.944] [modloading-worker-0/INFO] [net.minecraftforge.common.ForgeMod/FORGEMOD]: Forge mod loading, version 47.4.0, for MC 1.20.1 with MCP 20230612.114412
+[049月2026 12:59:09.944] [modloading-worker-0/INFO] [net.minecraftforge.common.MinecraftForge/FORGE]: MinecraftForge v47.4.0 Initialized
+[049月2026 12:59:10.029] [modloading-worker-0/INFO] [callresponse/]: ? CallResponse mod 初始化完成！
+[049月2026 12:59:10.093] [modloading-worker-0/INFO] [touhou_little_maid/]: common default pack init start...
+[049月2026 12:59:10.692] [modloading-worker-0/INFO] [touhou_little_maid/]: common default pack init finished, cost time: 599.029 ms
+[049月2026 12:59:11.127] [Forge Version Check/INFO] [net.minecraftforge.fml.VersionChecker/]: [forge] Starting version check at https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json
+[049月2026 12:59:11.531] [modloading-worker-0/INFO] [Jade/]: Start loading plugin at com.github.tartaricacid.touhoulittlemaid.compat.jade.JadePlugin
+[049月2026 12:59:11.540] [modloading-worker-0/INFO] [Jade/]: Start loading plugin at com.github.JumDa5he.callresponse.compat.jade.CallResponseJadePlugin
+[049月2026 12:59:11.541] [modloading-worker-0/INFO] [Jade/]: Start loading plugin at snownee.jade.addon.vanilla.VanillaPlugin
+[049月2026 12:59:11.547] [modloading-worker-0/INFO] [Jade/]: Start loading plugin at snownee.jade.addon.universal.UniversalPlugin
+[049月2026 12:59:11.550] [modloading-worker-0/INFO] [Jade/]: Start loading plugin at snownee.jade.addon.core.CorePlugin
+[049月2026 12:59:11.550] [modloading-worker-0/INFO] [Jade/]: Dev environment detected, loading test plugin
+[049月2026 12:59:11.911] [Forge Version Check/INFO] [net.minecraftforge.fml.VersionChecker/]: [forge] Found status: OUTDATED Current: 47.4.0 Target: 47.4.10
+[049月2026 12:59:12.123] [main/INFO] [com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService/]: Environment: authHost='https://authserver.mojang.com', accountsHost='https://api.mojang.com', sessionHost='https://sessionserver.mojang.com', servicesHost='https://api.minecraftservices.com', name='PROD'
+[049月2026 12:59:12.191] [main/INFO] [net.minecraftforge.registries.GameData/REGISTRIES]: Injecting existing registry data into this CLIENT instance
+[049月2026 12:59:12.529] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/D:/车万女仆/呼应/TLMAdditionExample-master/.gradle-user-home/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1/forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/assets/.mcassetsroot' uses unexpected schema
+[049月2026 12:59:12.529] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/D:/车万女仆/呼应/TLMAdditionExample-master/.gradle-user-home/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1/forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/data/.mcassetsroot' uses unexpected schema
+[049月2026 12:59:13.340] [Worker-Main-27/ERROR] [net.minecraftforge.common.ForgeHooks/]: Couldn't parse element loot_tables:touhou_little_maid:grant_book_on_first_join
 com.google.gson.JsonSyntaxException: Expected name to be an item, was unknown string 'patchouli:guide_book'
 	at net.minecraft.util.GsonHelper.lambda$convertToItem$0(GsonHelper.java:143) ~[forge-1.20.1-47.4.0_mapped_parchment_2023.08.20-1.20.1-recomp.jar%23191!/:?]
 	at java.util.Optional.orElseThrow(Optional.java:403) ~[?:?]
@@ -205,96 +85,29 @@ com.google.gson.JsonSyntaxException: Expected name to be an item, was unknown st
 	at java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1655) ~[?:?]
 	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1622) ~[?:?]
 	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:165) ~[?:?]
-[298月2026 13:29:59.218] [Render thread/INFO] [net.minecraft.world.item.crafting.RecipeManager/]: Skipping loading recipe touhou_little_maid:memorizable_gensokyo as it's serializer returned null
-[298月2026 13:29:59.228] [Render thread/INFO] [net.minecraft.world.item.crafting.RecipeManager/]: Loaded 8 recipes
-[298月2026 13:29:59.271] [Render thread/INFO] [net.minecraft.advancements.AdvancementList/]: Loaded 1324 advancements
-[298月2026 13:29:59.279] [Render thread/INFO] [callresponse/]: 已加载 23 个派遣事件
-[298月2026 13:29:59.281] [Render thread/INFO] [callresponse/]: 已加载 17 个 NPC 日常事件
-[298月2026 13:30:03.088] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Starting integrated minecraft server version 1.20.1
-[298月2026 13:30:03.088] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Generating keypair
-[298月2026 13:30:03.124] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Configuration file .\saves\新的世界\serverconfig\forge-server.toml is not correct. Correcting
-[298月2026 13:30:03.125] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key server was corrected from null to its default, SimpleCommentedConfig:{}. 
-[298月2026 13:30:03.125] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringBlockEntities was corrected from null to its default, false. 
-[298月2026 13:30:03.125] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringEntities was corrected from null to its default, false. 
-[298月2026 13:30:03.125] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key server.fullBoundingBoxLadders was corrected from null to its default, false. 
-[298月2026 13:30:03.125] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key server.zombieBaseSummonChance was corrected from null to its default, 0.1. 
-[298月2026 13:30:03.125] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key server.zombieBabyChance was corrected from null to its default, 0.05. 
-[298月2026 13:30:03.126] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key server.permissionHandler was corrected from null to its default, forge:default_handler. 
-[298月2026 13:30:03.126] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key server.advertiseDedicatedServerToLan was corrected from null to its default, true. 
-[298月2026 13:30:03.126] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key server.useItemWithDurationZero was corrected from null to its default, false. 
-[298月2026 13:30:03.127] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Configuration file .\saves\新的世界\serverconfig\touhou_little_maid-server.toml is not correct. Correcting
-[298月2026 13:30:03.128] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key ClientPackDownloadUrls was corrected from null to its default, []. 
-[298月2026 13:30:03.128] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key MaidAITimeDebug was corrected from null to its default, false. 
-[298月2026 13:30:03.128] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key MaidBackupIntervalSeconds was corrected from null to its default, 180. 
-[298月2026 13:30:03.129] [Server thread/WARN] [net.minecraftforge.common.ForgeConfigSpec/CORE]: Incorrect key MaidBackupMaxCount was corrected from null to its default, 3. 
-[298月2026 13:30:03.573] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Preparing start region for dimension minecraft:overworld
-[298月2026 13:30:04.749] [Render thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: 准备生成区域中：0%
-[298月2026 13:30:04.749] [Render thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: 准备生成区域中：0%
-[298月2026 13:30:04.749] [Render thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: 准备生成区域中：0%
-[298月2026 13:30:05.052] [Server thread/INFO] [net.minecraftforge.server.permission.PermissionAPI/]: Successfully initialized permission handler forge:default_handler
-[298月2026 13:30:05.057] [Render thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Time elapsed: 1473 ms
-[298月2026 13:30:05.104] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Changing view distance to 12, from 10
-[298月2026 13:30:05.105] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Changing simulation distance to 12, from 0
-[298月2026 13:30:05.249] [Render thread/WARN] [io.netty.util.internal.SystemPropertyUtil/]: Unable to parse the boolean system property 'java.net.preferIPv6Addresses':system - using the default value: false
-[298月2026 13:30:05.659] [Netty Local Client IO #0/INFO] [net.minecraftforge.network.NetworkHooks/]: Connected to a modded server.
-[298月2026 13:30:05.714] [Server thread/INFO] [net.minecraft.server.players.PlayerList/]: Dev[local:E:50983557] logged in with entity id 1 at (8.5, -60.0, -3.5)
-[298月2026 13:30:05.768] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Dev加入了游戏
-[298月2026 13:30:05.819] [Server thread/INFO] [Jade/]: Syncing config to Dev (380df991-f603-344c-a090-369bad2a924a)
-[298月2026 13:30:06.074] [Render thread/INFO] [Jade/]: Received config from the server: 
-[298月2026 13:30:06.085] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] [车万女仆] 点击这里安装帕秋莉手册模组来获取手册
-[298月2026 13:30:06.306] [Render thread/INFO] [net.minecraft.advancements.AdvancementList/]: Loaded 3 advancements
-[298月2026 13:30:07.514] [Render thread/WARN] [net.minecraft.network.syncher.SynchedEntityData/]: defineId called for: class com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid from class com.github.JumDa5he.callresponse.compat.emotion.EmotionData
-[298月2026 13:30:07.516] [Render thread/WARN] [net.minecraft.network.syncher.SynchedEntityData/]: defineId called for: class com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid from class com.github.JumDa5he.callresponse.compat.hunger.HungerData
-[298月2026 13:30:07.518] [Render thread/WARN] [net.minecraft.network.syncher.SynchedEntityData/]: defineId called for: class com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid from class com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidData
-[298月2026 13:30:07.520] [Render thread/WARN] [net.minecraft.network.syncher.SynchedEntityData/]: defineId called for: class com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid from class com.github.JumDa5he.callresponse.compat.trade.TradingMaidData
-[298月2026 13:30:07.602] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Dev取得了进度[永恒的伙伴]
-[298月2026 13:30:07.608] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Dev取得了进度[永恒的伙伴]
-[298月2026 13:30:07.640] [Render thread/INFO] [net.minecraft.advancements.AdvancementList/]: Loaded 6 advancements
-[298月2026 13:30:10.933] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Dev取得了进度[Cosplay!]
-[298月2026 13:30:10.964] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Dev取得了进度[Cosplay!]
-[298月2026 13:30:10.964] [Render thread/INFO] [net.minecraft.advancements.AdvancementList/]: Loaded 9 advancements
-[298月2026 13:30:13.302] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Saving and pausing game...
-[298月2026 13:30:13.310] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[新的世界]'/minecraft:overworld
-[298月2026 13:30:13.323] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[新的世界]'/minecraft:the_end
-[298月2026 13:30:13.324] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[新的世界]'/minecraft:the_nether
-[298月2026 13:30:25.712] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Dev取得了进度[工作中……]
-[298月2026 13:30:25.721] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Dev取得了进度[工作中……]
-[298月2026 13:30:25.765] [Render thread/INFO] [net.minecraft.advancements.AdvancementList/]: Loaded 26 advancements
-[298月2026 13:30:26.462] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Dev取得了进度[休息，休息一下]
-[298月2026 13:30:26.467] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Dev取得了进度[休息，休息一下]
-[298月2026 13:30:26.508] [Render thread/INFO] [net.minecraft.advancements.AdvancementList/]: Loaded 32 advancements
-[298月2026 13:30:28.679] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] 棋局开始了
-[298月2026 13:30:31.335] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] 现在还没有轮到你
-[298月2026 13:30:49.349] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Dev取得了进度[996]
-[298月2026 13:30:49.352] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] Dev取得了进度[996]
-[298月2026 13:30:49.361] [Render thread/INFO] [net.minecraft.advancements.AdvancementList/]: Loaded 35 advancements
-[298月2026 13:31:02.082] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] 棋局开始了
-[298月2026 13:31:03.712] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] 棋局开始了
-[298月2026 13:31:06.059] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] 棋局开始了
-[298月2026 13:31:08.530] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] 棋局开始了
-[298月2026 13:31:10.211] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] 棋局开始了
-[298月2026 13:31:12.682] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] 棋局开始了
-[298月2026 13:31:15.082] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] 棋局开始了
-[298月2026 13:31:15.912] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] 棋局开始了
-[298月2026 13:31:25.682] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] 棋局开始了
-[298月2026 13:31:31.783] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] 棋局开始了
-[298月2026 13:31:41.359] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] 棋局开始了
-[298月2026 13:31:42.362] [Render thread/INFO] [net.minecraft.client.gui.components.ChatComponent/]: [System] [CHAT] 棋局开始了
-[298月2026 13:31:55.702] [Server thread/INFO] [net.minecraft.client.server.IntegratedServer/]: Saving and pausing game...
-[298月2026 13:31:55.704] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[新的世界]'/minecraft:overworld
-[298月2026 13:31:55.708] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[新的世界]'/minecraft:the_end
-[298月2026 13:31:55.709] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[新的世界]'/minecraft:the_nether
-[298月2026 13:31:56.663] [Render thread/INFO] [net.minecraft.client.Minecraft/]: Stopping!
-[298月2026 13:31:56.707] [Server thread/INFO] [net.minecraft.server.network.ServerGamePacketListenerImpl/]: Dev lost connection: 连接中断
-[298月2026 13:31:56.707] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Dev退出了游戏
-[298月2026 13:31:56.718] [Server thread/INFO] [net.minecraft.server.network.ServerGamePacketListenerImpl/]: Stopping singleplayer server as player logged out
-[298月2026 13:31:56.753] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Stopping server
-[298月2026 13:31:56.753] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving players
-[298月2026 13:31:56.753] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving worlds
-[298月2026 13:31:57.075] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[新的世界]'/minecraft:overworld
-[298月2026 13:31:58.496] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[新的世界]'/minecraft:the_end
-[298月2026 13:31:58.497] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[新的世界]'/minecraft:the_nether
-[298月2026 13:31:58.517] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage (新的世界): All chunks are saved
-[298月2026 13:31:58.517] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
-[298月2026 13:31:58.517] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
-[298月2026 13:31:58.517] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: ThreadedAnvilChunkStorage: All dimensions are saved
+[049月2026 12:59:13.412] [main/INFO] [net.minecraft.world.item.crafting.RecipeManager/]: Skipping loading recipe touhou_little_maid:memorizable_gensokyo as it's serializer returned null
+[049月2026 12:59:13.419] [main/INFO] [net.minecraft.world.item.crafting.RecipeManager/]: Loaded 8 recipes
+[049月2026 12:59:13.466] [main/INFO] [net.minecraft.advancements.AdvancementList/]: Loaded 1324 advancements
+[049月2026 12:59:13.471] [main/INFO] [callresponse/]: 已加载 23 个派遣事件
+[049月2026 12:59:13.474] [main/INFO] [callresponse/]: 已加载 17 个 NPC 日常事件
+[049月2026 12:59:13.801] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Starting minecraft server version 1.20.1
+[049月2026 12:59:13.801] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Loading properties
+[049月2026 12:59:13.801] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Default game type: SURVIVAL
+[049月2026 12:59:13.801] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Generating keypair
+[049月2026 12:59:13.849] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Starting Minecraft server on *:25565
+[049月2026 12:59:13.861] [Server thread/INFO] [net.minecraft.server.network.ServerConnectionListener/]: Using default channel type
+[049月2026 12:59:14.144] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Preparing level "world"
+[049月2026 12:59:14.701] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Preparing start region for dimension minecraft:overworld
+[049月2026 12:59:16.416] [Worker-Main-15/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 0%
+[049月2026 12:59:16.416] [Worker-Main-15/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 0%
+[049月2026 12:59:16.416] [Worker-Main-15/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 0%
+[049月2026 12:59:16.416] [Worker-Main-15/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 0%
+[049月2026 12:59:16.702] [Worker-Main-20/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Preparing spawn area: 34%
+[049月2026 12:59:16.726] [Server thread/WARN] [net.minecraft.network.syncher.SynchedEntityData/]: defineId called for: class com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid from class com.github.JumDa5he.callresponse.compat.emotion.EmotionData
+[049月2026 12:59:16.727] [Server thread/WARN] [net.minecraft.network.syncher.SynchedEntityData/]: defineId called for: class com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid from class com.github.JumDa5he.callresponse.compat.hunger.HungerData
+[049月2026 12:59:16.728] [Server thread/WARN] [net.minecraft.network.syncher.SynchedEntityData/]: defineId called for: class com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid from class com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidData
+[049月2026 12:59:16.728] [Server thread/WARN] [net.minecraft.network.syncher.SynchedEntityData/]: defineId called for: class com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid from class com.github.JumDa5he.callresponse.compat.trade.TradingMaidData
+[049月2026 12:59:16.890] [Server thread/INFO] [net.minecraft.server.level.progress.LoggerChunkProgressListener/]: Time elapsed: 2189 ms
+[049月2026 12:59:16.890] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Done (2.765s)! For help, type "help"
+[049月2026 12:59:16.906] [Server thread/INFO] [net.minecraftforge.gametest.ForgeGameTestHooks/]: Enabled Gametest Namespaces: [callresponse]
+[049月2026 12:59:16.915] [Server thread/INFO] [net.minecraftforge.server.permission.PermissionAPI/]: Successfully initialized permission handler forge:default_handler

@@ -1,6 +1,8 @@
 package com.github.JumDa5he.callresponse.compat.block;
 
 import com.github.JumDa5he.callresponse.CallResponseMod;
+import com.github.JumDa5he.callresponse.compat.cage.DarkIronCageBlock;
+import com.github.JumDa5he.callresponse.compat.cage.DarkIronCageBlockEntity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.DeferredRegister;
@@ -24,6 +26,11 @@ public final class ModBlocks {
     public static final RegistryObject<BlockEntityType<RewardBoxBlockEntity>> REWARD_BOX_ENTITY =
             BLOCK_ENTITY_TYPES.register("reward_box", () ->
                     BlockEntityType.Builder.of(RewardBoxBlockEntity::new, REWARD_BOX.get()).build(null));
+    public static final RegistryObject<DarkIronCageBlock> DARK_IRON_CAGE =
+            BLOCKS.register("dark_iron_cage", DarkIronCageBlock::new);
+    public static final RegistryObject<BlockEntityType<DarkIronCageBlockEntity>> DARK_IRON_CAGE_ENTITY =
+            BLOCK_ENTITY_TYPES.register("dark_iron_cage", () ->
+                    BlockEntityType.Builder.of(DarkIronCageBlockEntity::new, DARK_IRON_CAGE.get()).build(null));
 
     private ModBlocks() {
     }

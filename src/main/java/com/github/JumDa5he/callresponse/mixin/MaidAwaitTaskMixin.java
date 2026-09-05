@@ -1,6 +1,7 @@
 package com.github.JumDa5he.callresponse.mixin;
 
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
+import com.github.JumDa5he.callresponse.compat.brain.SeekFoodBehavior;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidAwaitTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.server.level.ServerLevel;
@@ -14,7 +15,7 @@ public abstract class MaidAwaitTaskMixin {
     @Inject(method = "start", at = @At("HEAD"), cancellable = true, remap = false)
     private void callresponse$keepBeggingPath(ServerLevel level, EntityMaid maid, long gameTime,
                                                CallbackInfo ci) {
-        if (MaidMovementControl.controlsPath(maid)) {
+        if (MaidMovementControl.controlsPath(maid) || SeekFoodBehavior.isSeeking(maid)) {
             ci.cancel();
         }
     }

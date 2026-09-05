@@ -6,6 +6,8 @@ import com.github.JumDa5he.callresponse.compat.block.ModBlocks;
 import com.github.JumDa5he.callresponse.compat.brain.CustomExtraMaidBrain;
 import com.github.JumDa5he.callresponse.compat.brain.IdleMaidHurtFleeManager;
 import com.github.JumDa5he.callresponse.compat.brain.LazyMaidHitHandler;
+import com.github.JumDa5he.callresponse.compat.cage.CageStructureManager;
+import com.github.JumDa5he.callresponse.compat.cage.CageRescueManager;
 import com.github.JumDa5he.callresponse.compat.broadcast.BroadcastTools;
 import com.github.JumDa5he.callresponse.compat.broadcast.ChatEventListener;
 import com.github.JumDa5he.callresponse.compat.broadcast.actions.BroadcastMovementScheduler;
@@ -84,6 +86,8 @@ public class LittleMaidCompat implements ILittleMaid {
         MinecraftForge.EVENT_BUS.register(new NpcEventManager());
         MinecraftForge.EVENT_BUS.register(new FacilityCapacityManager());
         MinecraftForge.EVENT_BUS.register(new BoardGameManager());
+        MinecraftForge.EVENT_BUS.register(new CageStructureManager());
+        MinecraftForge.EVENT_BUS.register(new CageRescueManager());
         HuntGunEventBridge.register();
         MinecraftForge.EVENT_BUS.register(NoEatBauble.class);
     }

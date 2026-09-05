@@ -9,6 +9,7 @@ import com.github.JumDa5he.callresponse.compat.emotion.EmotionBetrayalManager;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderManager;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntRawHealth;
+import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -32,6 +33,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(EntityMaid.class)
 public abstract class MixinEntityMaid extends Mob {
     private MixinEntityMaid() { super(null, null); }
+
+    /** 困在铁笼中时从源头拒绝 TLM 跟随传送，避免在主人和笼子之间反复闪现。 */
+    @Inject(method = "teleportToOwner", at = @At("HEAD"), cancellable = true, remap = false)
+    private void callresponse$blockOwnerTeleportWhileCaged(LivingEntity owner,
+                                                            CallbackInfoReturnable<Boolean> cir) {
+        EntityMaid maid = (EntityMaid) (Object) this;
+        if (MaidMovementControl.isActive(maid, MaidMovementControl.Reason.CAGE)) {
+            cir.setReturnValue(false);
+        }
+    }
 
     // ===== 狩猎令：放行名单内的目标（玩家默认被 TLM 拒绝） =====
     @Inject(method = "canAttack", at = @At("HEAD"), cancellable = true)

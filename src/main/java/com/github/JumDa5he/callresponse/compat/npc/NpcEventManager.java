@@ -368,8 +368,8 @@ public final class NpcEventManager {
         EmotionData.addTrust(maid, ownerId, option.trust());
         EmotionData.addFear(maid, ownerId, option.fear());
         HungerData.add(maid, option.hunger());
-        maid.setFavorability(Math.max(0, Math.min(384,
-                maid.getFavorability() + option.favor())));
+        // 附属只负责相对增减，不替 TLM 决定好感度最高上限。
+        maid.setFavorability(Math.max(0, maid.getFavorability() + option.favor()));
 
         long gameTime = maid.level().getGameTime();
         performOptionAction(player, maid, option);

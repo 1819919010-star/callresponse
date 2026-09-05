@@ -174,7 +174,7 @@ public final class WanderingMaidManager {
             return false;
         }
         maid.finalizeSpawn(level, level.getCurrentDifficultyAt(spawnPos), MobSpawnType.EVENT, null, null);
-        maid.setModelId(selectModel(data, player.getUUID(), level));
+        maid.setModelId(selectSharedModel(level, player.getUUID()));
         maid.setPersistenceRequired();
         WanderingMaidData.initialize(maid, player.getUUID(), level.getGameTime());
         maid.addEffect(new MobEffectInstance(MobEffects.GLOWING, SPAWN_GLOW_DURATION, 0, false, false));
@@ -189,7 +189,9 @@ public final class WanderingMaidManager {
         return true;
     }
 
-    private static String selectModel(WanderingMaidSavedData data, UUID player, ServerLevel level) {
+    /** 流浪、交易及结构女仆共用的皮肤池选择入口。 */
+    public static String selectSharedModel(ServerLevel level, UUID player) {
+        WanderingMaidSavedData data = WanderingMaidSavedData.get(level.getServer().overworld());
         Set<String> available = ServerCustomPackLoader.SERVER_MAID_MODELS.getModelIdSet();
         List<String> pool = data.skinPool(player).stream().filter(available::contains).toList();
         if (!pool.isEmpty()) {
