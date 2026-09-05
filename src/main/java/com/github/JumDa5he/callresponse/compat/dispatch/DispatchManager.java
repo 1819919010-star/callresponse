@@ -1,6 +1,7 @@
 package com.github.JumDa5he.callresponse.compat.dispatch;
 
 import com.github.JumDa5he.callresponse.compat.block.RewardBoxBlockEntity;
+import com.github.JumDa5he.callresponse.compat.brain.LazyMaidCommand;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerData;
@@ -72,6 +73,7 @@ public final class DispatchManager {
     public static void registerCommands(RegisterCommandsEvent event) {
         event.getDispatcher().register(Commands.literal("callresponse")
                 .then(MaidPathCommand.node())
+                .then(LazyMaidCommand.node())
                 .then(Commands.literal("dispatch")
                         .then(Commands.literal("finish")
                                 .requires(source -> source.hasPermission(2))

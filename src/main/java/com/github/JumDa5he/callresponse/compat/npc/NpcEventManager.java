@@ -236,7 +236,6 @@ public final class NpcEventManager {
             // 梦境由真实睡眠状态下的统一抽取处理，不能再被通用条件循环重复生成。
             case "nightmare", "good_dream" -> false;
             case "battle_praise" -> NpcEventData.flag(maid, "battle_praise");
-            case "mistake" -> NpcEventData.flag(maid, "mistake");
             case "hunger_high" -> HungerData.get(maid) >= positiveOr(first, 90.0D);
             case "long_time_no_interaction" -> longTimeNoInteraction(maid, gameTime,
                     (long) positiveOr(first, 72_000.0D));
@@ -368,8 +367,8 @@ public final class NpcEventManager {
         EmotionData.addTrust(maid, ownerId, option.trust());
         EmotionData.addFear(maid, ownerId, option.fear());
         HungerData.add(maid, option.hunger());
-        maid.setFavorability(Math.max(0, Math.min(384,
-                maid.getFavorability() + option.favor())));
+        // 附属只负责相对增减，不替 TLM 决定好感度最高上限。
+        maid.setFavorability(Math.max(0, maid.getFavorability() + option.favor()));
 
         long gameTime = maid.level().getGameTime();
         performOptionAction(player, maid, option);
@@ -391,7 +390,7 @@ public final class NpcEventManager {
         switch (condition) {
             case "overwork" -> NpcEventData.resetWorkTicks(maid);
             case "food_variety" -> NpcEventData.resetFoodStats(maid);
-            case "battle_praise", "mistake", "owner_hurt_nearby", "player_hurt_maid" ->
+            case "battle_praise", "owner_hurt_nearby", "player_hurt_maid" ->
                     NpcEventData.setFlag(maid, condition, false);
             default -> {
             }
@@ -521,17 +520,6 @@ public final class NpcEventManager {
         }
         if (event.getEntity() instanceof EntityMaid deadMaid) {
             NpcEventData.remove(deadMaid);
-        }
-    }
-
-    @SubscribeEvent
-    public void onMaidHurtByOwner(LivingDamageEvent.Pre event) {
-        if (event.getEntity().level().isClientSide) return;
-        Entity attacker = event.getSource().getEntity();
-        LivingEntity victim = event.getEntity();
-        if (attacker instanceof EntityMaid maid && eligible(maid)
-                && maid.isOwnedBy(victim)) {
-            NpcEventData.setFlag(maid, "mistake", true);
         }
     }
 

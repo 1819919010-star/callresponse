@@ -42,6 +42,15 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_chest", has(Items.CHEST))
                 .save(output, ResourceLocation.fromNamespaceAndPath(CallResponseMod.MOD_ID, "reward_box"));
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModItems.DARK_IRON_CAGE.get())
+                .pattern("BBB")
+                .pattern("BIB")
+                .pattern("BBB")
+                .define('B', Items.IRON_BARS)
+                .define('I', Items.IRON_INGOT)
+                .unlockedBy("has_iron_bars", has(Items.IRON_BARS))
+                .save(output, ResourceLocation.fromNamespaceAndPath(CallResponseMod.MOD_ID, "dark_iron_cage"));
+
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.HUNT_ORDER.get())
                 .requires(Items.NETHER_STAR)
                 .requires(Items.DIAMOND_SWORD)

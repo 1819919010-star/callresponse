@@ -1,6 +1,7 @@
 package com.github.JumDa5he.callresponse.compat.brain;
 
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
+import com.github.JumDa5he.callresponse.compat.game.WatchBoardGameBehavior;
 
 import com.github.JumDa5he.callresponse.compat.bauble.BaubleDetector;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
@@ -17,17 +18,17 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.behavior.BehaviorControl;
 import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -35,12 +36,22 @@ import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 public class CustomExtraMaidBrain implements IExtraMaidBrain {
 
     private static final Random RANDOM = new Random();
+    /** 只存在于运行内存，不写入女仆 NBT；卸载附属后 TLM 会按原逻辑自动唤醒。 */
+    private static final Set<EntityMaid> GROUND_NAPPING_MAIDS =
+            Collections.newSetFromMap(new WeakHashMap<>());
+    /** 调试指令提交的一次性需求，只在对应女仆的好吃懒做 Behavior 下一 tick 消费。 */
+    private static final Map<EntityMaid, String> FORCED_LAZY_NEEDS =
+            Collections.synchronizedMap(new WeakHashMap<>());
 
     private static final String KEY_LAZY_STATE = "LazyState";
     private static final String KEY_STATE_TIMER = "LazyStateTimer";
@@ -59,6 +70,21 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
     private static final int SEARCH_TIMEOUT = 300;
     private static final int SIT_REST_DURATION = 100;
     private static final int CAKE_SIT_DURATION = 400;
+    /** 对齐 TLM 女仆床中实体相对床面的高度，避免 sleep 模型陷进完整方块。 */
+    private static final double GROUND_NAP_SURFACE_OFFSET = 0.24D;
+
+    public static boolean isGroundNapping(EntityMaid maid) {
+        return GROUND_NAPPING_MAIDS.contains(maid);
+    }
+
+    public static boolean requestLazyNeed(EntityMaid maid, String need) {
+        if (maid == null || !maid.isAlive()
+                || !"callresponse:lazy".equals(maid.getTask().getUid().toString())) {
+            return false;
+        }
+        FORCED_LAZY_NEEDS.put(maid, need);
+        return true;
+    }
 
     @Override
     public List<MemoryModuleType<?>> getExtraMemoryTypes() {
@@ -67,7 +93,16 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
 
     @Override
     public List<Pair<Integer, BehaviorControl<? super EntityMaid>>> getCoreBehaviors() {
-        return List.of(Pair.of(1, new LazyLoopBehavior()));
+        return List.of(
+                Pair.of(0, new SeekFoodBehavior()),
+                Pair.of(1, new LazyLoopBehavior()),
+                Pair.of(10, new WatchBoardGameBehavior())
+        );
+    }
+
+    @Override
+    public List<Pair<Integer, BehaviorControl<? super EntityMaid>>> getWorkBehaviors() {
+        return List.of(Pair.of(4, new FeedHungryMaidBehavior()));
     }
 
     private static class LazyLoopBehavior extends Behavior<EntityMaid> {
@@ -82,11 +117,12 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
             SEARCHING_FOOD,
             RESTING_TIRED,
             GOING_TO_CAKE,
-            RESTING_CAKE
+            RESTING_CAKE,
+            GROUND_NAPPING
         }
 
         private enum NeedType {
-            NONE, REST, OWNER_FOOD, FOOD_SOURCE, CAKE
+            NONE, REST, OWNER_FOOD, FOOD_SOURCE, CAKE, GROUND_NAP
         }
 
         private State currentState = State.IDLE;
@@ -95,6 +131,14 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
         private BlockPos targetFoodPos = null;
         private BlockPos targetCakePos = null;
         private LivingEntity targetOwner = null;
+        private BlockPos groundNapGroundPos = null;
+        private double groundNapX;
+        private double groundNapY;
+        private double groundNapZ;
+        private double restHoldX;
+        private double restHoldY;
+        private double restHoldZ;
+        private int restStartTick;
         private int stateTimer = 0;
         private int searchCooldown = 0;
         private boolean hasShownMessage = false;
@@ -114,6 +158,9 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
         private static final float BOOST_SPEED = 0.8f;
         private static final int GOING_TO_TIMEOUT = 600;
         private static final int TRUST_INTERVAL = 3600;
+        // Behavior 的无时长构造默认只运行 60 tick，会把所有休息在约 3 秒时强制 stop。
+        // 给循环行为一个足够长的运行窗口；正常退出仍由工作模式切换、受伤等既有条件负责。
+        private static final int BEHAVIOR_RUN_WINDOW = 1_000_000;
         private int trustTimer = 0;
 
         private int lazyModeCheckTimer = 0;
@@ -126,11 +173,16 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
             super(ImmutableMap.of(
                     MemoryModuleType.WALK_TARGET, MemoryStatus.REGISTERED,
                     MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES, MemoryStatus.REGISTERED
-            ));
+            ), BEHAVIOR_RUN_WINDOW);
         }
 
         private void saveState(EntityMaid maid) {
             CompoundTag nbt = maid.getPersistentData();
+            // 所有休息姿态都不落盘，避免附属被移除后留下需要本模组才能解释的状态。
+            if (isExclusiveRestState(currentState)) {
+                clearSavedLazyState(nbt);
+                return;
+            }
             nbt.putInt(KEY_LAZY_STATE, currentState.ordinal());
             nbt.putInt(KEY_STATE_TIMER, stateTimer);
             if (targetRestPos != null) {
@@ -150,12 +202,30 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
             }
         }
 
+        private void clearSavedLazyState(CompoundTag nbt) {
+            nbt.remove(KEY_LAZY_STATE);
+            nbt.remove(KEY_STATE_TIMER);
+            nbt.remove(KEY_TARGET_REST_X);
+            nbt.remove(KEY_TARGET_REST_Y);
+            nbt.remove(KEY_TARGET_REST_Z);
+            nbt.remove(KEY_TARGET_FOOD_X);
+            nbt.remove(KEY_TARGET_FOOD_Y);
+            nbt.remove(KEY_TARGET_FOOD_Z);
+            nbt.remove(KEY_TARGET_CAKE_X);
+            nbt.remove(KEY_TARGET_CAKE_Y);
+            nbt.remove(KEY_TARGET_CAKE_Z);
+        }
+
         private void loadState(EntityMaid maid) {
             CompoundTag nbt = maid.getPersistentData();
             if (nbt.contains(KEY_LAZY_STATE)) {
                 int stateOrd = nbt.getInt(KEY_LAZY_STATE);
                 if (stateOrd >= 0 && stateOrd < State.values().length) {
                     currentState = State.values()[stateOrd];
+                    // 旧版本可能把休息状态写进 NBT，但没有可安全恢复的原地坐标；加载后重新开始循环。
+                    if (isExclusiveRestState(currentState)) {
+                        currentState = State.IDLE;
+                    }
                 }
                 stateTimer = nbt.getInt(KEY_STATE_TIMER);
                 if (nbt.contains(KEY_TARGET_REST_X)) {
@@ -217,7 +287,9 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
             hasAskedForFood = false;
         }
 
+
         private void standUp(EntityMaid maid) {
+            endGroundNap(maid);
             if (MaidMovementControl.isActive(maid, MaidMovementControl.Reason.LAZY_POSE)) {
                 MaidMovementControl.end(maid, MaidMovementControl.Reason.LAZY_POSE);
             }
@@ -226,8 +298,145 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
 
         private void sitDown(EntityMaid maid) {
             MaidMovementControl.begin(maid, MaidMovementControl.Reason.LAZY_POSE,
-                    java.util.EnumSet.of(MaidMovementControl.Field.POSE));
+                    java.util.EnumSet.of(MaidMovementControl.Field.PATH, MaidMovementControl.Field.POSE));
+            restHoldX = maid.getX();
+            restHoldY = maid.getY();
+            restHoldZ = maid.getZ();
+            restStartTick = maid.tickCount;
+            MaidMovementControl.clearNavigation(maid);
             maid.setInSittingPose(true);
+         }
+
+        private boolean isExclusiveRestState(State state) {
+            return state == State.RESTING || state == State.RESTING_TIRED
+                    || state == State.RESTING_CAKE || state == State.GROUND_NAPPING;
+        }
+
+        private boolean canNapHere(ServerLevel level, EntityMaid maid) {
+            BlockPos groundPos = maid.blockPosition().below();
+            return level.getBlockState(groundPos).isFaceSturdy(level, groundPos, net.minecraft.core.Direction.UP)
+                    && level.getBlockState(groundPos.above()).getCollisionShape(level, groundPos.above()).isEmpty()
+                    && level.getBlockState(groundPos.above(2)).getCollisionShape(level, groundPos.above(2)).isEmpty();
+        }
+
+        private void beginGroundNap(ServerLevel level, EntityMaid maid) {
+            BlockPos groundPos = maid.blockPosition().below();
+            maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+            maid.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
+            maid.getNavigation().stop();
+            if (maid.isMaidInSittingPose()) {
+                maid.setInSittingPose(false);
+            }
+            float yaw = RANDOM.nextInt(4) * 90.0F;
+            maid.setYRot(yaw);
+            maid.setYHeadRot(yaw);
+            maid.setYBodyRot(yaw);
+            GROUND_NAPPING_MAIDS.add(maid);
+            // 只使用 TLM sleep 动画读取的姿态，不进入真实睡眠，避免 Brain 自动切换 REST 活动。
+            double surfaceY = groundPos.getY() + level.getBlockState(groundPos)
+                    .getCollisionShape(level, groundPos).max(net.minecraft.core.Direction.Axis.Y);
+            groundNapGroundPos = groundPos.immutable();
+            groundNapX = maid.getX();
+            groundNapY = surfaceY + GROUND_NAP_SURFACE_OFFSET;
+            groundNapZ = maid.getZ();
+            maid.setPos(groundNapX, groundNapY, groundNapZ);
+            maid.setDeltaMovement(0, 0, 0);
+            maid.setPose(Pose.SLEEPING);
+            MaidMovementControl.begin(maid, MaidMovementControl.Reason.LAZY_POSE,
+                    java.util.EnumSet.of(MaidMovementControl.Field.PATH, MaidMovementControl.Field.POSE));
+            restStartTick = maid.tickCount;
+            currentState = State.GROUND_NAPPING;
+            stateTimer = RANDOM.nextInt(800) + 400;
+            playVoice(maid);
+            maid.getChatBubbleManager().addTextChatBubble("躺一会儿吧");
+        }
+
+        private void endGroundNap(EntityMaid maid) {
+            if (!GROUND_NAPPING_MAIDS.remove(maid)) return;
+            if (maid.isSleeping()) {
+                maid.stopSleeping();
+            } else if (maid.getPose() == Pose.SLEEPING) {
+                maid.setPose(Pose.STANDING);
+            }
+            groundNapGroundPos = null;
+            maid.setXRot(0);
+        }
+
+        private NeedType consumeForcedNeed(EntityMaid maid) {
+            String need = FORCED_LAZY_NEEDS.remove(maid);
+            if (need == null) return null;
+            return switch (need) {
+                case "rest" -> NeedType.REST;
+                case "owner_food" -> NeedType.OWNER_FOOD;
+                case "food_source" -> NeedType.FOOD_SOURCE;
+                case "cake" -> NeedType.CAKE;
+                case "ground_nap" -> NeedType.GROUND_NAP;
+                default -> null;
+            };
+        }
+
+        private boolean wasRestInterruptedByDamage(EntityMaid maid) {
+            if (LazyMaidHitHandler.checkEscape(maid)) return true;
+            if (maid.tickCount <= restStartTick || maid.hurtTime <= 0) return false;
+            var source = maid.getLastDamageSource();
+            // 饥饿伤害不能打断休息；其他真实受伤视为被打醒。
+            return source == null || !source.is(DamageTypes.STARVE);
+        }
+
+        /** 休息期间的唯一状态循环：受伤退出，否则原地维持到计时结束。 */
+        private void tickExclusiveRest(ServerLevel level, EntityMaid maid) {
+            if (wasRestInterruptedByDamage(maid)) {
+                hasRepliedHit = LazyMaidHitHandler.checkEscape(maid);
+                standUp(maid);
+                clearAllMemories(maid);
+                currentState = State.IDLE;
+                isSpeedBoosted = true;
+                speedBoostTimer = 60;
+                stateTimer = RANDOM.nextInt(200) + 100;
+                setRandomWalkTarget(maid, BOOST_SPEED);
+                return;
+            }
+
+            MaidMovementControl.clearNavigation(maid);
+            maid.setDeltaMovement(0, 0, 0);
+            if (currentState == State.GROUND_NAPPING) {
+                boolean groundStillValid = groundNapGroundPos != null
+                        && level.getBlockState(groundNapGroundPos).isFaceSturdy(
+                        level, groundNapGroundPos, net.minecraft.core.Direction.UP);
+                if (!groundStillValid || !isGroundNapping(maid)) {
+                    finishExclusiveRest(maid);
+                    return;
+                }
+                maid.setPos(groundNapX, groundNapY, groundNapZ);
+                maid.setPose(Pose.SLEEPING);
+            } else {
+                maid.setPos(restHoldX, restHoldY, restHoldZ);
+                maid.setInSittingPose(true);
+                if (currentState == State.RESTING_CAKE && targetCakePos != null) {
+                    maid.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(targetCakePos));
+                }
+            }
+
+            stateTimer--;
+            if (stateTimer <= 0) {
+                State finished = currentState;
+                finishExclusiveRest(maid);
+                if (finished == State.RESTING) {
+                    playVoice(maid);
+                    maid.getChatBubbleManager().addTextChatBubble("休息够了，溜达溜达");
+                } else if (finished == State.RESTING_TIRED || finished == State.RESTING_CAKE) {
+                    playVoice(maid);
+                    maid.getChatBubbleManager().addTextChatBubble("继续溜达~");
+                }
+            }
+        }
+
+        private void finishExclusiveRest(EntityMaid maid) {
+            standUp(maid);
+            clearAllMemories(maid);
+            currentState = State.IDLE;
+            stateTimer = RANDOM.nextInt(400) + 200;
+            setRandomWalkTarget(maid, NORMAL_SPEED);
         }
 
         private void eatFood(EntityMaid maid, ItemStack food) {
@@ -401,12 +610,13 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                     default: return NeedType.CAKE;
                 }
             }
-            int r = RANDOM.nextInt(4);
+            int r = RANDOM.nextInt(5);
             switch (r) {
                 case 0: return NeedType.REST;
                 case 1: return NeedType.OWNER_FOOD;
                 case 2: return NeedType.FOOD_SOURCE;
-                default: return NeedType.CAKE;
+                case 3: return NeedType.CAKE;
+                default: return NeedType.GROUND_NAP;
             }
         }
 
@@ -421,46 +631,17 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
             return false;
         }
 
-        private void checkDropFoodOnHit(EntityMaid maid) {
-            int hurtTime = maid.hurtTime;
-            if (hurtTime > 0 && hurtTime != lastHurtTick) {
-                lastHurtTick = hurtTime;
-                ItemStack mainHand = maid.getMainHandItem();
-                if (!mainHand.isEmpty() && mainHand.getFoodProperties(maid) != null) {
-                    ItemStack toDrop = mainHand.copy();
-                    maid.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
-                    spawnFoodDrop(maid, toDrop);
-                }
-                ItemStack offHand = maid.getOffhandItem();
-                if (!offHand.isEmpty() && offHand.getFoodProperties(maid) != null) {
-                    ItemStack toDrop = offHand.copy();
-                    maid.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
-                    spawnFoodDrop(maid, toDrop);
-                }
-            }
-        }
-
-        private void spawnFoodDrop(EntityMaid maid, ItemStack stack) {
-            double angle = RANDOM.nextDouble() * 2 * Math.PI;
-            double speed = 0.2 + RANDOM.nextDouble() * 0.2;
-            double vx = Math.cos(angle) * speed;
-            double vz = Math.sin(angle) * speed;
-            double vy = 0.3 + RANDOM.nextDouble() * 0.2;
-            ItemEntity drop = new ItemEntity(maid.level(),
-                    maid.getX(), maid.getY() + 3.5, maid.getZ(),
-                    stack, vx, vy, vz);
-            maid.level().addFreshEntity(drop);
-            SoundEvent[] hurtSounds = { InitSounds.MAID_HURT.get()};
-            maid.playSound(hurtSounds[RANDOM.nextInt(hurtSounds.length)], 1f, 1f);
-        }
-
         private void playVoice(EntityMaid maid) {
             maid.playSound(InitSounds.MAID_IDLE.get(), 0.5f, 1.0f);
         }
 
         @Override
         protected boolean checkExtraStartConditions(ServerLevel level, EntityMaid maid) {
-            if (!isLazyMode(maid) || maid.isSleeping() || !isWorkTime(maid)) return false;
+            if (isExclusiveRestState(currentState)) {
+                return LazyMaidHitHandler.isLazyMode(maid);
+            }
+            if (!isLazyMode(maid) || !isWorkTime(maid)
+                    || maid.isSleeping() && !isGroundNapping(maid)) return false;
             loadState(maid);
             return true;
         }
@@ -475,7 +656,32 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
 
         @Override
         protected void tick(ServerLevel level, EntityMaid maid, long gameTime) {
-            if (!isLazyMode(maid) || maid.isSleeping() || !isWorkTime(maid)) return;
+            if (isExclusiveRestState(currentState)) {
+                if (!LazyMaidHitHandler.isLazyMode(maid)) {
+                    standUp(maid);
+                    clearAllMemories(maid);
+                    currentState = State.IDLE;
+                    stateTimer = 0;
+                    return;
+                }
+                tickExclusiveRest(level, maid);
+                return;
+            }
+            if (!isLazyMode(maid) || !isWorkTime(maid)
+                    || maid.isSleeping() && !isGroundNapping(maid)) return;
+            // 低饥饿正式 Behavior 正在寻食时，懒惰循环暂时让出 WALK_TARGET。
+            if (SeekFoodBehavior.isSeeking(maid)) return;
+
+            NeedType forcedNeed = consumeForcedNeed(maid);
+            if (forcedNeed != null) {
+                standUp(maid);
+                clearAllMemories(maid);
+                currentState = State.IDLE;
+                currentNeed = forcedNeed;
+                stateTimer = 0;
+                isSpeedBoosted = false;
+                speedBoostTimer = 0;
+            }
 
             if (!hasRepliedHit && LazyMaidHitHandler.checkEscape(maid)) {
                 hasRepliedHit = true;
@@ -490,8 +696,6 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
             }
 
             State prevState = currentState;
-
-            checkDropFoodOnHit(maid);
 
             boolean shouldEscape = isHitByOwner(maid) && !hasRepliedHit;
             if (shouldEscape) {
@@ -538,6 +742,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
 
             if (maid.isInSittingPose() && currentState != State.RESTING
                     && currentState != State.RESTING_TIRED && currentState != State.RESTING_CAKE) {
+                sitDown(maid);
                 clearAllMemories(maid);
                 currentState = State.RESTING;
                 stateTimer = RANDOM.nextInt(800) + 400;
@@ -558,7 +763,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                     isSpeedBoosted = false;
                     speedBoostTimer = 0;
                 }
-                currentNeed = getRandomNeed(level, maid);
+                currentNeed = forcedNeed != null ? forcedNeed : getRandomNeed(level, maid);
                 if (currentNeed == NeedType.REST) {
                     targetRestPos = findNearestRestPlace(level, maid);
                     if (targetRestPos != null) {
@@ -622,6 +827,13 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                         stateTimer = RANDOM.nextInt(200) + 100;
                         setRandomWalkTarget(maid, isSpeedBoosted ? BOOST_SPEED : NORMAL_SPEED);
                         maid.getChatBubbleManager().addTextChatBubble("想念蛋糕ing...");
+                    }
+                } else if (currentNeed == NeedType.GROUND_NAP) {
+                    if (canNapHere(level, maid)) {
+                        beginGroundNap(level, maid);
+                    } else {
+                        stateTimer = RANDOM.nextInt(200) + 100;
+                        setRandomWalkTarget(maid, isSpeedBoosted ? BOOST_SPEED : NORMAL_SPEED);
                     }
                 } else {
                     stateTimer = RANDOM.nextInt(200) + 100;
@@ -971,6 +1183,27 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                         playVoice(maid);
                     }
                     break;
+
+                case GROUND_NAPPING:
+                    stateTimer--;
+                    boolean groundStillValid = groundNapGroundPos != null
+                            && level.getBlockState(groundNapGroundPos).isFaceSturdy(
+                            level, groundNapGroundPos, net.minecraft.core.Direction.UP);
+                    if (stateTimer <= 0 || !isGroundNapping(maid) || !groundStillValid) {
+                        endGroundNap(maid);
+                        clearAllMemories(maid);
+                        currentState = State.IDLE;
+                        stateTimer = RANDOM.nextInt(400) + 200;
+                        setRandomWalkTarget(maid, NORMAL_SPEED);
+                    } else {
+                        // 其他实体更新可能重算 pose；小睡期间只维持动画姿态与静止，不写入持久数据。
+                        maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+                        maid.getNavigation().stop();
+                        maid.setDeltaMovement(0, 0, 0);
+                        maid.setPos(groundNapX, groundNapY, groundNapZ);
+                        maid.setPose(Pose.SLEEPING);
+                    }
+                    break;
             }
 
             if (currentState != prevState) {
@@ -987,13 +1220,22 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
 
         @Override
         protected boolean canStillUse(ServerLevel level, EntityMaid maid, long gameTime) {
-            return isLazyMode(maid) && isWorkTime(maid) && !maid.isSleeping();
+            if (isExclusiveRestState(currentState)) {
+                return LazyMaidHitHandler.isLazyMode(maid);
+            }
+            return isLazyMode(maid) && isWorkTime(maid)
+                    && (!maid.isSleeping() || isGroundNapping(maid));
         }
 
         @Override
         protected void stop(ServerLevel level, EntityMaid maid, long gameTime) {
+            if (isExclusiveRestState(currentState) || isGroundNapping(maid)) {
+                endGroundNap(maid);
+                currentState = State.IDLE;
+                stateTimer = RANDOM.nextInt(400) + 200;
+            }
             MaidMovementControl.end(maid, MaidMovementControl.Reason.LAZY_POSE);
-            saveState(maid);
+             saveState(maid);
             maid.setXRot(0);
             hasRepliedHit = false;
             lazyModeCheckTimer = 0;

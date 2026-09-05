@@ -1,16 +1,13 @@
 package com.github.JumDa5he.callresponse.compat.brain;
 
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
+import com.github.JumDa5he.callresponse.compat.damage.OwnerDamageSource;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
@@ -26,9 +23,12 @@ public class LazyMaidHitHandler {
         if (!(event.getEntity() instanceof EntityMaid maid)) return;
         if (maid.level().isClientSide) return;
 
-        Entity attacker = event.getSource().getEntity();
-        if (!(attacker instanceof Player player)) return;
-        if (maid.getOwner() == null || !player.getUUID().equals(maid.getOwnerUUID())) return;
+        // 饥饿/吃撑共用原版 starvation DamageSource，它绝不能被解释为主人教训。
+        if (event.getSource().is(DamageTypes.STARVE)) return;
+
+        // 复用保护破除链的来源追溯：近战、投射物及能暴露 owner/shooter/caster 的枪械
+        // 都必须最终追溯到这只女仆自己的当前主人，其他任何伤害都不触发受击反馈。
+        if (!OwnerDamageSource.isCurrentOwnerSource(maid, event.getSource())) return;
 
         if (!isLazyMode(maid)) return;
 
@@ -37,7 +37,8 @@ public class LazyMaidHitHandler {
         if (maid.getPersistentData().contains(KEY_ESCAPE_TICK)
                 && maid.getPersistentData().getLong(KEY_ESCAPE_TICK) == maid.level().getGameTime()) return;
 
-        if (maid.getOwner() instanceof ServerPlayer sp) {
+        ServerPlayer sp = OwnerDamageSource.findServerPlayer(maid, event.getSource());
+        if (sp != null) {
             triggerEscape(maid, sp);
         }
     }
@@ -47,7 +48,6 @@ public class LazyMaidHitHandler {
     }
 
     public static void triggerEscape(EntityMaid maid, ServerPlayer player) {
-        dropFoodFromHands(maid);
         maid.getPersistentData().putLong(KEY_ESCAPE_TICK, maid.level().getGameTime());
         SoundEvent[] hurtSounds = { InitSounds.MAID_HURT.get() };
         maid.playSound(hurtSounds[RANDOM.nextInt(hurtSounds.length)], 1f, 1f);
@@ -55,31 +55,6 @@ public class LazyMaidHitHandler {
         String tendencyDesc = EmotionData.getTendencyPromptSuffix(maid, player.getUUID());
         String prompt = "你突然被主人打了一下，吓得赶紧跑开。你或委屈或生气或害怕，不明白主人为什么打你。根据你目前的情感状态和对主人的态度" + tendencyDesc;
         MaidResponder.processBroadcast(player, Collections.singletonList(maid), prompt, false);
-    }
-
-    static void dropFoodFromHands(EntityMaid maid) {
-        ItemStack mainHand = maid.getMainHandItem();
-        if (!mainHand.isEmpty() && mainHand.getFoodProperties(maid) != null) {
-            spawnFoodDrop(maid, mainHand.copy());
-            maid.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
-        }
-        ItemStack offHand = maid.getOffhandItem();
-        if (!offHand.isEmpty() && offHand.getFoodProperties(maid) != null) {
-            spawnFoodDrop(maid, offHand.copy());
-            maid.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
-        }
-    }
-
-    private static void spawnFoodDrop(EntityMaid maid, ItemStack stack) {
-        double angle = RANDOM.nextDouble() * 2 * Math.PI;
-        double speed = 0.2 + RANDOM.nextDouble() * 0.2;
-        double vx = Math.cos(angle) * speed;
-        double vz = Math.sin(angle) * speed;
-        double vy = 0.3 + RANDOM.nextDouble() * 0.2;
-        ItemEntity drop = new ItemEntity(maid.level(),
-                maid.getX(), maid.getY() + 3.5, maid.getZ(),
-                stack, vx, vy, vz);
-        maid.level().addFreshEntity(drop);
     }
 
     static boolean checkEscape(EntityMaid maid) {

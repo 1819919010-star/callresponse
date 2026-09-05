@@ -19,6 +19,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
@@ -61,6 +63,7 @@ public final class WanderingMaidManager {
     private static final long NO_PROGRESS_TIMEOUT = 20L * 20L;
     private static final long APPROACH_TIMEOUT = 20L * 90L;
     private static final double NEARBY_EMOTION_RADIUS = 16.0;
+    private static final int SPAWN_GLOW_DURATION = 20 * 60;
 
 
     public static boolean blocksNormalInteraction(EntityMaid maid) {
@@ -168,9 +171,10 @@ public final class WanderingMaidManager {
             return false;
         }
         maid.finalizeSpawn(level, level.getCurrentDifficultyAt(spawnPos), MobSpawnType.EVENT, null);
-        maid.setModelId(selectModel(data, player.getUUID(), level));
+        maid.setModelId(selectSharedModel(level, player.getUUID()));
         maid.setPersistenceRequired();
         WanderingMaidData.initialize(maid, player.getUUID(), level.getGameTime());
+        maid.addEffect(new MobEffectInstance(MobEffects.GLOWING, SPAWN_GLOW_DURATION, 0, false, false));
         if (!level.addFreshEntity(maid)) {
             return false;
         }
@@ -182,7 +186,9 @@ public final class WanderingMaidManager {
         return true;
     }
 
-    private static String selectModel(WanderingMaidSavedData data, UUID player, ServerLevel level) {
+    /** 流浪、交易及结构女仆共用的皮肤池选择入口。 */
+    public static String selectSharedModel(ServerLevel level, UUID player) {
+        WanderingMaidSavedData data = WanderingMaidSavedData.get(level.getServer().overworld());
         Set<String> available = ServerCustomPackLoader.SERVER_MAID_MODELS.getModelIdSet();
         List<String> pool = data.skinPool(player).stream().filter(available::contains).toList();
         if (!pool.isEmpty()) {

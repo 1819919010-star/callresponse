@@ -2,6 +2,7 @@ package com.github.JumDa5he.callresponse.compat.hunger;
 
 import com.github.JumDa5he.callresponse.compat.api.event.hunger.MaidEatEvent;
 import com.github.JumDa5he.callresponse.compat.bauble.BaubleDetector;
+import com.github.JumDa5he.callresponse.compat.brain.SeekFoodBehavior;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.npc.NpcEventManager;
@@ -51,10 +52,13 @@ public class HungerManager {
     // ===== 饱食度衰减 =====
     private static final int HUNGER_DECAY_INTERVAL = 600; // 30秒减1点
     private static final float HUNGER_DECAY_AMOUNT = 1.0f;
+    private static final String HUNGER_DECAY_PROGRESS_TAG = "CallResponseHungerDecayProgress";
+    private static final String HUNGER_DECAY_LAST_TICK_TAG = "CallResponseHungerDecayLastTick";
 
     // ===== 伤害 =====
     private static final int DAMAGE_INTERVAL = 20;  // 1秒
-    private static final float DAMAGE_AMOUNT = 2.0f;
+    private static final float STARVATION_DAMAGE_AMOUNT = 1.0f;
+    private static final float OVERFED_DAMAGE_AMOUNT = 1.0f;
 
     // ===== 移速修改 =====
     private static final float BASE_SPEED = 0.65f;
@@ -187,7 +191,7 @@ public class HungerManager {
                         HungerEatingGuard.tick(maid, tick);
 
                         // 1. 饱食度衰减
-                        if (tick % HUNGER_DECAY_INTERVAL == 0) {
+                        if (advanceHungerDecayClock(maid, tick)) {
                             float current = HungerData.get(maid);
                             if (current > 0) {
                                 HungerData.add(maid, -HUNGER_DECAY_AMOUNT);
@@ -200,11 +204,11 @@ public class HungerManager {
                             DamageSource damageSource = maid.damageSources().starve();
 
                             if (hunger <= 9) {
-                                maid.hurt(damageSource, DAMAGE_AMOUNT);
+                                maid.hurt(damageSource, STARVATION_DAMAGE_AMOUNT);
                             } else if (hunger >= 91 && !BaubleDetector.hasMoreEat(maid)) {
                                 // 暴食饰品免疫吃撑伤害
                                 maid.getPersistentData().putBoolean(OVERFED_DEATH_TAG, true);
-                                maid.hurt(damageSource, DAMAGE_AMOUNT * 0.5f);
+                                maid.hurt(damageSource, OVERFED_DAMAGE_AMOUNT);
                             }
                         }
 
@@ -221,7 +225,7 @@ public class HungerManager {
                         // ★ 新增：消耗饥饿值回血（未满血时，每2秒消耗2饥饿值恢复1生命）
                         if (tick % CONSUMPTION_HEAL_INTERVAL == 0) {
                             float hunger = HungerData.get(maid);
-                            if (maid.getHealth() < maid.getMaxHealth() && hunger >= HUNGER_COST) {
+                            if (maid.getHealth() < maid.getMaxHealth() && hunger >= 10.0f) {
                                 // 消耗饥饿值
                                 HungerData.add(maid, -HUNGER_COST);
                                 // 恢复生命
@@ -263,7 +267,8 @@ public class HungerManager {
 
                         // 功能1：低饱食度(<20)且自己背包/手上确实没有食物时，去找附近同主人的女仆借食物（禁食饰品不触发）
                         // 讨食期间每tick调用：需要每tick重设 WALK_TARGET 与活动范围，对抗 TLM 的 MaidAwaitTask/SchedulePos 干扰
-                        if (!noEat && hunger < STEAL_HUNGER_THRESHOLD && !hasAnyFoodOfOwn(maid)) {
+                        if (!noEat && hunger < STEAL_HUNGER_THRESHOLD && !hasAnyFoodOfOwn(maid)
+                                && !SeekFoodBehavior.isSeeking(maid)) {
                             tryStealFoodFromNearbyMaid(maid, tick);
                         } else if (stealStates.containsKey(maid.getUUID())) {
                             // 中途被喂食、装上禁食饰品或饥饿值恢复时，立即结束讨食并恢复原状态。
@@ -372,6 +377,31 @@ public class HungerManager {
         StealState(EntityMaid maid) {
             this.maidInstance = maid;
         }
+    }
+
+    /**
+     * 用女仆自己的衰减进度替代全局整点判定。真实睡眠时不推进进度，醒来后接着睡前剩余时间。
+     * LastTick 同时避免多人站在同一只女仆附近时，同一服务器 tick 被重复累计。
+     */
+    private static boolean advanceHungerDecayClock(EntityMaid maid, long tick) {
+        var data = maid.getPersistentData();
+        if (data.getLong(HUNGER_DECAY_LAST_TICK_TAG) == tick) return false;
+        data.putLong(HUNGER_DECAY_LAST_TICK_TAG, tick);
+
+        if (!data.contains(HUNGER_DECAY_PROGRESS_TAG)) {
+            int inheritedProgress = (int) Math.floorMod(tick, HUNGER_DECAY_INTERVAL);
+            data.putInt(HUNGER_DECAY_PROGRESS_TAG, inheritedProgress);
+        }
+        // 只认 TLM/原版真实 sleeping 状态；坐下和好吃懒做的地面睡眠不会进入这里。
+        if (maid.isSleeping()) return false;
+
+        int progress = data.getInt(HUNGER_DECAY_PROGRESS_TAG) + 1;
+        if (progress >= HUNGER_DECAY_INTERVAL) {
+            data.putInt(HUNGER_DECAY_PROGRESS_TAG, 0);
+            return true;
+        }
+        data.putInt(HUNGER_DECAY_PROGRESS_TAG, progress);
+        return false;
     }
 
     public static boolean isBeggingForFood(EntityMaid maid) {

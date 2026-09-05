@@ -35,10 +35,16 @@
         "TalkMaidAIChatManagerMixin",
         "MaidFindHomeMealCapacityMixin",
         "MaidJoyCapacityMixin",
-        "MaidBedCapacityMixin"
+        "MaidBedCapacityMixin",
+        "MaidBoardGameTaskMixin",
+        "BoardGameBlockMixin",
+        "EntitySitSpectatorMixin"
     ],
     "client": [
-        "client.AbstractContainerScreenAccessor"
+        "client.AbstractContainerScreenAccessor",
+        "client.GomokuWinnerTextMixin",
+        "client.CChessWinnerTextMixin",
+        "client.WChessWinnerTextMixin"
     ],
     "injectors": {
         "defaultRequire": 1

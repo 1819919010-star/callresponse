@@ -37,6 +37,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinEntityMaid extends Mob {
     private MixinEntityMaid() { super(null, null); }
 
+    /** 困在铁笼中时从源头拒绝 TLM 跟随传送，避免在主人和笼子之间反复闪现。 */
+    @Inject(method = "teleportToOwner", at = @At("HEAD"), cancellable = true, remap = false)
+    private void callresponse$blockOwnerTeleportWhileCaged(LivingEntity owner,
+                                                            CallbackInfoReturnable<Boolean> cir) {
+        EntityMaid maid = (EntityMaid) (Object) this;
+        if (MaidMovementControl.isActive(maid, MaidMovementControl.Reason.CAGE)) {
+            cir.setReturnValue(false);
+        }
+    }
+
     // ===== 狩猎令：放行名单内的目标（玩家默认被 TLM 拒绝） =====
     @Inject(method = "canAttack", at = @At("HEAD"), cancellable = true)
     private void callresponse$allowHuntTarget(LivingEntity target, CallbackInfoReturnable<Boolean> cir) {

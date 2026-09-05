@@ -1,0 +1,10 @@
+{
+  "textures": { "particle": "minecraft:block/lava_still", "inside": "minecraft:block/lava_still" },
+  "elements": [
+    { "from": [2.1, 1, 2.1], "to": [13.9, 10, 13.9], "faces": {
+      "down": { "texture": "#inside" }, "up": { "texture": "#inside" },
+      "north": { "texture": "#inside" }, "south": { "texture": "#inside" },
+      "west": { "texture": "#inside" }, "east": { "texture": "#inside" }
+    } }
+  ]
+}

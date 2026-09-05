@@ -6,12 +6,15 @@ import com.github.JumDa5he.callresponse.compat.block.ModBlocks;
 import com.github.JumDa5he.callresponse.compat.brain.CustomExtraMaidBrain;
 import com.github.JumDa5he.callresponse.compat.brain.IdleMaidHurtFleeManager;
 import com.github.JumDa5he.callresponse.compat.brain.LazyMaidHitHandler;
+import com.github.JumDa5he.callresponse.compat.cage.CageStructureManager;
+import com.github.JumDa5he.callresponse.compat.cage.CageRescueManager;
 import com.github.JumDa5he.callresponse.compat.broadcast.actions.BroadcastMovementScheduler;
 import com.github.JumDa5he.callresponse.compat.broadcast.ChatEventListener;
 import com.github.JumDa5he.callresponse.compat.dispatch.DispatchEventLoader;
 import com.github.JumDa5he.callresponse.compat.dispatch.DispatchManager;
 import com.github.JumDa5he.callresponse.compat.emotion.*;
 import com.github.JumDa5he.callresponse.compat.facility.FacilityCapacityManager;
+import com.github.JumDa5he.callresponse.compat.game.BoardGameManager;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntGunEventBridge;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderInteractListener;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderManager;
@@ -74,6 +77,9 @@ public class LittleMaidCompat implements ILittleMaid {
         NeoForge.EVENT_BUS.register(DispatchEventLoader.class);
         NeoForge.EVENT_BUS.register(new NpcEventManager());
         NeoForge.EVENT_BUS.register(new FacilityCapacityManager());
+        NeoForge.EVENT_BUS.register(new BoardGameManager());
+        NeoForge.EVENT_BUS.register(new CageStructureManager());
+        NeoForge.EVENT_BUS.register(new CageRescueManager());
         NeoForge.EVENT_BUS.register(NpcEventLoader.class);
     }
 
