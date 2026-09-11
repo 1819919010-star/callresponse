@@ -76,9 +76,7 @@ public final class MaidPathCommand {
             MaidMovementControl.clearNavigation(maid);
             maid.getPersistentData().remove("callresponse:trading_maid_purchase_moving");
             MaidPathRepair.Result result = MaidPathRepair.cleanupKnownSpeedPollution(maid, hadEvidence, true);
-            context.getSource().sendSuccess(() -> Component.literal("[path repair] " + maid.getName().getString()
-                    + "：已清导航，移除速度修饰符 " + result.removedModifiers()
-                    + " 个，Base " + result.oldBase() + " -> " + result.newBase()), false);
+            context.getSource().sendSuccess(() -> Component.translatable("command.callresponse.path.repair", maid.getName(), result.removedModifiers(), result.oldBase(), result.newBase()), false);
         }
         return maids.size();
     }
@@ -170,7 +168,8 @@ public final class MaidPathCommand {
             if (outgoing.hasUUID("Owner") != expectedOwner
                     || expectedOwner && !outgoing.getUUID("Owner").equals(baseline.getUUID("Owner"))) failures.add("owner");
         }
-        source.sendSuccess(() -> Component.literal("[path validate] " + maid.getName().getString() + "："
-                + (failures.isEmpty() ? "PASS，outgoing TLM 字段等于 baseline" : "FAIL " + failures)), false);
+        source.sendSuccess(() -> (failures.isEmpty()
+                ? Component.translatable("command.callresponse.path.validate.pass", maid.getName())
+                : Component.translatable("command.callresponse.path.validate.fail", maid.getName(), failures)), false);
     }
 }

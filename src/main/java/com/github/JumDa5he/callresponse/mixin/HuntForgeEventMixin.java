@@ -15,7 +15,7 @@ public abstract class HuntForgeEventMixin {
     private void callresponse$keepHuntEventUncancelled(boolean cancel, CallbackInfo ci) {
         Event event = (Event) (Object) this;
         if (cancel && (HuntEventIntrospection.belongsToHuntDamage(event)
-                || OwnerDamageSource.belongsToOwnerDamageEvent(event))) {
+                || OwnerDamageSource.mayBypassCancellation(event))) {
             ci.cancel();
         }
     }
@@ -25,7 +25,7 @@ public abstract class HuntForgeEventMixin {
         Event event = (Event) (Object) this;
         if (result == Event.Result.DENY
                 && (HuntEventIntrospection.belongsToHuntDamage(event)
-                || OwnerDamageSource.belongsToOwnerDamageEvent(event))) {
+                || OwnerDamageSource.mayBypassCancellation(event))) {
             ci.cancel();
         }
     }

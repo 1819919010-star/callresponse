@@ -1,0 +1,24 @@
+{
+  "name": "Princess Carry",
+  "icon": "minecraft:saddle",
+  "category": "callresponse:carry_and_doting",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "title": "Task & Saddle",
+      "item": "minecraft:saddle",
+      "text": "Assign the Princess Carry task and place a saddle in the maid's inventory. Then open the task settings and press “Carry Maid.” She will approach a nearby maid belonging to the same master."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Pick Up & Put Down",
+      "text": "After reaching her target, the maid picks her up. Use the task settings again to put the target down. If the action is interrupted, the carried maid returns to normal activity."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Choosing a Target",
+      "text": "Princess Carry can select only another nearby maid belonging to the same master. If no target is available, bring the two maids closer together and try again."
+    }
+  ]
+}

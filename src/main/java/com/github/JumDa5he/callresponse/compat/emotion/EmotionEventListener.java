@@ -44,7 +44,7 @@ public class EmotionEventListener {
                 serverPlayer.sendSystemMessage(
                         Component.literal("")
                                 .append(maid.getName().copy().withStyle(ChatFormatting.GOLD))
-                                .append(Component.literal("§6的信任值 §a" + values.trust() + " §6恐惧值 §c" + values.fear()))
+                                .append(Component.translatable("message.callresponse.emotion.values", values.trust(), values.fear()))
                 );
             }
         }

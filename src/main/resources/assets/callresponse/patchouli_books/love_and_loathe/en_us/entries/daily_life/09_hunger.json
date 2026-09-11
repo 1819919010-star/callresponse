@@ -1,0 +1,23 @@
+{
+  "name": "Hunger",
+  "icon": "minecraft:cooked_chicken",
+  "category": "callresponse:daily_life",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Hunger Value",
+      "text": "Maids have an independent Hunger value from 0 to 100, starting at 50.$(br2)$(li)0–9: Starving$(li)10–25: Very Hungry$(li)26–40: Hungry$(li)41–74: Normal$(li)75–90: Full$(li)91–100: Overfed"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Eating & Sleeping",
+      "text": "Hunger decreases over time. A maid searches her own inventory for food and, when very hungry and empty-handed, may ask another maid with the same master. Hunger does not decrease while she sleeps."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Too Low or Too High",
+      "text": "Very low Hunger causes starvation damage, while overeating can also have negative effects. An injured maid may spend Hunger to recover health, so prepare food before long assignments."
+    }
+  ]
+}

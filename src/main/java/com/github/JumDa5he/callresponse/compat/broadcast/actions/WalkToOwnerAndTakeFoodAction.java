@@ -14,24 +14,24 @@ import net.minecraftforge.items.ItemStackHandler;
 public class WalkToOwnerAndTakeFoodAction {
     public static void execute(EntityMaid maid, ServerPlayer debugPlayer) {
         if (HungerEatingGuard.isBlocked(maid)) {
-            MaidResponder.debug(debugPlayer, "§e[调试] 女仆当前被禁止主动进食");
+            MaidResponder.debug(debugPlayer, Component.translatable("message.callresponse.debug.eating_disabled"));
             return;
         }
         if (!(maid.getOwner() instanceof Player owner)) {
-            maid.sendSystemMessage(Component.literal("§c[动作] 没有主人！"));
-            MaidResponder.debug(debugPlayer, "§c[调试] 女仆没有主人");
+            maid.sendSystemMessage(Component.translatable("message.callresponse.action.no_owner"));
+            MaidResponder.debug(debugPlayer, Component.translatable("message.callresponse.debug.maid_no_owner"));
             return;
         }
         ItemStack food = owner.getMainHandItem();
         if (food.isEmpty() || !food.getItem().isEdible()) {
-            maid.sendSystemMessage(Component.literal("§c[动作] 主人手里没有食物！"));
-            MaidResponder.debug(debugPlayer, "§c[调试] 主人手里没有食物");
+            maid.sendSystemMessage(Component.translatable("message.callresponse.action.owner_no_food"));
+            MaidResponder.debug(debugPlayer, Component.translatable("message.callresponse.debug.owner_no_food"));
             return;
         }
         String name = maid.getCustomName() != null ? maid.getCustomName().getString() : "无名";
         BroadcastMovementScheduler.startWalk(maid, owner, debugPlayer,
                 BroadcastMovementScheduler.WalkKind.TAKE_FOOD);
-        MaidResponder.debug(debugPlayer, "§a[动作] " + name + " 正在前往主人取食物");
+        MaidResponder.debug(debugPlayer, Component.translatable("message.callresponse.debug.going_for_food", name));
     }
 
     static void onArrived(EntityMaid maid, LivingEntity ownerEntity, ServerPlayer debugPlayer) {
@@ -39,8 +39,8 @@ public class WalkToOwnerAndTakeFoodAction {
         String name = maid.getCustomName() != null ? maid.getCustomName().getString() : "无名";
         ItemStack currentFood = owner.getMainHandItem();
         if (currentFood.isEmpty() || !currentFood.getItem().isEdible()) {
-            maid.sendSystemMessage(Component.literal("§c[动作] 主人手里没有食物了！"));
-            MaidResponder.debug(debugPlayer, "§c[调试] 主人手里没有食物了");
+            maid.sendSystemMessage(Component.translatable("message.callresponse.action.owner_no_food_left"));
+            MaidResponder.debug(debugPlayer, Component.translatable("message.callresponse.debug.owner_no_food_left"));
             return;
         }
 
@@ -58,8 +58,8 @@ public class WalkToOwnerAndTakeFoodAction {
                 }
             }
             if (!stashed) {
-                maid.sendSystemMessage(Component.literal("§c[动作] 隐藏物品栏已满，无法暂存手中的物品！"));
-                MaidResponder.debug(debugPlayer, "§c[调试] " + name + " 隐藏物品栏已满，取食物失败");
+                maid.sendSystemMessage(Component.translatable("message.callresponse.action.hidden_inventory_full"));
+                MaidResponder.debug(debugPlayer, Component.translatable("message.callresponse.debug.hidden_inventory_full", name));
                 return;
             }
         }
@@ -82,8 +82,8 @@ public class WalkToOwnerAndTakeFoodAction {
                 }
             }
         }
-        maid.sendSystemMessage(Component.literal("§a[动作] " + name + " 从主人手中拿到并吃掉了 " + foodName));
-        MaidResponder.debug(debugPlayer, "§a[调试] " + name + " 已拿到并吃掉食物");
+        maid.sendSystemMessage(Component.translatable("message.callresponse.action.ate_food", name, foodName));
+        MaidResponder.debug(debugPlayer, Component.translatable("message.callresponse.debug.ate_food", name));
         maid.setInSittingPose(true);
     }
 }

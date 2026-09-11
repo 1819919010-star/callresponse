@@ -20,8 +20,11 @@
 	#《呼应》每分钟最多发起多少次 AI 请求；0 表示不限额。只限制广播、主动对话和女仆谈话，不影响 TLM 本体普通聊天
 	#Range: 0 ~ 300
 	apiCallsPerMinute = 20
-	#是否允许主人使用原始伤害来源绕过自己女仆的护甲、护符、图腾、盾牌和枪械友伤保护；关闭后完全走正常 TLM/模组伤害逻辑
+	#主人伤害保护破除的总开关；关闭后等级配置无效并完全走正常 TLM/模组伤害逻辑
 	ownerDamageBypassEnabled = true
+	#主人攻击自己女仆时的保护破除等级：NONE=关闭，BASIC=仅保证进入正常受伤流程，ULTIMATE=沿用原有全破效果
+	#Allowed Values: NONE, BASIC, ULTIMATE
+	ownerDamageProtectionBreakLevel = "ULTIMATE"
 
 #女仆谈话事件配置
 [talk_event]
@@ -33,4 +36,14 @@
 	#谈话中一名女仆说完后，下一名女仆最少等待多少秒再回话（范围 1~20 秒）
 	#Range: 1 ~ 20
 	replyIntervalSeconds = 1
+
+#NPC 日常事件配置
+[npc_event]
+	#是否允许 NPC 事件沿用各自现有的 AI/固定回复混合逻辑；关闭后所有事件选项都只使用内置固定台词
+	enableNpcEventAiReply = true
+
+#背叛女仆配置
+[betrayal]
+	#背叛女仆死亡爆炸是否破坏地形
+	betrayalMaidExplosionBreakBlocks = true
 

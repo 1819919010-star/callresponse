@@ -96,7 +96,8 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
         return List.of(
                 Pair.of(0, new SeekFoodBehavior()),
                 Pair.of(1, new LazyLoopBehavior()),
-                Pair.of(10, new WatchBoardGameBehavior())
+                Pair.of(10, new WatchBoardGameBehavior()),
+                Pair.of(20, new JealousyCageBehavior())
         );
     }
 
@@ -292,6 +293,9 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
             if (MaidMovementControl.isActive(maid, MaidMovementControl.Reason.LAZY_POSE)) {
                 MaidMovementControl.end(maid, MaidMovementControl.Reason.LAZY_POSE);
             }
+            // LAZY_POSE 的旧基线可能来自玩家手动坐下。好吃懒做自己的休息结束或被打断时
+            // 必须明确站起，不能又被旧基线恢复成坐姿。
+            maid.setInSittingPose(false);
             maid.setXRot(0);
         }
 
@@ -347,7 +351,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
             currentState = State.GROUND_NAPPING;
             stateTimer = RANDOM.nextInt(800) + 400;
             playVoice(maid);
-            maid.getChatBubbleManager().addTextChatBubble("躺一会儿吧");
+            maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.lie_down");
         }
 
         private void endGroundNap(EntityMaid maid) {
@@ -422,10 +426,10 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                 finishExclusiveRest(maid);
                 if (finished == State.RESTING) {
                     playVoice(maid);
-                    maid.getChatBubbleManager().addTextChatBubble("休息够了，溜达溜达");
+                    maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.rested_walk");
                 } else if (finished == State.RESTING_TIRED || finished == State.RESTING_CAKE) {
                     playVoice(maid);
-                    maid.getChatBubbleManager().addTextChatBubble("继续溜达~");
+                    maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.keep_walking");
                 }
             }
         }
@@ -441,7 +445,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
         private void eatFood(EntityMaid maid, ItemStack food) {
             maid.eat(maid.level(), food);
             playVoice(maid);
-            maid.getChatBubbleManager().addTextChatBubble("好吃~");
+            maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.tasty");
         }
 
         private void setRandomWalkTarget(EntityMaid maid, float speed) {
@@ -739,21 +743,11 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                 hasRepliedHit = false;
             }
 
-            if (maid.isInSittingPose() && currentState != State.RESTING
-                    && currentState != State.RESTING_TIRED && currentState != State.RESTING_CAKE) {
-                sitDown(maid);
-                clearAllMemories(maid);
-                currentState = State.RESTING;
-                stateTimer = RANDOM.nextInt(800) + 400;
-                return;
-            }
-            if (!maid.isInSittingPose() && (currentState == State.RESTING
-                    || currentState == State.RESTING_TIRED || currentState == State.RESTING_CAKE)) {
-                standUp(maid);
-                clearAllMemories(maid);
-                currentState = State.IDLE;
-                stateTimer = RANDOM.nextInt(200) + 100;
-                setRandomWalkTarget(maid, NORMAL_SPEED);
+            // 玩家手动下达的坐下命令不属于好吃懒做的内部休息状态。
+            // 坐着时仅暂停本循环，玩家再次命令起身后自然继续，绝不强制重新坐下。
+            if (maid.isInSittingPose()) {
+                maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+                maid.getNavigation().stop();
                 return;
             }
 
@@ -825,7 +819,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                     } else {
                         stateTimer = RANDOM.nextInt(200) + 100;
                         setRandomWalkTarget(maid, isSpeedBoosted ? BOOST_SPEED : NORMAL_SPEED);
-                        maid.getChatBubbleManager().addTextChatBubble("想念蛋糕ing...");
+                        maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.miss_cake");
                     }
                 } else if (currentNeed == NeedType.GROUND_NAP) {
                     if (canNapHere(level, maid)) {
@@ -877,7 +871,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                         } else if (reached) {
                             sitDown(maid);
                             playVoice(maid);
-                            maid.getChatBubbleManager().addTextChatBubble("休息一下");
+                            maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.rest");
                             stateTimer = RANDOM.nextInt(800) + 400;
                             currentState = State.RESTING;
                             clearAllMemories(maid);
@@ -894,13 +888,13 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                         setRandomWalkTarget(maid, isSpeedBoosted ? BOOST_SPEED : NORMAL_SPEED);
                         stateTimer = RANDOM.nextInt(400) + 200;
                         playVoice(maid);
-                        maid.getChatBubbleManager().addTextChatBubble("休息够了，溜达溜达");
+                        maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.rested_walk");
                     }
                     break;
 
                 case SEARCHING_REST:
                     if (!hasShownMessage) {
-                        maid.getChatBubbleManager().addTextChatBubble("我的床呢？！");
+                        maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.where_bed");
                         hasShownMessage = true;
                     }
                     if (voiceCooldown == 0) {
@@ -912,7 +906,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                         standUp(maid);
                         clearAllMemories(maid);
                         sitDown(maid);
-                        maid.getChatBubbleManager().addTextChatBubble("好累啊...");
+                        maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.tired");
                         playVoice(maid);
                         currentState = State.RESTING_TIRED;
                         stateTimer = SIT_REST_DURATION;
@@ -939,7 +933,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
 
                 case SEARCHING_FOOD:
                     if (!hasShownMessage) {
-                        maid.getChatBubbleManager().addTextChatBubble("主人把吃的藏哪了？");
+                        maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.where_food");
                         hasShownMessage = true;
                     }
                     if (voiceCooldown == 0) {
@@ -951,7 +945,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                         standUp(maid);
                         clearAllMemories(maid);
                         sitDown(maid);
-                        maid.getChatBubbleManager().addTextChatBubble("好累啊...");
+                        maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.tired");
                         playVoice(maid);
                         currentState = State.RESTING_TIRED;
                         stateTimer = SIT_REST_DURATION;
@@ -984,7 +978,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                         currentState = State.IDLE;
                         setRandomWalkTarget(maid, NORMAL_SPEED);
                         stateTimer = RANDOM.nextInt(200) + 100;
-                        maid.getChatBubbleManager().addTextChatBubble("继续溜达~");
+                        maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.keep_walking");
                         playVoice(maid);
                     }
                     break;
@@ -997,7 +991,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                         double distance = maid.distanceTo(targetOwner);
                         if (distance > 3) {
                             if (voiceCooldown == 0 && !hasAskedForFood) {
-                                maid.getChatBubbleManager().addTextChatBubble("主人你有吃的吗");
+                                maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.ask_food");
                                 hasAskedForFood = true;
                                 voiceCooldown = 100;
                             }
@@ -1013,7 +1007,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                                     hasShownNoFoodMessage = false;
                                     ItemStack foodToGive = food.split(1);
                                     maid.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, foodToGive.copy());
-                                    maid.getChatBubbleManager().addTextChatBubble("谢谢主人~");
+                                    maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.thanks");
                                     playVoice(maid);
                                     foodToEat = foodToGive.copy();
                                     addFavorabilityAndHearts(maid);
@@ -1022,7 +1016,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                                 } else if (!hasShownNoFoodMessage) {
                                     hasShownNoFoodMessage = true;
                                     maid.setBegging(false);
-                                    maid.getChatBubbleManager().addTextChatBubble("原来主人也没吃的吗");
+                                    maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.owner_no_food");
                                     playVoice(maid);
                                     currentState = State.IDLE;
                                     clearAllMemories(maid);
@@ -1037,7 +1031,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                             if (ownerWaitTimer >= OWNER_WAIT_TIMEOUT && !hasShownIgnoreMessage) {
                                 hasShownIgnoreMessage = true;
                                 maid.setBegging(false);
-                                maid.getChatBubbleManager().addTextChatBubble("主人怎么不理我");
+                                maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.ignored");
                                 playVoice(maid);
                                 currentState = State.IDLE;
                                 clearAllMemories(maid);
@@ -1053,7 +1047,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                             clearAllMemories(maid);
                             stateTimer = RANDOM.nextInt(200) + 100;
                             setRandomWalkTarget(maid, isSpeedBoosted ? BOOST_SPEED : NORMAL_SPEED);
-                            maid.getChatBubbleManager().addTextChatBubble("主人去哪儿了？");
+                            maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.owner_missing");
                             playVoice(maid);
                             ownerSearchTimer = 0;
                         } else {
@@ -1109,7 +1103,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                         } else if (reached) {
                             ItemStack food = takeOneFoodFromContainer(level, targetFoodPos, maid);
                             if (!food.isEmpty()) {
-                                maid.getChatBubbleManager().addTextChatBubble("找到零食！");
+                                maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.found_snack");
                                 playVoice(maid);
                                 maid.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, food.copy());
                                 foodToEat = food.copy();
@@ -1117,7 +1111,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                                 currentState = State.EATING;
                                 stateTimer = 40;
                             } else {
-                                maid.getChatBubbleManager().addTextChatBubble("柜子里没有吃的...");
+                                maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.cupboard_empty");
                                 currentState = State.IDLE;
                                 clearAllMemories(maid);
                                 stateTimer = RANDOM.nextInt(200) + 100;
@@ -1144,10 +1138,10 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                             clearAllMemories(maid);
                             stateTimer = RANDOM.nextInt(200) + 100;
                             setRandomWalkTarget(maid, isSpeedBoosted ? BOOST_SPEED : NORMAL_SPEED);
-                            maid.getChatBubbleManager().addTextChatBubble("蛋糕不见了...");
+                            maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.cake_missing");
                         } else if (reached) {
                             sitDown(maid);
-                            maid.getChatBubbleManager().addTextChatBubble("好想吃...");
+                            maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.want_food");
                             playVoice(maid);
                             maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
                             maid.setBegging(false);
@@ -1165,7 +1159,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                         currentState = State.IDLE;
                         setRandomWalkTarget(maid, isSpeedBoosted ? BOOST_SPEED : NORMAL_SPEED);
                         stateTimer = RANDOM.nextInt(200) ;
-                        maid.getChatBubbleManager().addTextChatBubble("蛋糕不见了...");
+                        maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.cake_missing");
                         playVoice(maid);
                         break;
                     }
@@ -1178,7 +1172,7 @@ public class CustomExtraMaidBrain implements IExtraMaidBrain {
                         currentState = State.IDLE;
                         setRandomWalkTarget(maid, isSpeedBoosted ? BOOST_SPEED : NORMAL_SPEED);
                         stateTimer = RANDOM.nextInt(200) ;
-                        maid.getChatBubbleManager().addTextChatBubble("继续溜达~");
+                        maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.lazy.keep_walking");
                         playVoice(maid);
                     }
                     break;

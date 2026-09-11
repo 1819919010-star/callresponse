@@ -1,0 +1,22 @@
+{
+  "name": "Welcome",
+  "icon": "callresponse:emotion_book",
+  "category": "callresponse:basics",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Love & Loathe",
+      "text": "Love & Loathe is an interaction-focused addon for Touhou Little Maid. It adds Trust, Fear, Hunger, daily events, and several special relationship states. How you treat a maid over time affects her attitude, behavior, dialogue, and certain special abilities."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "Start Here",
+      "entries": [
+        "callresponse:basics/02_trust_and_fear",
+        "callresponse:daily_life/09_hunger"
+      ],
+      "text": "Most features appear naturally as you live, work, and interact with your maids. Start with Trust & Fear, then learn about Hunger."
+    }
+  ]
+}

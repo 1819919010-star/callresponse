@@ -48,15 +48,15 @@ public class RequestHuntOrderScreenC2SPacket {
 
             Entity entity = HuntOrderManager.resolveEntity(server, maidUuid);
             if (!(entity instanceof EntityMaid maid)) {
-                player.sendSystemMessage(Component.literal("§c[狩猎令] 该女仆不在线或未加载。"));
+                player.sendSystemMessage(Component.translatable("message.callresponse.hunt.offline"));
                 return;
             }
             if (!player.getUUID().equals(maid.getOwnerUUID())) {
-                player.sendSystemMessage(Component.literal("§c[狩猎令] 这不是你的女仆。"));
+                player.sendSystemMessage(Component.translatable("message.callresponse.hunt.not_owner"));
                 return;
             }
             if (!EmotionDevotedManager.isDevoted(maid, player)) {
-                player.sendSystemMessage(Component.literal("§c[狩猎令] 她还不是死忠女仆，无法下达狩猎令。"));
+                player.sendSystemMessage(Component.translatable("message.callresponse.hunt.not_devoted"));
                 return;
             }
             CallResponseMod.CHANNEL.send(

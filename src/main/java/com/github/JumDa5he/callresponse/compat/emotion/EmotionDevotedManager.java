@@ -409,7 +409,7 @@ public class EmotionDevotedManager {
         maid.getPersistentData().remove("DevotedSacrificeTick");
 
         String maidName = maid.getDisplayName().getString();
-        Component deathMsg = Component.literal(maidName + "为主人而献身");
+        Component deathMsg = Component.translatable("death.attack.callresponse.devoted_sacrifice", maidName);
         maid.level().players().forEach(p -> p.sendSystemMessage(deathMsg));
 
         maid.setHealth(0);

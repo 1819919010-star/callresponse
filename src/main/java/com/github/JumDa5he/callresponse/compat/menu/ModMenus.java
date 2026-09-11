@@ -18,6 +18,9 @@ public final class ModMenus {
     public static final RegistryObject<MenuType<RewardBoxMenu>> REWARD_BOX = MENUS.register(
             "reward_box", () -> IForgeMenuType.create((windowId, inventory, data) ->
                     new RewardBoxMenu(windowId, inventory)));
+    public static final RegistryObject<MenuType<PrincessCarryContainer>> PRINCESS_CARRY = MENUS.register(
+            "princess_carry", () -> IForgeMenuType.create((windowId, inventory, data) ->
+                    new PrincessCarryContainer(windowId, inventory, data.readInt())));
 
     private ModMenus() {
     }

@@ -1,0 +1,13 @@
+{
+  "name": "Maid Talk",
+  "icon": "minecraft:bell",
+  "category": "callresponse:daily_life",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Conversations Between Maids",
+      "text": "When several maids are nearby, they may begin talking with one another and add a little life to the household. If these conversations happen too often, disable the feature or adjust its frequency in the configuration."
+    }
+  ]
+}

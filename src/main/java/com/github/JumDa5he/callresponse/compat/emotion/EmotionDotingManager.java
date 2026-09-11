@@ -1,6 +1,7 @@
 package com.github.JumDa5he.callresponse.compat.emotion;
 
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
+import com.github.JumDa5he.callresponse.compat.brain.JealousyCageManager;
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.JumDa5he.callresponse.config.EmotionPassiveConfig;
 import com.github.tartaricacid.touhoulittlemaid.api.bauble.IChestType;
@@ -119,6 +120,12 @@ public class EmotionDotingManager {
                             return;
                         }
                         if (!maid.getOwnerUUID().equals(player.getUUID())) return;
+                        // 嫉妒关笼期间由正式 Behavior 独占路径；暂停溺爱日常/赶人，结束后按原计时自然恢复。
+                        if (JealousyCageManager.isRunning(maid)) {
+                            possessiveUntilTime.remove(maid.getUUID());
+                            finishMovement(maid);
+                            return;
+                        }
                         if (!isDoting(maid, player)) {
                             finishMovement(maid);
                             return;

@@ -1,0 +1,18 @@
+{
+  "name": "Doting",
+  "icon": "minecraft:golden_apple",
+  "category": "callresponse:extreme_relationships",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Doting",
+      "text": "If a master continuously spoils a maid without restraint, pushing the relationship toward extremely high Trust and very low Fear, she may enter the Doting state."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Possessiveness",
+      "text": "Doting is more than ordinary affection. It is extreme possessiveness formed through prolonged indulgence. Some Doting Maids may become jealous of other maids belonging to the same master."
+    }
+  ]
+}

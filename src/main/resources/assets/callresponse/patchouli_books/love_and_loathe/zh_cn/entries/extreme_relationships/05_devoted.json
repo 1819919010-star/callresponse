@@ -1,0 +1,18 @@
+{
+  "name": "死忠",
+  "icon": "minecraft:totem_of_undying",
+  "category": "callresponse:extreme_relationships",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "死忠",
+      "text": "当女仆同时拥有很高的信任和很高的恐惧时，可能进入死忠状态。她非常依赖主人，同时又害怕失去主人或违抗主人，因此会表现得格外服从。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "特殊能力",
+      "text": "死忠女仆可以参与部分特殊玩法，例如接受狩猎令。她也可能表现出更强烈的保护与战斗倾向。"
+    }
+  ]
+}

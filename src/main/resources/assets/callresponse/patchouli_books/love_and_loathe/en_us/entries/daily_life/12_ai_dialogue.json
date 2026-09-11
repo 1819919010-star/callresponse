@@ -1,0 +1,13 @@
+{
+  "name": "AI Dialogue",
+  "icon": "minecraft:name_tag",
+  "category": "callresponse:daily_life",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Relationships in Dialogue",
+      "text": "When Touhou Little Maid's AI dialogue is enabled, a maid's tone changes with her current relationship. Bond, Fearful, Conflicted, and other states can sound noticeably different. Nearby maids may also respond to player messages."
+    }
+  ]
+}

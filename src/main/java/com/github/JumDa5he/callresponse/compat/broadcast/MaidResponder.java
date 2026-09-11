@@ -80,8 +80,8 @@ public final class MaidResponder {
 
                     // 谈话成员可以在近距离回应主人，但外部指令不能改变围坐、寻路或工作。
                     if (TalkEventManager.suppressBroadcastAction(maid, serverPlayer)) {
-                        debug(player, Component.literal("§e[调试] ").append(maid.getName())
-                                .append(Component.literal(" 正在谈话，仅原地回应指令")));
+                        debug(player, Component.translatable("message.callresponse.debug.prefix").append(maid.getName())
+                                .append(Component.translatable("message.callresponse.debug.talking_in_place")));
                         continue;
                     }
 
@@ -90,9 +90,9 @@ public final class MaidResponder {
                             WalkToOwnerAndSitAction.execute(maid, serverPlayer);
                         } else {
                             debug(player,
-                                    Component.literal("§e[调试] ")
+                                    Component.translatable("message.callresponse.debug.prefix")
                                             .append(maid.getName())
-                                            .append(Component.literal(" 溺爱模式，拒绝集合指令"))
+                                            .append(Component.translatable("message.callresponse.debug.doting_refuse_gather"))
                             );
                         }
                     } else if (lowerCmd.contains("开饭") || lowerCmd.contains("拿食物")) {
@@ -100,9 +100,9 @@ public final class MaidResponder {
                             WalkToOwnerAndTakeFoodAction.execute(maid, serverPlayer);
                         } else {
                             debug(player,
-                                    Component.literal("§e[调试] ")
+                                    Component.translatable("message.callresponse.debug.prefix")
                                             .append(maid.getName())
-                                            .append(Component.literal(" 溺爱模式，拒绝拿食物指令"))
+                                            .append(Component.translatable("message.callresponse.debug.doting_refuse_food"))
                             );
                         }
                     } else if (lowerCmd.contains("打起来") || lowerCmd.contains("攻击") || lowerCmd.contains("打架") || lowerCmd.contains("决斗")) {
@@ -110,9 +110,9 @@ public final class MaidResponder {
                             AttackOtherMaidAction.execute(maid, serverPlayer);
                         } else {
                             debug(player,
-                                    Component.literal("§e[调试] ")
+                                    Component.translatable("message.callresponse.debug.prefix")
                                             .append(maid.getName())
-                                            .append(Component.literal(" 溺爱模式，拒绝攻击指令"))
+                                            .append(Component.translatable("message.callresponse.debug.doting_refuse_attack"))
                             );
                         }
                     } else if (lowerCmd.contains("停战") || lowerCmd.contains("停止攻击")) {
@@ -122,9 +122,9 @@ public final class MaidResponder {
                             StandUpAction.execute(maid, serverPlayer);
                         } else {
                             debug(player,
-                                    Component.literal("§e[调试] ")
+                                    Component.translatable("message.callresponse.debug.prefix")
                                             .append(maid.getName())
-                                            .append(Component.literal(" 溺爱模式，拒绝站起来指令"))
+                                            .append(Component.translatable("message.callresponse.debug.doting_refuse_stand"))
                             );
                         }
                     } else if (lowerCmd.contains("坐下")) {
@@ -132,9 +132,9 @@ public final class MaidResponder {
                             SitDownAction.execute(maid, serverPlayer);
                         } else {
                             debug(player,
-                                    Component.literal("§e[调试] ")
+                                    Component.translatable("message.callresponse.debug.prefix")
                                             .append(maid.getName())
-                                            .append(Component.literal(" 溺爱模式，拒绝坐下指令"))
+                                            .append(Component.translatable("message.callresponse.debug.doting_refuse_sit"))
                             );
                         }
                     }
@@ -156,16 +156,16 @@ public final class MaidResponder {
             }
             MaidAIChatManager manager = maid.getAiChatManager();
             Component maidName = maid.getName();
-            debug(serverPlayer, Component.literal("§e[调试] 正在处理: ").append(maidName));
+            debug(serverPlayer, Component.translatable("message.callresponse.debug.processing", maidName));
 
             try {
                 if (isPlayerCommand) {
                     EmotionData.FeedbackKind feedback = EmotionData.applyChatFeedback(
                             maid, serverPlayer, command);
                     if (feedback != EmotionData.FeedbackKind.NONE) {
-                        debug(serverPlayer, Component.literal("§e[调试] ")
+                        debug(serverPlayer, Component.translatable("message.callresponse.debug.prefix")
                                 .append(maidName)
-                                .append(Component.literal(" 检测到聊天反馈: " + feedback)));
+                                .append(Component.translatable("message.callresponse.debug.feedback", feedback)));
                     }
                 }
                 String emotionContext = EmotionPrompt.buildEmotionContext(maid, serverPlayer);
@@ -177,17 +177,15 @@ public final class MaidResponder {
                 // 都由本体按正常单体聊天的顺序处理，广播层只补充情感上下文。
                 manager.chat(message, clientInfo, serverPlayer);
                 debug(serverPlayer,
-                        Component.literal("§a[调试] ")
+                        Component.translatable("message.callresponse.debug.success_prefix")
                                 .append(maidName)
-                                .append(Component.literal(" 的 chat() 调用完成（对话语言: "
-                                        + clientInfo.language() + "，语音语言: "
-                                        + manager.getTTSLanguage() + "）"))
+                                .append(Component.translatable("message.callresponse.debug.chat_complete", clientInfo.language(), manager.getTTSLanguage()))
                 );
             } catch (Exception e) {
                 debug(serverPlayer,
-                        Component.literal("§c[调试] ")
+                        Component.translatable("message.callresponse.debug.error_prefix")
                                 .append(maidName)
-                                .append(Component.literal(" 异常: " + e.getMessage()))
+                                .append(Component.translatable("message.callresponse.debug.error", e.getMessage()))
                 );
                 CallResponseMod.LOGGER.error("出现错误：", e);
             }
@@ -225,10 +223,9 @@ public final class MaidResponder {
             boolean mentioned = isNameMentioned(maid, normalizedCommand);
             double chance = Math.min(1.0, baseChance + (mentioned ? nameBonus : 0.0));
             double roll = maid.getRandom().nextDouble();
-            debug(player, Component.literal("§e[调试] 回应筛选 ")
+            debug(player, Component.translatable("message.callresponse.debug.response_filter_prefix")
                     .append(maid.getName())
-                    .append(Component.literal(String.format(
-                            "：点名=%s，概率=%.2f，掷骰=%.2f", mentioned, chance, roll))));
+                    .append(Component.translatable("message.callresponse.debug.response_filter_values", mentioned, String.format("%.2f", chance), String.format("%.2f", roll))));
             if (roll < chance) {
                 passed.add(new ResponseCandidate(maid, mentioned,
                         maid.distanceToSqr(player)));

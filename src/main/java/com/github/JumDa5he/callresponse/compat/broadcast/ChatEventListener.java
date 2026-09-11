@@ -22,7 +22,7 @@ public class ChatEventListener {
         String message = event.getRawText();
         EmotionActiveDialogue.onPlayerSpoke(event.getPlayer());
 
-        MaidResponder.debug(player, "§e[调试] 监听到: " + message);
+        MaidResponder.debug(player, Component.translatable("message.callresponse.debug.heard", message));
 
         String prefix = BroadcastConfig.TRIGGER_PREFIX.get();
         if (!message.startsWith(prefix)) {
@@ -34,11 +34,11 @@ public class ChatEventListener {
 
         String command = message.substring(prefix.length()).trim();
         if (command.isEmpty()) {
-            MaidResponder.debug(player, "§c[广播] 指令为空");
+            MaidResponder.debug(player, Component.translatable("message.callresponse.debug.empty_command"));
             return;
         }
 
-        MaidResponder.debug(player, "§e[调试] 命令: " + command);
+        MaidResponder.debug(player, Component.translatable("message.callresponse.debug.command", command));
 
         Level level = player.level();
         int radius = BroadcastConfig.SEARCH_RADIUS.get();
@@ -53,19 +53,19 @@ public class ChatEventListener {
         int foundBeforeTalkRouting = maids.size();
         maids = TalkEventManager.routeBroadcastCommand(event.getPlayer(), maids, command);
 
-        MaidResponder.debug(player, "§e[调试] 找到女仆: " + maids.size());
+        MaidResponder.debug(player, Component.translatable("message.callresponse.debug.maid_count", maids.size()));
 
         if (maids.isEmpty()) {
             if (foundBeforeTalkRouting > 0) {
-                player.displayClientMessage(Component.literal("§e[广播] 谈话中的女仆只会坐在原地回应"), false);
+                player.displayClientMessage(Component.translatable("message.callresponse.broadcast.talking_only"), false);
             } else {
-                player.displayClientMessage(Component.literal("§c[广播] 周围没有女仆..."), false);
+                player.displayClientMessage(Component.translatable("message.callresponse.broadcast.no_maids"), false);
             }
             return;
         }
 
         player.displayClientMessage(
-                Component.literal("§a[广播] 已向 " + maids.size() + " 位女仆传达指令"),
+                Component.translatable("message.callresponse.broadcast.sent", maids.size()),
                 false
         );
 

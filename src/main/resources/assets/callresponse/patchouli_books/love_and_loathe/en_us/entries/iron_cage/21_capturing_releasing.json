@@ -1,0 +1,25 @@
+{
+  "name": "Capturing & Releasing",
+  "icon": "minecraft:lead",
+  "category": "callresponse:iron_cage",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "title": "Lead",
+      "item": "minecraft:lead",
+      "text": "Lead an ordinary creature and right-click an empty cage with the lead to capture it. Using a lead on an occupied cage releases an ordinary creature and keeps it leashed to the player."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "title": "Collision & Cage Item",
+      "item": "callresponse:dark_iron_cage",
+      "text": "A non-player creature touching an empty cage may be captured automatically. Right-click an eligible non-player creature while holding an Iron Cage to place the cage at its position and capture it immediately."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Player Entry & Escape",
+      "text": "Players are not pulled into a cage by ordinary collision. Sneak-right-click an empty cage to enter voluntarily. A trapped player can right-click the cage with a pickaxe to escape."
+    }
+  ]
+}

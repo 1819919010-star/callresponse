@@ -25,7 +25,7 @@ public final class MaidExpelManager {
         long now = maid.level().getGameTime();
         long until = maid.getPersistentData().getLong(FRIGHTEN_UNTIL_TAG);
         if (now < until) {
-            player.sendSystemMessage(Component.literal("今天已经用过‘吓吓你的’了。"));
+            player.sendSystemMessage(Component.translatable("message.callresponse.expel.frighten_used"));
             return;
         }
         maid.getPersistentData().putLong(FRIGHTEN_UNTIL_TAG, now + ONE_GAME_DAY);

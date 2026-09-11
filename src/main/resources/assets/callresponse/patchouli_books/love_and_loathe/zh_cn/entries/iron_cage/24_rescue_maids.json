@@ -1,0 +1,19 @@
+{
+  "name": "救援女仆",
+  "icon": "callresponse:disposable_favorability_tool_add",
+  "category": "callresponse:iron_cage",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "title": "首次救援奖励",
+      "item": "callresponse:disposable_favorability_tool_add",
+      "text": "第一次救出结构中的救援女仆时，她会感谢玩家，并掉落一个一次性好感度调整工具。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "及时收留",
+      "text": "获救后 3 分钟仍未驯服，她会离开并消失。成功驯服后，她就会留下，不再因为这次救援而离开。"
+    }
+  ]
+}

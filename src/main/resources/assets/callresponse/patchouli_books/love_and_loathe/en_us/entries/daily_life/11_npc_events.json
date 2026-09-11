@@ -1,0 +1,18 @@
+{
+  "name": "NPC Events",
+  "icon": "minecraft:writable_book",
+  "category": "callresponse:daily_life",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Daily Events",
+      "text": "Maids may encounter events involving overwork, poor nutrition, repetitive meals, nightmares, pleasant dreams, long periods without interaction, an injured master, thunderstorms, repeated attacks, and more. Some events present choices."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Choices & Replies",
+      "text": "Your answer may change Trust, Fear, Favorability, Hunger, or what happens next. You can disable AI replies in the configuration if you prefer every event to use preset dialogue."
+    }
+  ]
+}

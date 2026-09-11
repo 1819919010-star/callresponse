@@ -389,9 +389,9 @@ public class HuntOrderManager {
         ServerPlayer owner = getOwnerAsPlayer(maid);
         if (owner != null) {
             owner.sendSystemMessage(
-                    Component.literal("§c[狩猎] ")
+                    Component.translatable("message.callresponse.hunt.started_prefix")
                             .append(maid.getName())
-                            .append(Component.literal(" 开始狩猎："))
+                            .append(Component.translatable("message.callresponse.hunt.started_separator"))
                             .append(target.getName().copy())
                             .append(Component.literal("！"))
             );

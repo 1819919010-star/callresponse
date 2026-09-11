@@ -1,0 +1,18 @@
+{
+  "name": "Trust & Fear",
+  "icon": "minecraft:heart_of_the_sea",
+  "category": "callresponse:basics",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Two Core Values",
+      "text": "Every tamed maid with an owner tracks two primary emotional values:$(br2)$(bold)Trust$(): 0–100, representing how much she trusts and feels close to her master.$(br2)$(bold)Fear$(): 0–100, representing how afraid she is of her master."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Defaults & Relationships",
+      "text": "The default values are 40 Trust and 10 Fear. Both change through everyday interactions and events. Different combinations create different relationship states and influence dialogue and special behavior."
+    }
+  ]
+}

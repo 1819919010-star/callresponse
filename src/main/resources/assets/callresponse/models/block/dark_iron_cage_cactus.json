@@ -1,0 +1,22 @@
+{
+  "textures": {
+    "particle": "minecraft:block/cactus_side",
+    "side": "minecraft:block/cactus_side",
+    "top": "minecraft:block/cactus_top",
+    "bottom": "minecraft:block/cactus_bottom"
+  },
+  "elements": [
+    {
+      "from": [5, 1, 5],
+      "to": [11, 8, 11],
+      "faces": {
+        "down": { "texture": "#bottom" },
+        "up": { "texture": "#top" },
+        "north": { "texture": "#side" },
+        "south": { "texture": "#side" },
+        "west": { "texture": "#side" },
+        "east": { "texture": "#side" }
+      }
+    }
+  ]
+}

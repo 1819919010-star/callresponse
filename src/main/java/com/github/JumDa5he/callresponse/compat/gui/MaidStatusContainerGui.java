@@ -22,7 +22,7 @@ public class MaidStatusContainerGui extends AbstractMaidContainerGui<MaidStatusC
     private Button expelButton;
 
     public MaidStatusContainerGui(MaidStatusContainer menu, Inventory inventory, Component title) {
-        super(menu, inventory, Component.literal("女仆状态"));
+        super(menu, inventory, Component.translatable("gui.callresponse.maid_status.title"));
     }
 
     @Override
@@ -30,19 +30,21 @@ public class MaidStatusContainerGui extends AbstractMaidContainerGui<MaidStatusC
         this.expelButton = null;
 
         if (expelChoicesOpen) {
-            Button frighten = Button.builder(Component.literal(frightenUsedLocally ? "今日已用" : "吓吓你的"),
+            Button frighten = Button.builder(Component.translatable(frightenUsedLocally
+                            ? "gui.callresponse.maid_status.frighten_used"
+                            : "gui.callresponse.maid_status.frighten"),
                             ignored -> frightenMaid())
                     .bounds(leftPos + 92, topPos + 138, 74, 20)
                     .build();
             frighten.active = !frightenUsedLocally;
             this.addRenderableWidget(frighten);
-            this.addRenderableWidget(Button.builder(Component.literal("确认驱逐").withStyle(ChatFormatting.RED),
+            this.addRenderableWidget(Button.builder(Component.translatable("gui.callresponse.maid_status.expel_confirm").withStyle(ChatFormatting.RED),
                             ignored -> expelMaid())
                     .bounds(leftPos + 171, topPos + 138, 74, 20)
                     .build());
         } else {
             this.expelButton = Button.builder(
-                            Component.literal("驱逐").withStyle(ChatFormatting.RED, ChatFormatting.BOLD),
+                            Component.translatable("gui.callresponse.maid_status.expel").withStyle(ChatFormatting.RED, ChatFormatting.BOLD),
                             ignored -> {
                                 expelChoicesOpen = true;
                                 init();
@@ -78,17 +80,17 @@ public class MaidStatusContainerGui extends AbstractMaidContainerGui<MaidStatusC
 
     @Override
     protected void renderAddition(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        graphics.drawCenteredString(font, Component.literal("女仆状态"),
+        graphics.drawCenteredString(font, Component.translatable("gui.callresponse.maid_status.title"),
                 leftPos + 164, topPos + 41, 0xFF404040);
 
         int hunger = Math.round(HungerData.get(maid));
         EmotionData.EmotionValues emotions = getEmotions();
-        drawStatusBar(graphics, Component.literal("饥饿"), hunger, topPos + 58, 18);
-        drawStatusBar(graphics, Component.literal("信任"), emotions.trust(), topPos + 79, 28);
-        drawStatusBar(graphics, Component.literal("恐惧"), emotions.fear(), topPos + 100, 23);
+        drawStatusBar(graphics, Component.translatable("gui.callresponse.maid_status.hunger"), hunger, topPos + 58, 18);
+        drawStatusBar(graphics, Component.translatable("gui.callresponse.maid_status.trust"), emotions.trust(), topPos + 79, 28);
+        drawStatusBar(graphics, Component.translatable("gui.callresponse.maid_status.fear"), emotions.fear(), topPos + 100, 23);
 
         if (expelChoicesOpen) {
-            graphics.drawCenteredString(font, Component.literal("你确定要驱逐吗？"),
+            graphics.drawCenteredString(font, Component.translatable("gui.callresponse.maid_status.expel_question"),
                     leftPos + 166, topPos + 123, 0xFF8B2020);
         } else if (expelButton != null) {
             drawButtonFrame(graphics, expelButton);

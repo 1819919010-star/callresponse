@@ -1,5 +1,7 @@
 package com.github.JumDa5he.callresponse.compat.hunger;
 
+import com.github.JumDa5he.callresponse.compat.bauble.BaubleDetector;
+import com.github.JumDa5he.callresponse.compat.bauble.NoEatBauble;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -20,7 +22,8 @@ public class HungerData {
     }
 
     public static void set(EntityMaid maid, float value) {
-        float clamped = Math.max(MIN_HUNGER, Math.min(MAX_HUNGER, value));
+        float minimum = BaubleDetector.hasNoEat(maid) ? NoEatBauble.MIN_HUNGER : MIN_HUNGER;
+        float clamped = Math.max(minimum, Math.min(MAX_HUNGER, value));
         maid.getEntityData().set(HUNGER_KEY, clamped);
     }
 

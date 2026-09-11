@@ -1,0 +1,18 @@
+{
+  "name": "Betrayal & Iron Cages",
+  "icon": "minecraft:hopper",
+  "category": "callresponse:iron_cage",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Special Hostility",
+      "text": "A maid in Betrayal speaks hostile lines after being placed in an Iron Cage. She can still take damage from the cage environment and outside attacks."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Surrendering Items",
+      "text": "After a short delay, she gradually drops items from her hands, armor slots, and inventory around the cage. Ordinary maids do not do this."
+    }
+  ]
+}

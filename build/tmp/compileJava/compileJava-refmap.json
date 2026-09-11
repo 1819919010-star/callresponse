@@ -6,6 +6,9 @@
       "hurt": "Lnet/minecraft/world/entity/LivingEntity;m_6469_(Lnet/minecraft/world/damagesource/DamageSource;F)Z",
       "setHealth": "Lnet/minecraft/world/entity/LivingEntity;m_21153_(F)V"
     },
+    "com/github/JumDa5he/callresponse/mixin/PrincessCarryRemovalMixin": {
+      "remove": "Lnet/minecraft/world/entity/Entity;m_142687_(Lnet/minecraft/world/entity/Entity$RemovalReason;)V"
+    },
     "com/github/JumDa5he/callresponse/mixin/accessor/LivingEntityHealthAccessorMixin": {
       "DATA_HEALTH_ID": "f_20961_:Lnet/minecraft/network/syncher/EntityDataAccessor;"
     },
@@ -18,7 +21,11 @@
     "com/github/JumDa5he/callresponse/mixin/accessor/LootTableAccessor": {
       "pools": "f_79109_:Ljava/util/List;"
     },
+    "com/github/JumDa5he/callresponse/mixin/PlayerRestPoseMixin": {
+      "updatePlayerPose": "Lnet/minecraft/world/entity/player/Player;m_7594_()V"
+    },
     "com/github/JumDa5he/callresponse/mixin/MixinEntityMaid": {
+      "dropEquipment": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_5907_()V",
       "die": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_6667_(Lnet/minecraft/world/damagesource/DamageSource;)V",
       "canAttack": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_6779_(Lnet/minecraft/world/entity/LivingEntity;)Z",
       "hurt": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_6469_(Lnet/minecraft/world/damagesource/DamageSource;F)Z"
@@ -47,6 +54,9 @@
     "com/github/JumDa5he/callresponse/mixin/WanderingMaidVanillaTameMixin": {
       "tame": "Lnet/minecraft/world/entity/TamableAnimal;m_21828_(Lnet/minecraft/world/entity/player/Player;)V"
     },
+    "com/github/JumDa5he/callresponse/mixin/PrincessCarryControllerMixin": {
+      "getControllingPassenger": "Lnet/minecraft/world/entity/Mob;m_6688_()Lnet/minecraft/world/entity/LivingEntity;"
+    },
     "com/github/JumDa5he/callresponse/mixin/MixinMaidConflictBauble": {
       "tick": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_8119_()V"
     },
@@ -55,6 +65,12 @@
     },
     "com/github/JumDa5he/callresponse/mixin/accessor/LootItemAccessor": {
       "item": "f_79564_:Lnet/minecraft/world/item/Item;"
+    },
+    "com/github/JumDa5he/callresponse/mixin/PrincessCarryPassengerMixin": {
+      "positionRider(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/entity/Entity$MoveFunction;)V": "Lnet/minecraft/world/entity/Entity;m_19956_(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/entity/Entity$MoveFunction;)V"
+    },
+    "com/github/JumDa5he/callresponse/mixin/LivingEntityMaidBedOrientationMixin": {
+      "getBedOrientation": "Lnet/minecraft/world/entity/LivingEntity;m_21259_()Lnet/minecraft/core/Direction;"
     },
     "com/github/JumDa5he/callresponse/compat/emotion/mixin/MixinEntityMaid": {
       "hurt": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_6469_(Lnet/minecraft/world/damagesource/DamageSource;F)Z"
@@ -78,6 +94,9 @@
         "hurt": "Lnet/minecraft/world/entity/LivingEntity;m_6469_(Lnet/minecraft/world/damagesource/DamageSource;F)Z",
         "setHealth": "Lnet/minecraft/world/entity/LivingEntity;m_21153_(F)V"
       },
+      "com/github/JumDa5he/callresponse/mixin/PrincessCarryRemovalMixin": {
+        "remove": "Lnet/minecraft/world/entity/Entity;m_142687_(Lnet/minecraft/world/entity/Entity$RemovalReason;)V"
+      },
       "com/github/JumDa5he/callresponse/mixin/accessor/LivingEntityHealthAccessorMixin": {
         "DATA_HEALTH_ID": "f_20961_:Lnet/minecraft/network/syncher/EntityDataAccessor;"
       },
@@ -90,7 +109,11 @@
       "com/github/JumDa5he/callresponse/mixin/accessor/LootTableAccessor": {
         "pools": "f_79109_:Ljava/util/List;"
       },
+      "com/github/JumDa5he/callresponse/mixin/PlayerRestPoseMixin": {
+        "updatePlayerPose": "Lnet/minecraft/world/entity/player/Player;m_7594_()V"
+      },
       "com/github/JumDa5he/callresponse/mixin/MixinEntityMaid": {
+        "dropEquipment": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_5907_()V",
         "die": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_6667_(Lnet/minecraft/world/damagesource/DamageSource;)V",
         "canAttack": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_6779_(Lnet/minecraft/world/entity/LivingEntity;)Z",
         "hurt": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_6469_(Lnet/minecraft/world/damagesource/DamageSource;F)Z"
@@ -119,6 +142,9 @@
       "com/github/JumDa5he/callresponse/mixin/WanderingMaidVanillaTameMixin": {
         "tame": "Lnet/minecraft/world/entity/TamableAnimal;m_21828_(Lnet/minecraft/world/entity/player/Player;)V"
       },
+      "com/github/JumDa5he/callresponse/mixin/PrincessCarryControllerMixin": {
+        "getControllingPassenger": "Lnet/minecraft/world/entity/Mob;m_6688_()Lnet/minecraft/world/entity/LivingEntity;"
+      },
       "com/github/JumDa5he/callresponse/mixin/MixinMaidConflictBauble": {
         "tick": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_8119_()V"
       },
@@ -127,6 +153,12 @@
       },
       "com/github/JumDa5he/callresponse/mixin/accessor/LootItemAccessor": {
         "item": "f_79564_:Lnet/minecraft/world/item/Item;"
+      },
+      "com/github/JumDa5he/callresponse/mixin/PrincessCarryPassengerMixin": {
+        "positionRider(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/entity/Entity$MoveFunction;)V": "Lnet/minecraft/world/entity/Entity;m_19956_(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/entity/Entity$MoveFunction;)V"
+      },
+      "com/github/JumDa5he/callresponse/mixin/LivingEntityMaidBedOrientationMixin": {
+        "getBedOrientation": "Lnet/minecraft/world/entity/LivingEntity;m_21259_()Lnet/minecraft/core/Direction;"
       },
       "com/github/JumDa5he/callresponse/compat/emotion/mixin/MixinEntityMaid": {
         "hurt": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_6469_(Lnet/minecraft/world/damagesource/DamageSource;F)Z"

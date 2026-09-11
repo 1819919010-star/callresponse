@@ -1,0 +1,18 @@
+{
+  "name": "Relationship States",
+  "icon": "minecraft:painting",
+  "category": "callresponse:basics",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Closeness & Distance",
+      "text": "$(bold)Bond$(): High Trust and low Fear; she feels especially close to her master.$(br2)$(bold)Friendly$(): Relatively high Trust and low Fear.$(br2)$(bold)Stranger$(): Low Trust without strong Fear; the relationship feels distant."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Fear & Conflict",
+      "text": "$(bold)Fearful$(): Fear has become noticeably high.$(br2)$(bold)Terrified$(): Low Trust and high Fear.$(br2)$(bold)Conflicted$(): Trust and Fear are both high.$(br2)$(bold)Neutral$(): No stronger relationship pattern currently applies."
+    }
+  ]
+}

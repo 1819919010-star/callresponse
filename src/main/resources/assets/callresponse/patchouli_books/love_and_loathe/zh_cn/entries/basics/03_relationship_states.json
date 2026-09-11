@@ -1,0 +1,18 @@
+{
+  "name": "普通关系状态",
+  "icon": "minecraft:painting",
+  "category": "callresponse:basics",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "亲近与疏离",
+      "text": "$(bold)依恋$()：信任高、恐惧低，非常亲近主人。$(br2)$(bold)友善$()：信任较高、恐惧较低。$(br2)$(bold)疏离$()：信任较低、恐惧也不高，关系较生疏。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "恐惧与纠结",
+      "text": "$(bold)畏惧$()：恐惧明显升高。$(br2)$(bold)恐惧$()：信任低、恐惧高。$(br2)$(bold)纠结$()：信任与恐惧同时很高。$(br2)$(bold)平静$()：未达到其他明显状态。"
+    }
+  ]
+}

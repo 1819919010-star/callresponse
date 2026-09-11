@@ -1,0 +1,18 @@
+{
+  "name": "Devoted",
+  "icon": "minecraft:totem_of_undying",
+  "category": "callresponse:extreme_relationships",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Devoted",
+      "text": "When a maid has both very high Trust and very high Fear, she may become Devoted. Deep dependence on her master combines with a strong fear of disobedience or abandonment, creating extreme loyalty."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Special Abilities",
+      "text": "Devoted Maids can take part in special activities such as Hunt Orders. They may also show stronger protective and combat tendencies."
+    }
+  ]
+}

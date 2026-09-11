@@ -1,0 +1,18 @@
+{
+  "name": "背叛",
+  "icon": "minecraft:iron_sword",
+  "category": "callresponse:extreme_relationships",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "背叛",
+      "text": "当女仆长期处于极低信任和极高恐惧的危险状态时，最终可能发生背叛。背叛后，她会脱离原本的主人关系并进入敌对状态。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "敌对表现",
+      "text": "背叛女仆可能攻击其他女仆。将她关入铁笼后，她还会逐渐丢出身上携带的物品。"
+    }
+  ]
+}

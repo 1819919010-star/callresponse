@@ -343,16 +343,16 @@ public final class TalkEventManager {
     /** Admin test command: bypasses the daily timer, but keeps all participant safety filters. */
     private static int forceTalkInCurrentChunk(ServerPlayer player) {
         if (!isTalkEnabled()) {
-            player.sendSystemMessage(Component.literal("[谈话] 谈话事件已在配置中关闭。"));
+            player.sendSystemMessage(Component.translatable("message.callresponse.talk.disabled"));
             return 0;
         }
         if (!(player.level() instanceof ServerLevel level) || level != level.getServer().overworld()) {
-            player.sendSystemMessage(Component.literal("[谈话] 只能在主世界触发。"));
+            player.sendSystemMessage(Component.translatable("message.callresponse.talk.overworld_only"));
             return 0;
         }
         long chunkKey = player.chunkPosition().toLong();
         if (BY_CHUNK.containsKey(chunkKey)) {
-            player.sendSystemMessage(Component.literal("[谈话] 这个区块已经有一场谈话正在进行。"));
+            player.sendSystemMessage(Component.translatable("message.callresponse.talk.already_active"));
             return 0;
         }
         List<EntityMaid> maids = new ArrayList<>();
@@ -362,13 +362,12 @@ public final class TalkEventManager {
             maids.add(maid);
         }
         if (maids.size() < minimumMaids()) {
-            player.sendSystemMessage(Component.literal("[谈话] 当前区块只有 " + maids.size()
-                    + " 只符合条件的女仆，至少需要 " + minimumMaids() + " 只。"));
+            player.sendSystemMessage(Component.translatable("message.callresponse.talk.not_enough_maids", maids.size(), minimumMaids()));
             return 0;
         }
         startSession(level, new GroupKey(chunkKey, player.getUUID()), maids, level.getGameTime());
         TalkEventSavedData.get(level).recordStart(player.getUUID(), level.getDayTime() / 24000L);
-        player.sendSystemMessage(Component.literal("[谈话] 已让当前区块的女仆立即尝试聚集谈话。"));
+        player.sendSystemMessage(Component.translatable("message.callresponse.talk.forced"));
         return 1;
     }
 
@@ -376,7 +375,7 @@ public final class TalkEventManager {
     private static int finishTalkInCurrentChunk(ServerPlayer player) {
         TalkSession session = BY_CHUNK.get(player.chunkPosition().toLong());
         if (session == null || !session.ownerId.equals(player.getUUID())) {
-            player.sendSystemMessage(Component.literal("[谈话] 当前区块没有属于你的谈话可以结算。"));
+            player.sendSystemMessage(Component.translatable("message.callresponse.talk.none_to_finish"));
             return 0;
         }
         endSession(session, EndReason.NORMAL);
@@ -388,7 +387,7 @@ public final class TalkEventManager {
         try {
             sessionId = UUID.fromString(sessionText);
         } catch (IllegalArgumentException ignored) {
-            player.sendSystemMessage(Component.literal("[谈话] 这份邀请已经失效。"));
+            player.sendSystemMessage(Component.translatable("message.callresponse.talk.invitation_expired"));
             return 0;
         }
         TalkSession session = SESSIONS.stream()
@@ -399,18 +398,18 @@ public final class TalkEventManager {
                 || session.level != player.level() || !session.invitedOwner
                 || session.invitationClosed || session.ownerJoined
                 || now > session.invitationExpires) {
-            player.sendSystemMessage(Component.literal("[谈话] 这份邀请已经失效。"));
+            player.sendSystemMessage(Component.translatable("message.callresponse.talk.invitation_expired"));
             return 0;
         }
         session.invitationClosed = true;
         if (!accept) {
-            player.sendSystemMessage(Component.literal("[谈话] 你拒绝了女仆们的邀请。"));
+            player.sendSystemMessage(Component.translatable("message.callresponse.talk.declined"));
             return 1;
         }
         session.ownerJoined = true;
         session.ownerArrivalPending = true;
         session.nextDialogueTick = Math.min(session.nextDialogueTick, now + 1);
-        player.sendSystemMessage(Component.literal("[谈话] 你加入了女仆们的谈话。"));
+        player.sendSystemMessage(Component.translatable("message.callresponse.talk.joined"));
         return 1;
     }
 
@@ -554,7 +553,7 @@ public final class TalkEventManager {
                 session.lastInviteRoll = now;
                 ServerPlayer owner = session.level.getServer().getPlayerList().getPlayer(session.ownerId);
                 if (owner != null) {
-                    owner.sendSystemMessage(Component.literal("[谈话] 一群女仆在区块中心围坐了下来，她们好像正聊着什么……"));
+                    owner.sendSystemMessage(Component.translatable("message.callresponse.talk.gathered"));
                 }
             } else if (now - session.createdAt >= GATHER_TIMEOUT) {
                 endSession(session, EndReason.GATHER_TIMEOUT);
@@ -583,7 +582,7 @@ public final class TalkEventManager {
         if (session.invitedOwner && !session.ownerJoined && !session.invitationClosed
                 && now > session.invitationExpires) {
             session.invitationClosed = true;
-            owner.sendSystemMessage(Component.literal("[谈话] 你没有回应邀请，这次就不加入了。"));
+            owner.sendSystemMessage(Component.translatable("message.callresponse.talk.no_response"));
         }
         if (!session.inviteRequested && !session.invitedOwner && distance <= OWNER_INVITE_RANGE_SQR
                 && session.waitingRequest == null) {
@@ -727,13 +726,13 @@ public final class TalkEventManager {
 
     private static void sendInvitationChoices(TalkSession session, ServerPlayer owner) {
         String id = session.sessionId.toString();
-        Component message = Component.literal("[谈话] 女仆们邀请你一起来聊聊。 ")
-                .append(Component.literal("[加入]").withStyle(style -> style
+        Component message = Component.translatable("message.callresponse.talk.invitation")
+                .append(Component.translatable("message.callresponse.talk.join").withStyle(style -> style
                         .withColor(ChatFormatting.GREEN).withBold(true)
                         .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
                                 "/callresponse_talk_reply join " + id))))
                 .append(Component.literal("  "))
-                .append(Component.literal("[拒绝]").withStyle(style -> style
+                .append(Component.translatable("message.callresponse.talk.decline").withStyle(style -> style
                         .withColor(ChatFormatting.RED).withBold(true)
                         .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
                                 "/callresponse_talk_reply decline " + id))));
@@ -996,9 +995,8 @@ public final class TalkEventManager {
         if (normal) {
             ServerPlayer owner = session.level.getServer().getPlayerList().getPlayer(session.ownerId);
             if (owner != null) {
-                owner.sendSystemMessage(Component.literal("[谈话] 谈话结束了，女仆们各自散开。"));
-                owner.sendSystemMessage(Component.literal("[谈话调试] 正常结算 " + rewarded
-                        + " 只女仆：每只信任 +4、恐惧 -8。"));
+                owner.sendSystemMessage(Component.translatable("message.callresponse.talk.finished"));
+                owner.sendSystemMessage(Component.translatable("message.callresponse.talk.debug_reward", rewarded));
             }
             CallResponseMod.LOGGER.info(
                     "[谈话调试] 谈话正常结束：主人={}，区块=({}, {})，结算人数={}，信任+4，恐惧-8",

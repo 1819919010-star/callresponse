@@ -1,0 +1,18 @@
+{
+  "name": "棋类与观战",
+  "icon": "minecraft:oak_button",
+  "category": "callresponse:facilities",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "女仆对弈",
+      "text": "女仆可以参与五子棋、中国象棋和国际象棋。玩家与女仆可以分别占据棋局席位，两名女仆也能互相对弈。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "附近观战",
+      "text": "附近的其他女仆可能坐下来观战，并偶尔发表评论。棋局结束或中止后，她们会恢复正常行动。"
+    }
+  ]
+}

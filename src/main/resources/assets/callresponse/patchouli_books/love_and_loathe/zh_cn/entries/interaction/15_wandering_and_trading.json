@@ -1,0 +1,19 @@
+{
+  "name": "流浪女仆与交易",
+  "icon": "callresponse:wandering_maid_book",
+  "category": "callresponse:interaction",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "流浪女仆",
+      "text": "游戏中可能出现流浪女仆事件。流浪女仆会来到玩家附近请求收留，玩家可以接受或拒绝。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "title": "流浪与交易",
+      "item": "callresponse:wandering_maid_book",
+      "text": "流浪女仆名册用于管理相关皮肤池。流浪商人也可能提供女仆交易，让玩家购买待售女仆或出售符合条件的自己的女仆。"
+    }
+  ]
+}

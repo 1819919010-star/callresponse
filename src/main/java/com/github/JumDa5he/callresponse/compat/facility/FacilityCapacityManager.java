@@ -155,7 +155,8 @@ public final class FacilityCapacityManager {
         }
         BlockState state = level.getBlockState(center);
         if (state.getBlock() instanceof BlockMaidBed) {
-            return countBedOccupants(level, center);
+            return countBedOccupants(level, center)
+                    + MaidBedPlayerRestManager.countPlayersUsingBed(level, center);
         }
         int count = countOriginalSitOccupants(level, center);
         return count + cleanAndCountExtraSeats(level, center);

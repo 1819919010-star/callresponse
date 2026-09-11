@@ -1,0 +1,18 @@
+{
+  "name": "Betrayal",
+  "icon": "minecraft:iron_sword",
+  "category": "callresponse:extreme_relationships",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Betrayal",
+      "text": "If a maid remains at extremely low Trust and extremely high Fear for too long, she may enter Betrayal. She then breaks away from her former owner and becomes hostile."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Hostile Behavior",
+      "text": "A maid in Betrayal may attack other maids. If imprisoned in an Iron Cage, she gradually drops the items she is carrying."
+    }
+  ]
+}

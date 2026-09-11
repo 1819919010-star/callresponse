@@ -263,7 +263,7 @@ public final class WanderingMaidManager {
             maid.setBegging(true);
             WanderingMaidData.incrementArrivals(maid);
             WanderingMaidData.setState(maid, WanderingMaidState.WAITING, gameTime);
-            maid.getChatBubbleManager().addTextChatBubble("你能收留我吗？");
+            maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.wandering.request");
             return;
         }
         if (gameTime - WanderingMaidData.stateSince(maid) > APPROACH_TIMEOUT) {

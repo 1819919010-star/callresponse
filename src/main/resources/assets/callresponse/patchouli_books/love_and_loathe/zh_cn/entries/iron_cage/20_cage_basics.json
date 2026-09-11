@@ -1,0 +1,19 @@
+{
+  "name": "铁笼基础",
+  "icon": "callresponse:dark_iron_cage",
+  "category": "callresponse:iron_cage",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "title": "铁笼配方",
+      "recipe": "callresponse:dark_iron_cage",
+      "text": "铁笼是一个两格高的关押设施，一个笼子一次只能关押一个生物。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "笼中生物",
+      "text": "笼中生物会正常显示，也可以受到笼内环境或笼外攻击造成的伤害，但无法自行离开。"
+    }
+  ]
+}

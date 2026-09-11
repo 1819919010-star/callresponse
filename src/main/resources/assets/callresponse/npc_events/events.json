@@ -261,5 +261,37 @@
       {"text": "event.callresponse.self_worth.option.labor", "trust": -1, "fear": 1, "favor": 0, "hunger": 0, "response": ""},
       {"text": "event.callresponse.self_worth.option.nothing", "trust": -3, "fear": 3, "favor": 0, "hunger": 0, "response": ""}
     ]
+  },
+  {
+    "id": "revive_owner_killed",
+    "type": "conditional",
+    "condition": "revive_owner_killed",
+    "priority": 200,
+    "category": "special",
+    "cooldownTicks": 0,
+    "title": "event.callresponse.revive_owner_killed.title",
+    "description": "event.callresponse.revive_owner_killed.description",
+    "options": [
+      {"text": "event.callresponse.revive_owner_killed.option.apologize", "trust": 2, "fear": -1, "favor": 1, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.revive_owner_killed.option.welcome", "trust": 1, "fear": 0, "favor": 1, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.revive_owner_killed.option.caution", "trust": 0, "fear": 1, "favor": 0, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.revive_owner_killed.option.dismiss", "trust": 0, "fear": 2, "favor": -1, "hunger": 0, "response": ""}
+    ]
+  },
+  {
+    "id": "revive_other",
+    "type": "conditional",
+    "condition": "revive_other",
+    "priority": 200,
+    "category": "special",
+    "cooldownTicks": 0,
+    "title": "event.callresponse.revive_other.title",
+    "description": "event.callresponse.revive_other.description",
+    "options": [
+      {"text": "event.callresponse.revive_other.option.welcome", "trust": 2, "fear": -1, "favor": 1, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.revive_other.option.ask", "trust": 1, "fear": 0, "favor": 1, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.revive_other.option.caution", "trust": 0, "fear": 0, "favor": 0, "hunger": 0, "response": ""},
+      {"text": "event.callresponse.revive_other.option.work", "trust": 0, "fear": 1, "favor": -1, "hunger": 0, "response": ""}
+    ]
   }
 ]

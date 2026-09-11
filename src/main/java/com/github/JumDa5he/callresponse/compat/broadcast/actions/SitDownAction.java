@@ -15,10 +15,10 @@ public class SitDownAction {
         if (!isSitting(maid)) {
             maid.setInSittingPose(true);
             String name = maid.getCustomName() != null ? maid.getCustomName().getString() : "无名";
-            maid.sendSystemMessage(Component.literal("§a[动作] " + name + " 已坐下"));
-            MaidResponder.debug(debugPlayer, "§a[调试] " + name + " 执行: 坐下");
+            maid.sendSystemMessage(Component.translatable("message.callresponse.action.sat", name));
+            MaidResponder.debug(debugPlayer, Component.translatable("message.callresponse.debug.sat", name));
         } else {
-            MaidResponder.debug(debugPlayer, "§e[调试] 已经坐下了");
+            MaidResponder.debug(debugPlayer, Component.translatable("message.callresponse.debug.already_sitting"));
         }
     }
 }

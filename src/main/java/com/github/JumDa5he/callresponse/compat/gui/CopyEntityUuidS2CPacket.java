@@ -35,9 +35,9 @@ public class CopyEntityUuidS2CPacket {
             Minecraft.getInstance().keyboardHandler.setClipboard(uuid);
             if (Minecraft.getInstance().player != null) {
                 Minecraft.getInstance().player.displayClientMessage(
-                        Component.literal("§a[狩猎令] 已复制 ")
+                        Component.translatable("message.callresponse.hunt.copy_prefix")
                                 .append(Component.literal(entityName))
-                                .append(Component.literal(" 的 UUID 到剪贴板，可在狩猎令名单中粘贴添加")),
+                                .append(Component.translatable("message.callresponse.hunt.copy_suffix")),
                         false);
             }
         });

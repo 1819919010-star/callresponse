@@ -3,6 +3,7 @@ package com.github.JumDa5he.callresponse.compat.emotion;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderManager;
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
+import com.github.JumDa5he.callresponse.config.BroadcastConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
 import net.minecraft.core.BlockPos;
@@ -117,14 +118,14 @@ public class EmotionBetrayalManager {
             if (ownerPlayer.distanceTo(victim) < 16) {
                 Component victimName = victim.getName();
                 ownerPlayer.sendSystemMessage(
-                        Component.literal("§c[警告] 你的女仆 ")
+                        Component.translatable("message.callresponse.emotion.betrayal_warning_prefix")
                                 .append(victimName)
-                                .append(Component.literal(" 正在被一个疯狂的女仆攻击！"))
+                                .append(Component.translatable("message.callresponse.emotion.betrayal_warning_suffix"))
                 );
             }
             MaidResponder.processBroadcast(ownerPlayer, Collections.singletonList(victim), instruction, false);
         } else {
-            victim.getChatBubbleManager().addTextChatBubble("谁来救救我...");
+            victim.getChatBubbleManager().addTextChatBubble("bubble.callresponse.emotion.help");
         }
 
         // 逃跑路径由服务器 tick 持续维护，不能坐下，否则 canBrainMoving() 会立刻阻止 WALK_TARGET。
@@ -245,7 +246,7 @@ public class EmotionBetrayalManager {
             player.sendSystemMessage(
                     Component.literal("§c§l")
                             .append(maidName)
-                            .append(Component.literal(" 背叛了你！她开始疯狂攻击！"))
+                            .append(Component.translatable("message.callresponse.emotion.betrayed"))
             );
         }
         maid.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1.0f, 1.0f);
@@ -441,7 +442,10 @@ public class EmotionBetrayalManager {
         if (level.isClientSide) return;
 
         Vec3 pos = maid.position();
-        level.explode(null, pos.x, pos.y, pos.z, EXPLOSION_POWER, Level.ExplosionInteraction.TNT);
+        Level.ExplosionInteraction interaction = BroadcastConfig.BETRAYAL_MAID_EXPLOSION_BREAK_BLOCKS.get()
+                ? Level.ExplosionInteraction.TNT
+                : Level.ExplosionInteraction.NONE;
+        level.explode(null, pos.x, pos.y, pos.z, EXPLOSION_POWER, interaction);
 
         if (level instanceof ServerLevel serverLevel) {
             serverLevel.sendParticles(ParticleTypes.EXPLOSION_EMITTER,

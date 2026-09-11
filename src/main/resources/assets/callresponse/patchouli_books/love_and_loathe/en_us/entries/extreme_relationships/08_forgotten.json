@@ -1,0 +1,13 @@
+{
+  "name": "Forgotten",
+  "icon": "minecraft:clock",
+  "category": "callresponse:extreme_relationships",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Forgotten",
+      "text": "If a master goes for a long time without interacting with or paying attention to a maid, she may enter the Forgotten process. This is not caused by a brief absence, but by sustained neglect."
+    }
+  ]
+}

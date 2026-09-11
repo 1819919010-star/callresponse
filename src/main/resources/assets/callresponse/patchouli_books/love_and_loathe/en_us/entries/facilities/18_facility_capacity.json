@@ -1,0 +1,19 @@
+{
+  "name": "Facility Capacity",
+  "icon": "callresponse:facility_capacity_tool",
+  "category": "callresponse:facilities",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "title": "Facility Capacity Tool",
+      "recipe": "callresponse:facility_capacity_tool",
+      "text": "The capacity of certain Touhou Little Maid facilities can be expanded, including picnic mats, maid beds, and some recreational facilities. Use the Facility Capacity Tool to change capacity."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Shared Facilities",
+      "text": "Players may sit in the seats of a picnic mat. If a maid occupies that position, she can give it up for the player. You do not need to replace the facility after changing its capacity."
+    }
+  ]
+}

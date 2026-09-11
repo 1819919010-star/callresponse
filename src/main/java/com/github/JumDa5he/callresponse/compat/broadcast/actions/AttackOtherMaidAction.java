@@ -31,9 +31,9 @@ public class AttackOtherMaidAction {
         );
 
         if (targets.isEmpty()) {
-            maid.sendSystemMessage(Component.literal("§c[攻击] 附近没有可攻击的女仆！"));
+            maid.sendSystemMessage(Component.translatable("message.callresponse.attack.no_target"));
             if (debugPlayer != null) {
-                debugPlayer.sendSystemMessage(Component.literal("§c[调试] 没有找到攻击目标"));
+                debugPlayer.sendSystemMessage(Component.translatable("message.callresponse.debug.no_attack_target"));
             }
             return;
         }
@@ -74,10 +74,10 @@ public class AttackOtherMaidAction {
         // 10. 反馈消息
         String maidName = maid.getCustomName() != null ? maid.getCustomName().getString() : "女仆";
         String targetName = target.getCustomName() != null ? target.getCustomName().getString() : "女仆";
-        maid.sendSystemMessage(Component.literal("§a[攻击] " + maidName + " 开始攻击 " + targetName));
+        maid.sendSystemMessage(Component.translatable("message.callresponse.attack.started", maidName, targetName));
 
         if (debugPlayer != null) {
-            debugPlayer.sendSystemMessage(Component.literal("§a[调试] " + maidName + " 锁定目标: " + targetName));
+            debugPlayer.sendSystemMessage(Component.translatable("message.callresponse.debug.target_locked", maidName, targetName));
         }
     }
 
@@ -124,16 +124,16 @@ public class AttackOtherMaidAction {
      */
     public static void stopAllAttacks(EntityMaid maid, ServerPlayer debugPlayer) {
         if (!BroadcastMovementScheduler.isAttacking(maid)) {
-            maid.sendSystemMessage(Component.literal("§e[停战] 当前没有攻击目标"));
+            maid.sendSystemMessage(Component.translatable("message.callresponse.attack.none_active"));
             if (debugPlayer != null) {
-                debugPlayer.sendSystemMessage(Component.literal("§e[调试] " + maid.getCustomName() + " 没有正在攻击的目标"));
+                debugPlayer.sendSystemMessage(Component.translatable("message.callresponse.debug.no_active_target", maid.getName()));
             }
             return;
         }
         stopAttack(maid);
-        maid.sendSystemMessage(Component.literal("§a[停战] 已停止攻击"));
+        maid.sendSystemMessage(Component.translatable("message.callresponse.attack.stopped"));
         if (debugPlayer != null) {
-            debugPlayer.sendSystemMessage(Component.literal("§a[调试] " + maid.getCustomName() + " 已停战"));
+            debugPlayer.sendSystemMessage(Component.translatable("message.callresponse.debug.ceasefire", maid.getName()));
         }
     }
 }

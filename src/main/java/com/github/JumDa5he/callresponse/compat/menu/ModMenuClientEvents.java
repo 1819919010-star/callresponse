@@ -3,6 +3,7 @@ package com.github.JumDa5he.callresponse.compat.menu;
 import com.github.JumDa5he.callresponse.CallResponseMod;
 import com.github.JumDa5he.callresponse.compat.gui.MaidStatusContainerGui;
 import com.github.JumDa5he.callresponse.compat.gui.RewardBoxScreen;
+import com.github.JumDa5he.callresponse.compat.gui.PrincessCarryScreen;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -18,5 +19,6 @@ public final class ModMenuClientEvents {
     public static void clientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> MenuScreens.register(ModMenus.MAID_STATUS.get(), MaidStatusContainerGui::new));
         event.enqueueWork(() -> MenuScreens.register(ModMenus.REWARD_BOX.get(), RewardBoxScreen::new));
+        event.enqueueWork(() -> MenuScreens.register(ModMenus.PRINCESS_CARRY.get(), PrincessCarryScreen::new));
     }
 }

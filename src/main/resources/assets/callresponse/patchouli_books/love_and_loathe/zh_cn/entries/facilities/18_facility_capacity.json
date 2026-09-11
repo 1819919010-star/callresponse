@@ -1,0 +1,19 @@
+{
+  "name": "设施容量",
+  "icon": "callresponse:facility_capacity_tool",
+  "category": "callresponse:facilities",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "title": "设施容量调节器",
+      "recipe": "callresponse:facility_capacity_tool",
+      "text": "部分《车万女仆》设施可扩展同时使用人数，包括野餐垫、女仆床和部分娱乐设施。使用设施容量调节器修改容量。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "共享设施",
+      "text": "玩家可以坐在野餐垫的座位上。如果座位被女仆占据，她会主动让位。调整容量后，无需重新摆放设施。"
+    }
+  ]
+}

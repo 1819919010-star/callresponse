@@ -2,6 +2,7 @@ package com.github.JumDa5he.callresponse.mixin;
 
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerData;
+import com.github.JumDa5he.callresponse.compat.npc.MaidReviveEventData;
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.JumDa5he.callresponse.compat.state.MaidPathRepair;
 import com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidData;
@@ -36,6 +37,7 @@ public abstract class MixinMaidSyncedData extends Mob {
         data.put("Emotions", this.getEntityData().get(EmotionData.EMOTION_KEY));
         data.putFloat("Hunger", this.getEntityData().get(HungerData.HUNGER_KEY));
         tag.put(SAVE_KEY, data);
+        MaidReviveEventData.writeAdditionalSaveData((EntityMaid) (Object) this, tag);
         MaidMovementControl.sanitizeSave((EntityMaid) (Object) this, tag);
     }
 
@@ -46,6 +48,7 @@ public abstract class MixinMaidSyncedData extends Mob {
             this.getEntityData().set(EmotionData.EMOTION_KEY, data.getCompound("Emotions"));
             this.getEntityData().set(HungerData.HUNGER_KEY, data.getFloat("Hunger"));
         }
+        MaidReviveEventData.readAdditionalSaveData((EntityMaid) (Object) this, tag);
         WanderingMaidData.restoreSyncedFlag((EntityMaid) (Object) this);
         TradingMaidData.restoreSyncedFlag((EntityMaid) (Object) this);
         MaidPathRepair.cleanupKnownSpeedPollution((EntityMaid) (Object) this,

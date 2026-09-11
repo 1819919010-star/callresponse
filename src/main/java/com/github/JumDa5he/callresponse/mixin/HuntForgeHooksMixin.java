@@ -18,13 +18,15 @@ public abstract class HuntForgeHooksMixin {
     @Inject(method = "onLivingAttack", at = @At("RETURN"), cancellable = true, remap = false)
     private static void callresponse$forceHuntAttack(LivingEntity target, DamageSource source,
                                                       float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (HuntOrderManager.isHuntDamage(target, source)) {
+        if (isHuntOrScopedDamage(target, source)) {
             HuntDamageContext.captureAttack(target.getUUID(), source, amount);
             target.invulnerableTime = 0;
             cir.setReturnValue(true);
         } else if (target instanceof EntityMaid maid
                 && OwnerDamageContext.hasActiveDamage(maid, source)) {
-            target.invulnerableTime = 0;
+            if (OwnerDamageContext.isUltimate(maid, source)) {
+                target.invulnerableTime = 0;
+            }
             cir.setReturnValue(true);
         }
     }
@@ -32,10 +34,10 @@ public abstract class HuntForgeHooksMixin {
     @Inject(method = "onLivingHurt", at = @At("RETURN"), cancellable = true, remap = false)
     private static void callresponse$restoreHuntHurt(LivingEntity target, DamageSource source,
                                                       float amount, CallbackInfoReturnable<Float> cir) {
-        if (HuntOrderManager.isHuntDamage(target, source)) {
+        if (isHuntOrScopedDamage(target, source)) {
             cir.setReturnValue(HuntDamageContext.rawDamage(target.getUUID(), amount));
         } else if (target instanceof EntityMaid maid
-                && OwnerDamageContext.hasActiveDamage(maid, source)) {
+                && OwnerDamageContext.isUltimate(maid, source)) {
             cir.setReturnValue(OwnerDamageContext.rawDamage(maid, amount));
         }
     }
@@ -43,10 +45,10 @@ public abstract class HuntForgeHooksMixin {
     @Inject(method = "onLivingDamage", at = @At("RETURN"), cancellable = true, remap = false)
     private static void callresponse$restoreHuntDamage(LivingEntity target, DamageSource source,
                                                         float amount, CallbackInfoReturnable<Float> cir) {
-        if (HuntOrderManager.isHuntDamage(target, source)) {
+        if (isHuntOrScopedDamage(target, source)) {
             cir.setReturnValue(HuntDamageContext.rawDamage(target.getUUID(), amount));
         } else if (target instanceof EntityMaid maid
-                && OwnerDamageContext.hasActiveDamage(maid, source)) {
+                && OwnerDamageContext.isUltimate(maid, source)) {
             cir.setReturnValue(OwnerDamageContext.rawDamage(maid, amount));
         }
     }
@@ -61,7 +63,13 @@ public abstract class HuntForgeHooksMixin {
 
     private static boolean isProtectedBypass(LivingEntity target, DamageSource source) {
         return HuntOrderManager.isHuntDamage(target, source)
+                || HuntDamageContext.hasActiveDamage(target, source)
                 || target instanceof EntityMaid maid
-                && OwnerDamageContext.hasActiveDamage(maid, source);
+                && OwnerDamageContext.isUltimate(maid, source);
+    }
+
+    private static boolean isHuntOrScopedDamage(LivingEntity target, DamageSource source) {
+        return HuntOrderManager.isHuntDamage(target, source)
+                || HuntDamageContext.hasActiveDamage(target, source);
     }
 }

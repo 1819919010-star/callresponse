@@ -1,0 +1,13 @@
+{
+  "name": "嫉妒行为的特殊情况",
+  "icon": "minecraft:ender_pearl",
+  "category": "callresponse:carry_and_doting",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "特殊情况",
+      "text": "如果执行嫉妒行为的溺爱女仆自己意外进入铁笼，本次行动会立即结束。"
+    }
+  ]
+}

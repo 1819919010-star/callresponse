@@ -1,0 +1,19 @@
+{
+  "name": "Hunt Order",
+  "icon": "callresponse:hunt_order",
+  "category": "callresponse:combat",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "title": "Hunt Order",
+      "recipe": "callresponse:hunt_order",
+      "text": "A Hunt Order lets you choose a target for an eligible Devoted Maid. After accepting the order, she actively tracks and attacks that target."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "One Chosen Target",
+      "text": "The hunt applies only to the chosen target and does not make the maid attack others freely. She returns to normal when the target is gone or the hunt ends."
+    }
+  ]
+}

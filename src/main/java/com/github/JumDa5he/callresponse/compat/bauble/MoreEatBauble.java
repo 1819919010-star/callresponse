@@ -61,11 +61,11 @@ public class MoreEatBauble extends Item implements IMaidBauble {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.literal("§7佩戴效果："));
-        tooltip.add(Component.literal("§a移动速度 §c-10%"));
-        tooltip.add(Component.literal("§a生命上限 §f×3"));
-        tooltip.add(Component.literal("§a攻击力 §f+当前饥饿值"));
-        tooltip.add(Component.literal("§a每20秒自动进食一次"));
+        tooltip.add(Component.translatable("tooltip.callresponse.bauble.equip"));
+        tooltip.add(Component.translatable("tooltip.callresponse.moreeat_bauble.speed"));
+        tooltip.add(Component.translatable("tooltip.callresponse.moreeat_bauble.health"));
+        tooltip.add(Component.translatable("tooltip.callresponse.moreeat_bauble.attack"));
+        tooltip.add(Component.translatable("tooltip.callresponse.moreeat_bauble.auto_eat"));
     }
 
     private void applyBuffs(EntityMaid maid) {

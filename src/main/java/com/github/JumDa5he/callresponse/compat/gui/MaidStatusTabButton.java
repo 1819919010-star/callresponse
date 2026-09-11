@@ -50,7 +50,7 @@ public class MaidStatusTabButton extends Button implements ITooltipButton {
     public void renderTooltip(GuiGraphics graphics, Minecraft minecraft, int mouseX, int mouseY) {
         Font font = Minecraft.getInstance().font;
         graphics.renderComponentTooltip(font,
-                java.util.List.of(Component.literal("女仆状态"), Component.literal("查看饥饿、信任与恐惧")),
+                java.util.List.of(Component.translatable("gui.callresponse.maid_status.title"), Component.translatable("gui.callresponse.maid_status.tooltip")),
                 mouseX, mouseY);
     }
 }

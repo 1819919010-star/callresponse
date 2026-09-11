@@ -1,0 +1,18 @@
+{
+  "name": "背叛女仆与铁笼",
+  "icon": "minecraft:hopper",
+  "category": "callresponse:iron_cage",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "特殊敌对表现",
+      "text": "背叛女仆被关入铁笼后会说出敌对台词。她仍会受到笼内环境和外部攻击的伤害。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "逐件缴出物品",
+      "text": "关入一小段时间后，她会逐渐把主手、副手、盔甲和背包中的物品丢到铁笼周围。普通女仆不会出现这种表现。"
+    }
+  ]
+}

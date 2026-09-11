@@ -68,10 +68,10 @@ public class HuntOrderUpdateC2SPacket {
                     }
                     boolean isPlayer = target instanceof net.minecraft.world.entity.player.Player;
                     if (!HuntOrderData.addEntry(maid, targetId, name, isPlayer)) {
-                        player.sendSystemMessage(Component.literal("§c[狩猎令] 名单已满（最多 10 条）或目标已存在。"));
+                        player.sendSystemMessage(Component.translatable("message.callresponse.hunt.list_full"));
                     }
                 } else if (targetId == null) {
-                    player.sendSystemMessage(Component.literal("§c[狩猎令] 找不到玩家 '" + value + "' 或无法解析 UUID。"));
+                    player.sendSystemMessage(Component.translatable("message.callresponse.hunt.player_not_found", value));
                 }
             }
 

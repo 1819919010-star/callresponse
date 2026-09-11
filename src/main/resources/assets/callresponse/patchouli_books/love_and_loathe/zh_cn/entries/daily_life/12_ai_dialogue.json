@@ -1,0 +1,13 @@
+{
+  "name": "智能对话",
+  "icon": "minecraft:name_tag",
+  "category": "callresponse:daily_life",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "关系进入对话",
+      "text": "启用《车万女仆》的智能对话后，女仆的说话语气会受到当前关系影响。依恋、畏惧、纠结等状态会有不同表现，附近的女仆也可能回应玩家消息。"
+    }
+  ]
+}

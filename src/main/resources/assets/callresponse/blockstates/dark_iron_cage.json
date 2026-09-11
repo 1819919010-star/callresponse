@@ -11,6 +11,7 @@
     { "when": { "half": "lower", "environment": "water" }, "apply": { "model": "callresponse:block/dark_iron_cage_water_lower" } },
     { "when": { "half": "upper", "environment": "water" }, "apply": { "model": "callresponse:block/dark_iron_cage_water_upper" } },
     { "when": { "half": "lower", "environment": "lava" }, "apply": { "model": "callresponse:block/dark_iron_cage_lava" } },
-    { "when": { "half": "lower", "environment": "powder_snow" }, "apply": { "model": "callresponse:block/dark_iron_cage_powder_snow" } }
+    { "when": { "half": "lower", "environment": "powder_snow" }, "apply": { "model": "callresponse:block/dark_iron_cage_powder_snow" } },
+    { "when": { "half": "lower", "environment": "cactus" }, "apply": { "model": "callresponse:block/dark_iron_cage_cactus" } }
   ]
 }

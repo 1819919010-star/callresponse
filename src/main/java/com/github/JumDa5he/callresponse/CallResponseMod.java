@@ -18,6 +18,7 @@ import com.github.JumDa5he.callresponse.compat.block.ModBlocks;
 import com.github.JumDa5he.callresponse.compat.item.ModItems;
 import com.github.JumDa5he.callresponse.compat.menu.ModMenus;
 import com.github.JumDa5he.callresponse.compat.menu.OpenMaidStatusC2SPacket;
+import com.github.JumDa5he.callresponse.compat.menu.PrincessCarryActionC2SPacket;
 import com.github.JumDa5he.callresponse.compat.trade.EnableTradingMaidButtonS2CPacket;
 import com.github.JumDa5he.callresponse.compat.trade.OpenTradingMaidScreenS2CPacket;
 import com.github.JumDa5he.callresponse.compat.trade.RequestTradingMaidScreenC2SPacket;
@@ -165,6 +166,10 @@ public class CallResponseMod {
                 NpcEventChoiceC2SPacket::encode,
                 NpcEventChoiceC2SPacket::new,
                 NpcEventChoiceC2SPacket::handle);
+        CHANNEL.registerMessage(id++, PrincessCarryActionC2SPacket.class,
+                PrincessCarryActionC2SPacket::encode,
+                PrincessCarryActionC2SPacket::new,
+                PrincessCarryActionC2SPacket::handle);
 
         // ===== 3. 注册 ILittleMaid 扩展（在 MaidEdibleBlockManager.init() 之前执行） =====
         // 这个扩展会包装所有方块食物，增加饱食度同步逻辑

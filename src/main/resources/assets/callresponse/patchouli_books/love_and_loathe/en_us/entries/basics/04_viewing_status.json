@@ -1,0 +1,19 @@
+{
+  "name": "Viewing Maid Status",
+  "icon": "callresponse:emotion_book",
+  "category": "callresponse:basics",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Normal Status Checks",
+      "text": "When a maid sits down, her current Trust, Fear, Hunger, and related information are displayed once. You can also open the status page in her maid menu to check these values and her current relationship at any time."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "title": "Value Adjuster",
+      "item": "callresponse:emotion_book",
+      "text": "The Value Adjuster can change a maid's Trust, Fear, and Hunger in Creative Mode, making it easy to try different relationship states. It is not needed for normal survival play."
+    }
+  ]
+}

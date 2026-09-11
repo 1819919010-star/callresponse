@@ -1,0 +1,26 @@
+{
+  "name": "铁笼环境",
+  "icon": "minecraft:water_bucket",
+  "category": "callresponse:iron_cage",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "title": "水、岩浆、细雪与火",
+      "item": "minecraft:water_bucket",
+      "text": "水桶形成水环境；岩浆桶形成岩浆环境并造成岩浆式伤害；细雪桶造成冻结；打火石形成火焰环境。效果只作用于笼内，不会把流体或火蔓延到外界。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "title": "仙人掌与闪电",
+      "item": "minecraft:cactus",
+      "text": "仙人掌会显示在笼底并造成原版仙人掌式伤害。避雷针切换为闪电环境，不额外显示模型；笼中有实体时，约每 10 秒对该囚犯降下一道闪电。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "title": "金苹果与牛奶",
+      "item": "minecraft:golden_apple",
+      "text": "使用金苹果后，笼中生物会持续获得生命恢复 III 与抗性提升 I；离开铁笼或更换环境后，这些效果会消失。牛奶桶可以清除所有特殊环境，让铁笼恢复普通关押状态。"
+    }
+  ]
+}

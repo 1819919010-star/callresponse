@@ -1,4 +1,5 @@
 package com.github.JumDa5he.callresponse.config;
+import com.github.JumDa5he.callresponse.compat.damage.ProtectionBreakLevel;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.common.Mod;
 
@@ -13,6 +14,9 @@ public class BroadcastConfig {
     public static final ForgeConfigSpec.IntValue MAX_RESPONDERS;
     public static final ForgeConfigSpec.IntValue API_CALLS_PER_MINUTE;
     public static final ForgeConfigSpec.BooleanValue OWNER_DAMAGE_BYPASS_ENABLED;
+    public static final ForgeConfigSpec.EnumValue<ProtectionBreakLevel> OWNER_DAMAGE_PROTECTION_BREAK_LEVEL;
+    public static final ForgeConfigSpec.BooleanValue NPC_EVENT_AI_REPLY_ENABLED;
+    public static final ForgeConfigSpec.BooleanValue BETRAYAL_MAID_EXPLOSION_BREAK_BLOCKS;
     public static final ForgeConfigSpec.BooleanValue TALK_EVENT_ENABLED;
     public static final ForgeConfigSpec.IntValue TALK_EVENT_MIN_MAIDS;
     public static final ForgeConfigSpec.IntValue TALK_REPLY_INTERVAL_SECONDS;
@@ -58,10 +62,31 @@ public class BroadcastConfig {
                 .defineInRange("apiCallsPerMinute", 20, 0, 300);
 
         OWNER_DAMAGE_BYPASS_ENABLED = builder
-                .comment("是否允许主人使用原始伤害来源绕过自己女仆的护甲、护符、图腾、盾牌和枪械友伤保护；关闭后完全走正常 TLM/模组伤害逻辑")
+                .comment("主人伤害保护破除的总开关；关闭后等级配置无效并完全走正常 TLM/模组伤害逻辑")
                 .translation("callresponse.configuration.ownerDamageBypassEnabled")
                 .define("ownerDamageBypassEnabled", true);
 
+        OWNER_DAMAGE_PROTECTION_BREAK_LEVEL = builder
+                .comment("主人攻击自己女仆时的保护破除等级：NONE=关闭，BASIC=仅保证进入正常受伤流程，ULTIMATE=沿用原有全破效果")
+                .translation("callresponse.configuration.ownerDamageProtectionBreakLevel")
+                .defineEnum("ownerDamageProtectionBreakLevel", ProtectionBreakLevel.ULTIMATE);
+
+        builder.pop();
+
+        builder.comment("背叛女仆配置")
+                .translation("callresponse.configuration.betrayal").push("betrayal");
+        BETRAYAL_MAID_EXPLOSION_BREAK_BLOCKS = builder
+                .comment("背叛女仆死亡爆炸是否破坏地形")
+                .translation("callresponse.configuration.betrayalMaidExplosionBreakBlocks")
+                .define("betrayalMaidExplosionBreakBlocks", true);
+        builder.pop();
+
+        builder.comment("NPC 日常事件配置")
+                .translation("callresponse.configuration.npcEvent").push("npc_event");
+        NPC_EVENT_AI_REPLY_ENABLED = builder
+                .comment("是否允许 NPC 事件沿用各自现有的 AI/固定回复混合逻辑；关闭后所有事件选项都只使用内置固定台词")
+                .translation("callresponse.configuration.enableNpcEventAiReply")
+                .define("enableNpcEventAiReply", true);
         builder.pop();
 
         builder.comment("女仆谈话事件配置")

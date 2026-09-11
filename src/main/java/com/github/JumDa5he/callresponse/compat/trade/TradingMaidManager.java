@@ -294,7 +294,7 @@ public final class TradingMaidManager {
                     MaidMovementControl.end(maid, MaidMovementControl.Reason.PURCHASE_MOVING);
                     maid.setInSittingPose(true);
                     maid.getPersistentData().remove(PURCHASE_MOVING);
-                    maid.getChatBubbleManager().addTextChatBubble("今后就请多多指教啦");
+                    maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.trade.greeting");
                 }
             }
         }
@@ -432,7 +432,7 @@ public final class TradingMaidManager {
                 maid.level().getGameTime() + PURCHASE_MOVE_TIMEOUT);
         BehaviorUtils.setWalkAndLookTargetMemories(maid, buyer, 0.6F, 1);
         buyer.sendSystemMessage(Component.translatable("message.callresponse.trade.bought", price));
-        maid.getChatBubbleManager().addTextChatBubble("新主人！");
+        maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.trade.new_owner");
         notifyPurchaseWitnesses(buyer, witnesses);
         refreshStockOnceIfEmpty(buyer, trader);
     }
@@ -451,7 +451,7 @@ public final class TradingMaidManager {
         maid.setLeashedTo(trader, true);
         giveSaleReward(seller, seller.serverLevel(), favorabilityTools);
         seller.sendSystemMessage(Component.translatable("message.callresponse.trade.sold"));
-        maid.getChatBubbleManager().addTextChatBubble("呜呜呜……我被卖掉了……");
+        maid.getChatBubbleManager().addTextChatBubble("bubble.callresponse.trade.sold");
         notifySaleWitnesses(seller, witnesses);
     }
 

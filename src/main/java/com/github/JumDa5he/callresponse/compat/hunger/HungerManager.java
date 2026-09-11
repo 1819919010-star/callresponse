@@ -80,8 +80,7 @@ public class HungerManager {
     // ===== 暴食饰品：每20秒无条件尝试吃一次 =====
     private static final long MORE_EAT_EAT_COOLDOWN_TICKS = 20 * 20; // 20秒
 
-    // ===== 禁食饰品：饥饿值锁定区间 =====
-    private static final float NO_EAT_MIN_HUNGER = 10f;
+    // ===== 禁食饰品：饥饿值锁定上限 =====
     private static final float NO_EAT_MAX_HUNGER = 90f;
 
     // ===== 对话冷却 =====
@@ -146,12 +145,13 @@ public class HungerManager {
                 lastEatEmotionChangeTime.put(maidId, gameTime);
             }
             MaidResponder.debug(serverPlayer,
-                    Component.literal("§e[压力] ")
+                    Component.translatable("message.callresponse.debug.stress_prefix")
                             .append(maid.getName())
-                            .append(Component.literal(" 吃了 "))
+                            .append(Component.translatable("message.callresponse.debug.ate_separator"))
                             .append(stack.getDisplayName()) // 直接使用 Component
-                            .append(Component.literal("饥饿度 " + oldHunger + " → " + newHunger
-                                    + (emotionChanged ? "信任度 +1恐惧度 -1" : "")))
+                            .append(Component.translatable(emotionChanged
+                                    ? "message.callresponse.debug.ate_status_changed"
+                                    : "message.callresponse.debug.ate_status", oldHunger, newHunger))
             );
         }
 
@@ -282,11 +282,13 @@ public class HungerManager {
                             if (lastTime == null || now - lastTime > 1200) {
                                 String prompt = null;
                                 String suffix = EmotionData.getTendencyPromptSuffix(maid, player.getUUID());
-                                if (hungerLevel <= 9) {
+                                boolean suppressLowHungerTalk = BaubleDetector.hasNoEat(maid);
+                                boolean suppressOverfedTalk = BaubleDetector.hasMoreEat(maid);
+                                if (hungerLevel <= 9 && !suppressLowHungerTalk) {
                                     prompt = "你快要饿死了！胃痛得像刀割一样，视线都开始模糊了。" + suffix + " 请用你自己的话喊出你的绝望和痛苦，直接表达你的难受，30字左右。";
-                                } else if (hungerLevel <= 25) {
+                                } else if (hungerLevel <= 25 && !suppressLowHungerTalk) {
                                     prompt = "你肚子咕咕叫，饿得有点发慌。" + suffix + " 请用你自己的话表达你的饥饿感，25字左右。";
-                                } else if (hungerLevel >= 91) {
+                                } else if (hungerLevel >= 91 && !suppressOverfedTalk) {
                                     prompt = "你吃得太撑了，肚子胀得难受，感觉食物都顶到嗓子眼了！" + suffix + " 请用你自己的话表达你的难受和后悔，25字左右。";
                                 }
 
@@ -559,10 +561,12 @@ public class HungerManager {
         if (ownerEntity instanceof ServerPlayer serverPlayer) {
             UUID ownerId = serverPlayer.getUUID();
             EmotionData.addTrust(maid, ownerId, -1);
-            String suffix = EmotionData.getTendencyPromptSuffix(maid, ownerId);
-            String prompt = "你饿得头昏眼花，跑去找身边的女仆借食物，可是接连找了好几个女仆，她们都没有多余的食物，你空手而归，又饿又委屈。" + suffix
-                    + " 请用你自己的话诉说你这趟借食白跑一趟的失落和委屈，40字左右。";
-            MaidResponder.processBroadcast(serverPlayer, Collections.singletonList(maid), prompt, false);
+            if (!BaubleDetector.hasNoEat(maid)) {
+                String suffix = EmotionData.getTendencyPromptSuffix(maid, ownerId);
+                String prompt = "你饿得头昏眼花，跑去找身边的女仆借食物，可是接连找了好几个女仆，她们都没有多余的食物，你空手而归，又饿又委屈。" + suffix
+                        + " 请用你自己的话诉说你这趟借食白跑一趟的失落和委屈，40字左右。";
+                MaidResponder.processBroadcast(serverPlayer, Collections.singletonList(maid), prompt, false);
+            }
         }
         lastStealFailTime.put(maidId, tick);
     }
@@ -694,7 +698,7 @@ public class HungerManager {
         maid.getPersistentData().remove(OVERFED_DEATH_TAG);
 
         String maidName = maid.getDisplayName().getString();
-        Component deathMsg = Component.literal(maidName + "被撑死了");
+        Component deathMsg = Component.translatable("death.attack.callresponse.overfed", maidName);
         maid.level().players().forEach(p -> p.sendSystemMessage(deathMsg));
     }
 

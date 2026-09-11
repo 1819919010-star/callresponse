@@ -11,7 +11,7 @@ import net.minecraft.network.chat.Component;
 import java.util.UUID;
 
 public class EmotionBookScreen extends Screen {
-    private static final Component TITLE = Component.literal("数值调整器");
+    private static final Component TITLE = Component.translatable("gui.callresponse.emotion_book.title");
 
     private final UUID maidUUID;
     private final int initialTrust;
@@ -35,28 +35,28 @@ public class EmotionBookScreen extends Screen {
         int labelY = height / 2 - 60;
         int inputX = centerX - 40;
 
-        trustInput = new EditBox(font, inputX, labelY, 80, 18, Component.literal("信任值"));
+        trustInput = new EditBox(font, inputX, labelY, 80, 18, Component.translatable("gui.callresponse.emotion_book.trust"));
         trustInput.setMaxLength(3);
         trustInput.setFilter(s -> s.matches("\\d{0,3}"));
         trustInput.setValue(String.valueOf(initialTrust));
         addRenderableWidget(trustInput);
 
-        fearInput = new EditBox(font, inputX, labelY + 28, 80, 18, Component.literal("恐惧值"));
+        fearInput = new EditBox(font, inputX, labelY + 28, 80, 18, Component.translatable("gui.callresponse.emotion_book.fear"));
         fearInput.setMaxLength(3);
         fearInput.setFilter(s -> s.matches("\\d{0,3}"));
         fearInput.setValue(String.valueOf(initialFear));
         addRenderableWidget(fearInput);
 
-        hungerInput = new EditBox(font, inputX, labelY + 56, 80, 18, Component.literal("饥饿值"));
+        hungerInput = new EditBox(font, inputX, labelY + 56, 80, 18, Component.translatable("gui.callresponse.emotion_book.hunger"));
         hungerInput.setMaxLength(3);
         hungerInput.setFilter(s -> s.matches("\\d{0,3}"));
         hungerInput.setValue(String.valueOf(initialHunger));
         addRenderableWidget(hungerInput);
 
-        addRenderableWidget(Button.builder(Component.literal("确认"), btn -> onConfirm())
+        addRenderableWidget(Button.builder(Component.translatable("gui.done"), btn -> onConfirm())
                 .bounds(centerX - 55, labelY + 90, 50, 20).build());
 
-        addRenderableWidget(Button.builder(Component.literal("取消"), btn -> onClose())
+        addRenderableWidget(Button.builder(Component.translatable("gui.cancel"), btn -> onClose())
                 .bounds(centerX + 5, labelY + 90, 50, 20).build());
     }
 
@@ -78,9 +78,9 @@ public class EmotionBookScreen extends Screen {
         int centerX = width / 2;
         int labelX = centerX - 90;
         int labelY = height / 2 - 58;
-        graphics.drawString(font, "信任值:", labelX, labelY + 1, 0xFFFFFF);
-        graphics.drawString(font, "恐惧值:", labelX, labelY + 29, 0xFFFFFF);
-        graphics.drawString(font, "饥饿值:", labelX, labelY + 57, 0xFFFFFF);
+        graphics.drawString(font, Component.translatable("gui.callresponse.emotion_book.trust_label"), labelX, labelY + 1, 0xFFFFFF);
+        graphics.drawString(font, Component.translatable("gui.callresponse.emotion_book.fear_label"), labelX, labelY + 29, 0xFFFFFF);
+        graphics.drawString(font, Component.translatable("gui.callresponse.emotion_book.hunger_label"), labelX, labelY + 57, 0xFFFFFF);
         graphics.drawString(font, getTitle(), centerX - font.width(getTitle()) / 2, labelY - 25, 0xFFFF55);
     }
 

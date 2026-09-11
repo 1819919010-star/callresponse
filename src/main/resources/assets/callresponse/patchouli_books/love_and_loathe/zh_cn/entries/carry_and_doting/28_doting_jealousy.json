@@ -1,0 +1,23 @@
+{
+  "name": "溺爱女仆的嫉妒",
+  "icon": "callresponse:dark_iron_cage",
+  "category": "callresponse:carry_and_doting",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "溺爱女仆的嫉妒",
+      "text": "处于溺爱状态的女仆有时会嫉妒同一主人的其他女仆。如果附近有其他女仆和空铁笼，她可能会主动靠近其中一名女仆。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "抱走并关押",
+      "text": "她会把目标抱起来并带到铁笼中。这个行动由溺爱女仆自行发起，不需要玩家切换工作或准备鞍。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "关入之后",
+      "text": "成功关入后，她还可能在笼外教训对方一段时间，随后恢复正常行动。如果途中无法完成，她会放下目标并放弃；成功关入的女仆则需要玩家自行释放。"
+    }
+  ]
+}

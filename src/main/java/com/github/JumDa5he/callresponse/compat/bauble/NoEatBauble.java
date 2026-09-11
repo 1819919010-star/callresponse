@@ -22,7 +22,7 @@ public class NoEatBauble extends Item implements IMaidBauble {
     public static final UUID ATTACK_MODIFIER_UUID = UUID.fromString("0a1b2c3d-1111-4222-8333-944455566611");
     public static final UUID MAX_HEALTH_MODIFIER_UUID = UUID.fromString("0a1b2c3d-1111-4222-8333-944455566612");
     private static final float REGEN_AMOUNT = 5.0f;
-    private static final float MIN_HUNGER = 10.0f;
+    public static final float MIN_HUNGER = 15.0f;
 
     public NoEatBauble(Properties properties) {
         super(properties);
@@ -30,6 +30,8 @@ public class NoEatBauble extends Item implements IMaidBauble {
 
     @Override
     public void onPutOn(EntityMaid maid, ItemStack baubleItem) {
+        // 装备瞬间就应用下限，之后所有 HungerData 写入也会在落到 15 以下前被钳制。
+        HungerData.set(maid, Math.max(MIN_HUNGER, HungerData.get(maid)));
         applyBuffs(maid);
         updateHealthBonus(maid);
     }
@@ -59,12 +61,12 @@ public class NoEatBauble extends Item implements IMaidBauble {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.literal("§7佩戴效果："));
-        tooltip.add(Component.literal("§a攻击力 §f×2"));
-        tooltip.add(Component.literal("§a生命上限 §f+（100 - 当前饥饿值）"));
-        tooltip.add(Component.literal("§a每秒回复 §f5 §a点生命"));
-        tooltip.add(Component.literal("§a饥饿值不低于 §f10"));
-        tooltip.add(Component.literal("§a不会主动进食（玩家投喂除外）"));
+        tooltip.add(Component.translatable("tooltip.callresponse.bauble.equip"));
+        tooltip.add(Component.translatable("tooltip.callresponse.noeat_bauble.attack"));
+        tooltip.add(Component.translatable("tooltip.callresponse.noeat_bauble.health"));
+        tooltip.add(Component.translatable("tooltip.callresponse.noeat_bauble.regen"));
+        tooltip.add(Component.translatable("tooltip.callresponse.noeat_bauble.hunger_lock"));
+        tooltip.add(Component.translatable("tooltip.callresponse.noeat_bauble.no_eat"));
     }
 
     // ===== 拦截 TLM 三餐等主动进食（开饭指令/玩家投喂走 eat() 不经此事件，不受影响） =====

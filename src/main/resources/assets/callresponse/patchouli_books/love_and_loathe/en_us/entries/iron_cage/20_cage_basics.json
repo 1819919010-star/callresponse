@@ -1,0 +1,19 @@
+{
+  "name": "Iron Cage Basics",
+  "icon": "callresponse:dark_iron_cage",
+  "category": "callresponse:iron_cage",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "title": "Iron Cage Recipe",
+      "recipe": "callresponse:dark_iron_cage",
+      "text": "An Iron Cage is a two-block-tall prison. Each cage can hold only one creature at a time."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Inside the Cage",
+      "text": "A creature inside remains visible and can take damage from the cage environment or outside attackers, but it cannot leave on its own."
+    }
+  ]
+}

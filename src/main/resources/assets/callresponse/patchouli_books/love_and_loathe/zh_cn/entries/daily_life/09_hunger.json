@@ -1,0 +1,23 @@
+{
+  "name": "饥饿",
+  "icon": "minecraft:cooked_chicken",
+  "category": "callresponse:daily_life",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "饥饿值",
+      "text": "女仆拥有独立的饥饿值：0～100，默认 50。$(br2)$(li)0～9：濒临饿死$(li)10～25：非常饥饿$(li)26～40：饥饿$(li)41～74：正常$(li)75～90：饱$(li)91～100：吃撑"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "进食与睡眠",
+      "text": "饥饿值会随时间下降。女仆会从自己携带的物品中寻找食物；很饿且没有食物时，也可能向同主人的其他女仆讨食。睡眠期间，饥饿值不会下降。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "过低与过高",
+      "text": "饥饿值过低时会受到饥饿伤害；吃得过多也可能产生负面效果。受伤女仆还会消耗饥饿值恢复生命，因此外出工作前应准备食物。"
+    }
+  ]
+}

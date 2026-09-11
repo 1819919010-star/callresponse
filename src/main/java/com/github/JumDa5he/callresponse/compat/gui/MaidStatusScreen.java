@@ -23,7 +23,7 @@ public class MaidStatusScreen extends Screen {
     private int top;
 
     public MaidStatusScreen(Screen parent, EntityMaid maid) {
-        super(Component.literal("女仆状态"));
+        super(Component.translatable("gui.callresponse.maid_status.title"));
         this.parent = parent;
         this.maid = maid;
     }
@@ -49,9 +49,9 @@ public class MaidStatusScreen extends Screen {
 
         int hunger = Math.round(HungerData.get(maid));
         EmotionData.EmotionValues emotions = getEmotions();
-        drawStatusBar(graphics, Component.literal("饥饿"), hunger, 100, top + 47, 18);
-        drawStatusBar(graphics, Component.literal("信任"), emotions.trust(), 100, top + 65, 28);
-        drawStatusBar(graphics, Component.literal("恐惧"), emotions.fear(), 100, top + 83, 23);
+        drawStatusBar(graphics, Component.translatable("gui.callresponse.maid_status.hunger"), hunger, 100, top + 47, 18);
+        drawStatusBar(graphics, Component.translatable("gui.callresponse.maid_status.trust"), emotions.trust(), 100, top + 65, 28);
+        drawStatusBar(graphics, Component.translatable("gui.callresponse.maid_status.fear"), emotions.fear(), 100, top + 83, 23);
 
         super.render(graphics, mouseX, mouseY, partialTick);
     }

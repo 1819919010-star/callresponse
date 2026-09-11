@@ -1,0 +1,13 @@
+{
+  "name": "Jealousy Mishaps",
+  "icon": "minecraft:ender_pearl",
+  "category": "callresponse:carry_and_doting",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Special Case",
+      "text": "If the Doting Maid accidentally becomes trapped in an Iron Cage herself, the jealousy behavior immediately ends."
+    }
+  ]
+}

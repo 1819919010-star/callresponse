@@ -1,0 +1,18 @@
+{
+  "name": "Cages & Emotion",
+  "icon": "minecraft:ghast_tear",
+  "category": "callresponse:iron_cage",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "The Prisoner's Emotion",
+      "text": "A maid imprisoned in an Iron Cage gains Fear and loses a small amount of Trust. This emotional change does not stack rapidly."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Witnesses",
+      "text": "Nearby maids may also become afraid when they see another maid imprisoned. Frequently using Iron Cages in front of your maids may affect how they feel about their master."
+    }
+  ]
+}

@@ -44,8 +44,7 @@ public final class LazyMaidCommand {
             }
         }
         int result = accepted;
-        context.getSource().sendSuccess(() -> Component.literal("[lazy_need] 已为 " + result
-                + " 只好吃懒做女仆安排需求：" + need), false);
+        context.getSource().sendSuccess(() -> Component.translatable("command.callresponse.lazy_need.result", result, need), false);
         return accepted;
     }
 }
