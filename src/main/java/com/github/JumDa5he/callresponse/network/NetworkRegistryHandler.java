@@ -9,6 +9,7 @@ import com.github.JumDa5he.callresponse.compat.dispatch.DispatchActionC2SPacket;
 import com.github.JumDa5he.callresponse.compat.dispatch.OpenDispatchScreenS2CPacket;
 import com.github.JumDa5he.callresponse.compat.npc.NpcEventChoiceC2SPacket;
 import com.github.JumDa5he.callresponse.compat.npc.OpenNpcEventS2CPacket;
+import com.github.JumDa5he.callresponse.compat.menu.PrincessCarryActionC2SPacket;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -28,6 +29,7 @@ public class NetworkRegistryHandler {
         registrar.playToServer(TradingMaidActionC2SPacket.TYPE, TradingMaidActionC2SPacket.STREAM_CODEC, TradingMaidActionC2SPacket::handle);
         registrar.playToServer(DispatchActionC2SPacket.TYPE, DispatchActionC2SPacket.STREAM_CODEC, DispatchActionC2SPacket::handle);
         registrar.playToServer(NpcEventChoiceC2SPacket.TYPE, NpcEventChoiceC2SPacket.STREAM_CODEC, NpcEventChoiceC2SPacket::handle);
+        registrar.playToServer(PrincessCarryActionC2SPacket.TYPE, PrincessCarryActionC2SPacket.STREAM_CODEC, PrincessCarryActionC2SPacket::handle);
 
         // 防服务端崩溃
         if(FMLEnvironment.dist.isClient()){

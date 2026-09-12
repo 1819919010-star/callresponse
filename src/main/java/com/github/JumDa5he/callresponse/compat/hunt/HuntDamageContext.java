@@ -114,6 +114,10 @@ public final class HuntDamageContext {
         return false;
     }
 
+    public static boolean hasActiveDamage(LivingEntity target, DamageSource source) {
+        return target != null && hasActive(target.getUUID(), source);
+    }
+
     private static boolean hasActive(UUID targetId, DamageSource source) {
         for (Frame frame : FRAMES.get()) {
             if (frame.targetId().equals(targetId) && sameSource(frame.source(), source)) {

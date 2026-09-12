@@ -20,6 +20,10 @@ public final class ModMenus {
             "reward_box",
             () -> IMenuTypeExtension.create((windowId, inventory, data) ->
                     new RewardBoxMenu(windowId, inventory)));
+    public static final Supplier<MenuType<PrincessCarryContainer>> PRINCESS_CARRY = MENUS.register(
+            "princess_carry",
+            () -> IMenuTypeExtension.create((windowId, inventory, data) ->
+                    new PrincessCarryContainer(windowId, inventory, data.readInt())));
 
     private ModMenus() {
     }

@@ -6,6 +6,7 @@ import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerData;
 import com.github.JumDa5he.callresponse.compat.trade.TradingMaidData;
 import com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidData;
+import com.github.JumDa5he.callresponse.config.BroadcastConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.MaidSchedule;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskFeedOwner;
@@ -101,6 +102,7 @@ public final class NpcEventManager {
         }
 
         checkDreamEvent(maid, gameTime);
+        checkReviveEvent(maid, gameTime);
         checkFoodPromise(maid, gameTime);
         repairMissingDefinition(maid);
         evaluateConditionalEvents(maid, gameTime);
@@ -141,6 +143,17 @@ public final class NpcEventManager {
         } else {
             startEvent(maid, selected, gameTime);
         }
+    }
+
+    private static void checkReviveEvent(EntityMaid maid, long gameTime) {
+        String eventId = MaidReviveEventData.readyEventId(maid, gameTime).orElse(null);
+        if (eventId == null) return;
+        NpcEventDefinition definition = NpcEventLoader.get(eventId);
+        if (definition == null) return;
+
+        if (NpcEventData.hasCurrent(maid)) NpcEventData.addPending(maid, eventId);
+        else startEvent(maid, definition, gameTime);
+        MaidReviveEventData.consume(maid);
     }
 
     private static NpcEventDefinition dreamCandidate(EntityMaid maid, String id, long gameTime) {
@@ -378,7 +391,10 @@ public final class NpcEventManager {
         NpcEventData.clearCurrent(maid);
         promotePending(maid, gameTime);
 
-        if (!option.responseKey().isEmpty()) {
+        if (!BroadcastConfig.NPC_EVENT_AI_REPLY_ENABLED.get()) {
+            NpcEventFixedReplyProvider.randomReplyKey(currentId, option.textKey(), maid.getRandom())
+                    .ifPresent(key -> maid.getChatBubbleManager().addTextChatBubble(key));
+        } else if (!option.responseKey().isEmpty()) {
             maid.getChatBubbleManager().addTextChatBubble(option.responseKey());
         } else if (option.aiResponse()) {
             requestAiResponse(player, maid, definition, option);

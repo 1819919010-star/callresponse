@@ -19,6 +19,13 @@ base {
 repositories {
     mavenCentral()
     maven {
+        name = "BlameJared"
+        url = "https://maven.blamejared.com"
+        content {
+            includeGroup "vazkii.patchouli"
+        }
+    }
+    maven {
         name = "Modrinth"
         url = "https://api.modrinth.com/maven"
         content {
@@ -70,6 +77,8 @@ dependencies {
     implementation "maven.modrinth:touhou-little-maid:1.5.3-neoforge+mc1.21.1"
     // Jade
     implementation "maven.modrinth:jade:${project.jade_version}"
+    // Patchouli 游戏内手册（1.21.1 NeoForge，可选运行依赖）
+    runtimeOnly "vazkii.patchouli:Patchouli:${minecraft_version}-${patchouli_version}-NEOFORGE"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

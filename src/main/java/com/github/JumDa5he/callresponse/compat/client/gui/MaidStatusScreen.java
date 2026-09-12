@@ -23,7 +23,7 @@ public class MaidStatusScreen extends Screen {
     private int top;
 
     public MaidStatusScreen(Screen parent, EntityMaid maid) {
-        super(Component.literal("女仆状态"));
+        super(Component.translatable("gui.callresponse.maid_status.title"));
         this.parent = parent;
         this.maid = maid;
     }
@@ -39,21 +39,23 @@ public class MaidStatusScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics, mouseX, mouseY, partialTick);
-        graphics.fill(left, top, left + 206, top + 132, 0xE8202028);
-        graphics.fill(left + 1, top + 1, left + 205, top + 131, 0xF03A3444);
-        graphics.fill(left + 4, top + 4, left + 202, top + 128, 0xD0101018);
-
+        super.render(graphics, mouseX, mouseY, partialTick);
         graphics.drawCenteredString(this.font, this.title, this.left + 103, this.top + 13, 0xFFE8C776);
         graphics.drawCenteredString(this.font, this.maid.getDisplayName(), this.left + 103, this.top + 28, 0xFFFFFFFF);
 
         int hunger = Math.round(HungerData.get(maid));
         EmotionData.EmotionValues emotions = getEmotions();
-        drawStatusBar(graphics, Component.literal("饥饿"), hunger, 100, top + 47, 18);
-        drawStatusBar(graphics, Component.literal("信任"), emotions.trust(), 100, top + 65, 28);
-        drawStatusBar(graphics, Component.literal("恐惧"), emotions.fear(), 100, top + 83, 23);
+        drawStatusBar(graphics, Component.translatable("gui.callresponse.maid_status.hunger"), hunger, 100, top + 47, 18);
+        drawStatusBar(graphics, Component.translatable("gui.callresponse.maid_status.trust"), emotions.trust(), 100, top + 65, 28);
+        drawStatusBar(graphics, Component.translatable("gui.callresponse.maid_status.fear"), emotions.fear(), 100, top + 83, 23);
+    }
 
-        super.render(graphics, mouseX, mouseY, partialTick);
+    @Override
+    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.renderBackground(graphics, mouseX, mouseY, partialTick);
+        graphics.fill(left, top, left + 206, top + 132, 0xE8202028);
+        graphics.fill(left + 1, top + 1, left + 205, top + 131, 0xF03A3444);
+        graphics.fill(left + 4, top + 4, left + 202, top + 128, 0xD0101018);
     }
 
     private EmotionData.EmotionValues getEmotions() {

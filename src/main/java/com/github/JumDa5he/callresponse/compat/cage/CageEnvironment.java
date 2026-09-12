@@ -8,7 +8,10 @@ public enum CageEnvironment implements StringRepresentable {
     WATER("water"),
     LAVA("lava"),
     POWDER_SNOW("powder_snow"),
-    FIRE("fire");
+    FIRE("fire"),
+    CACTUS("cactus"),
+    LIGHTNING("lightning"),
+    GOLDEN_APPLE("golden_apple");
 
     private final String serializedName;
 

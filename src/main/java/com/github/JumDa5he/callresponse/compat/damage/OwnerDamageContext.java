@@ -23,20 +23,24 @@ public final class OwnerDamageContext {
         private final DamageSource source;
         private final float rawDamage;
         private final float desiredHealth;
+        private final ProtectionBreakLevel level;
         private boolean deathStarted;
 
-        private Frame(UUID maidId, DamageSource source, float rawDamage, float desiredHealth) {
+        private Frame(UUID maidId, DamageSource source, float rawDamage, float desiredHealth,
+                      ProtectionBreakLevel level) {
             this.maidId = maidId;
             this.source = source;
             this.rawDamage = rawDamage;
             this.desiredHealth = desiredHealth;
+            this.level = level;
         }
     }
 
-    public static void begin(EntityMaid maid, DamageSource source, float rawDamage) {
+    public static void begin(EntityMaid maid, DamageSource source, float rawDamage,
+                             ProtectionBreakLevel level) {
         float normalized = normalizeDamage(rawDamage);
         FRAMES.get().push(new Frame(maid.getUUID(), source, normalized,
-                Math.max(0.0F, maid.getHealth() - normalized)));
+                Math.max(0.0F, maid.getHealth() - normalized), level));
     }
 
     public static void end(EntityMaid maid, DamageSource source) {
@@ -63,7 +67,22 @@ public final class OwnerDamageContext {
     }
 
     public static boolean isSuppressingProtection() {
-        return !FRAMES.get().isEmpty();
+        return FRAMES.get().stream().anyMatch(frame -> frame.level == ProtectionBreakLevel.ULTIMATE);
+    }
+
+    public static boolean isBasic(EntityMaid maid, DamageSource source) {
+        Frame frame = frame(maid, source);
+        return frame != null && frame.level == ProtectionBreakLevel.BASIC;
+    }
+
+    public static boolean isUltimate(EntityMaid maid) {
+        Frame frame = frame(maid, null);
+        return frame != null && frame.level == ProtectionBreakLevel.ULTIMATE;
+    }
+
+    public static boolean isUltimate(EntityMaid maid, DamageSource source) {
+        Frame frame = frame(maid, source);
+        return frame != null && frame.level == ProtectionBreakLevel.ULTIMATE;
     }
 
     public static float rawDamage(EntityMaid maid, float fallback) {

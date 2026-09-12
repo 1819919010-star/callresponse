@@ -3,15 +3,20 @@ package com.github.JumDa5he.callresponse.compat.cage;
 import com.github.JumDa5he.callresponse.compat.block.ModBlocks;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionBetrayalManager;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
+import com.github.JumDa5he.callresponse.compat.brain.JealousyCageManager;
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.LivingEntity;
@@ -47,6 +52,8 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
     private static final int BETRAYAL_SPEECH_INTERVAL = 20 * 60;
     private static final int BETRAYAL_SPEECH_COUNT = 4;
     private static final long CAGE_EMOTION_COOLDOWN = 20L * 60L * 10L;
+    private static final long LIGHTNING_INTERVAL = 20L * 10L;
+    private static final int GOLDEN_EFFECT_DURATION = 60;
     private static final String CAGE_EMOTION_UNTIL = "CallResponseCageEmotionUntil";
     private static final String CAGE_WITNESS_UNTIL = "CallResponseCageWitnessUntil";
 
@@ -65,14 +72,27 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
     private double lastSafeX;
     private double lastSafeY;
     private double lastSafeZ;
+    private CageEnvironment trackedEnvironment;
+    private long nextLightningTime;
+    private UUID goldenAppleTargetId;
+    private boolean ownsRegeneration;
+    private boolean ownsResistance;
+    private MobEffectInstance previousRegeneration;
+    private MobEffectInstance previousResistance;
+    private long regenerationClaimTime;
+    private long resistanceClaimTime;
 
     public DarkIronCageBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.DARK_IRON_CAGE_ENTITY.get(), pos, state);
+        trackedEnvironment = state.getValue(DarkIronCageBlock.ENVIRONMENT);
     }
 
     public static void serverTick(ServerLevel level, BlockPos pos, BlockState state,
                                   DarkIronCageBlockEntity cage) {
+        CageEnvironment environment = state.getValue(DarkIronCageBlock.ENVIRONMENT);
+        cage.trackEnvironment(level, environment);
         if (cage.occupantId == null) {
+            cage.clearGoldenAppleEffects(cage.goldenAppleTarget(level));
             cage.captureTouchingEntity(level);
             return;
         }
@@ -91,7 +111,7 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
         cage.missingEntityTicks = 0;
         cage.ensureMaidCageControl(living);
         cage.keepInsideBoundary(living);
-        cage.applyEnvironment(living, state.getValue(DarkIronCageBlock.ENVIRONMENT));
+        cage.applyEnvironment(level, living, environment);
         cage.tickPrisonerSpeech(level, living);
         cage.tickBetrayalMaid(level, living);
     }
@@ -142,6 +162,7 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
     public @Nullable LivingEntity release(@Nullable Player leashHolder) {
         LivingEntity living = occupant();
         if (living != null) {
+            clearGoldenAppleEffects(living);
             endMaidCageControl(living);
             Vec3 exit = exitPosition();
             if (living instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
@@ -162,6 +183,19 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
         }
         clearOccupant();
         return living;
+    }
+
+    /** 所有玩家环境切换都从这里进入，确保金苹果来源效果能够立即撤销。 */
+    public void onEnvironmentChanged(CageEnvironment environment) {
+        if (level instanceof ServerLevel serverLevel) {
+            if (environment != CageEnvironment.GOLDEN_APPLE) {
+                clearGoldenAppleEffects(goldenAppleTarget(serverLevel));
+            }
+            nextLightningTime = environment == CageEnvironment.LIGHTNING
+                    ? serverLevel.getGameTime() + LIGHTNING_INTERVAL : 0L;
+        }
+        trackedEnvironment = environment;
+        setChanged();
     }
 
     public Component information() {
@@ -328,10 +362,7 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
                 worldPosition.getZ() + 0.5D + front.getStepZ() * 2.0D);
     }
 
-    private void applyEnvironment(LivingEntity living, CageEnvironment environment) {
-        if (level == null) {
-            return;
-        }
+    private void applyEnvironment(ServerLevel serverLevel, LivingEntity living, CageEnvironment environment) {
         switch (environment) {
             case EMPTY -> { }
             case WATER -> {
@@ -362,10 +393,138 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
             case FIRE -> {
                 living.igniteForSeconds(2);
                 if (living.tickCount % 20 == 0) {
-                    living.hurt(level.damageSources().inFire(), 1.0F);
+                    living.hurt(serverLevel.damageSources().inFire(), 1.0F);
                 }
             }
+            case CACTUS -> {
+                if (living.tickCount % 10 == 0) {
+                    living.hurt(serverLevel.damageSources().cactus(), 1.0F);
+                }
+            }
+            case LIGHTNING -> tickLightning(serverLevel, living);
+            case GOLDEN_APPLE -> maintainGoldenAppleEffects(serverLevel, living);
         }
+    }
+
+    private void trackEnvironment(ServerLevel serverLevel, CageEnvironment environment) {
+        if (trackedEnvironment == environment) return;
+        if (environment != CageEnvironment.GOLDEN_APPLE) {
+            clearGoldenAppleEffects(goldenAppleTarget(serverLevel));
+        }
+        trackedEnvironment = environment;
+        nextLightningTime = environment == CageEnvironment.LIGHTNING
+                ? serverLevel.getGameTime() + LIGHTNING_INTERVAL : 0L;
+        setChanged();
+    }
+
+    private void tickLightning(ServerLevel serverLevel, LivingEntity living) {
+        long now = serverLevel.getGameTime();
+        if (nextLightningTime <= 0L) {
+            nextLightningTime = now + LIGHTNING_INTERVAL;
+            setChanged();
+            return;
+        }
+        if (now < nextLightningTime) return;
+        net.minecraft.world.entity.LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(serverLevel);
+        if (lightning != null) {
+            lightning.moveTo(living.getX(), living.getY(), living.getZ());
+            // 视觉闪电不扫描周围实体；原版雷击效果只显式结算给当前囚犯。
+            lightning.setVisualOnly(true);
+            serverLevel.addFreshEntity(lightning);
+            living.thunderHit(serverLevel, lightning);
+        }
+        nextLightningTime = now + LIGHTNING_INTERVAL;
+        setChanged();
+    }
+
+    private void maintainGoldenAppleEffects(ServerLevel serverLevel, LivingEntity living) {
+        boolean trackerChanged = false;
+        if (!living.getUUID().equals(goldenAppleTargetId)) {
+            clearGoldenAppleEffects(goldenAppleTarget(serverLevel));
+            goldenAppleTargetId = living.getUUID();
+            trackerChanged = true;
+        }
+        if (!ownsRegeneration) {
+            MobEffectInstance current = living.getEffect(MobEffects.REGENERATION);
+            if (current == null || current.getAmplifier() < 2) {
+                previousRegeneration = current == null ? null : new MobEffectInstance(current);
+                regenerationClaimTime = serverLevel.getGameTime();
+                ownsRegeneration = true;
+                trackerChanged = true;
+            }
+        }
+        if (!ownsResistance) {
+            MobEffectInstance current = living.getEffect(MobEffects.DAMAGE_RESISTANCE);
+            if (current == null) {
+                previousResistance = null;
+                resistanceClaimTime = serverLevel.getGameTime();
+                ownsResistance = true;
+                trackerChanged = true;
+            }
+        }
+        boolean regenerationWasOwned = ownsRegeneration;
+        boolean resistanceWasOwned = ownsResistance;
+        ownsRegeneration = maintainOwnedEffect(living, MobEffects.REGENERATION, 2, ownsRegeneration);
+        ownsResistance = maintainOwnedEffect(living, MobEffects.DAMAGE_RESISTANCE, 0, ownsResistance);
+        if (trackerChanged || regenerationWasOwned != ownsRegeneration
+                || resistanceWasOwned != ownsResistance) {
+            setChanged();
+        }
+    }
+
+    private static boolean maintainOwnedEffect(LivingEntity living, Holder<MobEffect> effect,
+                                               int amplifier, boolean owned) {
+        if (!owned) return false;
+        MobEffectInstance current = living.getEffect(effect);
+        if (current != null && (current.getAmplifier() > amplifier
+                || current.getAmplifier() == amplifier && current.getDuration() > GOLDEN_EFFECT_DURATION)) {
+            return false;
+        }
+        if (current == null || current.getAmplifier() < amplifier || current.getDuration() <= 20) {
+            living.addEffect(new MobEffectInstance(effect, GOLDEN_EFFECT_DURATION, amplifier));
+        }
+        return true;
+    }
+
+    private void clearGoldenAppleEffects(@Nullable LivingEntity living) {
+        if (goldenAppleTargetId == null && !ownsRegeneration && !ownsResistance) return;
+        if (living != null && living.getUUID().equals(goldenAppleTargetId) && level != null) {
+            restoreOwnedEffect(living, MobEffects.REGENERATION, 2, ownsRegeneration,
+                    previousRegeneration, regenerationClaimTime, level.getGameTime());
+            restoreOwnedEffect(living, MobEffects.DAMAGE_RESISTANCE, 0, ownsResistance,
+                    previousResistance, resistanceClaimTime, level.getGameTime());
+        }
+        goldenAppleTargetId = null;
+        ownsRegeneration = false;
+        ownsResistance = false;
+        previousRegeneration = null;
+        previousResistance = null;
+        regenerationClaimTime = 0L;
+        resistanceClaimTime = 0L;
+        setChanged();
+    }
+
+    private static void restoreOwnedEffect(LivingEntity living, Holder<MobEffect> effect, int amplifier,
+                                           boolean owned, @Nullable MobEffectInstance previous,
+                                           long claimTime, long now) {
+        if (!owned) return;
+        MobEffectInstance current = living.getEffect(effect);
+        if (current != null && current.getAmplifier() == amplifier
+                && current.getDuration() <= GOLDEN_EFFECT_DURATION) {
+            living.removeEffect(effect);
+        }
+        if (previous == null || living.hasEffect(effect)) return;
+        int remaining = previous.getDuration() - (int) Math.max(0L, now - claimTime);
+        if (remaining > 0) {
+            living.addEffect(new MobEffectInstance(previous.getEffect(), remaining,
+                    previous.getAmplifier(), previous.isAmbient(), previous.isVisible(), previous.showIcon()));
+        }
+    }
+
+    private @Nullable LivingEntity goldenAppleTarget(ServerLevel serverLevel) {
+        if (goldenAppleTargetId == null) return null;
+        Entity entity = serverLevel.getEntity(goldenAppleTargetId);
+        return entity instanceof LivingEntity living ? living : null;
     }
 
     /** 仅自然结构中仍被本铁笼收容的女仆会定时求救，不调用 AI。 */
@@ -472,6 +631,7 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
 
         for (EntityMaid witness : serverLevel.getEntitiesOfClass(EntityMaid.class,
                 maid.getBoundingBox().inflate(10.0D), other -> other != maid && other.isAlive())) {
+            if (JealousyCageManager.isCageWitnessFearExempt(witness)) continue;
             UUID witnessOwner = witness.getOwnerUUID();
             long witnessUntil = witness.getPersistentData().getLong(CAGE_WITNESS_UNTIL);
             if (witnessOwner != null && (now >= witnessUntil
@@ -483,6 +643,7 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
     }
 
     private void clearOccupant() {
+        clearGoldenAppleEffects(occupant());
         occupantId = null;
         occupantName = Component.empty();
         captorId = null;
@@ -519,6 +680,15 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
         tag.putLong("NextBetrayalStripTime", nextBetrayalStripTime);
         tag.putLong("NextBetrayalSpeechTime", nextBetrayalSpeechTime);
         tag.putBoolean("BetrayalStrippingComplete", betrayalStrippingComplete);
+        tag.putString("TrackedEnvironment", trackedEnvironment.getSerializedName());
+        tag.putLong("NextLightningTime", nextLightningTime);
+        if (goldenAppleTargetId != null) tag.putUUID("GoldenAppleTarget", goldenAppleTargetId);
+        tag.putBoolean("OwnsRegeneration", ownsRegeneration);
+        tag.putBoolean("OwnsResistance", ownsResistance);
+        tag.putLong("RegenerationClaimTime", regenerationClaimTime);
+        tag.putLong("ResistanceClaimTime", resistanceClaimTime);
+        if (previousRegeneration != null) tag.put("PreviousRegeneration", previousRegeneration.save());
+        if (previousResistance != null) tag.put("PreviousResistance", previousResistance.save());
     }
 
     @Override
@@ -534,7 +704,26 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
         nextBetrayalStripTime = tag.getLong("NextBetrayalStripTime");
         nextBetrayalSpeechTime = tag.getLong("NextBetrayalSpeechTime");
         betrayalStrippingComplete = tag.getBoolean("BetrayalStrippingComplete");
+        trackedEnvironment = environmentByName(tag.getString("TrackedEnvironment"),
+                getBlockState().getValue(DarkIronCageBlock.ENVIRONMENT));
+        nextLightningTime = tag.getLong("NextLightningTime");
+        goldenAppleTargetId = tag.hasUUID("GoldenAppleTarget") ? tag.getUUID("GoldenAppleTarget") : null;
+        ownsRegeneration = tag.getBoolean("OwnsRegeneration");
+        ownsResistance = tag.getBoolean("OwnsResistance");
+        regenerationClaimTime = tag.getLong("RegenerationClaimTime");
+        resistanceClaimTime = tag.getLong("ResistanceClaimTime");
+        previousRegeneration = tag.contains("PreviousRegeneration", net.minecraft.nbt.Tag.TAG_COMPOUND)
+                ? MobEffectInstance.load(tag.getCompound("PreviousRegeneration")) : null;
+        previousResistance = tag.contains("PreviousResistance", net.minecraft.nbt.Tag.TAG_COMPOUND)
+                ? MobEffectInstance.load(tag.getCompound("PreviousResistance")) : null;
         missingEntityTicks = 0;
+    }
+
+    private static CageEnvironment environmentByName(String name, CageEnvironment fallback) {
+        for (CageEnvironment environment : CageEnvironment.values()) {
+            if (environment.getSerializedName().equals(name)) return environment;
+        }
+        return fallback;
     }
 
     private static Component readComponent(CompoundTag tag, String key) {

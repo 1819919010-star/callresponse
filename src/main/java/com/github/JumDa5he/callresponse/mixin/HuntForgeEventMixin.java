@@ -16,7 +16,7 @@ public interface HuntForgeEventMixin {
     private void callresponse$keepHuntEventUncancelled(boolean cancel, CallbackInfo ci) {
         Event event = (Event) (Object) this;
         if (cancel && (HuntEventIntrospection.belongsToHuntDamage(event)
-                || OwnerDamageSource.belongsToOwnerDamageEvent(event))) {
+                || OwnerDamageSource.mayBypassCancellation(event))) {
             ci.cancel();
         }
     }

@@ -31,7 +31,18 @@ public final class OwnerDamageSource {
     }
 
     public static boolean isEnabled() {
-        return BroadcastConfig.OWNER_DAMAGE_BYPASS_ENABLED.get();
+        return level() != ProtectionBreakLevel.NONE;
+    }
+
+    public static ProtectionBreakLevel level() {
+        if (!BroadcastConfig.OWNER_DAMAGE_BYPASS_ENABLED.get()) {
+            return ProtectionBreakLevel.NONE;
+        }
+        return BroadcastConfig.OWNER_DAMAGE_PROTECTION_BREAK_LEVEL.get();
+    }
+
+    public static boolean isUltimate() {
+        return level() == ProtectionBreakLevel.ULTIMATE;
     }
 
     public static boolean isCurrentOwnerDamage(EntityMaid maid, DamageSource source) {
@@ -144,6 +155,19 @@ public final class OwnerDamageSource {
             }
         }
         return false;
+    }
+
+    /** BASIC 只拦截命中/受伤前置取消；Damage/Death 等后置保护仅由 ULTIMATE 放行。 */
+    public static boolean mayBypassCancellation(Object event) {
+        if (!belongsToOwnerDamageEvent(event)) {
+            return false;
+        }
+        if (isUltimate()) {
+            return true;
+        }
+        String name = event.getClass().getName().toLowerCase(Locale.ROOT);
+        return name.contains("attack") || name.contains("hurt") || name.contains("hit")
+                || name.contains("projectileimpact") || name.contains("bulletimpact");
     }
 
     /** 爆炸事件可从弹体本身追溯 owner 时，也只放行该女仆真正的当前主人。 */

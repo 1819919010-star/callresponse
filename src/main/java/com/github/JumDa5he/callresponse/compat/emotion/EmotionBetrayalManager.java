@@ -4,6 +4,7 @@ import com.github.JumDa5he.callresponse.compat.api.event.emotion.MaidEmotionEven
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderManager;
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
+import com.github.JumDa5he.callresponse.config.BroadcastConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
 import net.minecraft.core.BlockPos;
@@ -443,7 +444,10 @@ public class EmotionBetrayalManager {
         if (level.isClientSide) return;
 
         Vec3 pos = maid.position();
-        level.explode(null, pos.x, pos.y, pos.z, EXPLOSION_POWER, Level.ExplosionInteraction.TNT);
+        Level.ExplosionInteraction interaction = BroadcastConfig.BETRAYAL_MAID_EXPLOSION_BREAK_BLOCKS.get()
+                ? Level.ExplosionInteraction.TNT
+                : Level.ExplosionInteraction.NONE;
+        level.explode(null, pos.x, pos.y, pos.z, EXPLOSION_POWER, interaction);
 
         if (level instanceof ServerLevel serverLevel) {
             serverLevel.sendParticles(ParticleTypes.EXPLOSION_EMITTER,

@@ -14,10 +14,11 @@ public class StandUpAction {
     public static void execute(EntityMaid maid, ServerPlayer debugPlayer) {
         if (isSitting(maid)) {
             maid.setInSittingPose(false);
-            Component name = maid.getName();
-            MaidResponder.debug(debugPlayer, Component.literal("§a[调试] ").append(name).append(" 执行: 站起来"));
+            String name = maid.getCustomName() != null ? maid.getCustomName().getString() : "无名";
+            maid.sendSystemMessage(Component.translatable("message.callresponse.action.stood", name));
+            MaidResponder.debug(debugPlayer, Component.translatable("message.callresponse.debug.stood", name));
         } else {
-            MaidResponder.debug(debugPlayer, "§e[调试] 已经站着了");
+            MaidResponder.debug(debugPlayer, Component.translatable("message.callresponse.debug.already_standing"));
         }
     }
 }

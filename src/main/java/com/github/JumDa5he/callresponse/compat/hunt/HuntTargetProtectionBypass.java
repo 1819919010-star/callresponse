@@ -31,17 +31,20 @@ public final class HuntTargetProtectionBypass {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
     public static void captureLivingAttack(LivingIncomingDamageEvent event) {
-        if (HuntOrderManager.isHuntDamage(event.getEntity(), event.getSource())) {
+        if (isHuntOrScopedDamage(event.getEntity(), event.getSource())) {
             HuntDamageContext.captureAttack(event.getEntity().getUUID(), event.getSource(), event.getAmount());
             event.getEntity().invulnerableTime = 0;
         } else if (isOwnerDamage(event.getEntity(), event.getSource())) {
-            event.getEntity().invulnerableTime = 0;
+            EntityMaid maid = (EntityMaid) event.getEntity();
+            if (OwnerDamageContext.isUltimate(maid, event.getSource())) {
+                event.getEntity().invulnerableTime = 0;
+            }
         }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
     public static void allowLivingAttack(LivingIncomingDamageEvent event) {
-        if (HuntOrderManager.isHuntDamage(event.getEntity(), event.getSource())
+        if (isHuntOrScopedDamage(event.getEntity(), event.getSource())
                 || isOwnerDamage(event.getEntity(), event.getSource())) {
             event.setCanceled(false);
         }
@@ -49,7 +52,7 @@ public final class HuntTargetProtectionBypass {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
     public static void captureLivingDamageFallback(LivingDamageEvent.Pre event) {
-        if (HuntOrderManager.isHuntDamage(event.getEntity(), event.getSource())) {
+        if (isHuntOrScopedDamage(event.getEntity(), event.getSource())) {
             HuntDamageContext.captureIfAbsent(
                     event.getEntity().getUUID(), event.getSource(), event.getContainer().getNewDamage());
         }
@@ -57,24 +60,26 @@ public final class HuntTargetProtectionBypass {
 
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
     public static void allowLivingDamage(LivingDamageEvent.Pre event) {
-        if (HuntOrderManager.isHuntDamage(event.getEntity(), event.getSource())) {
+        if (isHuntOrScopedDamage(event.getEntity(), event.getSource())) {
             event.setNewDamage(HuntDamageContext.rawDamage(event.getEntity().getUUID(), event.getNewDamage()));
-        } else if (isOwnerDamage(event.getEntity(), event.getSource())) {
-            event.setNewDamage(OwnerDamageContext.rawDamage((EntityMaid) event.getEntity(), event.getNewDamage()));
+        } else if (event.getEntity() instanceof EntityMaid maid
+                && OwnerDamageContext.isUltimate(maid, event.getSource())) {
+            event.setNewDamage(OwnerDamageContext.rawDamage(maid, event.getNewDamage()));
         }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
     public static void allowLivingDeath(LivingDeathEvent event) {
-        if (HuntOrderManager.isHuntDamage(event.getEntity(), event.getSource())
-                || isOwnerDamage(event.getEntity(), event.getSource())) {
+        if (isHuntOrScopedDamage(event.getEntity(), event.getSource())
+                || event.getEntity() instanceof EntityMaid maid
+                && OwnerDamageContext.isUltimate(maid, event.getSource())) {
             event.setCanceled(false);
         }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
     public static void allowMaidAttack(MaidAttackEvent event) {
-        if (HuntOrderManager.isHuntDamage(event.getMaid(), event.getSource())
+        if (isHuntOrScopedDamage(event.getMaid(), event.getSource())
                 || OwnerDamageContext.hasActiveDamage(event.getMaid(), event.getSource())) {
             event.setCanceled(false);
         }
@@ -82,21 +87,23 @@ public final class HuntTargetProtectionBypass {
 
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
     public static void allowMaidHurt(MaidHurtEvent event) {
-        if (HuntOrderManager.isHuntDamage(event.getMaid(), event.getSource())) {
+        if (isHuntOrScopedDamage(event.getMaid(), event.getSource())) {
             event.setCanceled(false);
             event.setAmount(HuntDamageContext.rawDamage(event.getMaid().getUUID(), event.getAmount()));
         } else if (OwnerDamageContext.hasActiveDamage(event.getMaid(), event.getSource())) {
             event.setCanceled(false);
-            event.setAmount(OwnerDamageContext.rawDamage(event.getMaid(), event.getAmount()));
+            if (OwnerDamageContext.isUltimate(event.getMaid(), event.getSource())) {
+                event.setAmount(OwnerDamageContext.rawDamage(event.getMaid(), event.getAmount()));
+            }
         }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
     public static void allowMaidDamage(MaidDamageEvent event) {
-        if (HuntOrderManager.isHuntDamage(event.getMaid(), event.getSource())) {
+        if (isHuntOrScopedDamage(event.getMaid(), event.getSource())) {
             event.setCanceled(false);
             event.setAmount(HuntDamageContext.rawDamage(event.getMaid().getUUID(), event.getAmount()));
-        } else if (OwnerDamageContext.hasActiveDamage(event.getMaid(), event.getSource())) {
+        } else if (OwnerDamageContext.isUltimate(event.getMaid(), event.getSource())) {
             event.setCanceled(false);
             event.setAmount(OwnerDamageContext.rawDamage(event.getMaid(), event.getAmount()));
         }
@@ -104,8 +111,8 @@ public final class HuntTargetProtectionBypass {
 
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
     public static void allowMaidDeath(MaidDeathEvent event) {
-        if (HuntOrderManager.isHuntDamage(event.getMaid(), event.getSource())
-                || OwnerDamageContext.hasActiveDamage(event.getMaid(), event.getSource())) {
+        if (isHuntOrScopedDamage(event.getMaid(), event.getSource())
+                || OwnerDamageContext.isUltimate(event.getMaid(), event.getSource())) {
             event.setCanceled(false);
         }
     }
@@ -158,5 +165,11 @@ public final class HuntTargetProtectionBypass {
                                          net.minecraft.world.damagesource.DamageSource source) {
         return target instanceof EntityMaid maid
                 && OwnerDamageContext.hasActiveDamage(maid, source);
+    }
+
+    private static boolean isHuntOrScopedDamage(LivingEntity target,
+                                                 net.minecraft.world.damagesource.DamageSource source) {
+        return HuntOrderManager.isHuntDamage(target, source)
+                || HuntDamageContext.hasActiveDamage(target, source);
     }
 }

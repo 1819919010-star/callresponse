@@ -181,10 +181,22 @@ public final class DarkIronCageBlock extends BaseEntityBlock {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
-        CageEnvironment selected = environmentFor(stack);
+        if (stack.is(Items.MILK_BUCKET)) {
+            setEnvironment(level, lowerPos(pos, state), CageEnvironment.EMPTY);
+            consumeContainerItem(player, hand, stack, new ItemStack(Items.BUCKET));
+            return ItemInteractionResult.CONSUME;
+        }
+
+        CageEnvironment selected = bucketEnvironmentFor(stack);
         if (selected != null) {
             setEnvironment(level, lowerPos(pos, state), selected);
             consumeContainerItem(player, hand, stack, new ItemStack(Items.BUCKET));
+            return ItemInteractionResult.CONSUME;
+        }
+        selected = simpleEnvironmentFor(stack);
+        if (selected != null) {
+            setEnvironment(level, lowerPos(pos, state), selected);
+            if (!player.getAbilities().instabuild) stack.shrink(1);
             return ItemInteractionResult.CONSUME;
         }
         if (stack.is(Items.FLINT_AND_STEEL)) {
@@ -284,6 +296,9 @@ public final class DarkIronCageBlock extends BaseEntityBlock {
     }
 
     private static void setEnvironment(Level level, BlockPos lower, CageEnvironment environment) {
+        if (level.getBlockEntity(lower) instanceof DarkIronCageBlockEntity cage) {
+            cage.onEnvironmentChanged(environment);
+        }
         updateBothHalves(level, lower, state -> state.setValue(ENVIRONMENT, environment));
     }
 
@@ -296,10 +311,17 @@ public final class DarkIronCageBlock extends BaseEntityBlock {
         return state.getValue(HALF) == DoubleBlockHalf.LOWER ? pos : pos.below();
     }
 
-    private static @Nullable CageEnvironment environmentFor(ItemStack stack) {
+    private static @Nullable CageEnvironment bucketEnvironmentFor(ItemStack stack) {
         if (stack.is(Items.WATER_BUCKET)) return CageEnvironment.WATER;
         if (stack.is(Items.LAVA_BUCKET)) return CageEnvironment.LAVA;
         if (stack.is(Items.POWDER_SNOW_BUCKET)) return CageEnvironment.POWDER_SNOW;
+        return null;
+    }
+
+    private static @Nullable CageEnvironment simpleEnvironmentFor(ItemStack stack) {
+        if (stack.is(Items.CACTUS)) return CageEnvironment.CACTUS;
+        if (stack.is(Items.LIGHTNING_ROD)) return CageEnvironment.LIGHTNING;
+        if (stack.is(Items.GOLDEN_APPLE)) return CageEnvironment.GOLDEN_APPLE;
         return null;
     }
 

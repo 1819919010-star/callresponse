@@ -7,6 +7,7 @@
         "MixinCakeEdible",
         "MixinEntityMaid",
         "MaidFollowOwnerTaskMixin",
+        "MaidFollowOwnerVehicleTaskMixin",
         "MaidAwaitTaskMixin",
         "SchedulePosMixin",
         "MixinMaidEdibleBlockManager",
@@ -36,15 +37,27 @@
         "MaidFindHomeMealCapacityMixin",
         "MaidJoyCapacityMixin",
         "MaidBedCapacityMixin",
+        "MaidBedPlayerBedSupportMixin",
+        "PlayerRestPoseMixin",
+        "LivingEntityMaidBedOrientationMixin",
         "MaidBoardGameTaskMixin",
         "BoardGameBlockMixin",
-        "EntitySitSpectatorMixin"
+        "EntitySitSpectatorMixin",
+        "PrincessCarryPassengerMixin",
+        "PrincessCarryControllerMixin",
+        "PrincessCarrySoulSlabMixin",
+        "PrincessCarryRemovalMixin"
     ],
     "client": [
         "client.AbstractContainerScreenAccessor",
         "client.GomokuWinnerTextMixin",
         "client.CChessWinnerTextMixin",
-        "client.WChessWinnerTextMixin"
+        "client.WChessWinnerTextMixin",
+        "client.PrincessCarryMaidRendererMixin",
+        "client.PrincessCarryVehicleAnimationMixin",
+        "client.PrincessCarryPassengerAnimationMixin",
+        "client.PrincessCarryCarrierPoseMixin",
+        "client.YsmPrincessCarryRendererMixin"
     ],
     "injectors": {
         "defaultRequire": 1

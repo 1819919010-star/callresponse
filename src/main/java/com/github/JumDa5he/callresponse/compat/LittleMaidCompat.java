@@ -5,6 +5,7 @@ import com.github.JumDa5he.callresponse.compat.bauble.NoEatBauble;
 import com.github.JumDa5he.callresponse.compat.block.ModBlocks;
 import com.github.JumDa5he.callresponse.compat.brain.CustomExtraMaidBrain;
 import com.github.JumDa5he.callresponse.compat.brain.IdleMaidHurtFleeManager;
+import com.github.JumDa5he.callresponse.compat.brain.JealousyCageManager;
 import com.github.JumDa5he.callresponse.compat.brain.LazyMaidHitHandler;
 import com.github.JumDa5he.callresponse.compat.cage.CageStructureManager;
 import com.github.JumDa5he.callresponse.compat.cage.CageRescueManager;
@@ -27,6 +28,8 @@ import com.github.JumDa5he.callresponse.compat.npc.NpcEventLoader;
 import com.github.JumDa5he.callresponse.compat.npc.NpcEventManager;
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementLifecycle;
 import com.github.JumDa5he.callresponse.compat.task.LazyMaidTask;
+import com.github.JumDa5he.callresponse.compat.task.PrincessCarryManager;
+import com.github.JumDa5he.callresponse.compat.task.PrincessCarryTask;
 import com.github.JumDa5he.callresponse.compat.talk.TalkEventManager;
 import com.github.JumDa5he.callresponse.compat.trade.TradingMaidManager;
 import com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidManager;
@@ -80,6 +83,8 @@ public class LittleMaidCompat implements ILittleMaid {
         NeoForge.EVENT_BUS.register(new BoardGameManager());
         NeoForge.EVENT_BUS.register(new CageStructureManager());
         NeoForge.EVENT_BUS.register(new CageRescueManager());
+        NeoForge.EVENT_BUS.register(new PrincessCarryManager());
+        NeoForge.EVENT_BUS.register(new JealousyCageManager());
         NeoForge.EVENT_BUS.register(NpcEventLoader.class);
     }
 
@@ -114,5 +119,6 @@ public class LittleMaidCompat implements ILittleMaid {
     @Override
     public void addMaidTask(TaskManager manager) {
         manager.add(new LazyMaidTask());
+        manager.add(new PrincessCarryTask());
     }
 }

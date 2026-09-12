@@ -1,6 +1,8 @@
 package com.github.JumDa5he.callresponse.compat.hunger;
 
 import com.github.JumDa5he.callresponse.init.InitAttachTypes;
+import com.github.JumDa5he.callresponse.compat.bauble.BaubleDetector;
+import com.github.JumDa5he.callresponse.compat.bauble.NoEatBauble;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 
 public class HungerData {
@@ -15,7 +17,8 @@ public class HungerData {
     }
 
     public static void set(EntityMaid maid, float value) {
-        float clamped = Math.clamp(value, MIN_HUNGER, MAX_HUNGER);
+        float minimum = BaubleDetector.hasNoEat(maid) ? NoEatBauble.MIN_HUNGER : MIN_HUNGER;
+        float clamped = Math.clamp(value, minimum, MAX_HUNGER);
         maid.setData(InitAttachTypes.SYNCED_HUNGER, clamped);
     }
 

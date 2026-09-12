@@ -28,7 +28,7 @@ public abstract class HuntLivingEntityProtectionMixin {
                                                CallbackInfoReturnable<Boolean> cir) {
         LivingEntity target = (LivingEntity) (Object) this;
         HuntDamageContext.enterNativeHurt(target, source, amount);
-        if (isProtectedBypass(target, source)) {
+        if (isFullProtectionBypass(target, source)) {
             target.invulnerableTime = 0;
             target.hurtTime = 0;
             this.lastHurt = 0.0F;
@@ -37,7 +37,7 @@ public abstract class HuntLivingEntityProtectionMixin {
 
     @Inject(method = "setHealth", at = @At("HEAD"), cancellable = true)
     private void callresponse$writeOwnerDamageHealth(float health, CallbackInfo ci) {
-        if ((Object) this instanceof EntityMaid maid && OwnerDamageContext.hasActiveDamage(maid)) {
+        if ((Object) this instanceof EntityMaid maid && OwnerDamageContext.isUltimate(maid)) {
             HuntRawHealth.write(maid, Math.min(health,
                     OwnerDamageContext.desiredHealth(maid, health)));
             ci.cancel();
@@ -55,7 +55,7 @@ public abstract class HuntLivingEntityProtectionMixin {
     @Inject(method = "checkTotemDeathProtection", at = @At("HEAD"), cancellable = true)
     private void callresponse$disableHuntTotem(DamageSource source,
                                                 CallbackInfoReturnable<Boolean> cir) {
-        if (isProtectedBypass((LivingEntity) (Object) this, source)) {
+        if (isFullProtectionBypass((LivingEntity) (Object) this, source)) {
             cir.setReturnValue(false);
         }
     }
@@ -63,14 +63,15 @@ public abstract class HuntLivingEntityProtectionMixin {
     @Inject(method = "isDamageSourceBlocked", at = @At("HEAD"), cancellable = true)
     private void callresponse$disableHuntShield(DamageSource source,
                                                  CallbackInfoReturnable<Boolean> cir) {
-        if (isProtectedBypass((LivingEntity) (Object) this, source)) {
+        if (isFullProtectionBypass((LivingEntity) (Object) this, source)) {
             cir.setReturnValue(false);
         }
     }
 
-    private static boolean isProtectedBypass(LivingEntity target, DamageSource source) {
+    private static boolean isFullProtectionBypass(LivingEntity target, DamageSource source) {
         return HuntOrderManager.isHuntDamage(target, source)
+                || HuntDamageContext.hasActiveDamage(target, source)
                 || target instanceof EntityMaid maid
-                && OwnerDamageContext.hasActiveDamage(maid, source);
+                && OwnerDamageContext.isUltimate(maid, source);
     }
 }

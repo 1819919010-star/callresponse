@@ -4,11 +4,13 @@ import com.github.JumDa5he.callresponse.compat.brain.LazyMaidHitHandler;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
 import com.github.JumDa5he.callresponse.compat.damage.OwnerDamageContext;
 import com.github.JumDa5he.callresponse.compat.damage.OwnerDamageSource;
+import com.github.JumDa5he.callresponse.compat.damage.ProtectionBreakLevel;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionActiveDialogue;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionBetrayalManager;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderManager;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntRawHealth;
+import com.github.JumDa5he.callresponse.compat.npc.MaidReviveEventData;
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.JumDa5he.callresponse.compat.state.MaidPathRepair;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
@@ -106,11 +108,19 @@ public abstract class MixinEntityMaid extends Mob {
             }
         }
 
-        // 主人伤害：保留原始 DamageSource，跳过 EntityMaid 的友伤压缩，
-        // 并在同一次原生 LivingEntity 结算中临时放行所有保护。
-        if (isOwnerAttack && OwnerDamageSource.isEnabled()) {
+        // BASIC 只建立前置放行凭证，随后继续执行 EntityMaid 原本的 hurt：
+        // TLM 限伤、护甲、无敌帧、饰品与死亡保护都照常结算。
+        ProtectionBreakLevel protectionLevel = OwnerDamageSource.level();
+        if (isOwnerAttack && protectionLevel == ProtectionBreakLevel.BASIC) {
+            OwnerDamageContext.begin(maid, source,
+                    OwnerDamageContext.normalizeDamage(amount), protectionLevel);
+            return;
+        }
+
+        // ULTIMATE 完整保留旧版全破路径。
+        if (isOwnerAttack && protectionLevel == ProtectionBreakLevel.ULTIMATE) {
             float rawDamage = OwnerDamageContext.normalizeDamage(amount);
-            OwnerDamageContext.begin(maid, source, rawDamage);
+            OwnerDamageContext.begin(maid, source, rawDamage, protectionLevel);
             this.invulnerableTime = 0;
             this.hurtTime = 0;
             this.lastHurt = 0.0F;
@@ -156,19 +166,42 @@ public abstract class MixinEntityMaid extends Mob {
     @Inject(method = "die", at = @At("HEAD"))
     private void callresponse$trackOwnerDamageDeath(DamageSource source, CallbackInfo ci) {
         EntityMaid maid = (EntityMaid) (Object) this;
-        if (OwnerDamageContext.hasActiveDamage(maid, source)) {
+        if (OwnerDamageContext.isUltimate(maid, source)) {
             OwnerDamageContext.markDeathStarted(maid, source);
         }
     }
 
+    @Inject(method = "hurt", at = @At("RETURN"))
+    private void callresponse$finishBasicOwnerDamage(DamageSource source, float amount,
+                                                      CallbackInfoReturnable<Boolean> cir) {
+        EntityMaid maid = (EntityMaid) (Object) this;
+        if (OwnerDamageContext.isBasic(maid, source)) {
+            OwnerDamageContext.end(maid, source);
+        }
+    }
+
+    /** 这里只会在死亡已经成立、TLM 即将把女仆 NBT 写入复活胶片时执行。 */
+    @Inject(method = "dropEquipment", at = @At("HEAD"))
+    private void callresponse$recordReviveEventDeathType(CallbackInfo ci) {
+        EntityMaid maid = (EntityMaid) (Object) this;
+        if (maid.level().isClientSide) return;
+        DamageSource source = maid.getLastDamageSource();
+        boolean ownerKilled = source != null && (OwnerDamageSource.isCurrentOwnerSource(maid, source)
+                || OwnerDamageContext.hasActiveDamage(maid, source));
+        MaidReviveEventData.recordDeath(maid, ownerKilled, maid.level().getGameTime());
+    }
+
     @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
     private void callresponse$sanitizeMovementSave(CompoundTag tag, CallbackInfo ci) {
-        MaidMovementControl.sanitizeSave((EntityMaid) (Object) this, tag);
+        EntityMaid maid = (EntityMaid) (Object) this;
+        MaidReviveEventData.writeAdditionalSaveData(maid, tag);
+        MaidMovementControl.sanitizeSave(maid, tag);
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
     private void callresponse$recoverMovementOnLoad(CompoundTag tag, CallbackInfo ci) {
         EntityMaid maid = (EntityMaid) (Object) this;
+        MaidReviveEventData.readAdditionalSaveData(maid, tag);
         MaidPathRepair.cleanupKnownSpeedPollution(maid,
                 maid.getPersistentData().contains(MaidMovementControl.ROOT_KEY, Tag.TAG_COMPOUND), true);
         MaidMovementControl.recoverOnLoad(maid);

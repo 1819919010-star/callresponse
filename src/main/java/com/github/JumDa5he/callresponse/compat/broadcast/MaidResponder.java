@@ -1,8 +1,9 @@
 package com.github.JumDa5he.callresponse.compat.broadcast;
 
 import com.github.JumDa5he.callresponse.CallResponseMod;
-import com.github.JumDa5he.callresponse.compat.api.broadcast.BroadcastManager;
+import com.github.JumDa5he.callresponse.compat.broadcast.actions.*;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
+import com.github.JumDa5he.callresponse.compat.emotion.EmotionDotingManager;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionPrompt;
 import com.github.JumDa5he.callresponse.compat.talk.TalkEventManager;
 import com.github.JumDa5he.callresponse.config.BroadcastConfig;
@@ -61,8 +62,91 @@ public final class MaidResponder {
 
         String lowerCmd = command.toLowerCase();
 
-        if(isPlayerCommand)
-            BroadcastManager.call(serverPlayer, maids, lowerCmd);
+        // 只有玩家指令才检测动作关键词
+        if (isPlayerCommand) {
+            boolean isAction = lowerCmd.contains("集合") || lowerCmd.contains("过来") ||
+                    lowerCmd.contains("站起来") || lowerCmd.contains("坐下") ||
+                    lowerCmd.contains("起立") || lowerCmd.contains("开饭") ||
+                    lowerCmd.contains("拿食物") ||
+                    lowerCmd.contains("打起来") || lowerCmd.contains("攻击") ||
+                    lowerCmd.contains("打架") || lowerCmd.contains("决斗") ||
+                    lowerCmd.contains("停战") || lowerCmd.contains("停止攻击");
+
+            if (isAction) {
+                debug(player, "§e[调试] 检测到动作指令");
+
+                for (EntityMaid maid : responders) {
+                    boolean isDoting = EmotionDotingManager.isDoting(maid, serverPlayer);
+
+                    // 谈话成员可以在近距离回应主人，但外部指令不能改变围坐、寻路或工作。
+                    if (TalkEventManager.suppressBroadcastAction(maid, serverPlayer)) {
+                        debug(player, Component.translatable("message.callresponse.debug.prefix").append(maid.getName())
+                                .append(Component.translatable("message.callresponse.debug.talking_in_place")));
+                        continue;
+                    }
+
+                    if (lowerCmd.contains("集合") || lowerCmd.contains("过来")) {
+                        if (!isDoting) {
+                            WalkToOwnerAndSitAction.execute(maid, serverPlayer);
+                        } else {
+                            debug(player,
+                                    Component.translatable("message.callresponse.debug.prefix")
+                                            .append(maid.getName())
+                                            .append(Component.translatable("message.callresponse.debug.doting_refuse_gather"))
+                            );
+                        }
+                    } else if (lowerCmd.contains("开饭") || lowerCmd.contains("拿食物")) {
+                        if (!isDoting) {
+                            WalkToOwnerAndTakeFoodAction.execute(maid, serverPlayer);
+                        } else {
+                            debug(player,
+                                    Component.translatable("message.callresponse.debug.prefix")
+                                            .append(maid.getName())
+                                            .append(Component.translatable("message.callresponse.debug.doting_refuse_food"))
+                            );
+                        }
+                    } else if (lowerCmd.contains("打起来") || lowerCmd.contains("攻击") || lowerCmd.contains("打架") || lowerCmd.contains("决斗")) {
+                        if (!isDoting) {
+                            AttackOtherMaidAction.execute(maid, serverPlayer);
+                        } else {
+                            debug(player,
+                                    Component.translatable("message.callresponse.debug.prefix")
+                                            .append(maid.getName())
+                                            .append(Component.translatable("message.callresponse.debug.doting_refuse_attack"))
+                            );
+                        }
+                    } else if (lowerCmd.contains("停战") || lowerCmd.contains("停止攻击")) {
+                        StopAttackAction.execute(maid, serverPlayer);
+                    } else if (lowerCmd.contains("站起来") || lowerCmd.contains("起立")) {
+                        if (!isDoting) {
+                            StandUpAction.execute(maid, serverPlayer);
+                        } else {
+                            debug(player,
+                                    Component.translatable("message.callresponse.debug.prefix")
+                                            .append(maid.getName())
+                                            .append(Component.translatable("message.callresponse.debug.doting_refuse_stand"))
+                            );
+                        }
+                    } else if (lowerCmd.contains("坐下")) {
+                        if (!isDoting) {
+                            SitDownAction.execute(maid, serverPlayer);
+                        } else {
+                            debug(player,
+                                    Component.translatable("message.callresponse.debug.prefix")
+                                            .append(maid.getName())
+                                            .append(Component.translatable("message.callresponse.debug.doting_refuse_sit"))
+                            );
+                        }
+                    }
+                }
+
+                debug(player, "§e[调试] 动作指令执行完毕，进入 AI 对话");
+            } else {
+                debug(player, "§e[调试] 未检测到动作关键词，进入对话模式");
+            }
+        } else {
+            debug(player, "§e[调试] 内部对话（非玩家指令），跳过动作检测");
+        }
 
         // ===== AI 对话 =====
         for (EntityMaid maid : responders) {
@@ -72,16 +156,16 @@ public final class MaidResponder {
             }
             MaidAIChatManager manager = maid.getAiChatManager();
             Component maidName = maid.getName();
-            debug(serverPlayer, Component.literal("§e[调试] 正在处理: ").append(maidName));
+            debug(serverPlayer, Component.translatable("message.callresponse.debug.processing", maidName));
 
             try {
                 if (isPlayerCommand) {
                     EmotionData.FeedbackKind feedback = EmotionData.applyChatFeedback(
                             maid, serverPlayer, command);
                     if (feedback != EmotionData.FeedbackKind.NONE) {
-                        debug(serverPlayer, Component.literal("§e[调试] ")
+                        debug(serverPlayer, Component.translatable("message.callresponse.debug.prefix")
                                 .append(maidName)
-                                .append(Component.literal(" 检测到聊天反馈: " + feedback)));
+                                .append(Component.translatable("message.callresponse.debug.feedback", feedback)));
                     }
                 }
                 String emotionContext = EmotionPrompt.buildEmotionContext(maid, serverPlayer);
@@ -93,17 +177,15 @@ public final class MaidResponder {
                 // 都由本体按正常单体聊天的顺序处理，广播层只补充情感上下文。
                 manager.chat(message, clientInfo, serverPlayer);
                 debug(serverPlayer,
-                        Component.literal("§a[调试] ")
+                        Component.translatable("message.callresponse.debug.success_prefix")
                                 .append(maidName)
-                                .append(Component.literal(" 的 chat() 调用完成（对话语言: "
-                                        + clientInfo.language() + "，语音语言: "
-                                        + manager.getTTSLanguage() + "）"))
+                                .append(Component.translatable("message.callresponse.debug.chat_complete", clientInfo.language(), manager.getTTSLanguage()))
                 );
             } catch (Exception e) {
                 debug(serverPlayer,
-                        Component.literal("§c[调试] ")
+                        Component.translatable("message.callresponse.debug.error_prefix")
                                 .append(maidName)
-                                .append(Component.literal(" 异常: " + e.getMessage()))
+                                .append(Component.translatable("message.callresponse.debug.error", e.getMessage()))
                 );
                 CallResponseMod.LOGGER.error("出现错误：", e);
             }
@@ -141,10 +223,9 @@ public final class MaidResponder {
             boolean mentioned = isNameMentioned(maid, normalizedCommand);
             double chance = Math.min(1.0, baseChance + (mentioned ? nameBonus : 0.0));
             double roll = maid.getRandom().nextDouble();
-            debug(player, Component.literal("§e[调试] 回应筛选 ")
+            debug(player, Component.translatable("message.callresponse.debug.response_filter_prefix")
                     .append(maid.getName())
-                    .append(Component.literal(String.format(
-                            "：点名=%s，概率=%.2f，掷骰=%.2f", mentioned, chance, roll))));
+                    .append(Component.translatable("message.callresponse.debug.response_filter_values", mentioned, String.format("%.2f", chance), String.format("%.2f", roll))));
             if (roll < chance) {
                 passed.add(new ResponseCandidate(maid, mentioned,
                         maid.distanceToSqr(player)));
