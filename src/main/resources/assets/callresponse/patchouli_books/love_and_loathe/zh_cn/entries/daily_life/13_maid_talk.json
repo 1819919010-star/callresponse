@@ -1,0 +1,13 @@
+{
+  "name": "女仆谈话",
+  "icon": "minecraft:bell",
+  "category": "callresponse:daily_life",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "女仆之间的谈话",
+      "text": "附近有多名女仆时，她们可能互相谈话，为日常生活增添气氛。如果谈话过于频繁，可以在配置中关闭该功能或调整频率。"
+    }
+  ]
+}

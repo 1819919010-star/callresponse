@@ -1,0 +1,22 @@
+{
+  "name": "模组简介",
+  "icon": "callresponse:emotion_book",
+  "category": "callresponse:basics",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "《爱憎分明》",
+      "text": "《爱憎分明》是《车万女仆》的互动向附属模组。它增加了信任、恐惧、饥饿、日常事件及多种特殊关系状态。主人平时怎样对待女仆，会逐渐影响她们的态度、行为、对话和部分特殊能力。"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "从这里开始",
+      "entries": [
+        "callresponse:basics/02_trust_and_fear",
+        "callresponse:daily_life/09_hunger"
+      ],
+      "text": "大多数玩法会在共同生活、工作和互动中自然出现。建议先阅读信任与恐惧，再了解饥饿。"
+    }
+  ]
+}

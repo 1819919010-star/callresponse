@@ -1,0 +1,18 @@
+{
+  "name": "日常事件",
+  "icon": "minecraft:writable_book",
+  "category": "callresponse:daily_life",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "日常事件",
+      "text": "女仆会遇到连续工作、营养不足、重复饮食、噩梦、美梦、长期没有互动、主人受伤、雷雨、连续受到主人攻击等事件。部分事件会弹出选项。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "选项与回复",
+      "text": "不同选择可能改变女仆的信任、恐惧、好感度、饥饿或后续表现。你也可以在配置中关闭智能回复，让所有事件使用预设台词。"
+    }
+  ]
+}

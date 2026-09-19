@@ -1,0 +1,18 @@
+{
+  "name": "自然生成的铁笼",
+  "icon": "minecraft:filled_map",
+  "category": "callresponse:iron_cage",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "生成位置",
+      "text": "自然生成的铁笼可能出现在掠夺者哨塔、村庄和要塞末地传送门房间，其中可能关押着野生女仆。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "结构救援女仆",
+      "text": "只有自然生成在这些结构铁笼中的女仆才属于救援女仆。普通女仆不会因为后来被玩家关入铁笼而获得救援奖励或离开规则。"
+    }
+  ]
+}

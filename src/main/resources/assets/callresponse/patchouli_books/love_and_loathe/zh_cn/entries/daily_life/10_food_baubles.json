@@ -1,0 +1,20 @@
+{
+  "name": "饮食饰品",
+  "icon": "callresponse:noeat_bauble",
+  "category": "callresponse:daily_life",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "title": "禁食饰品",
+      "recipe": "callresponse:noeat_bauble",
+      "text": "禁食饰品会阻止女仆主动进食，但玩家仍可亲手投喂。饥饿值较低时，它还会提供额外的战斗与恢复效果。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "暴食饰品",
+      "recipe": "callresponse:moreeat_bauble",
+      "text": "暴食饰品会让女仆更频繁地主动进食，并改变吃撑时受到的伤害和相关能力。"
+    }
+  ]
+}

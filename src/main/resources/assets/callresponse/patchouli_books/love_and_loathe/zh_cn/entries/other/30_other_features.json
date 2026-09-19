@@ -1,0 +1,19 @@
+{
+  "name": "其他玩法",
+  "icon": "callresponse:maid_seed",
+  "category": "callresponse:other",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "title": "女仆种子",
+      "item": "callresponse:maid_seed",
+      "text": "《爱憎分明》还包含女仆种子与生长中的女仆，以及其他互动扩展和创造模式测试工具。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "探索顺序",
+      "text": "这些内容可以独立体验。第一次游玩建议先熟悉关系与生活玩法，再按兴趣探索其他功能。"
+    }
+  ]
+}

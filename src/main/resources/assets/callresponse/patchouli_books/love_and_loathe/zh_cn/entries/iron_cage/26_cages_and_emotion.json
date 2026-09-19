@@ -1,0 +1,18 @@
+{
+  "name": "铁笼与情绪",
+  "icon": "minecraft:ghast_tear",
+  "category": "callresponse:iron_cage",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "囚犯的情绪",
+      "text": "女仆被铁笼关押时会增加恐惧，并降低少量信任。这种情绪变化不会连续快速叠加。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "目击者",
+      "text": "附近的女仆看到同伴被关时，也可能感到害怕。经常在女仆面前使用铁笼，可能会影响她们对主人的态度。"
+    }
+  ]
+}

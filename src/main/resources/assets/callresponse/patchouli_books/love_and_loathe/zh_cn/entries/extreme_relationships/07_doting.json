@@ -1,0 +1,18 @@
+{
+  "name": "溺爱",
+  "icon": "minecraft:golden_apple",
+  "category": "callresponse:extreme_relationships",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "溺爱",
+      "text": "如果主人长期无条件宠爱女仆，让关系持续向极高信任、极低恐惧发展，女仆可能进入溺爱状态。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "占有欲",
+      "text": "溺爱不只是普通亲近，也带有长期纵容形成的强烈占有欲。部分溺爱女仆会嫉妒同一主人的其他女仆。"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "Cage Environments",
+  "icon": "minecraft:water_bucket",
+  "category": "callresponse:iron_cage",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "title": "Water, Lava, Snow & Fire",
+      "item": "minecraft:water_bucket",
+      "text": "A Water Bucket creates a water environment; a Lava Bucket creates lava and deals lava-style damage; a Powder Snow Bucket causes freezing; Flint and Steel creates fire. Effects stay inside the cage and do not spread fluid or fire outside."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "title": "Cactus & Lightning",
+      "item": "minecraft:cactus",
+      "text": "Cactus appears at the cage floor and deals vanilla cactus-style damage. A Lightning Rod selects the lightning environment without adding a model; when occupied, the cage strikes that prisoner roughly every 10 seconds."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "title": "Golden Apple & Milk",
+      "item": "minecraft:golden_apple",
+      "text": "A Golden Apple continuously grants Regeneration III and Resistance I while the prisoner remains inside. Cage-provided effects end immediately after release or a state change. A Milk Bucket clears every special environment and restores ordinary imprisonment."
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "Food Baubles",
+  "icon": "callresponse:noeat_bauble",
+  "category": "callresponse:daily_life",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "title": "Fasting Bauble",
+      "recipe": "callresponse:noeat_bauble",
+      "text": "The Fasting Bauble prevents autonomous eating while still allowing player feeding. It also provides combat and recovery effects based around low Hunger."
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Gluttony Bauble",
+      "recipe": "callresponse:moreeat_bauble",
+      "text": "The Gluttony Bauble makes a maid more inclined to eat and changes overfeeding damage and related abilities."
+    }
+  ]
+}
