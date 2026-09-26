@@ -1,5 +1,6 @@
 package com.github.JumDa5he.callresponse;
 
+import com.github.JumDa5he.callresponse.compat.disguise.ModDisguiseEffects;
 import com.github.JumDa5he.callresponse.compat.block.ModBlocks;
 import com.github.JumDa5he.callresponse.compat.capability.ModCapabilities;
 import com.github.JumDa5he.callresponse.compat.datagen.DataGenerators;
@@ -29,6 +30,7 @@ public class CallResponseMod {
         ModMenus.MENUS.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
         ModBlocks.BLOCK_ENTITY_TYPES.register(modEventBus);
+        ModDisguiseEffects.EFFECTS.register(modEventBus);
 
         // 2. 注册配置文件
         modContainer.registerConfig(ModConfig.Type.COMMON, BroadcastConfig.SPEC);

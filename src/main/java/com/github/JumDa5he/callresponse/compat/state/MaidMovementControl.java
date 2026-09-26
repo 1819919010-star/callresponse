@@ -132,8 +132,16 @@ public final class MaidMovementControl {
         if (root == null) {
             return;
         }
-        int active = activeMask(root.getCompound(REASONS));
-        restoreFields(maid, root.getCompound(BASELINE), active);
+        CompoundTag reasons = root.getCompound(REASONS);
+        int active = activeMask(reasons);
+        boolean permanentBetrayal = reasons.contains(Reason.BETRAYAL.name(), Tag.TAG_INT)
+                && maid.getPersistentData().getBoolean("IsBetraying");
+        int restoreMask = permanentBetrayal ? active & ~Field.OWNER.bit : active;
+        restoreFields(maid, root.getCompound(BASELINE), restoreMask);
+        if (permanentBetrayal) {
+            maid.setTame(false, false);
+            maid.setOwnerUUID(null);
+        }
         clearNavigation(maid);
         maid.getPersistentData().remove(ROOT_KEY);
         TRACKED.remove(maid.getUUID());
@@ -256,7 +264,9 @@ public final class MaidMovementControl {
                     ? TaskManager.getIdleTask().getUid().toString() : task);
         }
         if (has(fields, Field.OWNER)) {
-            if (baseline.getBoolean("Tame") && baseline.hasUUID("Owner")) {
+            if (maid.getPersistentData().getBoolean("IsBetraying")) {
+                outgoing.remove("Owner");
+            } else if (baseline.getBoolean("Tame") && baseline.hasUUID("Owner")) {
                 outgoing.putUUID("Owner", baseline.getUUID("Owner"));
             } else {
                 outgoing.remove("Owner");
@@ -316,7 +326,7 @@ public final class MaidMovementControl {
         }
 
         if (keepBetrayal) {
-            maid.setTame(true, false);
+            maid.setTame(false, false);
             maid.setOwnerUUID(null);
             TaskManager.findTask(ResourceLocation.fromNamespaceAndPath("touhou_little_maid", "attack")).ifPresent(maid::setTask);
             maid.setAggressive(true);

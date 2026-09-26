@@ -4,6 +4,7 @@ import com.github.JumDa5he.callresponse.CallResponseMod;
 import com.github.JumDa5he.callresponse.compat.bauble.MoreEatBauble;
 import com.github.JumDa5he.callresponse.compat.bauble.NoEatBauble;
 import com.github.JumDa5he.callresponse.compat.block.ModBlocks;
+import com.github.JumDa5he.callresponse.compat.disguise.DisguiseItem;
 import com.github.JumDa5he.callresponse.compat.facility.FacilityCapacityToolItem;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -50,6 +51,8 @@ public class ModItems {
     public static final Supplier<Item> DARK_IRON_CAGE = ITEMS.register("dark_iron_cage",
             () -> new DarkIronCageItem(ModBlocks.DARK_IRON_CAGE.get(),
                     new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final Supplier<Item> DISGUISE_ITEM = ITEMS.register("disguise_item",
+            () -> new DisguiseItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
 
     // ===== 创造模式物品栏：专属栏位 =====
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CallResponseMod.MOD_ID);
@@ -70,6 +73,7 @@ public class ModItems {
                         output.accept(REWARD_BOX.get());
                         output.accept(FACILITY_CAPACITY_TOOL.get());
                         output.accept(DARK_IRON_CAGE.get());
+                        output.accept(DISGUISE_ITEM.get());
                     })
                     .build());
 }

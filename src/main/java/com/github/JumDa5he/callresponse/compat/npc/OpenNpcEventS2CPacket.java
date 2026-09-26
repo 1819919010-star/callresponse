@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 /** 服务器只发送翻译键，最终显示语言由玩家客户端决定。 */
-public record OpenNpcEventS2CPacket(int entityId, UUID maidId, String titleKey,
+public record OpenNpcEventS2CPacket(int entityId, UUID maidId, String eventId, long eventTime, String titleKey,
                                     String descriptionKey, List<String> optionKeys) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<OpenNpcEventS2CPacket> TYPE =
             new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CallResponseMod.MOD_ID, "open_npc_event"));
@@ -23,6 +23,8 @@ public record OpenNpcEventS2CPacket(int entityId, UUID maidId, String titleKey,
         public void encode(FriendlyByteBuf buf, OpenNpcEventS2CPacket pkt) {
             buf.writeVarInt(pkt.entityId);
             buf.writeUUID(pkt.maidId);
+            buf.writeUtf(pkt.eventId);
+            buf.writeVarLong(pkt.eventTime);
             buf.writeUtf(pkt.titleKey);
             buf.writeUtf(pkt.descriptionKey);
             buf.writeVarInt(pkt.optionKeys.size());
@@ -33,6 +35,8 @@ public record OpenNpcEventS2CPacket(int entityId, UUID maidId, String titleKey,
         public OpenNpcEventS2CPacket decode(FriendlyByteBuf buf) {
             int entityId = buf.readVarInt();
             UUID maidId = buf.readUUID();
+            String eventId = buf.readUtf();
+            long eventTime = buf.readVarLong();
             String titleKey = buf.readUtf();
             String descriptionKey = buf.readUtf();
             int size = Math.min(16, Math.max(0, buf.readVarInt()));
@@ -40,7 +44,8 @@ public record OpenNpcEventS2CPacket(int entityId, UUID maidId, String titleKey,
             for (int i = 0; i < size; i++) {
                 options.add(buf.readUtf());
             }
-            return new OpenNpcEventS2CPacket(entityId, maidId, titleKey, descriptionKey, List.copyOf(options));
+            return new OpenNpcEventS2CPacket(entityId, maidId, eventId, eventTime,
+                    titleKey, descriptionKey, List.copyOf(options));
         }
     };
 
@@ -50,6 +55,7 @@ public record OpenNpcEventS2CPacket(int entityId, UUID maidId, String titleKey,
 
     public static void handle(OpenNpcEventS2CPacket message, IPayloadContext context) {
         context.enqueueWork(() -> NpcEventScreen.open(message.entityId, message.maidId,
+                message.eventId, message.eventTime,
                 message.titleKey, message.descriptionKey, message.optionKeys));
     }
 

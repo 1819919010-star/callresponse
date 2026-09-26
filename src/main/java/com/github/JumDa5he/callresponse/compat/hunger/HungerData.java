@@ -27,6 +27,10 @@ public class HungerData {
         set(maid, current + delta);
     }
 
+    public static void resetToDefault(EntityMaid maid) {
+        set(maid, DEFAULT_HUNGER);
+    }
+
     // 获取饱食度区间（用于移速等）
     public static HungerLevel getLevel(EntityMaid maid) {
         float hunger = get(maid);

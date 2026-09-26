@@ -2,7 +2,6 @@ package com.github.JumDa5he.callresponse.mixin;
 
 import com.github.tartaricacid.touhoulittlemaid.block.BlockMaidBed;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
@@ -17,8 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MaidBedPlayerBedSupportMixin {
     @Inject(method = "isBed", at = @At("RETURN"), cancellable = true, remap = false)
     private void callresponse$allowPlayerSleep(BlockState state, BlockGetter level, BlockPos pos,
-                                                @org.jetbrains.annotations.Nullable LivingEntity entity,
-                                                CallbackInfoReturnable<Boolean> cir) {
+                                                LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
         if (entity instanceof Player) cir.setReturnValue(true);
     }
 }

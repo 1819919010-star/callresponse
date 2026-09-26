@@ -1,6 +1,7 @@
 package com.github.JumDa5he.callresponse.compat.npc;
 
 import com.github.JumDa5he.callresponse.CallResponseMod;
+import com.github.JumDa5he.callresponse.compat.intimidation.IntimidationManager;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerData;
@@ -66,6 +67,7 @@ public final class NpcEventManager {
     private static final double OWNER_HURT_MIN_DAMAGE = 4.0D;
     private static final double OWNER_HURT_RANGE = 16.0D;
     private static final long FOOD_PROMISE_TIMEOUT = 1_200L;
+    private static final long EVENT_RESPONSE_TIMEOUT = 1_200L;
     private static final long PLAYER_HURT_WINDOW = 60L;
     private static final float PLAYER_HURT_THRESHOLD = 10.0F;
     private static final TaskFeedOwner FEED_OWNER_TASK = new TaskFeedOwner();
@@ -95,12 +97,14 @@ public final class NpcEventManager {
     }
 
     private static void tickMaid(EntityMaid maid) {
+        if (IntimidationManager.isIntimidated(maid)) return;
         long gameTime = maid.level().getGameTime();
         if (maid.getScheduleDetail() == Activity.WORK) {
             // 每次管理器检查间隔累计一次，完全使用 TLM 当前日程活动。
             NpcEventData.addWorkTicks(maid, MANAGER_INTERVAL);
         }
 
+        expireIgnoredEvent(maid, gameTime);
         checkDreamEvent(maid, gameTime);
         checkReviveEvent(maid, gameTime);
         checkFoodPromise(maid, gameTime);
@@ -112,6 +116,34 @@ public final class NpcEventManager {
         if (!NpcEventData.hasCurrent(maid)) {
             tryRandomEvent(maid, gameTime);
         }
+    }
+
+    private static void expireIgnoredEvent(EntityMaid maid, long gameTime) {
+        String currentId = NpcEventData.current(maid);
+        if (currentId.isEmpty()) return;
+
+        long eventTime = NpcEventData.currentEventTime(maid);
+        // 兼容旧数据与时间回拨：从本次发现开始重新给予完整的一分钟回应时间。
+        if (eventTime <= 0L || gameTime < eventTime) {
+            NpcEventData.setCurrent(maid, currentId, gameTime);
+            return;
+        }
+        if (gameTime - eventTime < EVENT_RESPONSE_TIMEOUT) return;
+
+        UUID ownerId = maid.getOwnerUUID();
+        if (ownerId != null) {
+            EmotionData.addTrust(maid, ownerId, -1);
+            EmotionData.addFear(maid, ownerId, -2);
+        }
+
+        NpcEventDefinition definition = NpcEventLoader.get(currentId);
+        if (definition != null) {
+            NpcEventData.setCooldown(maid, currentId, gameTime + definition.cooldownTicks());
+            consumeCondition(maid, definition.condition());
+        }
+        NpcEventData.clearCurrent(maid);
+        CallResponseMod.LOGGER.debug("女仆 {} 的 NPC 事件 {} 因一分钟未回应而清除",
+                maid.getUUID(), currentId);
     }
 
     private static void checkDreamEvent(EntityMaid maid, long gameTime) {
@@ -151,6 +183,8 @@ public final class NpcEventManager {
         NpcEventDefinition definition = NpcEventLoader.get(eventId);
         if (definition == null) return;
 
+        // 先恢复统一默认值，再让复活事件选项在默认值基础上结算。
+        MaidReviveEventData.resetRevivedDefaultsOnce(maid);
         if (NpcEventData.hasCurrent(maid)) NpcEventData.addPending(maid, eventId);
         else startEvent(maid, definition, gameTime);
         MaidReviveEventData.consume(maid);
@@ -313,7 +347,7 @@ public final class NpcEventManager {
     }
 
     private static void startEvent(EntityMaid maid, NpcEventDefinition definition, long gameTime) {
-        if (NpcEventData.hasCurrent(maid)) return;
+        if (NpcEventData.hasCurrent(maid) || IntimidationManager.isIntimidated(maid)) return;
         NpcEventData.setCurrent(maid, definition.id(), gameTime);
         maid.getChatBubbleManager().addTextChatBubble(EVENT_BUBBLE_KEY);
         CallResponseMod.LOGGER.debug("女仆 {} 生成 NPC 事件 {}", maid.getUUID(), definition.id());
@@ -352,6 +386,7 @@ public final class NpcEventManager {
         NpcEventDefinition definition = NpcEventLoader.get(NpcEventData.current(maid));
         if (definition == null) return;
         PacketDistributor.sendToPlayer(player, new OpenNpcEventS2CPacket(maid.getId(), maid.getUUID(),
+                definition.id(), NpcEventData.currentEventTime(maid),
                 definition.titleKey(), definition.descriptionKey(),
                 definition.options().stream().map(NpcEventDefinition.Option::textKey).toList()));
         event.setCanceled(true);
@@ -363,11 +398,75 @@ public final class NpcEventManager {
         return interactionStack.is(InitItems.SMART_SLAB_EMPTY.get());
     }
 
-    public static void handleChoice(ServerPlayer player, UUID maidId, int optionIndex) {
+    public static void handleChoice(ServerPlayer player, UUID maidId, String eventId,
+                                    long eventTime, int optionIndex) {
         Entity entity = player.serverLevel().getEntity(maidId);
         if (!(entity instanceof EntityMaid maid) || !eligible(maid) || !maid.isOwnedBy(player)
-                || player.distanceToSqr(maid) > 64.0D) return;
+                || player.distanceToSqr(maid) > 64.0D || IntimidationManager.isIntimidated(maid)
+                || !eventId.equals(NpcEventData.current(maid))
+                || eventTime != NpcEventData.currentEventTime(maid)) return;
         applyChoice(player, maid, optionIndex);
+    }
+
+    /** 只结算已有事件的第二选项数值，不执行奖励、动作或台词。 */
+    public static void settleExistingSecondChoices(EntityMaid maid, UUID realOwner) {
+        if (!eligible(maid) || !realOwner.equals(maid.getOwnerUUID())) return;
+        long now = maid.level().getGameTime();
+        String current = NpcEventData.current(maid);
+        Set<String> pending = NpcEventData.pending(maid);
+        List<NpcEventDefinition> legalPending = new ArrayList<>();
+        for (String id : pending) {
+            if (isReviveEvent(id)) continue;
+            NpcEventDefinition definition = NpcEventLoader.get(id);
+            if (definition != null && definition.options().size() > 1
+                    && now >= NpcEventData.cooldownUntil(maid, id)
+                    && matchesEmotion(maid, definition)
+                    && pendingConditionStillValid(maid, definition, now)) {
+                legalPending.add(definition);
+            }
+        }
+        if (!current.isEmpty() && !isReviveEvent(current)) {
+            NpcEventDefinition definition = NpcEventLoader.get(current);
+            if (definition != null && definition.options().size() > 1) {
+                long eventTime = NpcEventData.currentEventTime(maid);
+                settleSecondOption(maid, realOwner, definition, now);
+                NpcEventData.clearCurrent(maid);
+                pending.remove(current);
+                ServerPlayer owner = maid.level().getServer().getPlayerList().getPlayer(realOwner);
+                if (owner != null) PacketDistributor.sendToPlayer(owner,
+                        new CloseNpcEventS2CPacket(maid.getUUID(), current, eventTime));
+            }
+        }
+        Set<String> remaining = new HashSet<>(pending);
+        for (NpcEventDefinition definition : legalPending) {
+            String id = definition.id();
+            if (!remaining.contains(id)) continue;
+            settleSecondOption(maid, realOwner, definition, now);
+            remaining.remove(id);
+        }
+        if (!remaining.equals(NpcEventData.pending(maid))) NpcEventData.setPending(maid, remaining);
+    }
+
+    private static boolean isReviveEvent(String id) {
+        return "revive_owner_killed".equals(id) || "revive_other".equals(id);
+    }
+
+    private static boolean pendingConditionStillValid(EntityMaid maid,
+                                                      NpcEventDefinition definition, long now) {
+        String condition = definition.condition();
+        return condition.isEmpty() || condition.equals("nightmare") || condition.equals("good_dream")
+                || matchesCondition(maid, definition, now);
+    }
+
+    private static void settleSecondOption(EntityMaid maid, UUID ownerId,
+                                           NpcEventDefinition definition, long now) {
+        NpcEventDefinition.Option option = definition.options().get(1);
+        EmotionData.addTrust(maid, ownerId, option.trust());
+        EmotionData.addFear(maid, ownerId, option.fear());
+        HungerData.add(maid, option.hunger());
+        maid.setFavorability(Math.max(0, maid.getFavorability() + option.favor()));
+        NpcEventData.setCooldown(maid, definition.id(), now + definition.cooldownTicks());
+        consumeCondition(maid, definition.condition());
     }
 
     private static boolean applyChoice(ServerPlayer player, EntityMaid maid, int optionIndex) {
@@ -503,13 +602,28 @@ public final class NpcEventManager {
             case "wake_good_dream" -> "女仆刚才正在做一个很开心的美梦，主人却突然叫醒并打断了它。";
             case "throw_into_storm" -> "主人不但没有安慰害怕雷声的女仆，还把她丢到了十格以外的雷雨中。";
             case "share_food" -> "主人同意了女仆分享食物的提议，女仆刚刚亲手喂给主人一份食物。";
-            default -> "";
+            default -> reviveResponseContext(definition.id(), option.textKey());
         };
         String prompt = "这是一次女仆日常事件。事件：" + title + "。背景：" + description
                 + "。主人选择：" + choice + "。" + actionContext
                 + "结合你当前的人格、信任与恐惧状态自然回应主人；"
                 + "不超过30字，不提系统、数值或AI，不执行任何动作指令。";
         MaidResponder.processBroadcast(player, List.of(maid), prompt, false);
+    }
+
+    private static String reviveResponseContext(String eventId, String optionTextKey) {
+        String optionId = optionTextKey.substring(optionTextKey.lastIndexOf('.') + 1);
+        return switch (eventId + "/" + optionId) {
+            case "revive_owner_killed/apologize" -> "主人正在为亲手杀死女仆而真诚道歉。";
+            case "revive_owner_killed/welcome" -> "主人庆幸被自己杀死的女仆能够回来。";
+            case "revive_owner_killed/caution" -> "主人以女仆能够复活为由，轻视她刚刚经历死亡的恐惧。";
+            case "revive_owner_killed/dismiss" -> "女仆才刚复活，主人就因她出声而再次用死亡威胁她。";
+            case "revive_other/welcome" -> "主人很担心刚复活的女仆，温柔询问她是否仍有不舒服。";
+            case "revive_other/ask" -> "主人欢迎女仆回来，同时关心地提醒她以后小心。";
+            case "revive_other/caution" -> "主人没有关心刚复活的女仆，只催促她醒了就赶紧去工作。";
+            case "revive_other/work" -> "主人没有说话，只冷冷看了刚复活的女仆一眼便转身离开；回应要体现女仆的迷茫，以及被主人漠视后的失望和伤心。";
+            default -> "";
+        };
     }
 
     public static void recordFood(EntityMaid maid, ItemStack food) {

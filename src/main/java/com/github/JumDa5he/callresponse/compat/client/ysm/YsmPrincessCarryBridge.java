@@ -23,9 +23,9 @@ public final class YsmPrincessCarryBridge {
     private static final Logger LOG = LogManager.getLogger();
     private static final String PACKAGE = "com.elfmcys.yesstevemodel.";
     private static final String[] COMPONENTS = {
-            "Oo0Oo0o00O00Oo0OOoOOoooo", "o0OOooo0o0OO00OoOOOo0o0O", "O00OOOooOoooOoo0o0o0oO0O",
-            "oOOOo0OOO0ooooo0O00OO0o0", "OOOOo0O0oO0OOo0O0O0Oo0O0", "Ooooo0oooO0oooOOOoO0000O",
-            "oo0OoO00oOoo000O0000o0oo", "oooooooOOoOOoO00OooOo00O", "Oo00o0OooOOo0ooOoo0oO0o0"
+            "oOo0OO0O0o000OO0O000oo0o", "oOoo00O0o0oO0o0oO00OO0O0", "OO000o0ooOooooOOOOO0Ooo0",
+            "OOo0o0000Ooo0o00OO0oOOoO", "Oo0O0OoOo0O0oOoo0000O0oO", "O0o0OoOOooOo0O0OOoo0Oo00",
+            "OoooO0OO0000O00oo0Oo00OO", "oOOO00ooO0oOOoOOo0OoOOOo", "ooOooOO0oO00o00o0o0oOOoO"
     };
     /** carryon.animation.json 中 carryon:princess 的完整静态骨骼数据。 */
     private static final Pose[] PRINCESS_POSE = {
@@ -50,6 +50,13 @@ public final class YsmPrincessCarryBridge {
             Pose.both("Tail", 20, 0, 0, 0, 0, -3),
             Pose.rotationScale("clothe", -37.5F, 0, 0, 1.065F, 1, 1)
     };
+    /** carryon:player 的抱持手臂姿态；用于采用 YSM 模型的抱人女仆。 */
+    private static final Pose[] CARRIER_POSE = {
+            Pose.rotation("LeftArm", -30.0F, 5.0F, -5.0F),
+            Pose.rotation("LeftForeArm", -90.0F, -47.5F, 90.0F),
+            Pose.rotation("RightArm", -30.0F, -5.0F, 5.0F),
+            Pose.rotation("RightForeArm", -90.0F, 47.5F, -90.0F)
+    };
 
     private static final Map<Object, List<Saved>> SAVED = new WeakHashMap<>();
     private static Method entityAccessor;
@@ -69,18 +76,23 @@ public final class YsmPrincessCarryBridge {
         if (disabled) return false;
         if (initialized) return true;
         try {
-            if (!ModList.get().isLoaded("yes_steve_model")) {
+            String version = ModList.get().getModContainerById("yes_steve_model")
+                    .map(container -> container.getModInfo().getVersion().toString()).orElse("");
+            if (!"2.6.5-neoforge+mc1.21.1".equals(version)) {
                 disabled = true;
+                if (!version.isEmpty()) {
+                    LOG.warn("YSM princess carry animation disabled for unverified version {}", version);
+                }
                 return false;
             }
-            Class<?> base = Class.forName(PACKAGE + "o0000OoOooO0oo0o0oooo0Oo");
-            Class<?> runtime = Class.forName(PACKAGE + "OOOO0O0O000O000000oOOO0o");
-            Class<?> bone = Class.forName(PACKAGE + "Oo0o00oOOo0OO000000O0oO0");
-            entityAccessor = base.getMethod("OO00OOOOo0Ooo0oo0o0Oo0OO");
-            runtimeAccessor = base.getMethod("OOOoOO000000o0o0oOooo0o0");
-            bonesAccessor = runtime.getMethod("O00OOOooOoooOoo0o0o0oO0O");
-            nameAccessor = bone.getMethod("oOOo0Ooo0oOoo0O0OOOOo0oo");
-            bindRotationAccessor = bone.getMethod("OO0ooO00OoO00o0OO0OOooO0");
+            Class<?> base = Class.forName(PACKAGE + "OoO0oo0o0o0oOoo0oOOO0Ooo");
+            Class<?> runtime = Class.forName(PACKAGE + "o0ooO0ooO00oo0o00Oo00000");
+            Class<?> bone = Class.forName(PACKAGE + "ooOO0OoOoO0o0o00oO0oo00o");
+            entityAccessor = base.getMethod("ooo00OoO00OOOO0oOooOo0Oo");
+            runtimeAccessor = base.getMethod("O00OOOo00Oo0OO0000oOo0oo");
+            bonesAccessor = runtime.getMethod("OO000o0ooOooooOOOOO0Ooo0");
+            nameAccessor = bone.getMethod("OOO0oooOOo00OOooo0OooOOo");
+            bindRotationAccessor = bone.getMethod("O0OO0O0o00o0o00oOoO0o0oO");
             for (int i = 0; i < COMPONENTS.length; i++) {
                 GET[i] = bone.getMethod(COMPONENTS[i]);
                 SET[i] = bone.getMethod(COMPONENTS[i], float.class);
@@ -107,15 +119,15 @@ public final class YsmPrincessCarryBridge {
         }
     }
 
-    /** 只在当前 YSM 女仆确实被另一只公主抱工作女仆骑乘时叠加 carryon:princess。 */
+    /** 为 YSM 被抱者叠加 carryon:princess，并为 YSM 抱人者叠加 carryon:player。 */
     public static void after(Object animatable) {
         if (!initialize()) return;
         try {
-            if (!(entityAccessor.invoke(animatable) instanceof EntityMaid carried)
-                    || !(carried.getVehicle() instanceof EntityMaid carrier)
-                    || !PrincessCarryManager.isMaidCarrySession(carrier, carried)) {
-                return;
-            }
+            if (!(entityAccessor.invoke(animatable) instanceof EntityMaid maid)) return;
+            boolean carriedPose = maid.getVehicle() instanceof EntityMaid carrier
+                    && PrincessCarryManager.isMaidCarrySession(carrier, maid);
+            boolean carrierPose = PrincessCarryManager.isMaidCarrySession(maid);
+            if (!carriedPose && !carrierPose) return;
             Object runtime = runtimeAccessor.invoke(animatable);
             if (runtime == null) return;
 
@@ -128,13 +140,17 @@ public final class YsmPrincessCarryBridge {
             }
             List<Saved> saved = new ArrayList<>();
             SAVED.put(animatable, saved);
-            for (Pose pose : PRINCESS_POSE) {
+            for (Pose pose : carriedPose ? PRINCESS_POSE : CARRIER_POSE) {
                 Object bone = exact.get(pose.bone);
                 if (bone == null) bone = normalized.get(pose.bone.toLowerCase(Locale.ROOT));
                 if (bone == null) continue;
                 if (pose.rotation != null) applyRotation(bone, pose.rotation, saved);
                 if (pose.position != null) applyDirect(bone, 3, pose.position, saved);
                 if (pose.scale != null) applyDirect(bone, 6, pose.scale, saved);
+                if (carrierPose && ("LeftArm".equalsIgnoreCase(pose.bone)
+                        || "RightArm".equalsIgnoreCase(pose.bone))) {
+                    applyOffset(bone, 4, -0.5F, saved);
+                }
             }
         } catch (Exception | LinkageError error) {
             before(animatable);
@@ -159,6 +175,13 @@ public final class YsmPrincessCarryBridge {
             saved.add(new Saved(bone, component, ((Number) GET[component].invoke(bone)).floatValue()));
             SET[component].invoke(bone, values[axis]);
         }
+    }
+
+    private static void applyOffset(Object bone, int component, float offset, List<Saved> saved)
+            throws ReflectiveOperationException {
+        float current = ((Number) GET[component].invoke(bone)).floatValue();
+        saved.add(new Saved(bone, component, current));
+        SET[component].invoke(bone, current + offset);
     }
 
     private static void disable(Throwable error) {

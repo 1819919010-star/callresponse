@@ -4,6 +4,7 @@ import com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidData;
 import com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidManager;
 import com.github.JumDa5he.callresponse.compat.trade.TradingMaidData;
 import com.github.JumDa5he.callresponse.compat.trade.TradingMaidManager;
+import com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostMaidData;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -21,7 +22,9 @@ public abstract class WanderingMaidInteractionMixin {
     private void callresponse$blockWanderingMaidInteraction(Player player, InteractionHand hand,
                                                              CallbackInfoReturnable<InteractionResult> cir) {
         EntityMaid maid = (EntityMaid) (Object) this;
-        if (WanderingMaidManager.blocksNormalInteraction(maid)
+        if (BetrayalOutpostMaidData.isOutpostMaid(maid)) {
+            cir.setReturnValue(InteractionResult.FAIL);
+        } else if (WanderingMaidManager.blocksNormalInteraction(maid)
                 || TradingMaidManager.blocksNormalInteraction(maid)) {
             cir.setReturnValue(InteractionResult.SUCCESS);
         }
@@ -32,7 +35,8 @@ public abstract class WanderingMaidInteractionMixin {
     private void callresponse$rejectOriginalTaming(ItemStack stack, Player player,
                                                     CallbackInfoReturnable<InteractionResult> cir) {
         EntityMaid maid = (EntityMaid) (Object) this;
-        if ((WanderingMaidData.isSpecial(maid) && !WanderingMaidData.mayAccept(maid))
+        if (BetrayalOutpostMaidData.isOutpostMaid(maid)
+                || (WanderingMaidData.isSpecial(maid) && !WanderingMaidData.mayAccept(maid))
                 || (TradingMaidData.isTrading(maid) && !TradingMaidData.purchaseAuthorized(maid))) {
             cir.setReturnValue(InteractionResult.FAIL);
         }

@@ -14,27 +14,15 @@ import org.jetbrains.annotations.NotNull;
 
 /** 设置页“抱起女仆”按钮使用的服务器指令。 */
 public record PrincessCarryActionC2SPacket(int maidId) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<PrincessCarryActionC2SPacket> TYPE =
-            new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(
-                    CallResponseMod.MOD_ID, "princess_carry_action"));
-
-    public static final StreamCodec<FriendlyByteBuf, PrincessCarryActionC2SPacket> STREAM_CODEC = new StreamCodec<>() {
-        @Override
-        public void encode(FriendlyByteBuf buffer, PrincessCarryActionC2SPacket pkt) {
-            buffer.writeVarInt(pkt.maidId);
-        }
-
-        @Override
-        public PrincessCarryActionC2SPacket decode(FriendlyByteBuf buffer) {
-            return new PrincessCarryActionC2SPacket(buffer.readVarInt());
-        }
-    };
+    public static final Type<PrincessCarryActionC2SPacket> TYPE = new Type<>(
+            ResourceLocation.fromNamespaceAndPath(CallResponseMod.MOD_ID, "princess_carry_action"));
+    public static final StreamCodec<FriendlyByteBuf, PrincessCarryActionC2SPacket> STREAM_CODEC =
+            StreamCodec.of((buffer, packet) -> buffer.writeVarInt(packet.maidId),
+                    buffer -> new PrincessCarryActionC2SPacket(buffer.readVarInt()));
 
     public static void handle(PrincessCarryActionC2SPacket message, IPayloadContext context) {
         context.enqueueWork(() -> {
-            if (!(context.player() instanceof ServerPlayer player)) {
-                return;
-            }
+            if (!(context.player() instanceof ServerPlayer player)) return;
             Entity entity = player.level().getEntity(message.maidId);
             if (entity instanceof EntityMaid maid) {
                 PrincessCarryManager.request(player, maid);

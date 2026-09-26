@@ -11,11 +11,17 @@ import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderManager;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntRawHealth;
 import com.github.JumDa5he.callresponse.compat.npc.MaidReviveEventData;
+import com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostAlertManager;
+import com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostMaidData;
+import com.github.JumDa5he.callresponse.compat.outpost.OutpostMaidMarker;
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.JumDa5he.callresponse.compat.state.MaidPathRepair;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -36,8 +42,39 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EntityMaid.class)
-public abstract class MixinEntityMaid extends Mob {
+public abstract class MixinEntityMaid extends Mob implements OutpostMaidMarker {
+    @Unique
+    private static final EntityDataAccessor<Boolean> callresponse$OUTPOST_MAID =
+            SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
+
+    @Inject(method = "defineSynchedData", at = @At("TAIL"))
+    private void callresponse$defineOutpostMaid(SynchedEntityData.Builder builder, CallbackInfo ci) {
+        builder.define(callresponse$OUTPOST_MAID, false);
+    }
+
+    @Override
+    public boolean callresponse$isOutpostMaid() {
+        return getEntityData().get(callresponse$OUTPOST_MAID);
+    }
+
+    @Override
+    public void callresponse$setOutpostMaid(boolean outpostMaid) {
+        getEntityData().set(callresponse$OUTPOST_MAID, outpostMaid);
+    }
+    @Unique
+    private static final String CALLRESPONSE$HURT_EMOTION_COOLDOWN =
+            "callresponse:owner_hurt_emotion_cooldown_until";
+    @Unique
+    private static final long CALLRESPONSE$HURT_EMOTION_COOLDOWN_TICKS = 20L;
+
     private MixinEntityMaid() { super(null, null); }
+
+    /** 只在据点复仇女仆真实睡眠/娱乐时将 TLM 传感器范围缩半。 */
+    @Inject(method = "searchDimension", at = @At("RETURN"), cancellable = true, remap = false)
+    private void callresponse$reduceRelaxedOutpostAwareness(CallbackInfoReturnable<AABB> cir) {
+        EntityMaid maid = (EntityMaid) (Object) this;
+        cir.setReturnValue(BetrayalOutpostAlertManager.adjustSensorBox(maid, cir.getReturnValue()));
+    }
 
     /** 困在铁笼中时从源头拒绝 TLM 跟随传送，避免在主人和笼子之间反复闪现。 */
     @Inject(method = "teleportToOwner", at = @At("HEAD"), cancellable = true, remap = false)
@@ -53,6 +90,14 @@ public abstract class MixinEntityMaid extends Mob {
     @Inject(method = "canAttack", at = @At("HEAD"), cancellable = true)
     private void callresponse$allowHuntTarget(LivingEntity target, CallbackInfoReturnable<Boolean> cir) {
         EntityMaid maid = (EntityMaid) (Object) this;
+        if (BetrayalOutpostMaidData.areSisters(maid, target)) {
+            cir.setReturnValue(false);
+            return;
+        }
+        if (!maid.level().isClientSide && BetrayalOutpostMaidData.isOutpostMaid(maid)) {
+            cir.setReturnValue(BetrayalOutpostAlertManager.canKeepOrDetectTarget(maid, target));
+            return;
+        }
         if (!maid.level().isClientSide && HuntOrderManager.isHuntTarget(maid, target)) {
             cir.setReturnValue(true);
         }
@@ -66,7 +111,8 @@ public abstract class MixinEntityMaid extends Mob {
         Entity directEntity = source.getDirectEntity();
 
         // 背叛女仆攻击通报（始终执行）
-        if (directEntity instanceof EntityMaid attackerMaid && EmotionBetrayalManager.isBetraying(attackerMaid)) {
+        if (directEntity instanceof EntityMaid attackerMaid
+                && EmotionBetrayalManager.isActualBetrayal(attackerMaid)) {
             EmotionBetrayalManager.onVictimAttackedByBetrayer(maid, attackerMaid);
         }
 
@@ -86,24 +132,30 @@ public abstract class MixinEntityMaid extends Mob {
             // 保持旧语义：只有主人近距离明确瞄准的直接攻击改变情感；
             // 投射物、TNT 和枪械仍可造成伤害，但不会被误算成一次近战“教训”。
             if (player != null && isAimingAtMaid(player, maid) && !isSplashDamage(source)) {
-                float damage = Math.max(amount, 0);
-                int fearDelta = Math.min((int) (1 + damage * 1.5), 4);
-                int trustDelta = Math.max(-(1 + (int) (damage * 0.5)), -2);
+                long nowTick = maid.level().getGameTime();
+                long cooldownUntil = maid.getPersistentData().getLong(CALLRESPONSE$HURT_EMOTION_COOLDOWN);
+                if (amount > 0.0F && nowTick >= cooldownUntil) {
+                    maid.getPersistentData().putLong(CALLRESPONSE$HURT_EMOTION_COOLDOWN,
+                            nowTick + CALLRESPONSE$HURT_EMOTION_COOLDOWN_TICKS);
+                    float damage = Math.max(amount, 0);
+                    int fearDelta = Math.min((int) (1 + damage * 1.5), 4);
+                    int trustDelta = Math.max(-(1 + (int) (damage * 0.5)), -2);
 
-                EmotionData.EmotionValues old = EmotionData.get(maid, player.getUUID());
-                EmotionData.addFear(maid, player.getUUID(), fearDelta);
-                EmotionData.addTrust(maid, player.getUUID(), trustDelta);
-                EmotionData.EmotionValues now = EmotionData.get(maid, player.getUUID());
+                    EmotionData.EmotionValues old = EmotionData.get(maid, player.getUUID());
+                    EmotionData.addFear(maid, player.getUUID(), fearDelta);
+                    EmotionData.addTrust(maid, player.getUUID(), trustDelta);
+                    EmotionData.EmotionValues now = EmotionData.get(maid, player.getUUID());
 
-                MaidResponder.debug(player,
-                        "§e[情感] 教训女仆(mixin) → 信任 " + trustDelta +
-                        " (" + old.trust() + "→" + now.trust() + "), 恐惧 " + fearDelta +
-                        " (" + old.fear() + "→" + now.fear() + ")");
+                    MaidResponder.debug(player,
+                            "§e[情感] 教训女仆(mixin) → 信任 " + trustDelta +
+                            " (" + old.trust() + "→" + now.trust() + "), 恐惧 " + fearDelta +
+                            " (" + old.fear() + "→" + now.fear() + ")");
 
-                if (LazyMaidHitHandler.isLazyMode(maid)) {
-                    LazyMaidHitHandler.triggerEscape(maid, player);
-                } else {
-                    EmotionActiveDialogue.tryInteractDialogue(maid, player);
+                    if (LazyMaidHitHandler.isLazyMode(maid)) {
+                        LazyMaidHitHandler.triggerEscape(maid, player);
+                    } else {
+                        EmotionActiveDialogue.tryInteractDialogue(maid, player);
+                    }
                 }
             }
         }

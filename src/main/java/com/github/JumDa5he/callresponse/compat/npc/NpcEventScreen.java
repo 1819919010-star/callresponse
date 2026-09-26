@@ -18,24 +18,34 @@ import java.util.UUID;
 public final class NpcEventScreen extends Screen {
     private final int entityId;
     private final UUID maidId;
+    private final String eventId;
+    private final long eventTime;
     private final String titleKey;
     private final String descriptionKey;
     private final List<String> optionKeys;
 
-    private NpcEventScreen(int entityId, UUID maidId, String titleKey,
+    private NpcEventScreen(int entityId, UUID maidId, String eventId, long eventTime, String titleKey,
                            String descriptionKey, List<String> optionKeys) {
         super(Component.translatable(titleKey));
         this.entityId = entityId;
         this.maidId = maidId;
+        this.eventId = eventId;
+        this.eventTime = eventTime;
         this.titleKey = titleKey;
         this.descriptionKey = descriptionKey;
         this.optionKeys = List.copyOf(optionKeys);
     }
 
-    public static void open(int entityId, UUID maidId, String titleKey,
+    public static void open(int entityId, UUID maidId, String eventId, long eventTime, String titleKey,
                             String descriptionKey, List<String> optionKeys) {
-        Minecraft.getInstance().setScreen(new NpcEventScreen(entityId, maidId,
+        Minecraft.getInstance().setScreen(new NpcEventScreen(entityId, maidId, eventId, eventTime,
                 titleKey, descriptionKey, optionKeys));
+    }
+
+    public static void closeIfMatches(UUID maidId, String eventId, long eventTime) {
+        if (Minecraft.getInstance().screen instanceof NpcEventScreen screen
+                && screen.maidId.equals(maidId) && screen.eventId.equals(eventId)
+                && screen.eventTime == eventTime) screen.onClose();
     }
 
     @Override
@@ -55,7 +65,7 @@ public final class NpcEventScreen extends Screen {
     }
 
     private void choose(int index) {
-        PacketDistributor.sendToServer(new NpcEventChoiceC2SPacket(maidId, index));
+        PacketDistributor.sendToServer(new NpcEventChoiceC2SPacket(maidId, eventId, eventTime, index));
         onClose();
     }
 
@@ -95,7 +105,7 @@ public final class NpcEventScreen extends Screen {
                 ? minecraft.level.getEntity(entityId) : null;
         if (entity instanceof EntityMaid maid) {
             InventoryScreen.renderEntityInInventoryFollowsMouse(graphics,
-                    left + 32, top + 133, left + 102, top + 203, 48,
+                    left + 32, top + 57, left + 102, top + 181, 48,
                     0, mouseX, mouseY, maid);
             graphics.drawCenteredString(font, maid.getDisplayName(), left + 67,
                     top + 181, 0xFFE8DCE7);

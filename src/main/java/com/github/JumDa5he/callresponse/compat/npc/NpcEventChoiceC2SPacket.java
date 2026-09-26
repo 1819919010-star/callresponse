@@ -11,7 +11,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public record NpcEventChoiceC2SPacket(UUID maidId, int optionIndex) implements CustomPacketPayload {
+public record NpcEventChoiceC2SPacket(UUID maidId, String eventId,
+                                      long eventTime, int optionIndex) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<NpcEventChoiceC2SPacket> TYPE =
             new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(CallResponseMod.MOD_ID, "npc_event_choice"));
 
@@ -19,12 +20,15 @@ public record NpcEventChoiceC2SPacket(UUID maidId, int optionIndex) implements C
         @Override
         public void encode(FriendlyByteBuf buf, NpcEventChoiceC2SPacket pkt) {
             buf.writeUUID(pkt.maidId);
+            buf.writeUtf(pkt.eventId);
+            buf.writeVarLong(pkt.eventTime);
             buf.writeVarInt(pkt.optionIndex);
         }
 
         @Override
         public NpcEventChoiceC2SPacket decode(FriendlyByteBuf buf) {
-            return new NpcEventChoiceC2SPacket(buf.readUUID(), buf.readVarInt());
+            return new NpcEventChoiceC2SPacket(buf.readUUID(), buf.readUtf(),
+                    buf.readVarLong(), buf.readVarInt());
         }
     };
 
@@ -32,7 +36,8 @@ public record NpcEventChoiceC2SPacket(UUID maidId, int optionIndex) implements C
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
             if (player != null) {
-                NpcEventManager.handleChoice(player, message.maidId, message.optionIndex);
+                NpcEventManager.handleChoice(player, message.maidId, message.eventId,
+                        message.eventTime, message.optionIndex);
             }
         });
     }

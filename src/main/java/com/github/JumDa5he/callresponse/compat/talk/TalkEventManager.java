@@ -1,5 +1,7 @@
 package com.github.JumDa5he.callresponse.compat.talk;
 
+import com.github.JumDa5he.callresponse.compat.intimidation.IntimidationManager;
+
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.github.JumDa5he.callresponse.CallResponseMod;
 import com.github.JumDa5he.callresponse.compat.broadcast.ChatTextSanitizer;
@@ -159,6 +161,11 @@ public final class TalkEventManager {
 
     public static boolean isParticipant(EntityMaid maid) {
         return BY_MAID.containsKey(maid.getUUID());
+    }
+
+    public static void abortForIntimidation(EntityMaid maid) {
+        TalkSession session = BY_MAID.get(maid.getUUID());
+        if (session != null) endSession(session, EndReason.TOO_FEW);
     }
 
     private static boolean isTalkEnabled() {
@@ -424,7 +431,8 @@ public final class TalkEventManager {
     }
 
     private static boolean eligibleAtStart(EntityMaid maid) {
-        if (!maid.isAlive() || !maid.isTame() || maid.getOwnerUUID() == null
+        if (!maid.isAlive() || IntimidationManager.isIntimidated(maid)
+                || !maid.isTame() || maid.getOwnerUUID() == null
                 || BY_MAID.containsKey(maid.getUUID())
                 || WanderingMaidData.isSpecial(maid) || TradingMaidData.isTrading(maid)
                 || HungerManager.isBeggingForFood(maid) || HuntOrderManager.isHunting(maid)) {

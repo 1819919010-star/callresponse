@@ -133,7 +133,7 @@ public final class PrincessCarryManager {
     }
 
     private static boolean validController(ServerPlayer player, EntityMaid maid) {
-        return maid.isAlive() && maid.isOwnedBy(player) && player.canInteractWithEntity(maid, 6.0)
+        return maid.isAlive() && maid.isOwnedBy(player) && player.distanceToSqr(maid) <= 36.0D
                 && PrincessCarryTask.isCurrentTask(maid) && PrincessCarryTask.hasSaddle(maid);
     }
 

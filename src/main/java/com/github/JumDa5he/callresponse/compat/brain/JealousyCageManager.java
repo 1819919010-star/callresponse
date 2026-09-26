@@ -1,5 +1,7 @@
 package com.github.JumDa5he.callresponse.compat.brain;
 
+import com.github.JumDa5he.callresponse.compat.intimidation.IntimidationManager;
+
 import com.github.JumDa5he.callresponse.compat.block.ModBlocks;
 import com.github.JumDa5he.callresponse.compat.cage.CageOrigin;
 import com.github.JumDa5he.callresponse.compat.cage.DarkIronCageBlock;
@@ -135,6 +137,9 @@ public final class JealousyCageManager {
 
     /** 自然触发与指令触发共用唯一入口；forced 只跳过触发时刻和 CD。 */
     private static StartResult start(ServerLevel level, EntityMaid maid, boolean forced) {
+        if (maid != null && IntimidationManager.isIntimidated(maid)) {
+            return StartResult.failure(StartFailure.ACTOR_UNAVAILABLE);
+        }
         if (maid == null || FLOWS.containsKey(maid.getUUID())
                 || TARGET_CLAIMS.containsKey(maid.getUUID())) {
             return StartResult.failure(StartFailure.ALREADY_RUNNING_OR_CLAIMED);
@@ -179,6 +184,10 @@ public final class JealousyCageManager {
     public static void tick(ServerLevel level, EntityMaid maid, long gameTime) {
         Flow flow = FLOWS.get(maid.getUUID());
         if (flow == null) return;
+        if (IntimidationManager.isIntimidated(maid)) {
+            abortForIntimidation(maid);
+            return;
+        }
         if (!flow.dimension.equals(level.dimension()) || !maid.isAlive() || maid.isRemoved()) {
             finish(flow, true, false);
             return;
@@ -374,14 +383,18 @@ public final class JealousyCageManager {
     }
 
     private static void finish(Flow flow, boolean releasePassenger, boolean blameTarget) {
+        finish(flow, releasePassenger, blameTarget, true);
+    }
+
+    private static void finish(Flow flow, boolean releasePassenger, boolean blameTarget, boolean speak) {
         if (FLOWS.remove(flow.actor.getUUID()) != flow) return;
         TARGET_CLAIMS.remove(flow.targetId, flow.actor.getUUID());
         CAGE_CLAIMS.remove(new CageKey(flow.dimension, flow.cagePos), flow.actor.getUUID());
         if (releasePassenger && flow.pickedUp) {
             PrincessCarryManager.releaseCarrier(flow.actor);
-            if (!blameTarget) say(flow.actor, "bubble.callresponse.jealousy.release.", RELEASE_LINES);
+            if (!blameTarget && speak) say(flow.actor, "bubble.callresponse.jealousy.release.", RELEASE_LINES);
         }
-        if (blameTarget) say(flow.actor, "bubble.callresponse.jealousy.blame.", BLAME_LINES);
+        if (blameTarget && speak) say(flow.actor, "bubble.callresponse.jealousy.blame.", BLAME_LINES);
         clearIssuedMovement(flow);
         Entity currentTarget = flow.actor.getTarget();
         if (currentTarget != null && currentTarget.getUUID().equals(flow.targetId)) {
@@ -411,6 +424,11 @@ public final class JealousyCageManager {
     public static void onBehaviorStopped(EntityMaid maid) {
         Flow flow = FLOWS.get(maid.getUUID());
         if (flow != null) finish(flow, true, false);
+    }
+
+    public static void abortForIntimidation(EntityMaid maid) {
+        Flow flow = FLOWS.get(maid.getUUID());
+        if (flow != null) finish(flow, true, false, false);
     }
 
     @SubscribeEvent

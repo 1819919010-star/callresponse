@@ -12,6 +12,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
@@ -19,7 +20,11 @@ import net.neoforged.neoforge.common.NeoForge;
 @Mod(value = CallResponseMod.MOD_ID, dist = Dist.CLIENT)
 public class CallResponseModClient {
     public CallResponseModClient(IEventBus modEventBus, ModContainer modContainer) {
-        modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+        // Configured skips mods that already register a screen factory; keep NeoForge's fallback only when absent.
+        if (FMLLoader.getLoadingModList() == null
+                || FMLLoader.getLoadingModList().getModFileById("configured") == null) {
+            modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+        }
         modEventBus.addListener(ModMenuClientEvents::clientSetup);
         NeoForge.EVENT_BUS.register(new MaidHungerGuiDisplay());
     }

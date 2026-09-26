@@ -1,13 +1,11 @@
 package com.github.JumDa5he.callresponse.compat.guide;
 
 import com.github.JumDa5he.callresponse.CallResponseMod;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -19,8 +17,6 @@ import java.lang.reflect.Method;
 @EventBusSubscriber(modid = CallResponseMod.MOD_ID)
 public final class PatchouliGuideGiftManager {
     private static final String GIFTED_TAG = "CallResponseLoveAndLoatheGuideGifted";
-    private static final ResourceLocation GUIDE_BOOK_ITEM =
-            ResourceLocation.fromNamespaceAndPath("patchouli", "guide_book");
     private static final ResourceLocation BOOK_ID =
             ResourceLocation.fromNamespaceAndPath(CallResponseMod.MOD_ID, "love_and_loathe");
 
@@ -32,12 +28,8 @@ public final class PatchouliGuideGiftManager {
         if (!(event.getEntity() instanceof ServerPlayer player) || !ModList.get().isLoaded("patchouli")) {
             return;
         }
-        CompoundTag persisted = player.getPersistentData();
+        CompoundTag persisted = player.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);
         if (persisted.getBoolean(GIFTED_TAG)) {
-            return;
-        }
-        Item guideBook = BuiltInRegistries.ITEM.get(GUIDE_BOOK_ITEM);
-        if (guideBook == Items.AIR) {
             return;
         }
         ItemStack stack = createGuideBook();
@@ -48,17 +40,17 @@ public final class PatchouliGuideGiftManager {
             player.drop(stack, false);
         }
         persisted.putBoolean(GIFTED_TAG, true);
+        player.getPersistentData().put(Player.PERSISTED_NBT_TAG, persisted);
     }
 
-    /** Patchouli 1.21.1 使用数据组件记录书籍编号，这里通过反射保持可选依赖。 */
     private static ItemStack createGuideBook() {
         try {
-            Class<?> itemClass = Class.forName("vazkii.patchouli.common.item.ItemModBook");
-            Method forBook = itemClass.getMethod("forBook", ResourceLocation.class);
-            Object result = forBook.invoke(null, BOOK_ID);
-            return result instanceof ItemStack stack ? stack : ItemStack.EMPTY;
-        } catch (ReflectiveOperationException | LinkageError error) {
-            CallResponseMod.LOGGER.warn("Unable to create Patchouli guide book stack", error);
+            Class<?> apiClass = Class.forName("vazkii.patchouli.api.PatchouliAPI");
+            Object api = apiClass.getMethod("get").invoke(null);
+            Method getBookStack = api.getClass().getMethod("getBookStack", ResourceLocation.class);
+            return (ItemStack) getBookStack.invoke(api, BOOK_ID);
+        } catch (ReflectiveOperationException | LinkageError exception) {
+            CallResponseMod.LOGGER.warn("无法创建帕秋莉手册 {}", BOOK_ID, exception);
             return ItemStack.EMPTY;
         }
     }

@@ -1,0 +1,28 @@
+{
+  "name": "Revenge Maid Camp",
+  "icon": "callresponse:disguise_item",
+  "category": "callresponse:other",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "A Home for Five",
+      "text": "Revenge Maid camps may generate in the Overworld. Five maids who escaped captivity and forced labor have made a home here: three guard and fight, while two tend the fields and supplies. They defend each other and cannot be tamed like ordinary maids."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Disguise and Caution",
+      "text": "A disguised attacker once hurt them, so they distrust outsiders. The Disguise Item lets you approach as a maid. Opening a regular camp chest without Recognition exposes you even while disguised. Hurting a camp maid revokes Recognition."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Earn Recognition",
+      "text": "In a special camp raid, you or your maid must kill a raider, then win the raid. This grants 20 minutes of Recognition. No disguise is needed for the fight. For friendly access and safe chest opening, keep both disguise and Recognition active."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Camp Supplies",
+      "text": "The camp holds supplies and a hidden book about its residents. With both an active disguise and Recognition, your first opening of an untouched regular camp loot chest grants one extra copy of its loot. Hidden story chests are excluded."
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 package com.github.JumDa5he.callresponse.mixin;
 
 import com.github.JumDa5he.callresponse.compat.facility.FacilityCapacityManager;
+import com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostAlertManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidJoyTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
@@ -15,6 +16,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /** Joy 保留原始首席 SitId，第二名起复制其精确位置创建独立 EntitySit。 */
 @Mixin(MaidJoyTask.class)
 public abstract class MaidJoyCapacityMixin {
+    @Inject(method = "checkExtraStartConditions", at = @At("HEAD"), cancellable = true, remap = false)
+    private void callresponse$combatBeforeJoy(ServerLevel level, EntityMaid maid,
+                                               CallbackInfoReturnable<Boolean> cir) {
+        if (BetrayalOutpostAlertManager.shouldBlockLeisure(maid)) cir.setReturnValue(false);
+    }
+
     @Inject(method = "isOccupied", at = @At("HEAD"), cancellable = true, remap = false)
     private void callresponse$useJoyCapacity(ServerLevel level, BlockPos pos,
                                              CallbackInfoReturnable<Boolean> cir) {

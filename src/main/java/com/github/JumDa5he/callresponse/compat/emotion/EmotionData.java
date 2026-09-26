@@ -53,6 +53,16 @@ public class EmotionData {
         maid.setData(InitAttachTypes.SYNCED_EMOTION, new MaidEmotion(Collections.unmodifiableMap(newMap)));
     }
 
+    /** 复活等明确的新生入口使用；清空全部旧关系后由统一 DEFAULT 提供默认双值。 */
+    public static void resetToDefault(EntityMaid maid) {
+        maid.setData(InitAttachTypes.SYNCED_EMOTION, MaidEmotion.DEFAULT);
+        maid.getPersistentData().remove(EMOTION_TAG);
+        String maidPrefix = maid.getUUID() + ":";
+        trustRemainder.keySet().removeIf(key -> key.startsWith(maidPrefix));
+        fearRemainder.keySet().removeIf(key -> key.startsWith(maidPrefix));
+        CHAT_FEEDBACK.keySet().removeIf(key -> key.maidId().equals(maid.getUUID()));
+    }
+
     public static void addTrust(EntityMaid maid, UUID playerId, int delta) {
         EmotionValues current = get(maid, playerId);
         int newTrust = Math.clamp(current.trust + delta, 0, 100);

@@ -2,6 +2,7 @@ package com.github.JumDa5he.callresponse.mixin;
 
 import com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidData;
 import com.github.JumDa5he.callresponse.compat.trade.TradingMaidData;
+import com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostMaidData;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.player.Player;
@@ -19,7 +20,7 @@ public abstract class WanderingMaidVanillaTameMixin {
         if (self instanceof EntityMaid maid) {
             boolean blockedWandering = WanderingMaidData.isSpecial(maid) && !WanderingMaidData.mayAccept(maid);
             boolean blockedTrading = TradingMaidData.isTrading(maid) && !TradingMaidData.purchaseAuthorized(maid);
-            if (blockedWandering || blockedTrading) {
+            if (blockedWandering || blockedTrading || BetrayalOutpostMaidData.isOutpostMaid(maid)) {
                 ci.cancel();
             }
         }
