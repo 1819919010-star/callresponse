@@ -15,7 +15,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
-@EventBusSubscriber(modid = CallResponseMod.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = CallResponseMod.MOD_ID, value = Dist.CLIENT)
 public final class IntimidationKeyHandler {
     private static final KeyMapping CAST = new KeyMapping("key.callresponse.intimidation",
             KeyConflictContext.IN_GAME, KeyModifier.ALT, InputConstants.Type.KEYSYM,

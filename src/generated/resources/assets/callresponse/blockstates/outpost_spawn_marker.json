@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "role=none": {
+      "model": "callresponse:block/outpost_spawn_marker_none"
+    },
+    "role=heavy": {
+      "model": "callresponse:block/outpost_spawn_marker_heavy"
+    },
+    "role=swordsman": {
+      "model": "callresponse:block/outpost_spawn_marker_swordsman"
+    },
+    "role=farmer": {
+      "model": "callresponse:block/outpost_spawn_marker_farmer"
+    },
+    "role=feeder": {
+      "model": "callresponse:block/outpost_spawn_marker_feeder"
+    },
+    "role=gly": {
+      "model": "callresponse:block/outpost_spawn_marker_gly"
+    }
+  }
+}

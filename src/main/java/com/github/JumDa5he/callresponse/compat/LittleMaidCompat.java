@@ -38,6 +38,7 @@ import com.github.JumDa5he.callresponse.compat.state.MaidMovementLifecycle;
 import com.github.JumDa5he.callresponse.compat.task.LazyMaidTask;
 import com.github.JumDa5he.callresponse.compat.task.PrincessCarryManager;
 import com.github.JumDa5he.callresponse.compat.task.PrincessCarryTask;
+import com.github.JumDa5he.callresponse.compat.outpost.OutpostGlyDialogue;
 import com.github.JumDa5he.callresponse.compat.talk.TalkEventManager;
 import com.github.JumDa5he.callresponse.compat.trade.TradingMaidManager;
 import com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidManager;
@@ -100,6 +101,7 @@ public class LittleMaidCompat implements ILittleMaid {
         NeoForge.EVENT_BUS.register(new OutpostLootAccessManager());
         NeoForge.EVENT_BUS.register(new PrincessCarryManager());
         NeoForge.EVENT_BUS.register(new JealousyCageManager());
+        NeoForge.EVENT_BUS.register(OutpostGlyDialogue.class);
         NeoForge.EVENT_BUS.register(NpcEventLoader.class);
     }
 

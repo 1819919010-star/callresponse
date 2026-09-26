@@ -1,6 +1,7 @@
 package com.github.JumDa5he.callresponse.compat.outpost;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.implement.TextChatBubbleData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -9,6 +10,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.phys.AABB;
+
+import java.util.List;
 
 /** 复仇女仆据点实体使用的无害附加 NBT。 */
 public final class BetrayalOutpostMaidData {
@@ -25,6 +28,10 @@ public final class BetrayalOutpostMaidData {
     private static final String NEXT_DIALOGUE_TIME = "NextDialogueGameTime";
     private static final String LAST_ENCOUNTER_LINE = "LastEncounterLine";
     private static final String LAST_COMBAT_LINE = "LastCombatLine";
+    private static final String GLY_NEXT_DIALOGUE_TIME = "GlyNextDialogueGameTime";
+    private static final String GLY_LAST_LINE = "GlyLastLine";
+    private static final String GLY_NEXT_HURT_TIME = "GlyNextHurtGameTime";
+    private static final String GLY_LAST_HURT_LINE = "GlyLastHurtLine";
     private static final String LEGACY_EXTRA_HEALTH = "ExtraHealth";
     private static final long DIALOGUE_INTERVAL_TICKS = 20L * 15L;
     private static final int ENCOUNTER_LINE_COUNT = 8;
@@ -245,10 +252,62 @@ public final class BetrayalOutpostMaidData {
         return next >= previous ? next + 1 : next;
     }
 
-    public enum Role {
+    public enum Role implements net.minecraft.util.StringRepresentable {
         HEAVY,
         SWORDSMAN,
         FARMER,
-        FEEDER
+        FEEDER,
+        GLY;
+
+        @Override
+        public String getSerializedName() {
+            return name().toLowerCase(java.util.Locale.ROOT);
+        }
+    }
+
+    /** 彩蛋女仆：不参与战斗，只在玩家靠近时随机说话。 */
+    public static void tickGlyDialogue(EntityMaid maid) {
+        if (!(maid.level() instanceof ServerLevel level) || !isOutpostMaid(maid) || !isGly(maid)) return;
+        ServerPlayer nearby = level.getEntitiesOfClass(ServerPlayer.class, maid.getBoundingBox().inflate(32.0D))
+                .stream()
+                .filter(player -> !player.isSpectator() && player.distanceToSqr(maid) <= 32.0D * 32.0D)
+                .findFirst().orElse(null);
+        if (nearby == null) return;
+
+        CompoundTag data = maid.getPersistentData().getCompound(ROOT);
+        long now = level.getGameTime();
+        if (now < data.getLong(GLY_NEXT_DIALOGUE_TIME)) return;
+
+        List<String> pool = OutpostGlyDialogue.lines();
+        if (pool.isEmpty()) return;
+        int line = nonRepeatingIndex(level, data.getInt(GLY_LAST_LINE), pool.size());
+        maid.getChatBubbleManager().addChatBubble(
+                TextChatBubbleData.type2(net.minecraft.network.chat.Component.literal(pool.get(line))));
+
+        data.putInt(GLY_LAST_LINE, line);
+        data.putLong(GLY_NEXT_DIALOGUE_TIME, now + 10L * (10L + level.getRandom().nextInt(21)));
+        maid.getPersistentData().put(ROOT, data);
+    }
+
+    public static boolean isGly(EntityMaid maid) {
+        return role(maid) == Role.GLY;
+    }
+
+    /** 彩蛋女仆被攻击时的台词，独立于日常台词池。 */
+    public static void tickGlyHurtDialogue(EntityMaid maid) {
+        if (!(maid.level() instanceof ServerLevel level) || !isOutpostMaid(maid) || !isGly(maid)) return;
+        List<String> pool = OutpostGlyDialogue.hurtLines();
+        if (pool.isEmpty()) return;
+
+        CompoundTag data = maid.getPersistentData().getCompound(ROOT);
+        long now = level.getGameTime();
+        if (now < data.getLong(GLY_NEXT_HURT_TIME)) return;
+
+        int line = nonRepeatingIndex(level, data.getInt(GLY_LAST_HURT_LINE), pool.size());
+        maid.getChatBubbleManager().addChatBubble(
+                TextChatBubbleData.type2(net.minecraft.network.chat.Component.literal(pool.get(line))));
+        data.putInt(GLY_LAST_HURT_LINE, line);
+        data.putLong(GLY_NEXT_HURT_TIME, now + (2L + level.getRandom().nextInt(4)));
+        maid.getPersistentData().put(ROOT, data);
     }
 }
