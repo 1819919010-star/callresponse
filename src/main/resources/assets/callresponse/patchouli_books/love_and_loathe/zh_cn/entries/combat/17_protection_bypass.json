@@ -1,0 +1,23 @@
+{
+  "name": "保护破除",
+  "icon": "minecraft:netherite_sword",
+  "category": "callresponse:combat",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "初级保护破除",
+      "text": "允许主人正常攻击自己的女仆，包括普通攻击和部分枪械、远程攻击。女仆会正常受伤并表现出受击反馈。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "仍然保留的防护",
+      "text": "初级保护破除不会解除女仆原有的无敌时间、单次伤害限制、死亡保护、护甲、抗性提升和减伤效果。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "终极保护破除",
+      "text": "终极保护破除会进一步解除更多保护机制，适合需要完整伤害效果的特殊玩法。关闭保护破除后，主人与女仆之间会恢复正常的伤害规则。"
+    }
+  ]
+}

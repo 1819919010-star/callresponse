@@ -1,0 +1,23 @@
+{
+  "name": "Protection Bypass",
+  "icon": "minecraft:netherite_sword",
+  "category": "callresponse:combat",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Basic Protection Bypass",
+      "text": "Basic allows a master to attack their own maid normally, including with ordinary attacks and some firearms or ranged attacks. The maid takes damage and shows normal hit feedback."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Protection Still Active",
+      "text": "Basic keeps the maid's invulnerability time, per-hit damage limits, death protection, armor, Resistance, and damage reduction active."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Ultimate Protection Bypass",
+      "text": "Ultimate removes more protection and is intended for special gameplay that needs the full damage effect. Disabling Protection Bypass restores the normal damage rules between masters and maids."
+    }
+  ]
+}

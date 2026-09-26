@@ -15,7 +15,7 @@ public class StandUpTool implements ITool<String> {
 
     @Override
     public String summary(EntityMaid entityMaid) {
-        return "让女仆站起来（如果坐着）。当玩家说'站起来'时调用。";
+        return "让女仆站起来。当玩家要求站起来时调用。";
     }
 
     @Override
@@ -29,19 +29,14 @@ public class StandUpTool implements ITool<String> {
     }
 
     @Override
-    public LLMCallback onCall(String s, String s2, LLMCallback llmCallback) {
-        if (isSitting(llmCallback.getMaid())) {
-            standUp(llmCallback.getMaid());
-            return llmCallback.addToolResult("已站起来", "stand_up");
+    public LLMCallback onCall(String toolCallId, String arguments, LLMCallback callback) {
+        if (!OneShotToolCall.claim(callback, id())) {
+            return OneShotToolCall.alreadyUsed(callback, toolCallId, id());
         }
-        return llmCallback.addToolResult("已经站着了", "stand_up");
-    }
-
-    private static boolean isSitting(EntityMaid maid) {
-        return maid.isInSittingPose();
-    }
-
-    private static void standUp(EntityMaid maid) {
-        maid.setInSittingPose(false);
+        if (callback.getMaid().isInSittingPose()) {
+            callback.getMaid().setInSittingPose(false);
+            return OneShotToolCall.finish(callback, toolCallId, id(), "已站起来。");
+        }
+        return OneShotToolCall.finish(callback, toolCallId, id(), "已经站着了。");
     }
 }

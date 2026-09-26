@@ -1,0 +1,10 @@
+{
+  "textures": { "particle": "minecraft:block/powder_snow", "inside": "minecraft:block/powder_snow" },
+  "elements": [
+    { "from": [2.1, 1, 2.1], "to": [13.9, 13, 13.9], "faces": {
+      "down": { "texture": "#inside" }, "up": { "texture": "#inside" },
+      "north": { "texture": "#inside" }, "south": { "texture": "#inside" },
+      "west": { "texture": "#inside" }, "east": { "texture": "#inside" }
+    } }
+  ]
+}

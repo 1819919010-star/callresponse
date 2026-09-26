@@ -3,6 +3,9 @@ package com.github.JumDa5he.callresponse.compat.emotion;
 import com.github.JumDa5he.callresponse.CallResponseMod;
 import com.github.JumDa5he.callresponse.compat.api.event.emotion.MaidEmotionEvent;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
+import com.github.JumDa5he.callresponse.compat.hunt.HuntRawHealth;
+import com.github.JumDa5he.callresponse.compat.intimidation.IntimidationManager;
+import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.inventory.handler.BaubleItemHandler;
 import net.minecraft.core.BlockPos;
@@ -10,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,6 +26,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 
@@ -39,10 +44,11 @@ public class EmotionDevotedManager {
     private static final int HEAL_DELAY_TICKS = 20;
     private static final double OWNER_LOW_HP_THRESHOLD = 0.1;
     private static final double STEAL_CHANCE = 0.6;
-    private static final float ATTACK_BONUS = 5.0f;
+    private static final double ATTACK_BONUS = 0.20D;
+    private static final double HEALTH_BONUS = 0.10D;
     private static final float SPEED_BONUS = 0.1f;
     // ===== 减伤系数 =====
-    private static final float DAMAGE_REDUCTION = 0.7f; // 受到 70% 伤害，即减免 30%
+    private static final float DAMAGE_REDUCTION = 0.6f;
 
     // ===== 状态存储 =====
     private static final Map<UUID, Long> lastAttackTime = new ConcurrentHashMap<>();
@@ -63,7 +69,8 @@ public class EmotionDevotedManager {
     // ===== 检查死忠状态 =====
     public static boolean isDevoted(EntityMaid maid, ServerPlayer player) {
         if(NeoForge.EVENT_BUS.post(new MaidEmotionEvent.MaidDevotedEvent(maid)).isCanceled())return false;
-        if (!maid.isTame() || maid.getOwner() == null) return false;
+        if (!maid.isTame() || maid.getOwner() == null
+                || !player.getUUID().equals(maid.getOwnerUUID())) return false;
         if (EmotionBetrayalManager.isBetraying(maid)) return false;
         EmotionData.EmotionValues values = EmotionData.get(maid, player);
         return values.trust() >= TRUST_THRESHOLD && values.fear() >= FEAR_THRESHOLD;
@@ -77,22 +84,29 @@ public class EmotionDevotedManager {
 
     // ===== 属性加成/移除 =====
     private static final ResourceLocation DEVOTED_ATTACK_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(CallResponseMod.MOD_ID, "devoted_attack");
-    private static final ResourceLocation DEVOTED_SPEED_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(CallResponseMod.MOD_ID, "devoted_speed");
+    private static final ResourceLocation DEVOTED_HEALTH_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(CallResponseMod.MOD_ID, "devoted_health");
+    public static final ResourceLocation DEVOTED_SPEED_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(CallResponseMod.MOD_ID, "devoted_speed");
 
     private static void applyDevotedBuffs(EntityMaid maid) {
         AttributeInstance attackAttr = maid.getAttribute(Attributes.ATTACK_DAMAGE);
         AttributeInstance speedAttr = maid.getAttribute(Attributes.MOVEMENT_SPEED);
+        AttributeInstance healthAttr = maid.getAttribute(Attributes.MAX_HEALTH);
         if (attackAttr != null) {
-            attackAttr.removeModifier(DEVOTED_ATTACK_MODIFIER_ID);
-            attackAttr.addPermanentModifier(new AttributeModifier(
-                    DEVOTED_ATTACK_MODIFIER_ID,
-                    ATTACK_BONUS,
-                    AttributeModifier.Operation.ADD_VALUE
-            ));
+            AttributeModifier current = attackAttr.getModifier(DEVOTED_ATTACK_MODIFIER_ID);
+            if (current == null || current.operation() != AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+                    || current.amount() != ATTACK_BONUS) {
+                attackAttr.removeModifier(DEVOTED_ATTACK_MODIFIER_ID);
+                attackAttr.addTransientModifier(new AttributeModifier(
+                        DEVOTED_ATTACK_MODIFIER_ID, ATTACK_BONUS,
+                        AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+            }
+        }
+        if (healthAttr != null && healthAttr.getModifier(DEVOTED_HEALTH_MODIFIER_ID) == null) {
+            healthAttr.addTransientModifier(new AttributeModifier(DEVOTED_HEALTH_MODIFIER_ID,
+                    HEALTH_BONUS, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
         }
         if (speedAttr != null) {
-            speedAttr.removeModifier(DEVOTED_SPEED_MODIFIER_ID);
-            speedAttr.addPermanentModifier(new AttributeModifier(
+            if (speedAttr.getModifier(DEVOTED_SPEED_MODIFIER_ID) == null) speedAttr.addTransientModifier(new AttributeModifier(
                     DEVOTED_SPEED_MODIFIER_ID,
                     SPEED_BONUS,
                     AttributeModifier.Operation.ADD_VALUE
@@ -103,11 +117,30 @@ public class EmotionDevotedManager {
     private static void removeDevotedBuffs(EntityMaid maid) {
         AttributeInstance attackAttr = maid.getAttribute(Attributes.ATTACK_DAMAGE);
         AttributeInstance speedAttr = maid.getAttribute(Attributes.MOVEMENT_SPEED);
+        AttributeInstance healthAttr = maid.getAttribute(Attributes.MAX_HEALTH);
         if (attackAttr != null) {
             attackAttr.removeModifier(DEVOTED_ATTACK_MODIFIER_ID);
         }
         if (speedAttr != null) {
             speedAttr.removeModifier(DEVOTED_SPEED_MODIFIER_ID);
+        }
+        if (healthAttr != null) healthAttr.removeModifier(DEVOTED_HEALTH_MODIFIER_ID);
+        if (maid.getHealth() > maid.getMaxHealth()) maid.setHealth(maid.getMaxHealth());
+    }
+
+    @SubscribeEvent
+    public void onMaidJoin(EntityJoinLevelEvent event) {
+        if (event.getLevel().isClientSide() || !(event.getEntity() instanceof EntityMaid maid)) return;
+        UUID owner = maid.getOwnerUUID();
+        boolean devoted = maid.isTame() && owner != null && !EmotionBetrayalManager.isBetraying(maid)
+                && EmotionData.get(maid, owner).trust() >= TRUST_THRESHOLD
+                && EmotionData.get(maid, owner).fear() >= FEAR_THRESHOLD;
+        if (devoted) {
+            devotedMaids.add(maid.getUUID());
+            applyDevotedBuffs(maid);
+        } else {
+            devotedMaids.remove(maid.getUUID());
+            removeDevotedBuffs(maid);
         }
     }
 
@@ -121,6 +154,7 @@ public class EmotionDevotedManager {
                     .forEach(maid -> {
                         if (!maid.isTame() || maid.getOwner() == null) return;
                         if (!maid.isAlive()) return;
+                        if (!player.getUUID().equals(maid.getOwnerUUID())) return;
 
                         boolean isDevoted = isDevoted(maid, player);
                         UUID maidId = maid.getUUID();
@@ -134,7 +168,23 @@ public class EmotionDevotedManager {
                             removeDevotedBuffs(maid);
                         }
 
-                        if (!isDevoted) return;
+                        if (!isDevoted) {
+                            MaidMovementControl.end(maid, MaidMovementControl.Reason.DEVOTED_COMBAT);
+                            MaidMovementControl.end(maid, MaidMovementControl.Reason.DEVOTED_HEAL);
+                            return;
+                        }
+
+                        // transient 修饰符不会落盘；区块重载后集合可能仍保留 UUID，需按实际属性补挂。
+                        AttributeInstance speed = maid.getAttribute(Attributes.MOVEMENT_SPEED);
+                        AttributeInstance attack = maid.getAttribute(Attributes.ATTACK_DAMAGE);
+                        AttributeInstance health = maid.getAttribute(Attributes.MAX_HEALTH);
+                        if ((speed != null && speed.getModifier(DEVOTED_SPEED_MODIFIER_ID) == null)
+                                || (attack != null && attack.getModifier(DEVOTED_ATTACK_MODIFIER_ID) == null)
+                                || (health != null && health.getModifier(DEVOTED_HEALTH_MODIFIER_ID) == null)) {
+                            applyDevotedBuffs(maid);
+                        }
+
+                        if (IntimidationManager.isIntimidated(maid)) return;
 
                         // 狩猎中的女仆专注狩猎：跳过攻击背叛女仆和给主人补血
                         // （否则打残主人时会触发补血回满主人并献祭女仆自己）
@@ -164,12 +214,15 @@ public class EmotionDevotedManager {
 
         if (betrayers.isEmpty()) {
             maid.setTarget(null);
+            MaidMovementControl.end(maid, MaidMovementControl.Reason.DEVOTED_COMBAT);
             return;
         }
 
         betrayers.sort(Comparator.comparingDouble(maid::distanceToSqr));
         EntityMaid target = betrayers.get(0);
 
+        MaidMovementControl.begin(maid, MaidMovementControl.Reason.DEVOTED_COMBAT,
+                java.util.EnumSet.of(MaidMovementControl.Field.PATH, MaidMovementControl.Field.POSE));
         if (maid.isInSittingPose()) {
             maid.setInSittingPose(false);
         }
@@ -187,8 +240,30 @@ public class EmotionDevotedManager {
         }
 
         maid.swing(InteractionHand.MAIN_HAND);
+        float healthBefore = target.getHealth();
+        DamageSource source = target.damageSources().mobAttack(maid);
+        target.invulnerableTime = 0;
         maid.doHurtTarget(target);
+
+        // 同主人保护、饰品或其他事件可能让 doHurtTarget 表面成功但实际不扣血。
+        // 仅在生命值完全没变时补一次基础攻击伤害，正常原生伤害不会被重复结算。
+        if (target.isAlive() && target.getHealth() >= healthBefore) {
+            float fallbackDamage = Math.max(1.0F,
+                    (float) maid.getAttributeValue(Attributes.ATTACK_DAMAGE));
+            float healthAfter = Math.max(0.0F, healthBefore - fallbackDamage);
+            HuntRawHealth.write(target, healthAfter);
+            target.hurtTime = target.hurtDuration = 10;
+            target.hurtMarked = true;
+            target.level().broadcastDamageEvent(target, source);
+            target.knockback(0.4D, maid.getX() - target.getX(), maid.getZ() - target.getZ());
+            target.hurtMarked = true;
+            if (healthAfter <= 0.0F) {
+                target.die(source);
+            }
+        }
         lastAttackTime.put(maidId, now);
+        MaidMovementControl.clearNavigation(maid);
+        MaidMovementControl.end(maid, MaidMovementControl.Reason.DEVOTED_COMBAT);
 
         if (maid.getRandom().nextDouble() < STEAL_CHANCE) {
             stealFromBetrayer(maid, target);
@@ -271,20 +346,25 @@ public class EmotionDevotedManager {
 
         // 主人已死亡：绝不能给尸体回血（会把死亡状态改乱，导致无法正常复活）
         if (!owner.isAlive()) {
+            MaidMovementControl.end(maid, MaidMovementControl.Reason.DEVOTED_HEAL);
             return;
         }
 
         Long lastHeal = lastHealTime.get(maidId);
         if (lastHeal != null && now - lastHeal < HEAL_COOLDOWN_TICKS) {
+            MaidMovementControl.end(maid, MaidMovementControl.Reason.DEVOTED_HEAL);
             return;
         }
 
         float maxHealth = owner.getMaxHealth();
         float currentHealth = owner.getHealth();
         if (currentHealth / maxHealth > OWNER_LOW_HP_THRESHOLD) {
+            MaidMovementControl.end(maid, MaidMovementControl.Reason.DEVOTED_HEAL);
             return;
         }
 
+        MaidMovementControl.begin(maid, MaidMovementControl.Reason.DEVOTED_HEAL,
+                java.util.EnumSet.of(MaidMovementControl.Field.PATH, MaidMovementControl.Field.POSE));
         if (maid.isInSittingPose()) {
             maid.setInSittingPose(false);
         }
@@ -324,6 +404,8 @@ public class EmotionDevotedManager {
 
         String prompt = "主人生命值过低！你的心脏骤然收紧——那是比你自己受伤还要痛苦的感受。作为一只愿意为主人去死的女仆，你毫不犹豫地决定把自己的生命力渡给主人。请用一句简短而坚定的话表达你的决心，语气里要有'把我的命拿去'的坦然。你不需要犹豫，因为对主人忠诚就是你存在的全部意义。";
         MaidResponder.processBroadcast(owner, Collections.singletonList(maid), prompt, false);
+        MaidMovementControl.clearNavigation(maid);
+        MaidMovementControl.end(maid, MaidMovementControl.Reason.DEVOTED_HEAL);
     }
 
     // ===== ★ 新增：忠诚女仆减伤被动 =====
@@ -364,7 +446,7 @@ public class EmotionDevotedManager {
         maid.getPersistentData().remove("DevotedSacrificeTick");
 
         String maidName = maid.getDisplayName().getString();
-        Component deathMsg = Component.literal(maidName + "为主人而献身");
+        Component deathMsg = Component.translatable("death.attack.callresponse.devoted_sacrifice", maidName);
         maid.level().players().forEach(p -> p.sendSystemMessage(deathMsg));
 
         maid.setHealth(0);

@@ -1,0 +1,25 @@
+{
+  "name": "关入与释放",
+  "icon": "minecraft:lead",
+  "category": "callresponse:iron_cage",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "title": "拴绳",
+      "item": "minecraft:lead",
+      "text": "牵着普通生物并用拴绳右键空笼即可关入。对已占用笼使用拴绳会释放普通生物，并让它继续被玩家牵住。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "title": "碰撞与手持铁笼",
+      "item": "callresponse:dark_iron_cage",
+      "text": "非玩家生物碰到空笼时可能自动被关入。手持铁笼右键可以关押的非玩家生物，可在目标位置放下笼子并立即将其关入。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "玩家进入与逃脱",
+      "text": "玩家不会因普通碰撞自动进入铁笼。潜行右键空笼可以主动进入；被关后，手持镐子右键笼子即可脱离。"
+    }
+  ]
+}

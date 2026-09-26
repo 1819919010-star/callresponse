@@ -1,0 +1,27 @@
+{
+  "cooldown": 20,
+  "description": {
+    "translate": "text.callresponse.dispatch.farm_harvest.description"
+  },
+  "duration": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 30,
+    "min_inclusive": 15
+  },
+  "emotion": {
+    "favor": 4,
+    "fear": -3,
+    "hunger": -5,
+    "trust": 1
+  },
+  "rewards": {
+    "experience": 5,
+    "loot": [
+      "callresponse:dispatch/farm_harvest"
+    ]
+  },
+  "title": {
+    "translate": "text.callresponse.dispatch.farm_harvest.title"
+  },
+  "weight": 10
+}

@@ -1,10 +1,8 @@
 package com.github.JumDa5he.callresponse.compat.hunt;
 
-import com.github.JumDa5he.callresponse.CallResponseMod;
-import com.github.JumDa5he.callresponse.compat.gui.CopyEntityUuidS2CPacket;
+import com.github.JumDa5he.callresponse.network.CopyEntityUuidS2CPacket;
 import com.github.JumDa5he.callresponse.compat.item.ModItems;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;

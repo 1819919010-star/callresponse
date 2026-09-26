@@ -1,0 +1,24 @@
+{
+  "name": "公主抱",
+  "icon": "minecraft:saddle",
+  "category": "callresponse:carry_and_doting",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "title": "工作与鞍",
+      "item": "minecraft:saddle",
+      "text": "让女仆切换到公主抱工作，并在物品栏中放入鞍。随后打开工作设置，点击“抱起女仆”，她就会走向附近同属一个主人的女仆。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "抱起与放下",
+      "text": "女仆靠近目标后会将她抱起。再次使用工作设置放下目标，或在行动被打断后，被抱的女仆会恢复正常行动。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "选择目标",
+      "text": "公主抱只能选择附近同属一个主人的其他女仆。如果附近没有合适目标，请让两名女仆靠近后再试。"
+    }
+  ]
+}

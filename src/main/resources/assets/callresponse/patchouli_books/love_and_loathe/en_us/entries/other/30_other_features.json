@@ -1,0 +1,19 @@
+{
+  "name": "Other Features",
+  "icon": "callresponse:maid_seed",
+  "category": "callresponse:other",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "title": "Maid Seed",
+      "item": "callresponse:maid_seed",
+      "text": "Love & Loathe also includes Maid Seeds, Growing Maids, other interaction extensions, and creative-mode testing tools."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Suggested Order",
+      "text": "These independent features are not required for Trust, Fear, or Hunger. New players are encouraged to experience the core relationship and daily-life systems first, then explore the extras at their own pace."
+    }
+  ]
+}

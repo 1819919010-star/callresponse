@@ -1,7 +1,7 @@
 package com.github.JumDa5he.callresponse.compat.emotion;
 
 import com.github.JumDa5he.callresponse.compat.api.event.saddle.SaddleEvent;
-import com.github.JumDa5he.callresponse.compat.gui.DropMaidC2SPacket;
+import com.github.JumDa5he.callresponse.network.DropMaidC2SPacket;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;

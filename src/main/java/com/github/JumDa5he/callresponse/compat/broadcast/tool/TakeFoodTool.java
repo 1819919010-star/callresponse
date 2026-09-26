@@ -17,7 +17,7 @@ public class TakeFoodTool implements ITool<String> {
 
     @Override
     public String summary(EntityMaid entityMaid) {
-        return "让女仆走到主人身边并从主人手中取一个食物（如果主人手里有食物）。当玩家说'开饭'、'拿食物'、'喂我'时调用。";
+        return "让女仆走到主人身边，从主人手中取得一个食物。当玩家要求开饭、拿食物或喂食时调用。";
     }
 
     @Override
@@ -31,12 +31,15 @@ public class TakeFoodTool implements ITool<String> {
     }
 
     @Override
-    public LLMCallback onCall(String s, String s2, LLMCallback llmCallback) {
-        var owner = llmCallback.getMaid().getOwner();
-        if (!(owner instanceof ServerPlayer sp)) {
-            return llmCallback.addToolResult("没有主人或主人不在线", "take_food");
+    public LLMCallback onCall(String toolCallId, String arguments, LLMCallback callback) {
+        if (!OneShotToolCall.claim(callback, id())) {
+            return OneShotToolCall.alreadyUsed(callback, toolCallId, id());
         }
-        WalkToOwnerAndTakeFoodAction.execute(llmCallback.getMaid(), sp);
-        return llmCallback.addToolResult("正在前往主人取食物", "take_food");
+        var owner = callback.getMaid().getOwner();
+        if (!(owner instanceof ServerPlayer player)) {
+            return OneShotToolCall.finish(callback, toolCallId, id(), "没有可用的在线主人，无法取食物。");
+        }
+        WalkToOwnerAndTakeFoodAction.execute(callback.getMaid(), player);
+        return OneShotToolCall.finish(callback, toolCallId, id(), "正在前往主人处取食物。");
     }
 }

@@ -1,0 +1,44 @@
+package com.github.JumDa5he.callresponse.mixin;
+
+import com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidData;
+import com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidManager;
+import com.github.JumDa5he.callresponse.compat.trade.TradingMaidData;
+import com.github.JumDa5he.callresponse.compat.trade.TradingMaidManager;
+import com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostMaidData;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+
+@Mixin(EntityMaid.class)
+public abstract class WanderingMaidInteractionMixin {
+    @Inject(method = "mobInteract", at = @At("HEAD"), cancellable = true)
+    private void callresponse$blockWanderingMaidInteraction(Player player, InteractionHand hand,
+                                                             CallbackInfoReturnable<InteractionResult> cir) {
+        EntityMaid maid = (EntityMaid) (Object) this;
+        if (BetrayalOutpostMaidData.isOutpostMaid(maid)) {
+            cir.setReturnValue(InteractionResult.FAIL);
+        } else if (WanderingMaidManager.blocksNormalInteraction(maid)
+                || TradingMaidManager.blocksNormalInteraction(maid)) {
+            cir.setReturnValue(InteractionResult.SUCCESS);
+        }
+    }
+
+
+    @Inject(method = "tameMaid", at = @At("HEAD"), cancellable = true, remap = false)
+    private void callresponse$rejectOriginalTaming(ItemStack stack, Player player,
+                                                    CallbackInfoReturnable<InteractionResult> cir) {
+        EntityMaid maid = (EntityMaid) (Object) this;
+        if (BetrayalOutpostMaidData.isOutpostMaid(maid)
+                || (WanderingMaidData.isSpecial(maid) && !WanderingMaidData.mayAccept(maid))
+                || (TradingMaidData.isTrading(maid) && !TradingMaidData.purchaseAuthorized(maid))) {
+            cir.setReturnValue(InteractionResult.FAIL);
+        }
+    }
+}

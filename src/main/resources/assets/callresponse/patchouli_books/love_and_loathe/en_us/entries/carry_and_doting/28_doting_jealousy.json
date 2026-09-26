@@ -1,0 +1,23 @@
+{
+  "name": "Doting Maid Jealousy",
+  "icon": "callresponse:dark_iron_cage",
+  "category": "callresponse:carry_and_doting",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "A Doting Maid's Jealousy",
+      "text": "A Doting Maid may sometimes become jealous of other maids belonging to the same master. If another maid and an empty Iron Cage are nearby, she may approach one of them."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Carry and Imprison",
+      "text": "She picks up her target and carries her to the Iron Cage. The Doting Maid starts this action on her own, so the player does not need to change her task or provide a saddle."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "After Imprisonment",
+      "text": "After placing her target inside, she may continue punishing her from outside for a while before returning to normal. If the trip cannot be completed, she puts the target down and gives up. A successfully imprisoned maid must be released by the player."
+    }
+  ]
+}

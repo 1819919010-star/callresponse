@@ -20,7 +20,7 @@ public class NoEatBauble extends Item implements IMaidBauble {
     public static final ResourceLocation ATTACK_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath("callresponse", "no_eat_attack");
     public static final ResourceLocation MAX_HEALTH_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath("callresponse", "no_eat_health");
     private static final float REGEN_AMOUNT = 5.0f;
-    private static final float MIN_HUNGER = 10.0f;
+    public static final float MIN_HUNGER = 15.0f;
 
     public NoEatBauble(Properties properties) {
         super(properties);
@@ -28,6 +28,8 @@ public class NoEatBauble extends Item implements IMaidBauble {
 
     @Override
     public void onPutOn(EntityMaid maid, ItemStack baubleItem) {
+        // 装备瞬间就应用下限，之后所有 HungerData 写入也会在落到 15 以下前被钳制。
+        HungerData.set(maid, Math.max(MIN_HUNGER, HungerData.get(maid)));
         applyBuffs(maid);
         updateHealthBonus(maid);
     }

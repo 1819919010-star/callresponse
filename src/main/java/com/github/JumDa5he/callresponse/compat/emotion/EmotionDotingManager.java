@@ -1,16 +1,29 @@
 package com.github.JumDa5he.callresponse.compat.emotion;
 
+import com.github.JumDa5he.callresponse.CallResponseMod;
+import com.github.JumDa5he.callresponse.compat.intimidation.IntimidationManager;
 import com.github.JumDa5he.callresponse.compat.api.event.emotion.MaidEmotionEvent;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
+import com.github.JumDa5he.callresponse.compat.brain.JealousyCageManager;
+import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
+import com.github.JumDa5he.callresponse.config.EmotionPassiveConfig;
 import com.github.tartaricacid.touhoulittlemaid.api.bauble.IChestType;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.inventory.chest.ChestManager;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -18,9 +31,12 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 
@@ -33,27 +49,29 @@ public class EmotionDotingManager {
     private static final int TRUST_THRESHOLD = 90;
     private static final int FEAR_THRESHOLD = 10;
 
-    // 攻击专用冷却
-    private static final int ATTACK_COOLDOWN = 10;           // 0.25秒
-    private static final int ATTACK_DIALOGUE_COOLDOWN = 200;           // 10秒
-
     // 日常行为共享冷却
-    private static final int ACTION_COOLDOWN = 2400;         // 120秒
+    private static final int ACTION_COOLDOWN = 4800;
 
     // 日常行为执行超时（取不到就放弃，避免一直去箱子的路上）
     private static final int ACTION_TIMEOUT_TICKS = 100;     // 5秒
 
     // 三种日常行为的权重
-    private static final double STEAL_WEIGHT = 0.4;
+    private static final double STEAL_WEIGHT = 0.3;
     private static final double SEARCH_WEIGHT = 0.3;
-    private static final double FLOWER_WEIGHT = 0.3;
+    private static final double FLOWER_WEIGHT = 0.4;
+    private static final String CALM_TICKS = "CallResponseDotingCalmTicks";
+    private static final ResourceLocation ALONE_ATTACK_ID = ResourceLocation.fromNamespaceAndPath(
+            CallResponseMod.MOD_ID, "doting_alone_attack");
+    private static final Map<UUID, Long> nextAloneHeart = new ConcurrentHashMap<>();
 
 
-    private static final int DIALOGUE_COOLDOWN = 2400;
+    // 溺爱所有 AI 发言共用 30 秒冷却；占有欲配置为 0 时也不能绕过此限制。
+    private static final int DIALOGUE_COOLDOWN = 20 * 30;
 
     // ===== 状态存储 =====
-    private static final Map<UUID, Long> lastAttackTime = new ConcurrentHashMap<>();
-    private static final Map<UUID, Long> lastAttackDialogueTime = new ConcurrentHashMap<>();
+    // 占有欲只在一次尝试开始时发言；发作期间持续赶走其他女仆，结束后恢复普通行为。
+    private static final Map<UUID, Long> lastPossessiveAttemptTime = new ConcurrentHashMap<>();
+    private static final Map<UUID, Long> possessiveUntilTime = new ConcurrentHashMap<>();
     private static final Map<UUID, Long> lastActionTime = new ConcurrentHashMap<>();
     private static final Map<UUID, Long> lastDialogueTime = new ConcurrentHashMap<>();
 
@@ -81,6 +99,56 @@ public class EmotionDotingManager {
         if (!maid.isTame() || maid.getOwner() == null) return false;
         EmotionData.EmotionValues values = EmotionData.get(maid, player);
         return values.trust() >= TRUST_THRESHOLD && values.fear() <= FEAR_THRESHOLD;
+    }
+
+    public static void startCalmPeriod(EntityMaid maid) {
+        maid.getPersistentData().putInt(CALM_TICKS, 20 * 60 * 10);
+    }
+
+    public static void abortForIntimidation(EntityMaid maid) {
+        pendingTasks.remove(maid.getUUID());
+        possessiveUntilTime.remove(maid.getUUID());
+        AttributeInstance attack = maid.getAttribute(Attributes.ATTACK_DAMAGE);
+        if (attack != null) attack.removeModifier(ALONE_ATTACK_ID);
+        nextAloneHeart.remove(maid.getUUID());
+        finishMovement(maid);
+    }
+
+    private static void updateAloneBonus(EntityMaid maid, ServerPlayer owner, boolean doting, long tick) {
+        AttributeInstance attack = maid.getAttribute(Attributes.ATTACK_DAMAGE);
+        if (attack == null) return;
+        boolean alone = owner != null && doting && !IntimidationManager.isIntimidated(maid)
+                && owner.level() == maid.level() && maid.distanceToSqr(owner) <= 4.0D
+                && maid.level().getEntitiesOfClass(LivingEntity.class, maid.getBoundingBox().inflate(2.0D),
+                    other -> other != maid && other != owner && other.isAlive()
+                            && maid.distanceToSqr(other) <= 4.0D).isEmpty();
+        if (!alone) {
+            attack.removeModifier(ALONE_ATTACK_ID);
+            nextAloneHeart.remove(maid.getUUID());
+            return;
+        }
+        if (attack.getModifier(ALONE_ATTACK_ID) == null) {
+            attack.addTransientModifier(new AttributeModifier(ALONE_ATTACK_ID,
+                    0.10D, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+        }
+        long next = nextAloneHeart.computeIfAbsent(maid.getUUID(), ignored -> tick + 200L);
+        if (tick >= next && maid.level() instanceof ServerLevel level) {
+            level.sendParticles(ParticleTypes.HEART, maid.getX(), maid.getY() + maid.getBbHeight(), maid.getZ(),
+                    3, 0.2D, 0.15D, 0.2D, 0.01D);
+            nextAloneHeart.put(maid.getUUID(), tick + 200L);
+        }
+    }
+
+    @SubscribeEvent
+    public void onMaidTick(EntityTickEvent.Post event) {
+        if (!(event.getEntity() instanceof EntityMaid maid) || maid.level().isClientSide) return;
+        int calm = maid.getPersistentData().getInt(CALM_TICKS);
+        if (calm > 0) maid.getPersistentData().putInt(CALM_TICKS, calm - 1);
+        if (maid.tickCount % 20 != 0) return;
+        ServerPlayer owner = maid.getOwnerUUID() == null ? null
+                : maid.level().getServer().getPlayerList().getPlayer(maid.getOwnerUUID());
+        updateAloneBonus(maid, owner, owner != null && isDoting(maid, owner),
+                maid.level().getGameTime());
     }
 
     private static void triggerAIDialogue(EntityMaid maid, ServerPlayer player, String prompt) {
@@ -114,20 +182,40 @@ public class EmotionDotingManager {
             player.level().getEntitiesOfClass(EntityMaid.class,
                             player.getBoundingBox().inflate(32))
                     .forEach(maid -> {
-                        if (!maid.isTame() || maid.getOwner() == null) return;
-                        if (!maid.isAlive()) return;
+                        if (!maid.isTame() || maid.getOwner() == null || !maid.isAlive()) {
+                            finishMovement(maid);
+                            return;
+                        }
                         if (!maid.getOwnerUUID().equals(player.getUUID())) return;
-                        if (!isDoting(maid, player)) return;
+                        if (IntimidationManager.isIntimidated(maid)) {
+                            abortForIntimidation(maid);
+                            return;
+                        }
+                        // 嫉妒关笼期间由正式 Behavior 独占路径；暂停溺爱日常/赶人，结束后按原计时自然恢复。
+                        if (JealousyCageManager.isRunning(maid)) {
+                            possessiveUntilTime.remove(maid.getUUID());
+                            finishMovement(maid);
+                            return;
+                        }
+                        if (!isDoting(maid, player)) {
+                            finishMovement(maid);
+                            return;
+                        }
 
                         long tick = maid.level().getGameTime();
                         UUID maidId = maid.getUUID();
 
-                        // ---- 1. 攻击检测（被动，独立运行） ----
-                        if (tick - lastAttackTime.getOrDefault(maidId, 0L) >= ATTACK_COOLDOWN) {
-                            if (attackNearbyMaids(maid, player, tick)) {
-                                lastAttackTime.put(maidId, tick);
+                        // ---- 1. 占有欲赶人：按配置间隔开始一次，持续期内保持追赶 ----
+                        if (isPossessiveActive(maid, tick)) {
+                            if (driveNearbyMaids(maid, player)) {
                                 return;
                             }
+                            // 周围已经没有要赶走的女仆，提前回到普通行为。
+                            possessiveUntilTime.remove(maidId);
+                            finishPossessiveMovement(maid);
+                        }
+                        if (tryStartPossessiveDrive(maid, player, tick)) {
+                            return;
                         }
 
                         // ---- 2. 处理待执行日常行为 ----
@@ -135,6 +223,7 @@ public class EmotionDotingManager {
                             ActionTask task = pendingTasks.get(maidId);
                             if (tick - task.startTick >= ACTION_TIMEOUT_TICKS) {
                                 pendingTasks.remove(maidId);
+                                finishMovement(maid);
                                 return;
                             }
                             double distSq;
@@ -159,12 +248,14 @@ public class EmotionDotingManager {
                             } else {
                                 executeAction(maid, task);
                                 pendingTasks.remove(maidId);
+                                finishMovement(maid);
                                 return;
                             }
                         }
 
                         // ---- 3. 日常行为触发（共享冷却） ----
-                        if (tick - lastActionTime.getOrDefault(maidId, 0L) >= ACTION_COOLDOWN) {
+                        if (maid.getPersistentData().getInt(CALM_TICKS) <= 0
+                                && tick - lastActionTime.getOrDefault(maidId, 0L) >= ACTION_COOLDOWN) {
                             ActionType selected = selectAction(maid, player);
                             if (selected != null && startAction(maid, player, selected)) {
                                 lastActionTime.put(maidId, tick);
@@ -174,8 +265,61 @@ public class EmotionDotingManager {
         }
     }
 
+    private static boolean isPossessiveActive(EntityMaid maid, long tick) {
+        UUID maidId = maid.getUUID();
+        Long until = possessiveUntilTime.get(maidId);
+        if (until != null && tick < until) {
+            return true;
+        }
+        possessiveUntilTime.remove(maidId);
+        finishPossessiveMovement(maid);
+        return false;
+    }
+
+    private static void finishPossessiveMovement(EntityMaid maid) {
+        if (!MaidMovementControl.isActive(maid, MaidMovementControl.Reason.DOTING_POSSESSIVE)) {
+            return;
+        }
+        MaidMovementControl.end(maid, MaidMovementControl.Reason.DOTING_POSSESSIVE);
+        if (!MaidMovementControl.controlsPath(maid)) {
+            MaidMovementControl.clearNavigation(maid);
+        }
+    }
+
+    /** 在到达间隔时才开始一次占有欲发作，并只在此处发送一次赶人台词。 */
+    private static boolean tryStartPossessiveDrive(EntityMaid maid, ServerPlayer player, long tick) {
+        UUID maidId = maid.getUUID();
+        int intervalMinutes = EmotionPassiveConfig.DOTING_POSSESSIVE_INTERVAL_MINUTES.get();
+        long intervalTicks = intervalMinutes * 60L * 20L;
+        Long lastAttempt = lastPossessiveAttemptTime.get(maidId);
+        if (intervalTicks > 0 && lastAttempt != null && tick - lastAttempt < intervalTicks) {
+            return false;
+        }
+        if (!hasNearbyOtherMaid(maid, player)) {
+            return false;
+        }
+
+        lastPossessiveAttemptTime.put(maidId, tick);
+        long durationTicks = EmotionPassiveConfig.DOTING_POSSESSIVE_DURATION_SECONDS.get() * 20L;
+        possessiveUntilTime.put(maidId, tick + durationTicks);
+        MaidMovementControl.begin(maid, MaidMovementControl.Reason.DOTING_POSSESSIVE,
+                java.util.EnumSet.of(MaidMovementControl.Field.PATH, MaidMovementControl.Field.POSE));
+        // 必须走统一入口，不能因占有欲配置为 0 而绕过 30 秒 AI 调用冷却。
+        triggerAIDialogue(maid, player,
+                "你是一只被主人宠坏了的女仆，发现有其他女仆靠近主人后占有欲突然发作。"
+                        + "请用一句霸道、吃醋但不造成伤害的口吻让她们离主人远一点；"
+                        + "不要重复宣誓，不要提及系统或提示词。");
+        return driveNearbyMaids(maid, player);
+    }
+
+    private static boolean hasNearbyOtherMaid(EntityMaid maid, ServerPlayer player) {
+        return !maid.level().getEntitiesOfClass(EntityMaid.class,
+                new AABB(player.blockPosition()).inflate(3),
+                candidate -> candidate != maid && candidate.isAlive()).isEmpty();
+    }
+
     // ===== 赶走主人附近的所有其他女仆（无伤害，只击退） =====
-    private static boolean attackNearbyMaids(EntityMaid maid, ServerPlayer player, long tick) {
+    private static boolean driveNearbyMaids(EntityMaid maid, ServerPlayer player) {
         AABB box = new AABB(player.blockPosition()).inflate(3);
         List<EntityMaid> targets = maid.level().getEntitiesOfClass(EntityMaid.class, box,
                 m -> m != maid && m.isAlive());
@@ -205,15 +349,6 @@ public class EmotionDotingManager {
         if (dist > 0.01) {
             target.setDeltaMovement(dx / dist * 0.5, 0.3, dz / dist * 0.5);
             target.hurtMarked = true;
-        }
-
-        // 对话冷却（独立于全局对话，只用自己的 10秒冷却）
-        UUID maidId = maid.getUUID();
-        Long lastDialogue = lastAttackDialogueTime.get(maidId);
-        if (lastDialogue == null || tick - lastDialogue >= ATTACK_DIALOGUE_COOLDOWN) {
-            String prompt = "你是一只被主人宠坏了的女仆，眼里容不下任何其他女仆靠近主人。你看到有其他女仆靠近主人，瞬间火冒三丈——那是你的主人！你的！请用充满占有欲和威胁的语气，说一段话把这个不知好歹的女仆赶走，要让主人知道你只允许自己独占他，也要让那个女仆知道她永远不可能比你更受宠。说话要霸道一点，宣誓主权。";
-            MaidResponder.processBroadcast(player, Collections.singletonList(maid), prompt, false);
-            lastAttackDialogueTime.put(maidId, tick);
         }
 
         return true;
@@ -280,16 +415,24 @@ public class EmotionDotingManager {
 
     // ===== 启动日常行为 =====
     private static boolean startAction(EntityMaid maid, ServerPlayer player, ActionType type) {
+        MaidMovementControl.begin(maid, MaidMovementControl.Reason.DOTING_ACTION,
+                java.util.EnumSet.of(MaidMovementControl.Field.PATH, MaidMovementControl.Field.POSE));
         standUpIfSitting(maid);
         switch (type) {
             case STEAL:
-                if (player == null) return false;
+                if (player == null) {
+                    MaidMovementControl.end(maid, MaidMovementControl.Reason.DOTING_ACTION);
+                    return false;
+                }
                 pendingTasks.put(maid.getUUID(), new ActionTask(type, null, player, maid.level().getGameTime()));
                 walkTo(maid, player.blockPosition());
                 return true;
             case SEARCH:
                 BlockPos container = findNearestContainer(maid);
-                if (container == null) return false;
+                if (container == null) {
+                    MaidMovementControl.end(maid, MaidMovementControl.Reason.DOTING_ACTION);
+                    return false;
+                }
                 pendingTasks.put(maid.getUUID(), new ActionTask(type, container, player, maid.level().getGameTime()));
                 walkTo(maid, container);
                 return true;
@@ -298,6 +441,7 @@ public class EmotionDotingManager {
                 walkTo(maid, player.blockPosition());
                 return true;
             default:
+                MaidMovementControl.end(maid, MaidMovementControl.Reason.DOTING_ACTION);
                 return false;
         }
     }
@@ -335,25 +479,61 @@ public class EmotionDotingManager {
         ItemStack selected = candidates.get(maid.getRandom().nextInt(candidates.size()));
         ItemStack taken = selected.copy();
 
-        if (player.getMainHandItem() == selected) {
-            player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
-        } else if (player.getOffhandItem() == selected) {
-            player.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
-        } else {
-            for (int i = 0; i < 27; i++) {
-                if (player.getInventory().getItem(i) == selected) {
-                    player.getInventory().setItem(i, ItemStack.EMPTY);
-                    break;
-                }
-            }
+        // getMaidInv() 包含当前背包尚未开放的物理栏位；写入那里会让物品在 GUI 中不可见。
+        // 先模拟真实可用背包能接收的数量，再移除玩家物品并按实际结果守恒转移。
+        IItemHandler availableInventory = maid.getAvailableBackpackInv();
+        ItemStack simulatedRemainder = ItemHandlerHelper.insertItemStacked(
+                availableInventory, taken.copy(), true);
+        int plannedInsertCount = Math.max(0, taken.getCount() - simulatedRemainder.getCount());
+
+        if (!removeSelectedPlayerStack(player, selected)) {
+            return;
         }
 
-        ItemStack remaining = ItemHandlerHelper.insertItemStacked(maid.getMaidInv(), taken, false);
-        if (!remaining.isEmpty()) maid.spawnAtLocation(remaining);
+        int insertedCount = 0;
+        if (plannedInsertCount > 0) {
+            ItemStack toInsert = taken.copy();
+            toInsert.setCount(plannedInsertCount);
+            ItemStack actualRemainder = ItemHandlerHelper.insertItemStacked(availableInventory, toInsert, false);
+            insertedCount = Math.max(0, plannedInsertCount - actualRemainder.getCount());
+        }
+
+        int dropCount = taken.getCount() - insertedCount;
+        if (dropCount > 0) {
+            ItemStack toDrop = taken.copy();
+            toDrop.setCount(dropCount);
+            dropAtMaid(maid, toDrop);
+        }
 
         String itemName = taken.getDisplayName().getString();
         String prompt = "你趁主人不注意，偷偷拿了一样东西（" + itemName + "）——作为一只被宠坏的女仆，你早就习惯了主人什么都顺着你。主人东西多的是，拿一件怎么了？请用一句理直气壮又带点调皮的话告诉主人：你拿了就是你的了，完全不觉得理亏，甚至觉得是主人赚了——你的笑容不就是最好的回报吗？语气要像在说'我看上它是你的福气'。";
         triggerAIDialogue(maid, player, prompt);
+    }
+
+    private static boolean removeSelectedPlayerStack(ServerPlayer player, ItemStack selected) {
+        if (player.getMainHandItem() == selected) {
+            player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+            return true;
+        }
+        if (player.getOffhandItem() == selected) {
+            player.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
+            return true;
+        }
+        for (int slot = 0; slot < 27; slot++) {
+            if (player.getInventory().getItem(slot) == selected) {
+                player.getInventory().setItem(slot, ItemStack.EMPTY);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void dropAtMaid(EntityMaid maid, ItemStack stack) {
+        if (stack.isEmpty() || maid.level().isClientSide) return;
+        ItemEntity itemEntity = new ItemEntity(
+                maid.level(), maid.getX(), maid.getY() + 0.25, maid.getZ(), stack);
+        itemEntity.setDefaultPickUpDelay();
+        maid.level().addFreshEntity(itemEntity);
     }
 
     // ===== 偷箱子 =====
@@ -440,10 +620,38 @@ public class EmotionDotingManager {
 
     public static void resetDoting(EntityMaid maid) {
         UUID maidId = maid.getUUID();
-        lastAttackTime.remove(maidId);
-        lastAttackDialogueTime.remove(maidId);
+        lastPossessiveAttemptTime.remove(maidId);
+        possessiveUntilTime.remove(maidId);
         lastActionTime.remove(maidId);
         lastDialogueTime.remove(maidId);
         pendingTasks.remove(maidId);
+        finishMovement(maid);
+    }
+
+    private static void finishMovement(EntityMaid maid) {
+        boolean ownedMovement = MaidMovementControl.isActive(maid, MaidMovementControl.Reason.DOTING_ACTION)
+                || MaidMovementControl.isActive(maid, MaidMovementControl.Reason.DOTING_POSSESSIVE);
+        MaidMovementControl.end(maid, MaidMovementControl.Reason.DOTING_ACTION);
+        MaidMovementControl.end(maid, MaidMovementControl.Reason.DOTING_POSSESSIVE);
+        // 只有溺爱流程确实持有过移动权，且没有其他流程继续接管时，才能清掉它留下的路径。
+        if (ownedMovement && !MaidMovementControl.controlsPath(maid)) {
+            MaidMovementControl.clearNavigation(maid);
+        }
+    }
+
+    @SubscribeEvent
+    public void onMaidLeave(EntityLeaveLevelEvent event) {
+        if (event.getEntity() instanceof EntityMaid maid && !event.getLevel().isClientSide()) {
+            pendingTasks.remove(maid.getUUID());
+            possessiveUntilTime.remove(maid.getUUID());
+            nextAloneHeart.remove(maid.getUUID());
+        }
+    }
+
+    @SubscribeEvent
+    public void onServerStopping(ServerStoppingEvent event) {
+        pendingTasks.clear();
+        possessiveUntilTime.clear();
+        nextAloneHeart.clear();
     }
 }

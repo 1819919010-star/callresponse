@@ -2,19 +2,32 @@ package com.github.JumDa5he.callresponse.mixin;
 
 import com.github.JumDa5he.callresponse.compat.brain.LazyMaidHitHandler;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
+import com.github.JumDa5he.callresponse.compat.damage.OwnerDamageContext;
+import com.github.JumDa5he.callresponse.compat.damage.OwnerDamageSource;
+import com.github.JumDa5he.callresponse.compat.damage.ProtectionBreakLevel;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionActiveDialogue;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionBetrayalManager;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderManager;
+import com.github.JumDa5he.callresponse.compat.hunt.HuntRawHealth;
+import com.github.JumDa5he.callresponse.compat.npc.MaidReviveEventData;
+import com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostAlertManager;
+import com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostMaidData;
+import com.github.JumDa5he.callresponse.compat.outpost.OutpostMaidMarker;
+import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
+import com.github.JumDa5he.callresponse.compat.state.MaidPathRepair;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
@@ -25,19 +38,66 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import javax.annotation.Nullable;
-import java.util.UUID;
-
 @Mixin(EntityMaid.class)
-public abstract class MixinEntityMaid extends Mob {
+public abstract class MixinEntityMaid extends Mob implements OutpostMaidMarker {
+    @Unique
+    private static final EntityDataAccessor<Boolean> callresponse$OUTPOST_MAID =
+            SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
+
+    @Inject(method = "defineSynchedData", at = @At("TAIL"))
+    private void callresponse$defineOutpostMaid(SynchedEntityData.Builder builder, CallbackInfo ci) {
+        builder.define(callresponse$OUTPOST_MAID, false);
+    }
+
+    @Override
+    public boolean callresponse$isOutpostMaid() {
+        return getEntityData().get(callresponse$OUTPOST_MAID);
+    }
+
+    @Override
+    public void callresponse$setOutpostMaid(boolean outpostMaid) {
+        getEntityData().set(callresponse$OUTPOST_MAID, outpostMaid);
+    }
+    @Unique
+    private static final String CALLRESPONSE$HURT_EMOTION_COOLDOWN =
+            "callresponse:owner_hurt_emotion_cooldown_until";
+    @Unique
+    private static final long CALLRESPONSE$HURT_EMOTION_COOLDOWN_TICKS = 20L;
+
     private MixinEntityMaid() { super(null, null); }
+
+    /** 只在据点复仇女仆真实睡眠/娱乐时将 TLM 传感器范围缩半。 */
+    @Inject(method = "searchDimension", at = @At("RETURN"), cancellable = true, remap = false)
+    private void callresponse$reduceRelaxedOutpostAwareness(CallbackInfoReturnable<AABB> cir) {
+        EntityMaid maid = (EntityMaid) (Object) this;
+        cir.setReturnValue(BetrayalOutpostAlertManager.adjustSensorBox(maid, cir.getReturnValue()));
+    }
+
+    /** 困在铁笼中时从源头拒绝 TLM 跟随传送，避免在主人和笼子之间反复闪现。 */
+    @Inject(method = "teleportToOwner", at = @At("HEAD"), cancellable = true, remap = false)
+    private void callresponse$blockOwnerTeleportWhileCaged(LivingEntity owner,
+                                                            CallbackInfoReturnable<Boolean> cir) {
+        EntityMaid maid = (EntityMaid) (Object) this;
+        if (MaidMovementControl.isActive(maid, MaidMovementControl.Reason.CAGE)) {
+            cir.setReturnValue(false);
+        }
+    }
 
     // ===== 狩猎令：放行名单内的目标（玩家默认被 TLM 拒绝） =====
     @Inject(method = "canAttack", at = @At("HEAD"), cancellable = true)
     private void callresponse$allowHuntTarget(LivingEntity target, CallbackInfoReturnable<Boolean> cir) {
         EntityMaid maid = (EntityMaid) (Object) this;
+        if (BetrayalOutpostMaidData.areSisters(maid, target)) {
+            cir.setReturnValue(false);
+            return;
+        }
+        if (!maid.level().isClientSide && BetrayalOutpostMaidData.isOutpostMaid(maid)) {
+            cir.setReturnValue(BetrayalOutpostAlertManager.canKeepOrDetectTarget(maid, target));
+            return;
+        }
         if (!maid.level().isClientSide && HuntOrderManager.isHuntTarget(maid, target)) {
             cir.setReturnValue(true);
         }
@@ -51,11 +111,12 @@ public abstract class MixinEntityMaid extends Mob {
         Entity directEntity = source.getDirectEntity();
 
         // 背叛女仆攻击通报（始终执行）
-        if (directEntity instanceof EntityMaid attackerMaid && EmotionBetrayalManager.isBetraying(attackerMaid)) {
+        if (directEntity instanceof EntityMaid attackerMaid
+                && EmotionBetrayalManager.isActualBetrayal(attackerMaid)) {
             EmotionBetrayalManager.onVictimAttackedByBetrayer(maid, attackerMaid);
         }
 
-        boolean isOwnerAttack = isOwnerAttackingMaid(maid, source);
+        boolean isOwnerAttack = OwnerDamageSource.isCurrentOwnerSource(maid, source);
         boolean isMaidAttack = directEntity instanceof EntityMaid;
 
         // 只有来自当前狩猎者的伤害才绕过目标女仆保护，其他伤害仍走原逻辑。
@@ -67,34 +128,74 @@ public abstract class MixinEntityMaid extends Mob {
         }
 
         if (isOwnerAttack && !EmotionBetrayalManager.isBetraying(maid)) {
-            ServerPlayer player = resolvePlayer(source);
-            if (player == null || !isAimingAtMaid(player, maid) || isSplashDamage(source)) {
-                return;
-            }
+            ServerPlayer player = OwnerDamageSource.findServerPlayer(maid, source);
+            // 保持旧语义：只有主人近距离明确瞄准的直接攻击改变情感；
+            // 投射物、TNT 和枪械仍可造成伤害，但不会被误算成一次近战“教训”。
+            if (player != null && isAimingAtMaid(player, maid) && !isSplashDamage(source)) {
+                long nowTick = maid.level().getGameTime();
+                long cooldownUntil = maid.getPersistentData().getLong(CALLRESPONSE$HURT_EMOTION_COOLDOWN);
+                if (amount > 0.0F && nowTick >= cooldownUntil) {
+                    maid.getPersistentData().putLong(CALLRESPONSE$HURT_EMOTION_COOLDOWN,
+                            nowTick + CALLRESPONSE$HURT_EMOTION_COOLDOWN_TICKS);
+                    float damage = Math.max(amount, 0);
+                    int fearDelta = Math.min((int) (1 + damage * 1.5), 4);
+                    int trustDelta = Math.max(-(1 + (int) (damage * 0.5)), -2);
 
-            float damage = Math.max(amount, 0);
-            int fearDelta = Math.min((int) (1 + damage * 1.5), 4);
-            int trustDelta = Math.max(-(1 + (int) (damage * 0.5)), -2);
+                    EmotionData.EmotionValues old = EmotionData.get(maid, player.getUUID());
+                    EmotionData.addFear(maid, player.getUUID(), fearDelta);
+                    EmotionData.addTrust(maid, player.getUUID(), trustDelta);
+                    EmotionData.EmotionValues now = EmotionData.get(maid, player.getUUID());
 
-            EmotionData.EmotionValues old = EmotionData.get(maid, player.getUUID());
-            EmotionData.addFear(maid, player.getUUID(), fearDelta);
-            EmotionData.addTrust(maid, player.getUUID(), trustDelta);
-            EmotionData.EmotionValues now = EmotionData.get(maid, player.getUUID());
+                    MaidResponder.debug(player,
+                            "§e[情感] 教训女仆(mixin) → 信任 " + trustDelta +
+                            " (" + old.trust() + "→" + now.trust() + "), 恐惧 " + fearDelta +
+                            " (" + old.fear() + "→" + now.fear() + ")");
 
-            MaidResponder.debug(player,
-                    "§e[情感] 教训女仆(mixin) → 信任 " + trustDelta +
-                    " (" + old.trust() + "→" + now.trust() + "), 恐惧 " + fearDelta +
-                    " (" + old.fear() + "→" + now.fear() + ")");
-
-            if (LazyMaidHitHandler.isLazyMode(maid)) {
-                LazyMaidHitHandler.triggerEscape(maid, player);
-            } else {
-                EmotionActiveDialogue.tryInteractDialogue(maid, player);
+                    if (LazyMaidHitHandler.isLazyMode(maid)) {
+                        LazyMaidHitHandler.triggerEscape(maid, player);
+                    } else {
+                        EmotionActiveDialogue.tryInteractDialogue(maid, player);
+                    }
+                }
             }
         }
 
-        // 伤害绕过：主人故意攻击 / 女仆间攻击
-        if (isOwnerAttack || isMaidAttack) {
+        // BASIC 只建立前置放行凭证，随后继续执行 EntityMaid 原本的 hurt：
+        // TLM 限伤、护甲、无敌帧、饰品与死亡保护都照常结算。
+        ProtectionBreakLevel protectionLevel = OwnerDamageSource.level();
+        if (isOwnerAttack && protectionLevel == ProtectionBreakLevel.BASIC) {
+            OwnerDamageContext.begin(maid, source,
+                    OwnerDamageContext.normalizeDamage(amount), protectionLevel);
+            return;
+        }
+
+        // ULTIMATE 完整保留旧版全破路径。
+        if (isOwnerAttack && protectionLevel == ProtectionBreakLevel.ULTIMATE) {
+            float rawDamage = OwnerDamageContext.normalizeDamage(amount);
+            OwnerDamageContext.begin(maid, source, rawDamage, protectionLevel);
+            this.invulnerableTime = 0;
+            this.hurtTime = 0;
+            this.lastHurt = 0.0F;
+            try {
+                boolean result = super.hurt(source, rawDamage);
+                float desiredHealth = OwnerDamageContext.desiredHealth(maid, maid.getHealth());
+                if (maid.getHealth() > desiredHealth) {
+                    HuntRawHealth.write(maid, desiredHealth);
+                }
+                if (desiredHealth <= 0.0F && !OwnerDamageContext.wasDeathStarted(maid)
+                        && !maid.isRemoved()) {
+                    OwnerDamageContext.markDeathStarted(maid, source);
+                    super.die(source);
+                }
+                cir.setReturnValue(result || rawDamage > 0.0F);
+            } finally {
+                OwnerDamageContext.end(maid, source);
+            }
+            return;
+        }
+
+        // 保留原有女仆攻击女仆范围；这部分暂不扩大，也不冒充主人伤害。
+        if (isMaidAttack) {
             DamageSource neutral = maid.damageSources().generic();
             boolean result = super.hurt(neutral, amount);
             if (result) {
@@ -114,36 +215,48 @@ public abstract class MixinEntityMaid extends Mob {
         }
     }
 
-    @Unique
-    private boolean isOwnerAttackingMaid(EntityMaid maid, DamageSource source) {
-        UUID ownerId = maid.getOwnerUUID();
-        if (ownerId == null) return false;
-
-        Entity entity = source.getEntity();
-        if (entity instanceof Player player && player.getUUID().equals(ownerId)) return true;
-
-        Entity direct = source.getDirectEntity();
-        if (direct instanceof Player player && player.getUUID().equals(ownerId)) return true;
-        if (direct instanceof Projectile proj && proj.getOwner() instanceof Player player && player.getUUID().equals(ownerId)) return true;
-        if (direct instanceof PrimedTnt tnt && tnt.getOwner() instanceof Player player && player.getUUID().equals(ownerId)) return true;
-
-        return false;
+    @Inject(method = "die", at = @At("HEAD"))
+    private void callresponse$trackOwnerDamageDeath(DamageSource source, CallbackInfo ci) {
+        EntityMaid maid = (EntityMaid) (Object) this;
+        if (OwnerDamageContext.isUltimate(maid, source)) {
+            OwnerDamageContext.markDeathStarted(maid, source);
+        }
     }
 
-    @Nullable
-    @Unique
-    private ServerPlayer resolvePlayer(DamageSource source) {
-        Entity direct = source.getDirectEntity();
+    @Inject(method = "hurt", at = @At("RETURN"))
+    private void callresponse$finishBasicOwnerDamage(DamageSource source, float amount,
+                                                      CallbackInfoReturnable<Boolean> cir) {
+        EntityMaid maid = (EntityMaid) (Object) this;
+        if (OwnerDamageContext.isBasic(maid, source)) {
+            OwnerDamageContext.end(maid, source);
+        }
+    }
 
-        if (source.getEntity() instanceof ServerPlayer player) return player;
+    /** 这里只会在死亡已经成立、TLM 即将把女仆 NBT 写入复活胶片时执行。 */
+    @Inject(method = "dropEquipment", at = @At("HEAD"))
+    private void callresponse$recordReviveEventDeathType(CallbackInfo ci) {
+        EntityMaid maid = (EntityMaid) (Object) this;
+        if (maid.level().isClientSide) return;
+        DamageSource source = maid.getLastDamageSource();
+        boolean ownerKilled = source != null && (OwnerDamageSource.isCurrentOwnerSource(maid, source)
+                || OwnerDamageContext.hasActiveDamage(maid, source));
+        MaidReviveEventData.recordDeath(maid, ownerKilled, maid.level().getGameTime());
+    }
 
-        if (direct instanceof ServerPlayer player) return player;
+    @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
+    private void callresponse$sanitizeMovementSave(CompoundTag tag, CallbackInfo ci) {
+        EntityMaid maid = (EntityMaid) (Object) this;
+        MaidReviveEventData.writeAdditionalSaveData(maid, tag);
+        MaidMovementControl.sanitizeSave(maid, tag);
+    }
 
-        if (direct instanceof Projectile proj && proj.getOwner() instanceof ServerPlayer player) return player;
-
-        if (direct instanceof PrimedTnt tnt && tnt.getOwner() instanceof ServerPlayer player) return player;
-
-        return null;
+    @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
+    private void callresponse$recoverMovementOnLoad(CompoundTag tag, CallbackInfo ci) {
+        EntityMaid maid = (EntityMaid) (Object) this;
+        MaidReviveEventData.readAdditionalSaveData(maid, tag);
+        MaidPathRepair.cleanupKnownSpeedPollution(maid,
+                maid.getPersistentData().contains(MaidMovementControl.ROOT_KEY, Tag.TAG_COMPOUND), true);
+        MaidMovementControl.recoverOnLoad(maid);
     }
 
     @Unique

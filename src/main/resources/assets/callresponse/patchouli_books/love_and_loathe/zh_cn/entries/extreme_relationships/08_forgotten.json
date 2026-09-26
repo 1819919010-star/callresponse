@@ -1,0 +1,13 @@
+{
+  "name": "淡忘",
+  "icon": "minecraft:clock",
+  "category": "callresponse:extreme_relationships",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "淡忘",
+      "text": "如果主人长期不再与某名女仆互动或关注她，她可能逐渐进入淡忘状态。短暂离开不会立刻造成这种变化。"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 package com.github.JumDa5he.callresponse.compat.emotion;
 
+import com.github.JumDa5he.callresponse.compat.broadcast.tool.OneShotToolCall;
 import com.github.tartaricacid.touhoulittlemaid.ai.agent.tool.ITool;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.LLMCallback;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.function.schema.parameter.ObjectParameter;
@@ -9,7 +10,6 @@ import com.mojang.serialization.Codec;
 import net.minecraft.server.level.ServerPlayer;
 
 public class EmotionTool implements ITool<String> {
-
     @Override
     public String id() {
         return "get_emotion";
@@ -17,9 +17,7 @@ public class EmotionTool implements ITool<String> {
 
     @Override
     public String summary(EntityMaid entityMaid) {
-        return "获取当前女仆对玩家的信任值和恐惧值（0-100）。" +
-                "信任值高表示亲近，恐惧值高表示害怕。" +
-                "根据这些值调整你的回复语气：信任>恐惧时亲近，恐惧>信任时畏惧。";
+        return "获取当前女仆对玩家的信任值和恐惧值（0 到 100），并据此调整回复语气。";
     }
 
     @Override
@@ -33,25 +31,20 @@ public class EmotionTool implements ITool<String> {
     }
 
     @Override
-    public LLMCallback onCall(String s, String s2, LLMCallback llmCallback) {
-        // 获取主人（触发对话的玩家）
-        var owner = llmCallback.getMaid().getOwner();
-        if (!(owner instanceof ServerPlayer player)) {
-            return llmCallback.addToolResult("信任值: 40, 恐惧值: 10, 情感倾向: 中立", "get_emotion");
+    public LLMCallback onCall(String toolCallId, String arguments, LLMCallback callback) {
+        if (!OneShotToolCall.claim(callback, id())) {
+            return OneShotToolCall.alreadyUsed(callback, toolCallId, id());
         }
-
-        // 获取情感值
-        var values = EmotionData.get(llmCallback.getMaid(), player);
-        var tendency = EmotionData.getTendency(llmCallback.getMaid(), player);
-
-        // 构建返回信息
+        var owner = callback.getMaid().getOwner();
+        if (!(owner instanceof ServerPlayer player)) {
+            return OneShotToolCall.finish(callback, toolCallId, id(), "信任值：40，恐惧值：10，情感倾向：中立");
+        }
+        var values = EmotionData.get(callback.getMaid(), player);
+        var tendency = EmotionData.getTendency(callback.getMaid(), player);
         String response = String.format(
-                "信任值: %d, 恐惧值: %d, 情感倾向: %s",
-                values.trust(),
-                values.fear(),
-                tendency.name().toLowerCase()
+                "信任值：%d，恐惧值：%d，情感倾向：%s",
+                values.trust(), values.fear(), tendency.name().toLowerCase()
         );
-
-        return llmCallback.addToolResult(response, "get_emotion");
+        return OneShotToolCall.finish(callback, toolCallId, id(), response);
     }
 }

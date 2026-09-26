@@ -1,0 +1,19 @@
+{
+  "name": "女仆派遣",
+  "icon": "callresponse:dispatch_book",
+  "category": "callresponse:interaction",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "title": "派遣委托书",
+      "recipe": "callresponse:dispatch_book",
+      "text": "使用派遣委托书，可以让自己的女仆暂时离开，参加工作或外出活动。不同事件有不同持续时间、要求和结果。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "派遣内容",
+      "text": "可选活动包括面包房帮厨、农场秋收、商队护送、矿洞勘察、林间野餐、花海散步、河边垂钓和村庄庆典等。完成后，女仆会带回相应奖励，情绪和饥饿也可能发生变化。"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "cooldown": 45,
+  "description": {
+    "translate": "text.callresponse.dispatch.mineshaft_inspect.description"
+  },
+  "duration": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 50,
+    "min_inclusive": 30
+  },
+  "emotion": {
+    "favor": 2,
+    "fear": -2,
+    "hunger": -12,
+    "trust": 1
+  },
+  "rewards": {
+    "experience": 8,
+    "loot": [
+      "callresponse:dispatch/mineshaft_inspect"
+    ]
+  },
+  "title": {
+    "translate": "text.callresponse.dispatch.mineshaft_inspect.title"
+  },
+  "weight": 8
+}

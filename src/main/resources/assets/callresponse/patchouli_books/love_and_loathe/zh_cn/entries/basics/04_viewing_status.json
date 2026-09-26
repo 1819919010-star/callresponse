@@ -1,0 +1,19 @@
+{
+  "name": "查看状态",
+  "icon": "callresponse:emotion_book",
+  "category": "callresponse:basics",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "正常查看方式",
+      "text": "让女仆坐下时，会显示一次当前信任、恐惧、饥饿等信息。也可以打开女仆界面的状态页，随时查看这些数值和当前关系。"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "title": "数值调整器",
+      "item": "callresponse:emotion_book",
+      "text": "数值调整器可在创造模式中直接调整女仆的信任、恐惧和饥饿，方便体验不同关系状态。正常生存游玩不需要使用它。"
+    }
+  ]
+}

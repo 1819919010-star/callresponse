@@ -1,0 +1,19 @@
+{
+  "name": "Rescue Maids",
+  "icon": "callresponse:disposable_favorability_tool_add",
+  "category": "callresponse:iron_cage",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "title": "First Rescue Reward",
+      "item": "callresponse:disposable_favorability_tool_add",
+      "text": "The first time you free a Rescue Maid from a structure, she thanks you and drops one Disposable Favorability Tool."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Take Her In Quickly",
+      "text": "If she remains untamed for 3 minutes after rescue, she leaves and disappears. Once tamed, she stays and will not leave because of that rescue."
+    }
+  ]
+}

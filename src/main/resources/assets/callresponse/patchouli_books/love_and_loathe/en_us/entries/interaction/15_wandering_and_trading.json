@@ -1,0 +1,19 @@
+{
+  "name": "Wandering Maids & Trading",
+  "icon": "callresponse:wandering_maid_book",
+  "category": "callresponse:interaction",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Wandering Maids",
+      "text": "A Wandering Maid event may occasionally occur. A wandering maid approaches the player and asks to be taken in; the player may accept or refuse."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "title": "Wandering & Trading",
+      "item": "callresponse:wandering_maid_book",
+      "text": "The Wandering Maid Roster manages the related skin pool. Wandering Traders may also offer maid trading, allowing players to buy maids for sale or sell their own eligible maids."
+    }
+  ]
+}

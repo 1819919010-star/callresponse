@@ -1,0 +1,19 @@
+{
+  "name": "Maid Dispatch",
+  "icon": "callresponse:dispatch_book",
+  "category": "callresponse:interaction",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "title": "Maid Dispatch Order",
+      "recipe": "callresponse:dispatch_book",
+      "text": "Use a Maid Dispatch Order to temporarily send one of your maids away for work or leisure. Each event has its own duration, requirements, and outcome."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Dispatch Activities",
+      "text": "Activities include bakery assistance, farm harvesting, caravan escort, mine surveying, forest picnics, flower field walks, riverside fishing, village festivals, and more. When the trip is complete, your maid returns with the listed rewards, and her emotions or Hunger may change."
+    }
+  ]
+}

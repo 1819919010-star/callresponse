@@ -1,0 +1,19 @@
+{
+  "name": "狩猎令",
+  "icon": "callresponse:hunt_order",
+  "category": "callresponse:combat",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "title": "狩猎令",
+      "recipe": "callresponse:hunt_order",
+      "text": "狩猎令可以为符合条件的死忠女仆指定一个目标。接受命令后，她会主动追踪并攻击该目标。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "指定目标",
+      "text": "狩猎只针对这次指定的目标，不会让女仆随意攻击其他女仆。目标失效或狩猎结束后，女仆会恢复正常行动。"
+    }
+  ]
+}

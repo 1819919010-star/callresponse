@@ -1,0 +1,52 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#bottom"
+        },
+        "east": {
+          "cullface": "east",
+          "texture": "#right"
+        },
+        "north": {
+          "cullface": "north",
+          "texture": "#front"
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#back"
+        },
+        "up": {
+          "cullface": "up",
+          "texture": "#top"
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#left"
+        }
+      },
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ]
+    }
+  ],
+  "textures": {
+    "back": "callresponse:block/reward_box_back_16x",
+    "bottom": "callresponse:block/reward_box_bottom_16x",
+    "front": "callresponse:block/reward_box_front_16x",
+    "left": "callresponse:block/reward_box_left_16x",
+    "particle": "callresponse:block/reward_box_front_16x",
+    "right": "callresponse:block/reward_box_right_16x",
+    "top": "callresponse:block/reward_box_top_16x"
+  }
+}

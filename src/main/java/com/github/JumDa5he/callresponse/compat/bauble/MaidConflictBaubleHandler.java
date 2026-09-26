@@ -1,7 +1,6 @@
 package com.github.JumDa5he.callresponse.compat.bauble;
 
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
-import com.github.JumDa5he.callresponse.compat.emotion.EmotionPrompt;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -36,8 +35,8 @@ public class MaidConflictBaubleHandler {
         }
         LAST_DIALOGUE_TICKS.put(maidId, gameTime);
         if (maid.getOwner() instanceof ServerPlayer player) {
-            String command = "你体内又两股力量在疯狂撕扯着你，一个让你什么都不能吃，一个让你疯狂的想要吃，你感到头晕目眩，身上不断地受到伤害，感觉整个人要被撕扯成了碎片，你感到异常的痛苦与烦躁。请按照目前的情感发泄一下。\n\n【当前情感】\n"
-                    + EmotionPrompt.buildEmotionContext(maid, player);
+            String command = "你体内又两股力量在疯狂撕扯着你，一个让你什么都不能吃，一个让你疯狂地想吃，"
+                    + "你感到头晕目眩并不断受到伤害。请按照目前的情感自然发泄一下。";
             MaidResponder.processBroadcast(player, Collections.singletonList(maid), command, false);
         }
     }

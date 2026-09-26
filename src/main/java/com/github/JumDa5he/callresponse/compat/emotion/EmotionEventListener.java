@@ -1,6 +1,6 @@
 package com.github.JumDa5he.callresponse.compat.emotion;
 
-import com.github.JumDa5he.callresponse.compat.gui.OpenEmotionBookScreenS2CPacket;
+import com.github.JumDa5he.callresponse.network.OpenEmotionBookScreenS2CPacket;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerData;
 import com.github.JumDa5he.callresponse.compat.item.ModItems;
 import com.github.tartaricacid.touhoulittlemaid.api.event.InteractMaidEvent;
@@ -43,7 +43,7 @@ public class EmotionEventListener {
                 serverPlayer.sendSystemMessage(
                         Component.literal("")
                                 .append(maid.getName().copy().withStyle(ChatFormatting.GOLD))
-                                .append(Component.literal("§6 的信任值: §a" + values.trust() + " §6恐惧值: §c" + values.fear()))
+                                .append(Component.translatable("message.callresponse.emotion.values", values.trust(), values.fear()))
                 );
             }
         }

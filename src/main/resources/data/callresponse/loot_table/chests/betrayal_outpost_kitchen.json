@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "rolls": { "type": "minecraft:uniform", "min": 4.0, "max": 7.0 },
+      "entries": [
+        { "type": "minecraft:item", "name": "minecraft:wheat", "weight": 12, "functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 2.0, "max": 7.0 }, "add": false }] },
+        { "type": "minecraft:item", "name": "minecraft:carrot", "weight": 10, "functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 2.0, "max": 6.0 }, "add": false }] },
+        { "type": "minecraft:item", "name": "minecraft:potato", "weight": 10, "functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 2.0, "max": 6.0 }, "add": false }] },
+        { "type": "minecraft:item", "name": "minecraft:beetroot", "weight": 6, "functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 2.0, "max": 5.0 }, "add": false }] },
+        { "type": "minecraft:item", "name": "minecraft:beef", "weight": 7, "functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1.0, "max": 4.0 }, "add": false }] },
+        { "type": "minecraft:item", "name": "minecraft:porkchop", "weight": 7, "functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1.0, "max": 4.0 }, "add": false }] },
+        { "type": "minecraft:item", "name": "minecraft:chicken", "weight": 6, "functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1.0, "max": 4.0 }, "add": false }] },
+        { "type": "minecraft:item", "name": "minecraft:mutton", "weight": 6, "functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1.0, "max": 4.0 }, "add": false }] },
+        { "type": "minecraft:item", "name": "minecraft:egg", "weight": 5, "functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1.0, "max": 5.0 }, "add": false }] },
+        { "type": "minecraft:item", "name": "minecraft:sugar", "weight": 4, "functions": [{ "function": "minecraft:set_count", "count": { "type": "minecraft:uniform", "min": 1.0, "max": 4.0 }, "add": false }] }
+      ]
+    }
+  ]
+}

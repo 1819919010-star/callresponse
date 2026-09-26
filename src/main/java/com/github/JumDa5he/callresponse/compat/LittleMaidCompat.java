@@ -1,20 +1,46 @@
 package com.github.JumDa5he.callresponse.compat;
 
+import com.github.JumDa5he.callresponse.compat.disguise.DisguiseManager;
+import com.github.JumDa5he.callresponse.compat.disguise.OutpostDisguiseRelations;
+import com.github.JumDa5he.callresponse.compat.disguise.OutpostLootAccessManager;
+import com.github.JumDa5he.callresponse.compat.disguise.OutpostRecognitionManager;
+import com.github.JumDa5he.callresponse.compat.outpost.OutpostRaidManager;
 import com.github.JumDa5he.callresponse.compat.bauble.MaidConflictBaubleHandler;
 import com.github.JumDa5he.callresponse.compat.bauble.NoEatBauble;
+import com.github.JumDa5he.callresponse.compat.block.MaidCropSpecialCropHandler;
+import com.github.JumDa5he.callresponse.compat.block.ModBlocks;
 import com.github.JumDa5he.callresponse.compat.brain.CustomExtraMaidBrain;
+import com.github.JumDa5he.callresponse.compat.brain.IdleMaidHurtFleeManager;
+import com.github.JumDa5he.callresponse.compat.brain.JealousyCageManager;
 import com.github.JumDa5he.callresponse.compat.brain.LazyMaidHitHandler;
+import com.github.JumDa5he.callresponse.compat.cage.CageStructureManager;
+import com.github.JumDa5he.callresponse.compat.cage.CageRescueManager;
+import com.github.JumDa5he.callresponse.compat.broadcast.actions.BroadcastMovementScheduler;
 import com.github.JumDa5he.callresponse.compat.broadcast.ChatEventListener;
+import com.github.JumDa5he.callresponse.compat.dispatch.DispatchEventLoader;
+import com.github.JumDa5he.callresponse.compat.dispatch.DispatchManager;
 import com.github.JumDa5he.callresponse.compat.emotion.*;
+import com.github.JumDa5he.callresponse.compat.facility.FacilityCapacityManager;
+import com.github.JumDa5he.callresponse.compat.game.BoardGameManager;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntGunEventBridge;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderInteractListener;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderManager;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntTargetProtectionBypass;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerManager;
+import com.github.JumDa5he.callresponse.compat.intimidation.IntimidationManager;
 import com.github.JumDa5he.callresponse.compat.hunger.MaidHungerGuiDisplay;
 import com.github.JumDa5he.callresponse.compat.hunger.NoEatAwareMaidMeal;
 import com.github.JumDa5he.callresponse.compat.item.ModItems;
+import com.github.JumDa5he.callresponse.compat.npc.NpcEventLoader;
+import com.github.JumDa5he.callresponse.compat.npc.NpcEventManager;
+import com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostManager;
+import com.github.JumDa5he.callresponse.compat.state.MaidMovementLifecycle;
 import com.github.JumDa5he.callresponse.compat.task.LazyMaidTask;
+import com.github.JumDa5he.callresponse.compat.task.PrincessCarryManager;
+import com.github.JumDa5he.callresponse.compat.task.PrincessCarryTask;
+import com.github.JumDa5he.callresponse.compat.talk.TalkEventManager;
+import com.github.JumDa5he.callresponse.compat.trade.TradingMaidManager;
+import com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidManager;
 import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.LittleMaidExtension;
 import com.github.tartaricacid.touhoulittlemaid.api.bauble.IMaidBauble;
@@ -22,6 +48,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.task.meal.IMaidMeal;
 import com.github.tartaricacid.touhoulittlemaid.api.task.meal.MaidMealType;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.ExtraMaidBrainManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
+import com.github.tartaricacid.touhoulittlemaid.entity.task.crop.SpecialCropManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.meal.MaidMealManager;
 import com.github.tartaricacid.touhoulittlemaid.item.bauble.BaubleManager;
 import net.neoforged.neoforge.common.NeoForge;
@@ -35,12 +62,14 @@ public class LittleMaidCompat implements ILittleMaid {
         NeoForge.EVENT_BUS.register(new EmotionEventListener());
         NeoForge.EVENT_BUS.register(new EmotionActiveDialogue());
         NeoForge.EVENT_BUS.register(new EmotionBetrayalManager());
+        NeoForge.EVENT_BUS.register(new IntimidationManager());
+        NeoForge.EVENT_BUS.register(new MaidMovementLifecycle());
         NeoForge.EVENT_BUS.register(new HungerManager());
         NeoForge.EVENT_BUS.register(new EmotionDotingManager());
         NeoForge.EVENT_BUS.register(new EmotionPassiveManager());
         NeoForge.EVENT_BUS.register(new ChatEventListener());
+        NeoForge.EVENT_BUS.register(new BroadcastMovementScheduler());
         NeoForge.EVENT_BUS.register(new EmotionDevotedManager());
-        NeoForge.EVENT_BUS.register(new MaidHungerGuiDisplay());
         NeoForge.EVENT_BUS.register(new EmotionForgettingManager());
         NeoForge.EVENT_BUS.register(new LazyMaidHitHandler());
         NeoForge.EVENT_BUS.register(new SaddlePickupHandler());
@@ -48,10 +77,30 @@ public class LittleMaidCompat implements ILittleMaid {
         NeoForge.EVENT_BUS.register(NoEatBauble.class);
         NeoForge.EVENT_BUS.register(MaidConflictBaubleHandler.class);
         NeoForge.EVENT_BUS.register(new FearPanicManager());
+        NeoForge.EVENT_BUS.register(new IdleMaidHurtFleeManager());
         NeoForge.EVENT_BUS.register(new HuntOrderManager());
         NeoForge.EVENT_BUS.register(new HuntOrderInteractListener());
         NeoForge.EVENT_BUS.register(HuntTargetProtectionBypass.class);
         HuntGunEventBridge.register();
+        NeoForge.EVENT_BUS.register(new WanderingMaidManager());
+        NeoForge.EVENT_BUS.register(new TradingMaidManager());
+        NeoForge.EVENT_BUS.register(new TalkEventManager());
+        NeoForge.EVENT_BUS.register(DispatchManager.class);
+        NeoForge.EVENT_BUS.register(DispatchEventLoader.class);
+        NeoForge.EVENT_BUS.register(new NpcEventManager());
+        NeoForge.EVENT_BUS.register(new FacilityCapacityManager());
+        NeoForge.EVENT_BUS.register(new BoardGameManager());
+        NeoForge.EVENT_BUS.register(new CageStructureManager());
+        NeoForge.EVENT_BUS.register(new CageRescueManager());
+        NeoForge.EVENT_BUS.register(new BetrayalOutpostManager());
+        NeoForge.EVENT_BUS.register(new OutpostRaidManager());
+        NeoForge.EVENT_BUS.register(new DisguiseManager());
+        NeoForge.EVENT_BUS.register(new OutpostDisguiseRelations());
+        NeoForge.EVENT_BUS.register(new OutpostRecognitionManager());
+        NeoForge.EVENT_BUS.register(new OutpostLootAccessManager());
+        NeoForge.EVENT_BUS.register(new PrincessCarryManager());
+        NeoForge.EVENT_BUS.register(new JealousyCageManager());
+        NeoForge.EVENT_BUS.register(NpcEventLoader.class);
     }
 
     @Override
@@ -85,5 +134,12 @@ public class LittleMaidCompat implements ILittleMaid {
     @Override
     public void addMaidTask(TaskManager manager) {
         manager.add(new LazyMaidTask());
+        manager.add(new PrincessCarryTask());
+    }
+
+    @Override
+    public void registerSpecialCropHandler(SpecialCropManager manager) {
+        manager.add(ModItems.MAID_SEED.get(), ModBlocks.MAID_CROP_BLOCK.get(),
+                new MaidCropSpecialCropHandler());
     }
 }

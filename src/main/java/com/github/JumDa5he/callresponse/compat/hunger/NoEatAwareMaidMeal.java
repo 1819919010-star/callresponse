@@ -1,6 +1,5 @@
 package com.github.JumDa5he.callresponse.compat.hunger;
 
-import com.github.JumDa5he.callresponse.compat.bauble.BaubleDetector;
 import com.github.tartaricacid.touhoulittlemaid.api.task.meal.IMaidMeal;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.world.InteractionHand;
@@ -15,7 +14,7 @@ public class NoEatAwareMaidMeal implements IMaidMeal {
 
     @Override
     public boolean canMaidEat(EntityMaid maid, ItemStack stack, InteractionHand hand) {
-        return !BaubleDetector.hasNoEat(maid) && delegate.canMaidEat(maid, stack, hand);
+        return !HungerEatingGuard.isBlocked(maid) && delegate.canMaidEat(maid, stack, hand);
     }
 
     @Override

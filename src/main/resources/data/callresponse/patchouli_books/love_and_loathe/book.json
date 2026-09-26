@@ -1,0 +1,9 @@
+{
+  "name": "book.callresponse.love_and_loathe.name",
+  "landing_text": "book.callresponse.love_and_loathe.landing",
+  "subtitle": "book.callresponse.love_and_loathe.subtitle",
+  "creative_tab": "callresponse:callresponse",
+  "use_resource_pack": true,
+  "show_progress": false,
+  "version": "1"
+}

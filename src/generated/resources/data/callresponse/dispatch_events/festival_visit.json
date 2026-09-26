@@ -1,0 +1,27 @@
+{
+  "category": "play",
+  "cooldown": 60,
+  "description": {
+    "translate": "text.callresponse.dispatch.festival_visit.description"
+  },
+  "duration": {
+    "type": "minecraft:uniform",
+    "max_inclusive": 40,
+    "min_inclusive": 20
+  },
+  "emotion": {
+    "favor": 6,
+    "fear": -2,
+    "hunger": 6,
+    "trust": 4
+  },
+  "rewards": {
+    "loot": [
+      "callresponse:dispatch/festival_visit"
+    ]
+  },
+  "title": {
+    "translate": "text.callresponse.dispatch.festival_visit.title"
+  },
+  "weight": 8
+}

@@ -2,6 +2,7 @@ package com.github.JumDa5he.callresponse.compat.emotion;
 
 import com.github.JumDa5he.callresponse.compat.api.event.saddle.SaddleEvent;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
+import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.tartaricacid.touhoulittlemaid.api.event.InteractMaidEvent;
 import com.github.tartaricacid.touhoulittlemaid.api.event.MaidTickEvent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
@@ -12,6 +13,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 
@@ -45,7 +48,8 @@ public class SaddleLaunchHandler {
         if (!event.isCanceled()) return;
         Player player = event.getPlayer();
         if (!(player.getFirstPassenger() instanceof EntityMaid maid)) return;
-        maid.setHomeModeEnable(true);
+        MaidMovementControl.begin(maid, MaidMovementControl.Reason.SADDLE,
+                EnumSet.of(MaidMovementControl.Field.PATH, MaidMovementControl.Field.POSE));
         maid.setInSittingPose(true);
         launchedMaidIds.add(maid.getUUID());
         if (player instanceof ServerPlayer serverPlayer) {
@@ -76,6 +80,8 @@ public class SaddleLaunchHandler {
 
     public static void dropMaid(EntityMaid maid, Player player, float chargePercent){
         if(NeoForge.EVENT_BUS.post(new SaddleEvent.Launch.Pre(player, maid, chargePercent)).isCanceled())return;
+        MaidMovementControl.begin(maid, MaidMovementControl.Reason.SADDLE,
+                EnumSet.of(MaidMovementControl.Field.PATH, MaidMovementControl.Field.POSE));
         maid.stopRiding();
         maid.setPos(player.getX(), player.getY() + 0.5, player.getZ());
 
@@ -87,7 +93,6 @@ public class SaddleLaunchHandler {
         maid.hurtMarked = true;
         maid.hasImpulse = true;
 
-        maid.setHomeModeEnable(true);
         maid.setInSittingPose(true);
         launchedMaidIds.add(maid.getUUID());
 
@@ -136,9 +141,28 @@ public class SaddleLaunchHandler {
         }
         if (flyingMaidIds.contains(uuid) && !maid.isPassenger() &&
             (maid.onGround() || maid.isInWater() || maid.isInLava())) {
-            maid.setHomeModeEnable(false);
-            maid.setInSittingPose(false);
+            MaidMovementControl.end(maid, MaidMovementControl.Reason.SADDLE);
             flyingMaidIds.remove(uuid);
         }
+    }
+
+    @SubscribeEvent
+    public void onMaidDeath(LivingDeathEvent event) {
+        if (event.getEntity() instanceof EntityMaid maid) {
+            clearRuntimeState(maid);
+        }
+    }
+
+    @SubscribeEvent
+    public void onMaidLeave(EntityLeaveLevelEvent event) {
+        if (event.getEntity() instanceof EntityMaid maid && !event.getLevel().isClientSide) {
+            clearRuntimeState(maid);
+        }
+    }
+
+    private static void clearRuntimeState(EntityMaid maid) {
+        launchedMaidIds.remove(maid.getUUID());
+        flyingMaidIds.remove(maid.getUUID());
+        MaidMovementControl.end(maid, MaidMovementControl.Reason.SADDLE);
     }
 }

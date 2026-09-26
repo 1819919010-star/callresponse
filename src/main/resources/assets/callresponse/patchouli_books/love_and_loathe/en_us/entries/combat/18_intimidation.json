@@ -1,0 +1,33 @@
+{
+  "name": "Intimidation",
+  "icon": "minecraft:iron_sword",
+  "category": "callresponse:combat",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Intimidation",
+      "text": "Press Alt+L to use Intimidation and briefly halt nearby mobs. You can rebind the key in Controls. A successful cast enters cooldown even if nothing is nearby."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Tiers and Maids",
+      "text": "More cumulative maid kills raise Intimidation's tier, range, and duration while shortening its cooldown. Your maids become more fearful when affected, and their current daily events may end. A Doting Maid behaves for a while after the effect ends."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Tiers 1–2",
+      "text": "Tiers run from 1 to 5 and unlock through your total TLM maid kills. Tier 1 is available with zero kills.$(br2)Tier 1: 0 kills; 16-block radius; 8 seconds; 15-minute cooldown.$(br2)Tier 2: 1 kill; 24-block radius; 10 seconds; 12-minute cooldown."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Tiers 3–4",
+      "text": "Tier 3: 10 kills; 32-block radius; 12 seconds; 8-minute cooldown.$(br2)Tier 4: 100 kills; 48-block radius; 15 seconds; 3-minute cooldown."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Tier 5",
+      "text": "Tier 5: 1,000 kills; 64-block radius; 20 seconds; 1-minute cooldown.$(br2)Zero kills is the requirement for Tier 1, not a Tier 0."
+    }
+  ]
+}
