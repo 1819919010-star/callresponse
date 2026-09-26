@@ -66,6 +66,10 @@ public final class NpcEventData {
         return !current(maid).isEmpty();
     }
 
+    public static long currentEventTime(EntityMaid maid) {
+        return root(maid).getLong(EVENT_TIME);
+    }
+
     public static void setCurrent(EntityMaid maid, String id, long gameTime) {
         CompoundTag root = root(maid);
         root.putString(CURRENT, id);

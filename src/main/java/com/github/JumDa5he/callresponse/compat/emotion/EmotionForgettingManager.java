@@ -1,6 +1,7 @@
 package com.github.JumDa5he.callresponse.compat.emotion;
 
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
+import com.github.JumDa5he.callresponse.compat.intimidation.IntimidationManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import net.minecraft.nbt.CompoundTag;
@@ -53,6 +54,7 @@ public class EmotionForgettingManager {
 
     // ===== 处理单个女仆 =====
     private void processMaid(EntityMaid maid, ServerPlayer player) {
+        if (IntimidationManager.isIntimidated(maid)) return;
         UUID maidId = maid.getUUID();
         CompoundTag data = maid.getPersistentData();
 
@@ -95,6 +97,15 @@ public class EmotionForgettingManager {
         if (timer >= DURATION_THRESHOLD) {
             triggerForgetting(maid, player);
         }
+    }
+
+    /** A completed intimidation starts a fresh normal waiting cycle, never an immediate leave. */
+    public static void resetAfterIntimidation(EntityMaid maid) {
+        CompoundTag data = maid.getPersistentData();
+        data.remove(KEY_FORGET_TIMER);
+        data.remove(KEY_FORGET_COUNTDOWN);
+        data.remove(KEY_FORGET_TRIGGERED);
+        pendingTeleport.remove(maid.getUUID());
     }
 
     // ===== 触发淡忘 =====

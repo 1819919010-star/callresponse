@@ -6,6 +6,7 @@ import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionDotingManager;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionPrompt;
 import com.github.JumDa5he.callresponse.compat.talk.TalkEventManager;
+import com.github.JumDa5he.callresponse.compat.intimidation.IntimidationManager;
 import com.github.JumDa5he.callresponse.config.BroadcastConfig;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.ChatClientInfo;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatManager;
@@ -42,7 +43,7 @@ public final class MaidResponder {
         // 复制列表，避免不可变列表异常
         List<EntityMaid> maidList = new ArrayList<>(maids);
         maidList.removeIf(maid -> !maid.isTame() || maid.getOwner() == null
-                || TalkEventManager.isParticipant(maid));
+                || TalkEventManager.isParticipant(maid) || IntimidationManager.isIntimidated(maid));
         if (maidList.isEmpty()) {
             debug(player, "§c[调试] 没有已驯服且有主人的女仆");
             return;

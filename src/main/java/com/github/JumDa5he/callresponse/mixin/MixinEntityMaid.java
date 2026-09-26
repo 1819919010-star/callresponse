@@ -11,6 +11,9 @@ import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderManager;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntRawHealth;
 import com.github.JumDa5he.callresponse.compat.npc.MaidReviveEventData;
+import com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostAlertManager;
+import com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostMaidData;
+import com.github.JumDa5he.callresponse.compat.outpost.OutpostMaidMarker;
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,6 +23,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
@@ -33,8 +39,34 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityMaid.class)
-public abstract class MixinEntityMaid extends Mob {
+public abstract class MixinEntityMaid extends Mob implements OutpostMaidMarker {
     private MixinEntityMaid() { super(null, null); }
+
+    @Unique
+    private static final EntityDataAccessor<Boolean> callresponse$OUTPOST_MAID =
+            SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
+
+    @Inject(method = "defineSynchedData", at = @At("TAIL"))
+    private void callresponse$defineOutpostMaid(CallbackInfo ci) {
+        getEntityData().define(callresponse$OUTPOST_MAID, false);
+    }
+
+    @Override
+    public boolean callresponse$isOutpostMaid() {
+        return getEntityData().get(callresponse$OUTPOST_MAID);
+    }
+
+    @Override
+    public void callresponse$setOutpostMaid(boolean outpostMaid) {
+        getEntityData().set(callresponse$OUTPOST_MAID, outpostMaid);
+    }
+
+    /** 只在据点复仇女仆真实睡眠/娱乐时将 TLM 传感器范围缩半。 */
+    @Inject(method = "searchDimension", at = @At("RETURN"), cancellable = true, remap = false)
+    private void callresponse$reduceRelaxedOutpostAwareness(CallbackInfoReturnable<AABB> cir) {
+        EntityMaid maid = (EntityMaid) (Object) this;
+        cir.setReturnValue(BetrayalOutpostAlertManager.adjustSensorBox(maid, cir.getReturnValue()));
+    }
 
     /** 困在铁笼中时从源头拒绝 TLM 跟随传送，避免在主人和笼子之间反复闪现。 */
     @Inject(method = "teleportToOwner", at = @At("HEAD"), cancellable = true, remap = false)
@@ -50,6 +82,15 @@ public abstract class MixinEntityMaid extends Mob {
     @Inject(method = "canAttack", at = @At("HEAD"), cancellable = true)
     private void callresponse$allowHuntTarget(LivingEntity target, CallbackInfoReturnable<Boolean> cir) {
         EntityMaid maid = (EntityMaid) (Object) this;
+        if (BetrayalOutpostMaidData.areSisters(maid, target)) {
+            cir.setReturnValue(false);
+            return;
+        }
+        if (!maid.level().isClientSide && BetrayalOutpostMaidData.isOutpostMaid(maid)) {
+            // One gate for TLM StartAttacking and callresponse's camp target selection.
+            cir.setReturnValue(BetrayalOutpostAlertManager.canKeepOrDetectTarget(maid, target));
+            return;
+        }
         if (!maid.level().isClientSide && HuntOrderManager.isHuntTarget(maid, target)) {
             cir.setReturnValue(true);
         }

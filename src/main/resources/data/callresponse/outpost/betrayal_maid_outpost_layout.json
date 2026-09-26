@@ -1,0 +1,248 @@
+{
+  "size": [
+    27,
+    19,
+    28
+  ],
+  "center": [
+    13,
+    2,
+    13
+  ],
+  "spawnCandidates": [
+    [
+      3,
+      11,
+      5
+    ],
+    [
+      8,
+      3,
+      9
+    ],
+    [
+      9,
+      2,
+      16
+    ],
+    [
+      12,
+      9,
+      9
+    ],
+    [
+      15,
+      3,
+      7
+    ],
+    [
+      15,
+      13,
+      6
+    ],
+    [
+      17,
+      9,
+      4
+    ],
+    [
+      17,
+      9,
+      9
+    ],
+    [
+      19,
+      3,
+      5
+    ],
+    [
+      21,
+      2,
+      17
+    ]
+  ],
+  "decorativeBarrels": [
+    [
+      8,
+      2,
+      1
+    ],
+    [
+      12,
+      2,
+      1
+    ],
+    [
+      18,
+      2,
+      1
+    ],
+    [
+      21,
+      2,
+      1
+    ],
+    [
+      24,
+      2,
+      20
+    ]
+  ],
+  "containers": [
+    {
+      "pos": [
+        6,
+        2,
+        17
+      ],
+      "otherHalf": null,
+      "table": "callresponse:chests/betrayal_outpost_kitchen"
+    },
+    {
+      "pos": [
+        8,
+        3,
+        11
+      ],
+      "otherHalf": null,
+      "table": "callresponse:chests/betrayal_outpost_kitchen"
+    },
+    {
+      "pos": [
+        9,
+        9,
+        4
+      ],
+      "otherHalf": null,
+      "table": "callresponse:chests/betrayal_outpost_story"
+    },
+    {
+      "pos": [
+        10,
+        9,
+        11
+      ],
+      "otherHalf": [
+        10,
+        9,
+        10
+      ],
+      "table": "callresponse:chests/betrayal_outpost_valuables"
+    },
+    {
+      "pos": [
+        14,
+        13,
+        11
+      ],
+      "otherHalf": [
+        15,
+        13,
+        11
+      ],
+      "table": "callresponse:chests/betrayal_outpost_valuables"
+    },
+    {
+      "pos": [
+        18,
+        9,
+        6
+      ],
+      "otherHalf": null,
+      "table": "callresponse:chests/betrayal_outpost_enchanted"
+    },
+    {
+      "pos": [
+        19,
+        3,
+        11
+      ],
+      "otherHalf": null,
+      "table": "callresponse:chests/betrayal_outpost_storage"
+    },
+    {
+      "pos": [
+        19,
+        9,
+        11
+      ],
+      "otherHalf": [
+        19,
+        9,
+        10
+      ],
+      "table": "callresponse:chests/betrayal_outpost_enchanted"
+    },
+    {
+      "pos": [
+        21,
+        3,
+        3
+      ],
+      "otherHalf": null,
+      "table": "callresponse:chests/betrayal_outpost_kitchen"
+    },
+    {
+      "pos": [
+        21,
+        3,
+        9
+      ],
+      "otherHalf": [
+        21,
+        3,
+        8
+      ],
+      "table": "callresponse:chests/betrayal_outpost_storage"
+    },
+    {
+      "pos": [
+        21,
+        3,
+        11
+      ],
+      "otherHalf": [
+        21,
+        3,
+        10
+      ],
+      "table": "callresponse:chests/betrayal_outpost_storage"
+    },
+    {
+      "pos": [
+        21,
+        5,
+        3
+      ],
+      "otherHalf": null,
+      "table": "callresponse:chests/betrayal_outpost_kitchen"
+    },
+    {
+      "pos": [
+        21,
+        5,
+        8
+      ],
+      "otherHalf": null,
+      "table": "callresponse:chests/betrayal_outpost_storage"
+    },
+    {
+      "pos": [
+        21,
+        5,
+        10
+      ],
+      "otherHalf": null,
+      "table": "callresponse:chests/betrayal_outpost_storage"
+    },
+    {
+      "pos": [
+        25,
+        2,
+        19
+      ],
+      "otherHalf": null,
+      "table": "callresponse:chests/betrayal_outpost_storage"
+    }
+  ]
+}

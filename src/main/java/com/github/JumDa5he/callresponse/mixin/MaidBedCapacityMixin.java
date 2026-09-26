@@ -1,6 +1,7 @@
 package com.github.JumDa5he.callresponse.mixin;
 
 import com.github.JumDa5he.callresponse.compat.facility.FacilityCapacityManager;
+import com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostAlertManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidBedTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
@@ -15,6 +16,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /** 原床已标记 OCCUPIED 时，只有配置仍有余量才允许额外女仆共享床位。 */
 @Mixin(MaidBedTask.class)
 public abstract class MaidBedCapacityMixin {
+    @Inject(method = "checkExtraStartConditions", at = @At("HEAD"), cancellable = true, remap = false)
+    private void callresponse$combatBeforeBed(ServerLevel level, EntityMaid maid,
+                                               CallbackInfoReturnable<Boolean> cir) {
+        if (BetrayalOutpostAlertManager.shouldBlockLeisure(maid)) cir.setReturnValue(false);
+    }
+
     @Inject(method = "findBed", at = @At("HEAD"), cancellable = true, remap = false)
     private void callresponse$findBedWithCapacity(ServerLevel level, EntityMaid maid,
                                                   CallbackInfoReturnable<BlockPos> cir) {

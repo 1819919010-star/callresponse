@@ -1,0 +1,39 @@
+{
+  "name": "Revenge Maid Camp",
+  "icon": "minecraft:campfire",
+  "category": "callresponse:combat",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Revenge Maid Camp",
+      "text": "Revenge Maid Camps can appear naturally across the Overworld. Five ownerless maids live together here and defend their home. They are hostile to approaching threats and cannot be tamed normally."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The Five Maids",
+      "text": "One heavily armored maid carries an axe and shield, two swordswomen lead the fight, and two others tend the farm and supplies. They work together and may even cooperate against enemies on high ground."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Supplies and Clues",
+      "text": "Kitchen, storage, enchanted, and valuables chests hold food, tools, enchanted books, minerals, Golden Apples, and more. Explore carefully to find traces of the maids' daily lives."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Camp Raid",
+      "text": "Entering a camp with Bad Omen may start a Raid here. Raiders will fight the Revenge Maids. If you or one of your maids kills a Raider and you win that Raid, you gain Recognition for 20 minutes."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "title": "Disguise Item",
+      "item": "callresponse:disguise_item",
+      "text": "Use a Disguise Item to take on the appearance of one of your own maids and approach a camp more safely. Attacking a Revenge Maid exposes you and removes Recognition."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Recognition and Loot",
+      "text": "Recognition works at every camp, but you must also remain disguised for the maids to accept you. You can then open chests safely. Opening an untouched regular loot chest for the first time grants an extra copy of its loot."
+    }
+  ]
+}

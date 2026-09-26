@@ -1,5 +1,7 @@
 package com.github.JumDa5he.callresponse.compat.npc;
 
+import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
+import com.github.JumDa5he.callresponse.compat.hunger.HungerData;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -13,6 +15,7 @@ public final class MaidReviveEventData {
     private static final String REVIVE_EVENT_PENDING = "ReviveEventPending";
     private static final String LAST_DEATH_GAME_TIME = "LastDeathGameTime";
     private static final String REVIVE_EVENT_READY_TIME = "ReviveEventReadyGameTime";
+    private static final String REVIVE_DEFAULTS_RESET = "ReviveDefaultsReset";
     private static final long REVIVE_EVENT_DELAY_TICKS = 60L;
 
     private MaidReviveEventData() {
@@ -24,6 +27,7 @@ public final class MaidReviveEventData {
         data.putBoolean(REVIVE_EVENT_PENDING, true);
         data.putLong(LAST_DEATH_GAME_TIME, gameTime);
         data.remove(REVIVE_EVENT_READY_TIME);
+        data.remove(REVIVE_DEFAULTS_RESET);
         maid.getPersistentData().put(ROOT, data);
     }
 
@@ -56,6 +60,22 @@ public final class MaidReviveEventData {
         };
     }
 
+    /**
+     * READY_TIME 只会在继承死亡 NBT 的新实体读取时建立，因此普通存档加载不会创建复活重置。
+     * 先写一次性标记，保证事件入队即使中途异常也不会反复重置数值。
+     */
+    public static void resetRevivedDefaultsOnce(EntityMaid maid) {
+        CompoundTag data = data(maid).copy();
+        if (!data.getBoolean(REVIVE_EVENT_PENDING)
+                || !data.contains(REVIVE_EVENT_READY_TIME, Tag.TAG_LONG)
+                || data.getBoolean(REVIVE_DEFAULTS_RESET)) return;
+
+        EmotionData.resetToDefault(maid);
+        HungerData.resetToDefault(maid);
+        data.putBoolean(REVIVE_DEFAULTS_RESET, true);
+        maid.getPersistentData().put(ROOT, data);
+    }
+
     /** 事件进入 current 或 pending 后立刻清掉标记，区块重载不会再次生成。 */
     public static void consume(EntityMaid maid) {
         CompoundTag data = data(maid).copy();
@@ -63,6 +83,7 @@ public final class MaidReviveEventData {
         data.remove(REVIVE_EVENT_PENDING);
         data.remove(LAST_DEATH_GAME_TIME);
         data.remove(REVIVE_EVENT_READY_TIME);
+        data.remove(REVIVE_DEFAULTS_RESET);
         if (data.isEmpty()) maid.getPersistentData().remove(ROOT);
         else maid.getPersistentData().put(ROOT, data);
     }

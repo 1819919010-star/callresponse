@@ -133,8 +133,16 @@ public final class MaidMovementControl {
         if (root == null) {
             return;
         }
-        int active = activeMask(root.getCompound(REASONS));
-        restoreFields(maid, root.getCompound(BASELINE), active);
+        CompoundTag reasons = root.getCompound(REASONS);
+        int active = activeMask(reasons);
+        boolean permanentBetrayal = reasons.contains(Reason.BETRAYAL.name(), Tag.TAG_INT)
+                && maid.getPersistentData().getBoolean("IsBetraying");
+        int restoreMask = permanentBetrayal ? active & ~Field.OWNER.bit : active;
+        restoreFields(maid, root.getCompound(BASELINE), restoreMask);
+        if (permanentBetrayal) {
+            maid.setTame(false);
+            maid.setOwnerUUID(null);
+        }
         clearNavigation(maid);
         maid.getPersistentData().remove(ROOT_KEY);
         TRACKED.remove(maid.getUUID());
@@ -255,7 +263,10 @@ public final class MaidMovementControl {
                     ? TaskManager.getIdleTask().getUid().toString() : task);
         }
         if (has(fields, Field.OWNER)) {
-            if (baseline.getBoolean("Tame") && baseline.hasUUID("Owner")) {
+            if (maid.getPersistentData().getBoolean("IsBetraying")) {
+                // 背叛是永久身份变更，保存时绝不能写回临时控制前的原主人。
+                outgoing.remove("Owner");
+            } else if (baseline.getBoolean("Tame") && baseline.hasUUID("Owner")) {
                 outgoing.putUUID("Owner", baseline.getUUID("Owner"));
             } else {
                 outgoing.remove("Owner");
@@ -316,8 +327,8 @@ public final class MaidMovementControl {
         }
 
         if (keepBetrayal) {
-            // 保持旧玩法：背叛运行态仍为“已驯服标志 + 无主人”，仅保存输出恢复安全主人。
-            maid.setTame(true);
+            // 背叛运行态必须保持真正未驯服，避免被 TLM/其他模组继续视作宠物。
+            maid.setTame(false);
             maid.setOwnerUUID(null);
             TaskManager.findTask(new ResourceLocation("touhou_little_maid", "attack")).ifPresent(maid::setTask);
             maid.setAggressive(true);

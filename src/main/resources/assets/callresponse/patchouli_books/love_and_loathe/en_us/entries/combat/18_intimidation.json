@@ -1,0 +1,28 @@
+{
+  "name": "Intimidation",
+  "icon": "minecraft:iron_sword",
+  "category": "callresponse:combat",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Intimidation",
+      "text": "Press Alt+L to use Intimidation and briefly halt nearby mobs. You can rebind the key in Controls. A successful cast enters cooldown even if nothing is nearby."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Tiers and Maids",
+      "text": "Cumulative maid kills raise your Intimidation tier. Tier I is available without any kills. Your maids become more fearful when affected, and their current daily events may end. A Doting Maid behaves for a while afterward."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Tiers I–III",
+      "text": "Each line shows cumulative maid kills / radius / duration / cooldown.$(br2)$(li)Tier I: 0 / 16 blocks / 8 sec / 15 min$(li)Tier II: 1 / 24 blocks / 10 sec / 12 min$(li)Tier III: 10 / 32 blocks / 12 sec / 8 min"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Tiers IV–V",
+      "text": "Order: cumulative maid kills / radius / duration / cooldown.$(br2)$(li)Tier IV: 100 / 48 blocks / 15 sec / 3 min$(li)Tier V: 1000 / 64 blocks / 20 sec / 1 min"
+    }
+  ]
+}

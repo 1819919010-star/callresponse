@@ -1,6 +1,7 @@
 package com.github.JumDa5he.callresponse.compat.emotion;
 
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
+import com.github.JumDa5he.callresponse.compat.intimidation.IntimidationManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -43,7 +44,8 @@ public class EmotionActiveDialogue {
                     .forEach(maid -> {
                         // ✅ 必须已驯服且有主人
                         if (!maid.isTame() || maid.getOwner() == null
-                                || !player.getUUID().equals(maid.getOwnerUUID())) return;
+                                || !player.getUUID().equals(maid.getOwnerUUID())
+                                || IntimidationManager.isIntimidated(maid)) return;
 
                         DialogueKey dialogueKey = new DialogueKey(maid.getUUID(), player.getUUID());
                         if (silentTriggerCounts.getOrDefault(dialogueKey, 0) >= 2) {
@@ -76,7 +78,7 @@ public class EmotionActiveDialogue {
     // ===== 交互触发 =====
     public static void tryInteractDialogue(EntityMaid maid, ServerPlayer player) {
         // ✅ 必须已驯服且有主人
-        if (!maid.isTame() || maid.getOwner() == null) return;
+        if (!maid.isTame() || maid.getOwner() == null || IntimidationManager.isIntimidated(maid)) return;
 
         long currentTick = maid.level().getGameTime();
         UUID maidId = maid.getUUID();

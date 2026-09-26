@@ -4,12 +4,12 @@ license="All rights reserved"
 
 [[mods]]
 modId="callresponse"
-version="2.1.0"
+version="2.2.0"
 displayName="爱憎分明 - Love & Loathing"
 logoFile=""
 credits="JumDa5he"
 authors="JumDa5he"
-description='''一个可以管教自己女仆的mod'''
+description='''�?个可以管教自己女仆的mod'''
 
 [[dependencies.callresponse]]
 modId="forge"
@@ -21,7 +21,7 @@ side="BOTH"
 [[dependencies.callresponse]]
 modId="touhou_little_maid"
 mandatory=true
-versionRange="[1.5.0,)"
+versionRange="[1.5.3,)"
 ordering="AFTER"
 side="BOTH"
 

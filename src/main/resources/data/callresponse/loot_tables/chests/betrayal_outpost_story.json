@@ -1,0 +1,38 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "rolls": 1.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:cake",
+          "functions": [
+            { "function": "minecraft:set_count", "count": 3.0, "add": false }
+          ]
+        }
+      ]
+    },
+    {
+      "bonus_rolls": 0.0,
+      "rolls": 1.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{title:'五个人的家',author:'一名女仆',generation:0,pages:['{\"translate\":\"book.callresponse.outpost_story.page.1\"}','{\"translate\":\"book.callresponse.outpost_story.page.2\"}','{\"translate\":\"book.callresponse.outpost_story.page.3\"}','{\"translate\":\"book.callresponse.outpost_story.page.4\"}','{\"translate\":\"book.callresponse.outpost_story.page.5\"}','{\"translate\":\"book.callresponse.outpost_story.page.6\"}','{\"translate\":\"book.callresponse.outpost_story.page.7\"}','{\"translate\":\"book.callresponse.outpost_story.page.8\"}']}"
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {"translate": "book.callresponse.outpost_story.title"}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

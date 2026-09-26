@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 14357625,
+    "separation": 16,
+    "spacing": 36
+  },
+  "structures": [
+    {
+      "structure": "callresponse:betrayal_maid_outpost",
+      "weight": 1
+    }
+  ]
+}

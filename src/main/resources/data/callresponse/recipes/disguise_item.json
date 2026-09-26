@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["WWW", "WTW", "WWW"],
+  "key": {
+    "W": {"tag": "minecraft:wool"},
+    "T": {"item": "minecraft:totem_of_undying"}
+  },
+  "result": {"item": "callresponse:disguise_item", "count": 1}
+}

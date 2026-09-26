@@ -28,8 +28,13 @@ import com.github.JumDa5he.callresponse.config.EmotionPassiveConfig;
 import com.github.JumDa5he.callresponse.config.DispatchConfig;
 import com.github.JumDa5he.callresponse.compat.dispatch.OpenDispatchScreenS2CPacket;
 import com.github.JumDa5he.callresponse.compat.dispatch.DispatchActionC2SPacket;
+import com.github.JumDa5he.callresponse.compat.disguise.DisguiseSyncPacket;
+import com.github.JumDa5he.callresponse.compat.intimidation.IntimidationCastC2SPacket;
+import com.github.JumDa5he.callresponse.compat.cuteactivity.CuteActivityScareS2CPacket;
+import com.github.JumDa5he.callresponse.compat.disguise.ModDisguiseEffects;
 import com.github.JumDa5he.callresponse.compat.npc.NpcEventChoiceC2SPacket;
 import com.github.JumDa5he.callresponse.compat.npc.OpenNpcEventS2CPacket;
+import com.github.JumDa5he.callresponse.compat.npc.CloseNpcEventS2CPacket;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.block.IMaidEdibleBlock;
@@ -54,7 +59,7 @@ public class CallResponseMod {
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     // ===== 网络通道（饱食度同步） =====
-    private static final String PROTOCOL_VERSION = "2";
+    private static final String PROTOCOL_VERSION = "4";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
              new ResourceLocation(MOD_ID, "main"),
             () -> PROTOCOL_VERSION,
@@ -70,6 +75,7 @@ public class CallResponseMod {
         ModMenus.MENUS.register(modBus);
         ModBlocks.BLOCKS.register(modBus);
         ModBlocks.BLOCK_ENTITY_TYPES.register(modBus);
+        ModDisguiseEffects.EFFECTS.register(modBus);
 
         // ===== 2. 注册配置文件 =====
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, BroadcastConfig.SPEC);
@@ -170,6 +176,22 @@ public class CallResponseMod {
                 PrincessCarryActionC2SPacket::encode,
                 PrincessCarryActionC2SPacket::new,
                 PrincessCarryActionC2SPacket::handle);
+        CHANNEL.registerMessage(id++, DisguiseSyncPacket.class,
+                DisguiseSyncPacket::encode,
+                DisguiseSyncPacket::decode,
+                DisguiseSyncPacket::handle);
+        CHANNEL.registerMessage(id++, IntimidationCastC2SPacket.class,
+                IntimidationCastC2SPacket::encode,
+                IntimidationCastC2SPacket::new,
+                IntimidationCastC2SPacket::handle);
+        CHANNEL.registerMessage(id++, CloseNpcEventS2CPacket.class,
+                CloseNpcEventS2CPacket::encode,
+                CloseNpcEventS2CPacket::new,
+                CloseNpcEventS2CPacket::handle);
+        CHANNEL.registerMessage(id++, CuteActivityScareS2CPacket.class,
+                CuteActivityScareS2CPacket::encode,
+                CuteActivityScareS2CPacket::decode,
+                CuteActivityScareS2CPacket::handle);
 
         // ===== 3. 注册 ILittleMaid 扩展（在 MaidEdibleBlockManager.init() 之前执行） =====
         // 这个扩展会包装所有方块食物，增加饱食度同步逻辑

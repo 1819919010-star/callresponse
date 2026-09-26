@@ -43,6 +43,75 @@ public final class HuntTargetProtectionBypass {
         }
     }
 
+    /**
+     * 主人伤害保护通常在 HIGHEST 取消事件。必须在普通第三方观察者之前恢复，
+     * 否则同为 LOWEST 且不接收 canceled 事件的监听器会先被 EventBus 跳过。
+     */
+    @SubscribeEvent(priority = EventPriority.HIGH, receiveCanceled = true)
+    public static void allowOwnerLivingAttackBeforeObservers(LivingAttackEvent event) {
+        if (isOwnerDamage(event.getEntity(), event.getSource())) {
+            event.setCanceled(false);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH, receiveCanceled = true)
+    public static void allowOwnerLivingHurtBeforeObservers(LivingHurtEvent event) {
+        if (!isOwnerDamage(event.getEntity(), event.getSource())) return;
+        event.setCanceled(false);
+        EntityMaid maid = (EntityMaid) event.getEntity();
+        if (OwnerDamageContext.isUltimate(maid, event.getSource())) {
+            event.setAmount(OwnerDamageContext.rawDamage(maid, event.getAmount()));
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH, receiveCanceled = true)
+    public static void allowOwnerLivingDamageBeforeObservers(LivingDamageEvent event) {
+        if (event.getEntity() instanceof EntityMaid maid
+                && OwnerDamageContext.isUltimate(maid, event.getSource())) {
+            event.setCanceled(false);
+            event.setAmount(OwnerDamageContext.rawDamage(maid, event.getAmount()));
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH, receiveCanceled = true)
+    public static void allowOwnerLivingDeathBeforeObservers(LivingDeathEvent event) {
+        if (event.getEntity() instanceof EntityMaid maid
+                && OwnerDamageContext.isUltimate(maid, event.getSource())) {
+            event.setCanceled(false);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH, receiveCanceled = true)
+    public static void allowOwnerMaidAttackBeforeObservers(MaidAttackEvent event) {
+        if (OwnerDamageContext.hasActiveDamage(event.getMaid(), event.getSource())) {
+            event.setCanceled(false);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH, receiveCanceled = true)
+    public static void allowOwnerMaidHurtBeforeObservers(MaidHurtEvent event) {
+        if (!OwnerDamageContext.hasActiveDamage(event.getMaid(), event.getSource())) return;
+        event.setCanceled(false);
+        if (OwnerDamageContext.isUltimate(event.getMaid(), event.getSource())) {
+            event.setAmount(OwnerDamageContext.rawDamage(event.getMaid(), event.getAmount()));
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH, receiveCanceled = true)
+    public static void allowOwnerMaidDamageBeforeObservers(MaidDamageEvent event) {
+        if (OwnerDamageContext.isUltimate(event.getMaid(), event.getSource())) {
+            event.setCanceled(false);
+            event.setAmount(OwnerDamageContext.rawDamage(event.getMaid(), event.getAmount()));
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH, receiveCanceled = true)
+    public static void allowOwnerMaidDeathBeforeObservers(MaidDeathEvent event) {
+        if (OwnerDamageContext.isUltimate(event.getMaid(), event.getSource())) {
+            event.setCanceled(false);
+        }
+    }
+
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
     public static void allowLivingAttack(LivingAttackEvent event) {
         if (isHuntOrScopedDamage(event.getEntity(), event.getSource())

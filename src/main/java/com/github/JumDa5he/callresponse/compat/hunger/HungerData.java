@@ -32,6 +32,10 @@ public class HungerData {
         set(maid, current + delta);
     }
 
+    public static void resetToDefault(EntityMaid maid) {
+        set(maid, DEFAULT_HUNGER);
+    }
+
     public static HungerLevel getLevel(EntityMaid maid) {
         float hunger = get(maid);
         if (hunger <= 9) return HungerLevel.STARVING;

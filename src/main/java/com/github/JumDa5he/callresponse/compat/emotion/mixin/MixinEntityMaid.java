@@ -30,6 +30,12 @@ import java.util.UUID;
 
 @Mixin(EntityMaid.class)
 public abstract class MixinEntityMaid extends Mob {
+    @Unique
+    private static final String CALLRESPONSE$HURT_EMOTION_COOLDOWN =
+            "callresponse:owner_hurt_emotion_cooldown_until";
+    @Unique
+    private static final long CALLRESPONSE$HURT_EMOTION_COOLDOWN_TICKS = 20L;
+
     private MixinEntityMaid() { super(null, null); }
 
     @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)
@@ -40,7 +46,8 @@ public abstract class MixinEntityMaid extends Mob {
         Entity directEntity = source.getDirectEntity();
 
         // 背叛女仆攻击通报（始终执行）
-        if (directEntity instanceof EntityMaid attackerMaid && EmotionBetrayalManager.isBetraying(attackerMaid)) {
+        if (directEntity instanceof EntityMaid attackerMaid
+                && EmotionBetrayalManager.isActualBetrayal(attackerMaid)) {
             EmotionBetrayalManager.onVictimAttackedByBetrayer(maid, attackerMaid);
         }
 
@@ -54,25 +61,31 @@ public abstract class MixinEntityMaid extends Mob {
                 return;
             }
 
-            float damage = Math.max(amount, 0);
-            int fearDelta = Math.min((int) (1 + damage * 1.5), 4);
-            int trustDelta = Math.max(-(1 + (int) (damage * 0.5)), -2);
+            long nowTick = maid.level().getGameTime();
+            long cooldownUntil = maid.getPersistentData().getLong(CALLRESPONSE$HURT_EMOTION_COOLDOWN);
+            if (amount > 0.0F && nowTick >= cooldownUntil) {
+                maid.getPersistentData().putLong(CALLRESPONSE$HURT_EMOTION_COOLDOWN,
+                        nowTick + CALLRESPONSE$HURT_EMOTION_COOLDOWN_TICKS);
+                float damage = amount;
+                int fearDelta = Math.min((int) (1 + damage * 1.5), 4);
+                int trustDelta = Math.max(-(1 + (int) (damage * 0.5)), -2);
 
-            EmotionData.EmotionValues old = EmotionData.get(maid, player.getUUID());
-            EmotionData.addFear(maid, player.getUUID(), fearDelta);
-            EmotionData.addTrust(maid, player.getUUID(), trustDelta);
-            EmotionData.EmotionValues now = EmotionData.get(maid, player.getUUID());
+                EmotionData.EmotionValues old = EmotionData.get(maid, player.getUUID());
+                EmotionData.addFear(maid, player.getUUID(), fearDelta);
+                EmotionData.addTrust(maid, player.getUUID(), trustDelta);
+                EmotionData.EmotionValues now = EmotionData.get(maid, player.getUUID());
 
-            MaidResponder.debug(player,
-                    "§e[情感] 教训女仆(mixin) → 信任 " + trustDelta +
-                    " (" + old.trust() + "→" + now.trust() + "), 恐惧 " + fearDelta +
-                    " (" + old.fear() + "→" + now.fear() + ")");
+                MaidResponder.debug(player,
+                        "§e[情感] 教训女仆(mixin) → 信任 " + trustDelta +
+                        " (" + old.trust() + "→" + now.trust() + "), 恐惧 " + fearDelta +
+                        " (" + old.fear() + "→" + now.fear() + ")");
 
-            // ★ 10%概率 + 30秒冷却触发AI对话，见 EmotionActiveDialogue.java:69-76
-            if (LazyMaidHitHandler.isLazyMode(maid)) {
-                LazyMaidHitHandler.triggerEscape(maid, player);
-            } else {
-                EmotionActiveDialogue.tryInteractDialogue(maid, player);
+                // ★ 10%概率 + 30秒冷却触发AI对话，见 EmotionActiveDialogue.java:69-76
+                if (LazyMaidHitHandler.isLazyMode(maid)) {
+                    LazyMaidHitHandler.triggerEscape(maid, player);
+                } else {
+                    EmotionActiveDialogue.tryInteractDialogue(maid, player);
+                }
             }
         }
 

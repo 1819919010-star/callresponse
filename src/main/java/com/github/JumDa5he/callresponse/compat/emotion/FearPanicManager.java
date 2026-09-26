@@ -2,6 +2,7 @@ package com.github.JumDa5he.callresponse.compat.emotion;
 
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
+import com.github.JumDa5he.callresponse.compat.intimidation.IntimidationManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -57,6 +58,7 @@ public class FearPanicManager {
                     .forEach(maid -> {
                         if (!maid.isAlive()) return;
                         if (!maid.isTame()) return;
+                        if (IntimidationManager.isIntimidated(maid)) return;
 
                         UUID maidId = maid.getUUID();
                         long tick = maid.level().getGameTime();
@@ -150,6 +152,12 @@ public class FearPanicManager {
 
     public static void resetPanic(EntityMaid maid) {
         lastPanicTime.remove(maid.getUUID());
+        fleeStates.remove(maid.getUUID());
+        MaidMovementControl.end(maid, MaidMovementControl.Reason.PANIC_FLEE);
+        MaidMovementControl.end(maid, MaidMovementControl.Reason.PANIC_HOLD);
+    }
+
+    public static void abortForIntimidation(EntityMaid maid) {
         fleeStates.remove(maid.getUUID());
         MaidMovementControl.end(maid, MaidMovementControl.Reason.PANIC_FLEE);
         MaidMovementControl.end(maid, MaidMovementControl.Reason.PANIC_HOLD);

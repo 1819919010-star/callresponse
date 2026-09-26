@@ -4,6 +4,7 @@ import com.github.JumDa5he.callresponse.compat.broadcast.BroadcastDialogueTracke
 import com.github.JumDa5he.callresponse.compat.broadcast.ChatTextSanitizer;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionActiveDialogue;
+import com.github.JumDa5he.callresponse.compat.intimidation.IntimidationManager;
 import com.github.JumDa5he.callresponse.compat.talk.TalkDialogueBridge;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.LLMCallback;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatManager;
@@ -32,6 +33,7 @@ public abstract class TalkLLMCallbackMixin {
     @Shadow protected long waitingChatBubbleId;
     @Unique private UUID callresponse$talkRequestId;
     @Unique private UUID callresponse$broadcastPlayerId;
+    @Unique private int callresponse$intimidationGeneration;
 
     @Inject(method = "<init>(Lcom/github/tartaricacid/touhoulittlemaid/ai/manager/entity/MaidAIChatManager;Ljava/util/List;Z)V",
             at = @At("TAIL"))
@@ -39,6 +41,7 @@ public abstract class TalkLLMCallbackMixin {
                                               boolean subagents, CallbackInfo ci) {
         callresponse$talkRequestId = TalkDialogueBridge.findRequestId(messages);
         callresponse$broadcastPlayerId = BroadcastDialogueTracker.findPlayerId(messages);
+        if (maid != null) callresponse$intimidationGeneration = IntimidationManager.generation(maid);
         if (callresponse$talkRequestId != null) {
             needAddTools = false;
         }
@@ -77,6 +80,15 @@ public abstract class TalkLLMCallbackMixin {
 
     @Inject(method = "onSuccess", at = @At("HEAD"), cancellable = true)
     private void callresponse$discardLateTalkReply(ResponseChat response, CallbackInfo ci) {
+        if ((callresponse$talkRequestId != null || callresponse$broadcastPlayerId != null)
+                && maid != null && (IntimidationManager.isIntimidated(maid)
+                || callresponse$intimidationGeneration != IntimidationManager.generation(maid))) {
+            if (maid.level() instanceof ServerLevel level) {
+                level.getServer().submit(() -> maid.getChatBubbleManager().removeChatBubble(waitingChatBubbleId));
+            }
+            ci.cancel();
+            return;
+        }
         if (callresponse$talkRequestId != null && !TalkDialogueBridge.isPending(callresponse$talkRequestId)) {
             if (maid.level() instanceof ServerLevel level) {
                 level.getServer().submit(() -> maid.getChatBubbleManager().removeChatBubble(waitingChatBubbleId));

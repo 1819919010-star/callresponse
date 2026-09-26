@@ -1,6 +1,7 @@
 package com.github.JumDa5he.callresponse.compat.game;
 
 import com.github.JumDa5he.callresponse.CallResponseMod;
+import com.github.JumDa5he.callresponse.compat.intimidation.IntimidationManager;
 import com.github.tartaricacid.touhoulittlemaid.api.game.gomoku.Point;
 import com.github.tartaricacid.touhoulittlemaid.api.game.gomoku.Statue;
 import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
@@ -368,6 +369,8 @@ public final class BoardGameManager {
             abort(board, true);
             return;
         }
+        if (IntimidationManager.isIntimidated(participantEntity(board, root, Side.A))
+                || IntimidationManager.isIntimidated(participantEntity(board, root, Side.B))) return;
         Side current = currentSide(board);
         if (current == null) {
             abort(board, true);
@@ -569,6 +572,7 @@ public final class BoardGameManager {
                             || currentRoot.getInt(REVISION) != revision
                             || currentSide(current) != side
                             || !maidId.equals(participantUuid(currentRoot, side))) return;
+                    if (IntimidationManager.isIntimidated(current.level().getEntity(maidId))) return;
                     applyAiMove(current, currentRoot, side, move);
                 }));
     }
@@ -827,7 +831,8 @@ public final class BoardGameManager {
 
     /** 正式低优先级 Behavior 用：寻找最近的可围观棋局并申请稳定席位。 */
     public static boolean tryStartSpectating(ServerLevel level, EntityMaid maid) {
-        if (!validSpectator(maid) || SPECTATING.containsKey(maid.getUUID())) return false;
+        if (!validSpectator(maid) || IntimidationManager.isIntimidated(maid)
+                || SPECTATING.containsKey(maid.getUUID())) return false;
         BoardKey exitLock = SPECTATOR_EXIT_LOCKS.get(maid.getUUID());
         if (exitLock != null) {
             if (exitLock.dimension().equals(level.dimension()) && level.isLoaded(exitLock.pos())

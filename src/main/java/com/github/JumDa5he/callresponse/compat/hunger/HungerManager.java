@@ -4,6 +4,7 @@ import com.github.JumDa5he.callresponse.compat.bauble.BaubleDetector;
 import com.github.JumDa5he.callresponse.compat.brain.SeekFoodBehavior;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
+import com.github.JumDa5he.callresponse.compat.intimidation.IntimidationManager;
 import com.github.JumDa5he.callresponse.compat.npc.NpcEventManager;
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.JumDa5he.callresponse.compat.talk.TalkEventManager;
@@ -70,7 +71,7 @@ public class HungerManager {
 
     // ===== 新增：消耗饥饿值回血 =====
     private static final int CONSUMPTION_HEAL_INTERVAL = 40;   // 2秒
-    private static final float HUNGER_COST = 2.0f;             // 消耗饥饿值
+    private static final float HUNGER_COST = 1.0f;             // 消耗饥饿值
     private static final float CONSUMPTION_HEAL_AMOUNT = 1.0f; // 恢复生命值
 
     // ===== 自动进食 =====
@@ -219,10 +220,10 @@ public class HungerManager {
                             }
                         }
 
-                        // ★ 新增：消耗饥饿值回血（未满血时，每2秒消耗2饥饿值恢复1生命）
+                        // ★ 消耗饥饿值回血（未满血且饥饿不低于20时，每2秒消耗1饥饿值恢复1生命）
                         if (tick % CONSUMPTION_HEAL_INTERVAL == 0) {
                             float hunger = HungerData.get(maid);
-                            if (maid.getHealth() < maid.getMaxHealth() && hunger >= 10.0f) {
+                            if (maid.getHealth() < maid.getMaxHealth() && hunger >= 20.0f) {
                                 // 消耗饥饿值
                                 HungerData.add(maid, -HUNGER_COST);
                                 // 恢复生命
@@ -233,6 +234,12 @@ public class HungerManager {
                         // 5. 移速更新
                         if (tick % 20 == 0) {
                             applySpeedEffect(maid);
+                        }
+
+                        // 生理数值照常结算；只暂停主动觅食和饥饿抱怨。
+                        if (IntimidationManager.isIntimidated(maid)) {
+                            finishStealFood(maid);
+                            return;
                         }
 
                         // 6. 自动进食（禁食饰品不主动吃；饥饿低于阈值按正常冷却主动吃；暴食饰品每20秒无条件额外吃一次，与正常进食互不干扰）
