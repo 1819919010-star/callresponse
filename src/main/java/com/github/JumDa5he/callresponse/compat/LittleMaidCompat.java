@@ -35,6 +35,11 @@ import com.github.JumDa5he.callresponse.compat.npc.NpcEventLoader;
 import com.github.JumDa5he.callresponse.compat.npc.NpcEventManager;
 import com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostManager;
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementLifecycle;
+import com.github.JumDa5he.callresponse.compat.sign.MaidSignManager;
+import com.github.JumDa5he.callresponse.compat.sign.MaidSignDeterrence;
+import com.github.JumDa5he.callresponse.compat.sign.client.MaidSignLayer;
+import com.github.JumDa5he.callresponse.compat.sign.client.MaidSignTips;
+import com.github.JumDa5he.callresponse.compat.sign.client.MaidSignVanillaLayer;
 import com.github.JumDa5he.callresponse.compat.task.LazyMaidTask;
 import com.github.JumDa5he.callresponse.compat.task.PrincessCarryManager;
 import com.github.JumDa5he.callresponse.compat.task.PrincessCarryTask;
@@ -52,6 +57,13 @@ import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.crop.SpecialCropManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.meal.MaidMealManager;
 import com.github.tartaricacid.touhoulittlemaid.item.bauble.BaubleManager;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.GeckoEntityMaidRenderer;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
+import com.github.tartaricacid.touhoulittlemaid.client.overlay.MaidTipsOverlay;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.world.entity.Mob;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.List;
@@ -103,6 +115,8 @@ public class LittleMaidCompat implements ILittleMaid {
         NeoForge.EVENT_BUS.register(new JealousyCageManager());
         NeoForge.EVENT_BUS.register(OutpostGlyDialogue.class);
         NeoForge.EVENT_BUS.register(NpcEventLoader.class);
+        NeoForge.EVENT_BUS.register(new MaidSignManager());
+        NeoForge.EVENT_BUS.register(new MaidSignDeterrence());
     }
 
     @Override
@@ -143,5 +157,23 @@ public class LittleMaidCompat implements ILittleMaid {
     public void registerSpecialCropHandler(SpecialCropManager manager) {
         manager.add(ModItems.MAID_SEED.get(), ModBlocks.MAID_CROP_BLOCK.get(),
                 new MaidCropSpecialCropHandler());
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void addMaidTips(MaidTipsOverlay maidTipsOverlay) {
+        MaidSignTips.register(maidTipsOverlay);
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void addAdditionMaidLayer(EntityMaidRenderer renderer, EntityRendererProvider.Context context) {
+        renderer.addLayer(new MaidSignVanillaLayer(renderer));
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void addAdditionGeckoMaidLayer(GeckoEntityMaidRenderer<? extends Mob> renderer, EntityRendererProvider.Context context) {
+        renderer.addGeoLayerRenderer(new MaidSignLayer<>(renderer));
     }
 }

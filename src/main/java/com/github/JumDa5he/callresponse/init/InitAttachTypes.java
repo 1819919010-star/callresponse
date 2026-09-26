@@ -3,6 +3,7 @@ package com.github.JumDa5he.callresponse.init;
 import com.github.JumDa5he.callresponse.CallResponseMod;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerData;
+import com.github.JumDa5he.callresponse.compat.sign.MaidSignData;
 import com.mojang.serialization.Codec;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.neoforged.bus.api.IEventBus;
@@ -34,6 +35,12 @@ public class InitAttachTypes {
             AttachmentType.builder(h -> false)
                     .serialize(Codec.BOOL)
                     .sync(ByteBufCodecs.BOOL)
+                    .build());
+    public static final Supplier<AttachmentType<MaidSignData>> SYNCED_MAID_SIGN = ATTACHMENT_TYPES.register("maid_sign", r ->
+            AttachmentType.builder(h -> MaidSignData.EMPTY)
+                    .serialize(MaidSignData.CODEC)
+                    .sync(MaidSignData.STREAM_CODEC)
+                    .copyOnDeath()
                     .build());
 
     public static void init(IEventBus bus){

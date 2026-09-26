@@ -2,71 +2,60 @@ package com.github.JumDa5he.callresponse.compat.outpost;
 
 import com.github.JumDa5he.callresponse.CallResponseMod;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionBetrayalManager;
+import com.github.JumDa5he.callresponse.compat.sign.MaidSignManager;
 import com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidManager;
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.info.ServerCustomPackLoader;
-import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
+import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.AxeItem;
-import net.minecraft.world.item.HoeItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.ShovelItem;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
+import net.minecraft.world.level.block.entity.SignText;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadStructurePlacement;
 import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -480,6 +469,7 @@ public final class BetrayalOutpostManager {
             }
             case GLY -> {
                 giveGlyBoombox(maid);
+                addGlySign(maid);
             }
         }
     }
@@ -492,6 +482,22 @@ public final class BetrayalOutpostManager {
         if (!boombox.isEmpty()) {
             maid.setItemSlot(EquipmentSlot.MAINHAND, boombox);
         }
+    }
+
+    private static final Component[] glyTexts = new Component[]{Component.empty(),
+            Component.translatable("message.callresponse.outpost.sign.gly.1"),
+            Component.translatable("message.callresponse.outpost.sign.gly.2"),
+            Component.empty()
+    };
+    private static final SignText glySignText = new SignText(
+            glyTexts,
+            glyTexts.clone(),
+            DyeColor.CYAN,
+            true
+    );
+    private static void addGlySign(EntityMaid maid){
+        MaidSignManager.attach(maid, Items.OAK_SIGN);
+        MaidSignManager.setText(maid, glySignText);
     }
 
     private static void reduceMovementSpeed(EntityMaid maid, double multiplier) {
@@ -529,6 +535,7 @@ public final class BetrayalOutpostManager {
                 maid.setAggressive(false);
                 maid.getBrain().eraseMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.ATTACK_TARGET);
                 BetrayalOutpostMaidData.tickGlyDialogue(maid);
+                BetrayalOutpostMaidData.tickGlyBehavior(maid);
                 return;
             }
             BetrayalOutpostAlertManager.tick(maid);
@@ -560,6 +567,10 @@ public final class BetrayalOutpostManager {
         if (event.getSource().is(DamageTypes.STARVE)) return;
         if (event.getSource().getEntity() == null && event.getSource().getDirectEntity() == null) return;
         BetrayalOutpostMaidData.tickGlyHurtDialogue(maid);
+        Entity attacker = event.getSource().getEntity();
+        if (attacker != null && attacker != maid) {
+            BetrayalOutpostMaidData.startGlyFlee(maid, attacker);
+        }
     }
 
     @SubscribeEvent
@@ -610,16 +621,27 @@ public final class BetrayalOutpostManager {
     }
 
     private static void sendDeathDialogue(ServerLevel level, EntityMaid maid) {
-        int line = 1 + level.getRandom().nextInt(10);
-        String modelName = ServerCustomPackLoader.SERVER_MAID_MODELS.getInfo(maid.getModelId())
-                .map(info -> ParseI18n.parse(info.getName()).getString())
-                .orElse(maid.getModelId());
+        Component modelName = ServerCustomPackLoader.SERVER_MAID_MODELS.getInfo(maid.getModelId())
+                .map(info -> ParseI18n.parse(info.getName()))
+                .orElse(Component.literal(maid.getModelId()));
         Component message = Component.translatable("message.callresponse.outpost.death.format",
-                modelName, Component.translatable("message.callresponse.outpost.death." + line));
+                modelName, deathLine(level, maid));
         double rangeSqr = 64.0D * 64.0D;
         for (ServerPlayer player : level.players()) {
             if (player.distanceToSqr(maid) <= rangeSqr) player.sendSystemMessage(message);
         }
+    }
+
+    /** GLY 的遗言来自 gly_lines.json 的 death_lines；没写或写空时用普通据点死亡台词。 */
+    private static Component deathLine(ServerLevel level, EntityMaid maid) {
+        if (BetrayalOutpostMaidData.isGly(maid)) {
+            List<String> pool = OutpostGlyDialogue.deathLines();
+            if (!pool.isEmpty()) {
+                return Component.literal(pool.get(level.getRandom().nextInt(pool.size())));
+            }
+        }
+        return Component.translatable("message.callresponse.outpost.death."
+                + (1 + level.getRandom().nextInt(10)));
     }
 
     private static void addDrop(LivingDropsEvent event, ServerLevel level, EntityMaid maid, ItemStack stack) {

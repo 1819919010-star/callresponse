@@ -22,6 +22,7 @@ public final class OutpostGlyDialogue extends SimpleJsonResourceReloadListener {
     private static final OutpostGlyDialogue INSTANCE = new OutpostGlyDialogue();
     private static volatile List<String> lines = List.of();
     private static volatile List<String> hurtLines = List.of();
+    private static volatile List<String> deathLines = List.of();
 
     private OutpostGlyDialogue() {
         super(GSON, "outpost");
@@ -39,10 +40,12 @@ public final class OutpostGlyDialogue extends SimpleJsonResourceReloadListener {
         if (element == null || !element.isJsonObject()) {
             lines = List.of();
             hurtLines = List.of();
+            deathLines = List.of();
             return;
         }
         lines = readLines(element.getAsJsonObject().get("lines"));
         hurtLines = readLines(element.getAsJsonObject().get("hurt_lines"));
+        deathLines = readLines(element.getAsJsonObject().get("death_lines"));
     }
 
     private static List<String> readLines(JsonElement array) {
@@ -63,5 +66,10 @@ public final class OutpostGlyDialogue extends SimpleJsonResourceReloadListener {
 
     public static List<String> hurtLines() {
         return hurtLines;
+    }
+
+    /** 死亡台词；留空时调用方回退到普通的据点死亡台词。 */
+    public static List<String> deathLines() {
+        return deathLines;
     }
 }

@@ -73,6 +73,7 @@
         "client.ConfiguredNeoForgeValueMixin",
         "cuteactivity.client.CuteScareClientMixin",
         "client.AbstractContainerScreenAccessor",
+        "client.AbstractSignEditScreenAccessor",
         "client.GomokuWinnerTextMixin",
         "client.CChessWinnerTextMixin",
         "client.WChessWinnerTextMixin",

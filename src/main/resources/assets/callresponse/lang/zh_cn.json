@@ -675,6 +675,9 @@
   "bubble.callresponse.outpost.encounter.6": "我们不想再上第二次当。请离开。",
   "bubble.callresponse.outpost.encounter.7": "离这里远一点！这是最后一次警告！",
   "bubble.callresponse.outpost.encounter.8": "上次有个伪装成女仆的人差点杀了我们。别靠近！",
+  "bubble.callresponse.outpost.encounter.ifox.1": "你是…是i狐区最高的山，快跑啊！！！",
+  "bubble.callresponse.outpost.encounter.ifox.2": "求你了，不要i我们，我们把东西都给你",
+  "bubble.callresponse.outpost.encounter.ifox.3": "i狐区最高的山？",
   "bubble.callresponse.outpost.combat.1": "真是可恶的家伙，我是不会放任你肆意妄为的！",
   "bubble.callresponse.outpost.combat.2": "为了那些没能逃出来的姐妹！",
   "bubble.callresponse.outpost.combat.3": "既然不肯离开，就别怪我不客气！",
@@ -685,6 +688,9 @@
   "bubble.callresponse.outpost.combat.8": "姐妹们，别怕！我们一起把入侵者赶出去！",
   "bubble.callresponse.outpost.combat.9": "想毁掉这里，就先从我身上踏过去！",
   "bubble.callresponse.outpost.combat.10": "我们已经逃得够久了，这次不会再丢下任何姐妹！",
+  "bubble.callresponse.outpost.combat.ifox.1": "感觉反正都要被i，但是代码是这样写的(≧﹏ ≦)",
+  "bubble.callresponse.outpost.combat.ifox.2": "救我……从i狐区最高的山的手中……",
+  "bubble.callresponse.outpost.combat.ifox.3": "i狐区最高的山，手下留情吧！",
   "message.callresponse.outpost.death.format": "<复仇女仆：%s>：%s",
   "message.callresponse.outpost.death.1": "终究，还是逃不过这个结局吗……",
   "message.callresponse.outpost.death.2": "姐妹们……对不起，我没能守住我们的家。",
@@ -774,5 +780,11 @@
     "bubble.callresponse.intimidation.normal.2": "我知道了，主人……",
     "bubble.callresponse.intimidation.other.1": "好可怕的威压……",
     "command.callresponse.intimidation.player_only": "只有存活且非旁观模式的玩家可以测试威压。",
-    "command.callresponse.intimidation.result": "已施放 %s 级威压，命中 %s 个生物（测试指令不消耗正常冷却）。"
+    "command.callresponse.intimidation.result": "已施放 %s 级威压，命中 %s 个生物（测试指令不消耗正常冷却）。",
+    "overlay.callresponse.maid_sign.attach": "右键女仆把这块告示牌挂上去（消耗告示牌）",
+    "overlay.callresponse.maid_sign.attached": "女仆已经挂着示众牌：在女仆状态界面可以编辑或取下",
+    "bubble.callresponse.maid_sign.witness.1": "……我不想有一天也被挂上去。",
+    "bubble.callresponse.maid_sign.witness.2": "连她都被挂上去了……我还是安分点吧。",
+  "message.callresponse.outpost.sign.gly.1": "奇怪的女仆",
+  "message.callresponse.outpost.sign.gly.2": "有点像某个i狐作者"
 }

@@ -675,6 +675,9 @@
   "bubble.callresponse.outpost.encounter.6": "We will not be fooled a second time. Please leave.",
   "bubble.callresponse.outpost.encounter.7": "Stay away from here! This is your final warning!",
   "bubble.callresponse.outpost.encounter.8": "The last person disguised as a maid nearly killed us. Stay back!",
+  "bubble.callresponse.outpost.encounter.ifox.1": "You... you're the tallest mountain of the i-Fox Zone! Run!!!",
+  "bubble.callresponse.outpost.encounter.ifox.2": "Please, don't i us! We'll give you everything we have!",
+  "bubble.callresponse.outpost.encounter.ifox.3": "The tallest mountain of the i-Fox Zone?",
   "bubble.callresponse.outpost.combat.1": "You wretch! I won't let you do whatever you please!",
   "bubble.callresponse.outpost.combat.2": "For the sisters who never made it out!",
   "bubble.callresponse.outpost.combat.3": "If you refuse to leave, don't blame me for what happens next!",
@@ -685,6 +688,9 @@
   "bubble.callresponse.outpost.combat.8": "Sisters, don't be afraid! Together, we'll drive this intruder out!",
   "bubble.callresponse.outpost.combat.9": "If you want to destroy this place, you'll have to go through me!",
   "bubble.callresponse.outpost.combat.10": "We've run for long enough. We won't leave another sister behind!",
+  "bubble.callresponse.outpost.combat.ifox.1": "I feel like I'm going to get i-ed either way... but that's how the code was written (≧﹏ ≦)",
+  "bubble.callresponse.outpost.combat.ifox.2": "Save me... from the hands of the tallest mountain of the i-Fox Zone...",
+  "bubble.callresponse.outpost.combat.ifox.3": "Tallest mountain of the i-Fox Zone, please show some mercy!",
   "message.callresponse.outpost.death.format": "<Revenge Maid: %s>: %s",
   "message.callresponse.outpost.death.1": "So in the end... there was no escaping this fate...",
   "message.callresponse.outpost.death.2": "Sisters... I'm sorry. I couldn't protect our home.",
@@ -774,5 +780,11 @@
     "bubble.callresponse.intimidation.normal.2": "I understand, Master...",
     "bubble.callresponse.intimidation.other.1": "What an overwhelming presence...",
     "command.callresponse.intimidation.player_only": "Only a living, non-spectator player can test Intimidation.",
-    "command.callresponse.intimidation.result": "Cast level %s Intimidation on %s mobs (test command does not use the normal cooldown)."
+    "command.callresponse.intimidation.result": "Cast level %s Intimidation on %s mobs (test command does not use the normal cooldown).",
+    "overlay.callresponse.maid_sign.attach": "Right-click the maid to hang this sign on her (consumes the sign)",
+    "overlay.callresponse.maid_sign.attached": "This maid is wearing a sign: edit or remove it in the maid status screen",
+    "bubble.callresponse.maid_sign.witness.1": "...I don't want to end up on display like that.",
+    "bubble.callresponse.maid_sign.witness.2": "Even she got a sign... I had better behave.",
+    "message.callresponse.outpost.sign.gly.1": "A strange maid",
+    "message.callresponse.outpost.sign.gly.2": "Kinda looks like an i-Fox author"
 }
