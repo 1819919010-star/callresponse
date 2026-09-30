@@ -84,5 +84,12 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(Items.AMETHYST_SHARD)
                 .unlockedBy("get", has(Items.AMETHYST_SHARD))
                 .save(output);
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.BIRTHDAY_CARD.get())
+                .requires(Items.PAPER)
+                .requires(Items.CAKE)
+                .requires(Items.GOLD_INGOT)
+                .unlockedBy("has_cake", has(Items.CAKE))
+                .save(output, ResourceLocation.fromNamespaceAndPath(CallResponseMod.MOD_ID, "birthday_card"));
     }
 }

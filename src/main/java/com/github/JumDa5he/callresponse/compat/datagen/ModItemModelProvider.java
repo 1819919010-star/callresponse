@@ -25,5 +25,6 @@ public class ModItemModelProvider extends ItemModelProvider {
                 ResourceLocation.fromNamespaceAndPath("touhou_little_maid", "item/favorability_tool_add"));
         singleTexture("free_photo", mcLoc("item/generated"), "layer0",
                 ResourceLocation.fromNamespaceAndPath("touhou_little_maid", "item/photo"));
+        singleTexture("birthday_card", mcLoc("item/generated"), "layer0", mcLoc("item/paper"));
     }
 }

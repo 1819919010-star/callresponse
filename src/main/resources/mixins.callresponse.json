@@ -95,7 +95,8 @@
         "client.PrincessCarryVehicleAnimationMixin",
         "client.PrincessCarryPassengerAnimationMixin",
         "client.PrincessCarryCarrierPoseMixin",
-        "client.YsmPrincessCarryRendererMixin"
+        "client.YsmPrincessCarryRendererMixin",
+        "TitleScreenMixin"
     ],
     "injectors": {
         "defaultRequire": 1

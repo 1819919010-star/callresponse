@@ -3,6 +3,7 @@ package com.github.JumDa5he.callresponse.compat.item;
 import com.github.JumDa5he.callresponse.CallResponseMod;
 import com.github.JumDa5he.callresponse.compat.bauble.MoreEatBauble;
 import com.github.JumDa5he.callresponse.compat.bauble.NoEatBauble;
+import com.github.JumDa5he.callresponse.compat.birthday.BirthdayCardItem;
 import com.github.JumDa5he.callresponse.compat.block.ModBlocks;
 import com.github.JumDa5he.callresponse.compat.disguise.DisguiseItem;
 import com.github.JumDa5he.callresponse.compat.facility.FacilityCapacityToolItem;
@@ -54,6 +55,9 @@ public class ModItems {
     public static final Supplier<Item> DISGUISE_ITEM = ITEMS.register("disguise_item",
             () -> new DisguiseItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
 
+    public static final Supplier<Item> BIRTHDAY_CARD = ITEMS.register("birthday_card",
+            () -> new BirthdayCardItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
+
     public static final Supplier<Item> REVENGE_MAID_SPAWN_EGG = ITEMS.register("revenge_maid_spawn_egg",
             () -> new RevengeMaidSpawnEggItem(false));
     public static final Supplier<Item> ALLIED_REVENGE_MAID_SPAWN_EGG = ITEMS.register("allied_revenge_maid_spawn_egg",
@@ -79,6 +83,7 @@ public class ModItems {
                         output.accept(FACILITY_CAPACITY_TOOL.get());
                         output.accept(DARK_IRON_CAGE.get());
                         output.accept(DISGUISE_ITEM.get());
+                        output.accept(BIRTHDAY_CARD.get());
                         output.accept(REVENGE_MAID_SPAWN_EGG.get());
                         output.accept(ALLIED_REVENGE_MAID_SPAWN_EGG.get());
                     })

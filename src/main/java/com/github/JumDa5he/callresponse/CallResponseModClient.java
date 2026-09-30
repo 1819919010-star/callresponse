@@ -1,6 +1,7 @@
 package com.github.JumDa5he.callresponse;
 
 import com.github.JumDa5he.callresponse.compat.block.ModBlocks;
+import com.github.JumDa5he.callresponse.compat.birthday.client.BirthdayClientData;
 import com.github.JumDa5he.callresponse.compat.client.renderer.MaidCropBlockRenderer;
 import com.github.JumDa5he.callresponse.compat.hunger.MaidHungerGuiDisplay;
 import com.github.JumDa5he.callresponse.compat.menu.ModMenuClientEvents;
@@ -44,6 +45,11 @@ public class CallResponseModClient {
                     ModBlocks.MAID_CROP_BLOCK_ENTITY.get(),
                     context -> new MaidCropBlockRenderer()
             );
+        }
+
+        @SubscribeEvent
+        public static void onLoggingOut(net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent.LoggingOut event) {
+            BirthdayClientData.onDisconnect();
         }
     }
 }

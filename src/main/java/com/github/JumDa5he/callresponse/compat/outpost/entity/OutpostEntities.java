@@ -11,7 +11,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.minecraft.core.registries.Registries;
 import java.util.function.Supplier;
 
-@EventBusSubscriber(modid = CallResponseMod.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = CallResponseMod.MOD_ID)
 public final class OutpostEntities {
     public static final DeferredRegister<EntityType<?>> TYPES = DeferredRegister.create(Registries.ENTITY_TYPE, CallResponseMod.MOD_ID);
     public static final Supplier<EntityType<RevengeMaidEntity>> REVENGE_MAID = TYPES.register("revenge_maid",

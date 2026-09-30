@@ -7,6 +7,7 @@ import com.github.JumDa5he.callresponse.compat.disguise.OutpostRecognitionManage
 import com.github.JumDa5he.callresponse.compat.outpost.OutpostRaidManager;
 import com.github.JumDa5he.callresponse.compat.bauble.MaidConflictBaubleHandler;
 import com.github.JumDa5he.callresponse.compat.bauble.NoEatBauble;
+import com.github.JumDa5he.callresponse.compat.birthday.BirthdayManager;
 import com.github.JumDa5he.callresponse.compat.block.MaidCropSpecialCropHandler;
 import com.github.JumDa5he.callresponse.compat.block.ModBlocks;
 import com.github.JumDa5he.callresponse.compat.brain.CustomExtraMaidBrain;
@@ -117,6 +118,7 @@ public class LittleMaidCompat implements ILittleMaid {
         NeoForge.EVENT_BUS.register(NpcEventLoader.class);
         NeoForge.EVENT_BUS.register(new MaidSignManager());
         NeoForge.EVENT_BUS.register(new MaidSignDeterrence());
+        NeoForge.EVENT_BUS.register(new BirthdayManager());
     }
 
     @Override

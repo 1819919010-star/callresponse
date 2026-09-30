@@ -1,5 +1,8 @@
 package com.github.JumDa5he.callresponse.network;
 
+import com.github.JumDa5he.callresponse.compat.birthday.BirthdaySetC2SPacket;
+import com.github.JumDa5he.callresponse.compat.birthday.BirthdaySyncS2CPacket;
+import com.github.JumDa5he.callresponse.compat.birthday.OpenBirthdayScreenS2CPacket;
 import com.github.JumDa5he.callresponse.compat.disguise.DisguiseSyncPacket;
 import com.github.JumDa5he.callresponse.compat.intimidation.IntimidationCastC2SPacket;
 import com.github.JumDa5he.callresponse.compat.cuteactivity.CuteActivityScareS2CPacket;
@@ -37,6 +40,7 @@ public class NetworkRegistryHandler {
         registrar.playToServer(PrincessCarryActionC2SPacket.TYPE, PrincessCarryActionC2SPacket.STREAM_CODEC, PrincessCarryActionC2SPacket::handle);
         registrar.playToServer(IntimidationCastC2SPacket.TYPE, IntimidationCastC2SPacket.STREAM_CODEC, IntimidationCastC2SPacket::handle);
         registrar.playToServer(MaidSignUpdateC2SPacket.TYPE, MaidSignUpdateC2SPacket.STREAM_CODEC, MaidSignUpdateC2SPacket::handle);
+        registrar.playToServer(BirthdaySetC2SPacket.TYPE, BirthdaySetC2SPacket.STREAM_CODEC, BirthdaySetC2SPacket::handle);
 
         // 防服务端崩溃
         if(FMLEnvironment.dist.isClient()){
@@ -53,6 +57,8 @@ public class NetworkRegistryHandler {
             registrar.playToClient(CloseNpcEventS2CPacket.TYPE, CloseNpcEventS2CPacket.STREAM_CODEC, CloseNpcEventS2CPacket::handle);
             registrar.playToClient(CuteActivityScareS2CPacket.TYPE, CuteActivityScareS2CPacket.STREAM_CODEC, CuteActivityScareS2CPacket::handle);
             registrar.playToClient(DisguiseSyncPacket.TYPE, DisguiseSyncPacket.STREAM_CODEC, DisguiseSyncPacket::handle);
+            registrar.playToClient(OpenBirthdayScreenS2CPacket.TYPE, OpenBirthdayScreenS2CPacket.STREAM_CODEC, OpenBirthdayScreenS2CPacket::handle);
+            registrar.playToClient(BirthdaySyncS2CPacket.TYPE, BirthdaySyncS2CPacket.STREAM_CODEC, BirthdaySyncS2CPacket::handle);
         }else {
             registrar.playToClient(OpenEmotionBookScreenS2CPacket.TYPE, OpenEmotionBookScreenS2CPacket.STREAM_CODEC, (openEmotionBookScreenS2CPacket, iPayloadContext) -> {});
             registrar.playToClient(CopyEntityUuidS2CPacket.TYPE, CopyEntityUuidS2CPacket.STREAM_CODEC, (copyEntityUuidS2CPacket, iPayloadContext) -> {});
@@ -67,6 +73,8 @@ public class NetworkRegistryHandler {
             registrar.playToClient(CloseNpcEventS2CPacket.TYPE, CloseNpcEventS2CPacket.STREAM_CODEC, (packet, context) -> {});
             registrar.playToClient(CuteActivityScareS2CPacket.TYPE, CuteActivityScareS2CPacket.STREAM_CODEC, (packet, context) -> {});
             registrar.playToClient(DisguiseSyncPacket.TYPE, DisguiseSyncPacket.STREAM_CODEC, (packet, context) -> {});
+            registrar.playToClient(OpenBirthdayScreenS2CPacket.TYPE, OpenBirthdayScreenS2CPacket.STREAM_CODEC, (packet, context) -> {});
+            registrar.playToClient(BirthdaySyncS2CPacket.TYPE, BirthdaySyncS2CPacket.STREAM_CODEC, (packet, context) -> {});
         }
     }
 }
