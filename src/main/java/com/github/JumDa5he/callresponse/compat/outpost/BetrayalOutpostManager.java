@@ -496,7 +496,8 @@ public final class BetrayalOutpostManager {
             true
     );
     private static void addGlySign(EntityMaid maid){
-        MaidSignManager.attach(maid, Items.OAK_SIGN);
+        // 彩蛋牌子只作展示：旁边的女仆看到不会被威慑
+        MaidSignManager.attach(maid, Items.OAK_SIGN, false);
         MaidSignManager.setText(maid, glySignText);
     }
 

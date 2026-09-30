@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.entity.SignText;
 
@@ -30,7 +31,7 @@ public final class MaidSignRenderHelper {
     private static final double ANCHOR_Y = 0.52;
     private static final double ANCHOR_Z = 0.0625;
 
-    private final MaidSignBlockEntity holder = new MaidSignBlockEntity(new SignText());
+    private final MaidSignBlockEntity holder = new MaidSignBlockEntity(Items.OAK_SIGN, new SignText());
     private BlockEntityRenderer<SignBlockEntity> renderer;
     private MaidSignData renderedData;
 
@@ -64,6 +65,8 @@ public final class MaidSignRenderHelper {
         if (this.renderedData != data) {
             // 附件同步时数据整体替换，这里按引用比较就够
             this.holder.setSignText(data.text().setHasGlowingText(true));
+            // 牌面材质跟着挂上去的那件物品走
+            this.holder.setSignState(MaidSignBlockEntity.wallSignState(data.item()));
             this.renderedData = data;
         }
         // 发光文字由 SignRenderer 内部用满亮度绘制，与光照无关

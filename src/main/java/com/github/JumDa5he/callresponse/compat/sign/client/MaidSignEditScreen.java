@@ -58,7 +58,7 @@ public class MaidSignEditScreen extends AbstractSignEditScreen {
 
     public static MaidSignEditScreen create(Screen parent, EntityMaid maid, MaidSignData data) {
         SignText text = data.text().setHasGlowingText(true);
-        return new MaidSignEditScreen(parent, maid, new MaidSignBlockEntity(text), text.getColor());
+        return new MaidSignEditScreen(parent, maid, new MaidSignBlockEntity(data.item(), text), text.getColor());
     }
 
     @Override

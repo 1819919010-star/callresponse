@@ -55,7 +55,8 @@ public class MaidSignDeterrence {
     private static void scanLevel(ServerLevel level, long now) {
         List<EntityMaid> paraded = new ArrayList<>();
         for (Entity entity : level.getAllEntities()) {
-            if (entity instanceof EntityMaid maid && MaidSignManager.hasSign(maid)) {
+            // scareOnlookers 为 false 的牌子只作展示，不吓人
+            if (entity instanceof EntityMaid maid && MaidSignManager.scaresOnlookers(maid)) {
                 paraded.add(maid);
             }
         }

@@ -37,8 +37,20 @@ public class MaidSignManager {
         return get(maid).enabled();
     }
 
+    /** 这块牌子会不会威慑旁边看到它的女仆。 */
+    public static boolean scaresOnlookers(EntityMaid maid) {
+        MaidSignData data = get(maid);
+        return data.enabled() && data.scareOnlookers();
+    }
+
     public static void attach(EntityMaid maid, Item signItem) {
-        maid.setData(InitAttachTypes.SYNCED_MAID_SIGN, MaidSignData.glowing(new SignText(), signItem));
+        attach(maid, signItem, true);
+    }
+
+    /** {@code scareOnlookers} 为 false 的牌子只作展示，不会威慑周围女仆（GLY 的彩蛋牌子用这个）。 */
+    public static void attach(EntityMaid maid, Item signItem, boolean scareOnlookers) {
+        maid.setData(InitAttachTypes.SYNCED_MAID_SIGN,
+                MaidSignData.glowing(new SignText(), signItem, scareOnlookers));
     }
 
     /** 取下告示牌，并把它还给发起者（背包放不下就掉在脚下）。 */
@@ -67,8 +79,10 @@ public class MaidSignManager {
     }
 
     public static void setText(EntityMaid maid, SignText text) {
-        // 只换文本和颜色，物品种类保持原样
-        maid.setData(InitAttachTypes.SYNCED_MAID_SIGN, MaidSignData.glowing(text, get(maid).item()));
+        // 只换文本和颜色，物品种类和“是否威慑旁人”都保持原样
+        MaidSignData current = get(maid);
+        maid.setData(InitAttachTypes.SYNCED_MAID_SIGN,
+                MaidSignData.glowing(text, current.item(), current.scareOnlookers()));
     }
 
     /** 把牌子上的四行文字拼成一段纯文本。 */
