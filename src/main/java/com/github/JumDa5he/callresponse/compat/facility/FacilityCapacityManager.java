@@ -235,43 +235,18 @@ public final class FacilityCapacityManager {
     /**
      * 附近只要存在被《呼应》调过容量的床，就用容量规则选床；否则返回 null 让本体原逻辑继续。
      */
+    public record BedCandidates(boolean hasOverride, List<BlockPos> positions) {}
+
     public static BedSearchResult findCapacityAwareBed(ServerLevel level, EntityMaid maid) {
-        BlockPos searchCenter = maid.getBrainSearchPos();
-        int range = (int) maid.getRestrictRadius();
-        List<BlockPos> poiBeds = level.getPoiManager()
-                .getInRange(type -> type.value().equals(InitPoi.MAID_BED.get()), searchCenter, range,
-                        PoiManager.Occupancy.ANY)
-                .map(PoiRecord::getPos).toList();
-        List<BlockPos> overrideBeds = new ArrayList<>();
-        for (FacilityKey facilityKey : data(level).keys()) {
-            if (!facilityKey.dimension().equals(level.dimension().location())) {
-                continue;
-            }
-            BlockPos pos = BlockPos.of(facilityKey.pos());
-            if (pos.distSqr(searchCenter) > (long) range * range || !level.hasChunkAt(pos)) {
-                continue;
-            }
-            if (level.getBlockState(pos).getBlock() instanceof BlockMaidBed) {
-                overrideBeds.add(pos);
-            }
-        }
-        boolean hasOverride = !overrideBeds.isEmpty();
-        if (!hasOverride) {
-            return new BedSearchResult(false, null);
-        }
-        Set<BlockPos> beds = new HashSet<>(poiBeds);
-        beds.addAll(overrideBeds);
-        BlockPos selected = beds.stream()
+        BedCandidates candidates = collectBedCandidates(level, maid);
+        if (!candidates.hasOverride()) return new BedSearchResult(false, null);
+        BlockPos selected = candidates.positions().stream()
                 .filter(maid::isWithinRestriction)
                 .filter(pos -> {
                     BlockPos center = canonicalize(level, pos);
-                    if (center == null) {
-                        return false;
-                    }
-                    if (hasCapacityOverride(level, center)) {
-                        return hasVacancy(level, center);
-                    }
-                    return !level.getBlockState(center).getValue(BedBlock.OCCUPIED);
+                    if (center == null) return false;
+                    return hasCapacityOverride(level, center) ? hasVacancy(level, center)
+                            : !level.getBlockState(center).getValue(BedBlock.OCCUPIED);
                 })
                 .min(Comparator.comparingDouble(pos -> pos.distSqr(maid.blockPosition())))
                 .orElse(null);
@@ -493,5 +468,29 @@ public final class FacilityCapacityManager {
     }
 
     public record BedSearchResult(boolean handled, BlockPos pos) {
+    }
+    public static BedCandidates collectBedCandidates(ServerLevel level, EntityMaid maid) {
+        BlockPos searchCenter = maid.getBrainSearchPos();
+        int range = (int) maid.getRestrictRadius();
+        List<BlockPos> poiBeds = level.getPoiManager()
+                .getInRange(type -> type.value().equals(InitPoi.MAID_BED.get()), searchCenter, range,
+                        PoiManager.Occupancy.ANY)
+                .map(PoiRecord::getPos).toList();
+        List<BlockPos> overrideBeds = new ArrayList<>();
+        for (FacilityKey facilityKey : data(level).keys()) {
+            if (!facilityKey.dimension().equals(level.dimension().location())) {
+                continue;
+            }
+            BlockPos pos = BlockPos.of(facilityKey.pos());
+            if (pos.distSqr(searchCenter) > (long) range * range || !level.hasChunkAt(pos)) {
+                continue;
+            }
+            if (level.getBlockState(pos).getBlock() instanceof BlockMaidBed) {
+                overrideBeds.add(pos);
+            }
+        }
+        Set<BlockPos> beds = new HashSet<>(poiBeds);
+        beds.addAll(overrideBeds);
+        return new BedCandidates(!overrideBeds.isEmpty(), List.copyOf(beds));
     }
 }

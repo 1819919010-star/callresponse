@@ -1,10 +1,8 @@
 package com.github.JumDa5he.callresponse.compat.outpost;
 
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
@@ -13,20 +11,24 @@ import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.pathfinder.Path;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.Comparator;
 import java.util.EnumSet;
-import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
 
 /** 只在营地特殊 Raid 中引导 Raider 从真正的围栏入口进入，不穿墙或传送。 */
 public final class OutpostRaidAdvanceGoal extends Goal {
     private final Raider raider;
     private BlockPos chosenGate;
-    private UUID checkedTarget;
+    private BlockPos chosenDestination;
+    private net.minecraft.world.entity.raid.Raid raidContext;
     private int nextPathCheckTick;
-    private boolean targetPathReachable;
+    private int retryAfterTick;
+    private final Map<BlockPos, Integer> failedEntrances = new HashMap<>();
+    private Path ownedPath;
+    private Vec3 lastProgress;
+    private int lastProgressTick;
 
     public OutpostRaidAdvanceGoal(Raider raider) {
         this.raider = raider;
@@ -50,12 +52,20 @@ public final class OutpostRaidAdvanceGoal extends Goal {
 
     @Override
     public void tick() {
+        if (!shouldAdvance()) return;
+        if (lastProgress == null || raider.position().distanceToSqr(lastProgress) >= 1.0D) {
+            lastProgress = raider.position();
+            lastProgressTick = raider.tickCount;
+        } else if (raider.tickCount - lastProgressTick >= 60) {
+            failPath();
+            return;
+        }
         if (chosenGate != null && raider.level() instanceof ServerLevel level
                 && raider.position().distanceToSqr(Vec3.atCenterOf(chosenGate)) <= 3.5D * 3.5D
                 && openNearbyGates(level, chosenGate)) {
             nextPathCheckTick = 0;
             moveTowardCamp();
-        } else if (raider.tickCount % 20 == 0 && raider.getNavigation().isDone()) {
+        } else if (raider.tickCount >= nextPathCheckTick && raider.getNavigation().isDone()) {
             moveTowardCamp();
         }
     }
@@ -63,22 +73,39 @@ public final class OutpostRaidAdvanceGoal extends Goal {
     @Override
     public void stop() {
         chosenGate = null;
-        raider.getNavigation().stop();
+        chosenDestination = null;
+        if (ownedPath != null && raider.getNavigation().getPath() == ownedPath) raider.getNavigation().stop();
+        ownedPath = null;
+        lastProgress = null;
+        if (!OutpostMaidTargetGoal.isCampRaid(raider)) {
+            failedEntrances.clear();
+            retryAfterTick = 0;
+            nextPathCheckTick = 0;
+        }
     }
 
     private boolean shouldAdvance() {
-        if (!OutpostMaidTargetGoal.isCampRaid(raider)) return false;
-        LivingEntity target = raider.getTarget();
-        if (target != null && !OutpostMaidTargetGoal.isCampTarget(raider, target)) return false;
+        if (raidContext != raider.getCurrentRaid()) {
+            stop();
+            failedEntrances.clear();
+            retryAfterTick = 0;
+            nextPathCheckTick = 0;
+            raidContext = raider.getCurrentRaid();
+        }
+        if (!OutpostMaidTargetGoal.isCampRaid(raider)) {
+            failedEntrances.clear();
+            retryAfterTick = 0;
+            return false;
+        }
+        if (!OutpostMaidTargetGoal.canAct(raider) || OutpostMaidTargetGoal.hasValidTarget(raider)
+                || raider.tickCount < retryAfterTick) return false;
         BlockPos center = raider.getCurrentRaid().getCenter();
         if (raider.level() instanceof ServerLevel level) {
             BetrayalOutpostSavedData.Outpost outpost = BetrayalOutpostSavedData.get(level).findAt(level, center);
-            if (outpost != null && !insideFence(outpost.box())) return true;
-            if (target != null) return !hasReachablePathTo(target);
+            if (outpost != null) return !insideFence(outpost.box())
+                    || Math.abs(raider.getY() - outpost.center().getY()) > 3.0D;
         }
-        double dx = raider.getX() - (center.getX() + 0.5D);
-        double dz = raider.getZ() - (center.getZ() + 0.5D);
-        return dx * dx + dz * dz > 6.0D * 6.0D;
+        return false;
     }
 
     private boolean insideFence(BoundingBox box) {
@@ -86,52 +113,68 @@ public final class OutpostRaidAdvanceGoal extends Goal {
                 && raider.getZ() > box.minZ() + 1 && raider.getZ() < box.maxZ() - 1;
     }
 
-    private boolean hasReachablePathTo(LivingEntity target) {
-        if (!target.getUUID().equals(checkedTarget) || raider.tickCount >= nextPathCheckTick) {
-            checkedTarget = target.getUUID();
-            nextPathCheckTick = raider.tickCount + 20;
-            Path path = raider.getNavigation().createPath(target, 0);
-            targetPathReachable = path != null && path.canReach();
-        }
-        return targetPathReachable;
-    }
-
     private void moveTowardCamp() {
-        BlockPos center = raider.getCurrentRaid().getCenter();
+        if (!shouldAdvance() || raider.tickCount < nextPathCheckTick) return;
+        nextPathCheckTick = raider.tickCount + 20;
+        failedEntrances.entrySet().removeIf(entry -> entry.getValue() <= raider.tickCount);
         if (raider.level() instanceof ServerLevel level) {
-            LivingEntity target = raider.getTarget();
-            BetrayalOutpostSavedData.Outpost outpost = BetrayalOutpostSavedData.get(level).findAt(level, center);
-            if (OutpostMaidTargetGoal.isCampTarget(raider, target)) {
-                Path path = raider.getNavigation().createPath(target, 0);
-                if (path != null && path.canReach()) {
-                    chosenGate = null;
-                    raider.getNavigation().moveTo(path, 1.0D);
+            var outpost = BetrayalOutpostSavedData.get(level).findAt(level, raider.getCurrentRaid().getCenter());
+            if (outpost != null) {
+                if (moveToEntrance(level, outpost.box(), outpost.center())) {
+                    rememberPath();
                     return;
                 }
-                if (outpost != null && moveToEntrance(level, outpost.box(), target.blockPosition())) return;
-            } else {
-                EntityMaid maid = level.getEntitiesOfClass(EntityMaid.class,
-                                new AABB(center).inflate(24.0D, 16.0D, 24.0D),
-                                candidate -> OutpostMaidTargetGoal.isCampTarget(raider, candidate))
-                        .stream().min(Comparator.comparingDouble(raider::distanceToSqr)).orElse(null);
-                Path path = maid == null ? null : raider.getNavigation().createPath(maid, 0);
-                if (path != null && path.canReach()) {
-                    chosenGate = null;
-                    raider.getNavigation().moveTo(path, 1.0D);
-                    return;
+                // 只在营地记录的地面高度附近找落脚点，不能误用水底/平台下表面。
+                for (int radius = 0; radius <= 6; radius += 2) {
+                    for (Direction direction : Direction.Plane.HORIZONTAL) {
+                        BlockPos horizontal = outpost.center().relative(direction, radius);
+                        for (int dy = 3; dy >= -2; dy--) {
+                            BlockPos ground = horizontal.above(dy);
+                            if (failedEntrances.containsKey(ground) || !canStandAt(level, ground)) continue;
+                            Path path = raider.getNavigation().createPath(ground, 0);
+                            if (path != null && path.canReach() && raider.getNavigation().moveTo(path, 1.0D)) {
+                                chosenGate = null;
+                                chosenDestination = ground;
+                                rememberPath();
+                                return;
+                            }
+                        }
+                    }
                 }
-                path = raider.getNavigation().createPath(center, 0);
-                if (path != null && path.canReach()) {
-                    chosenGate = null;
-                    raider.getNavigation().moveTo(path, 1.0D);
-                    return;
-                }
-                if (outpost != null && moveToEntrance(level, outpost.box(), center)) return;
             }
         }
-        if (raider.getNavigation().moveTo(center.getX() + 0.5D, center.getY(), center.getZ() + 0.5D, 1.0D)) return;
-        Vec3 step = DefaultRandomPos.getPosTowards(raider, 12, 4, Vec3.atCenterOf(center), Math.PI / 2.0D);
-        if (step != null) raider.getNavigation().moveTo(step.x, step.y, step.z, 1.0D);
+        failPath();
+    }
+
+    private void rememberPath() {
+        ownedPath = raider.getNavigation().getPath();
+        if (lastProgress == null) {
+            lastProgress = raider.position();
+            lastProgressTick = raider.tickCount;
+        }
+    }
+
+    private void failPath() {
+        if (chosenGate != null) failedEntrances.put(chosenGate.immutable(), raider.tickCount + 200);
+        if (chosenDestination != null) failedEntrances.put(chosenDestination.immutable(), raider.tickCount + 200);
+        if (ownedPath != null && raider.getNavigation().getPath() == ownedPath) raider.getNavigation().stop();
+        ownedPath = null;
+        chosenGate = null;
+        chosenDestination = null;
+        lastProgress = null;
+        retryAfterTick = raider.tickCount + 40;
+    }
+
+    private boolean canStandAt(ServerLevel level, BlockPos pos) {
+        var body = raider.getBoundingBox().move(pos.getX() + 0.5D - raider.getX(),
+                pos.getY() - raider.getY(), pos.getZ() + 0.5D - raider.getZ());
+        for (BlockPos check : BlockPos.betweenClosed(BlockPos.containing(body.minX, body.minY - 1, body.minZ),
+                BlockPos.containing(body.maxX, body.maxY, body.maxZ))) {
+            if (!level.hasChunkAt(check)) return false;
+        }
+        return level.getFluidState(pos).isEmpty()
+                && level.getBlockState(pos.below()).isFaceSturdy(level, pos.below(), Direction.UP)
+                && level.noCollision(raider, body) && !level.containsAnyLiquid(body);
     }
 
     private boolean moveToEntrance(ServerLevel level, BoundingBox box, BlockPos destination) {
@@ -143,10 +186,11 @@ public final class OutpostRaidAdvanceGoal extends Goal {
         BlockPos nearestGate = null;
         BlockPos nearestWaypoint = null;
         double nearestDistance = Double.MAX_VALUE;
-        for (int y = box.minY(); y <= Math.min(box.maxY(), box.minY() + 5); y++) {
+        for (int y = Math.max(box.minY(), destination.getY() - 2); y <= Math.min(box.maxY(), destination.getY() + 3); y++) {
             for (int x = box.minX(); x <= box.maxX(); x++) {
                 for (int z = box.minZ(); z <= box.maxZ(); z++) {
                     BlockPos gate = new BlockPos(x, y, z);
+                    if (!level.hasChunkAt(gate) || failedEntrances.containsKey(gate)) continue;
                     BlockState state = level.getBlockState(gate);
                     if (!(state.getBlock() instanceof FenceGateBlock)) continue;
                     if (raider.position().distanceToSqr(Vec3.atCenterOf(gate)) <= 3.5D * 3.5D) {
@@ -158,6 +202,7 @@ public final class OutpostRaidAdvanceGoal extends Goal {
                         BlockPos nearSide = gate.relative(side, 2);
                         BlockPos farSide = gate.relative(side.getOpposite(), 2);
                         BlockPos waypoint = state.getValue(FenceGateBlock.OPEN) ? farSide : nearSide;
+                        if (!canStandAt(level, waypoint) || !canStandAt(level, nearSide)) continue;
                         double distance = raider.distanceToSqr(Vec3.atCenterOf(nearSide));
                         if (distance < nearestDistance && (!outsideCamp || isBoundaryGate(box, gate))) {
                             nearestGate = gate;
@@ -180,9 +225,12 @@ public final class OutpostRaidAdvanceGoal extends Goal {
             chosenGate = nearestGate;
             Vec3 step = DefaultRandomPos.getPosTowards(raider, 12, 4,
                     Vec3.atCenterOf(nearestWaypoint), Math.PI / 2.0D);
-            if (step != null && navigation.moveTo(step.x, step.y, step.z, 1.0D)) return true;
-            return navigation.moveTo(nearestWaypoint.getX() + 0.5D,
-                    nearestWaypoint.getY(), nearestWaypoint.getZ() + 0.5D, 1.0D);
+            if (step != null && canStandAt(level, BlockPos.containing(step))) {
+                Path segment = navigation.createPath(BlockPos.containing(step), 0);
+                if (segment != null && segment.canReach() && navigation.moveTo(segment, 1.0D)) return true;
+            }
+            failedEntrances.put(nearestGate.immutable(), raider.tickCount + 200);
+            return false;
         }
         chosenGate = bestGate;
         return navigation.moveTo(bestPath, 1.0D);
@@ -196,6 +244,7 @@ public final class OutpostRaidAdvanceGoal extends Goal {
     private static boolean openNearbyGates(ServerLevel level, BlockPos gate) {
         boolean opened = false;
         for (BlockPos pos : BlockPos.betweenClosed(gate.offset(-1, 0, -1), gate.offset(1, 0, 1))) {
+            if (!level.hasChunkAt(pos)) continue;
             BlockState state = level.getBlockState(pos);
             if (state.getBlock() instanceof FenceGateBlock && !state.getValue(FenceGateBlock.OPEN)) {
                 level.setBlock(pos, state.setValue(FenceGateBlock.OPEN, true), 3);

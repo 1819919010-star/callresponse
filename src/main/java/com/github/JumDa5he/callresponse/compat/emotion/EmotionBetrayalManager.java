@@ -187,6 +187,7 @@ public class EmotionBetrayalManager {
 
     /** 让据点女仆沿用现有背叛索敌与攻击节奏，但保留生成器分配的真实工作模式。 */
     public static void initializeOutpostBetrayer(EntityMaid maid) {
+        if (BetrayalOutpostMaidData.isGly(maid)) return;
         UUID maidId = maid.getUUID();
         isBetraying.put(maidId, true);
         maid.getPersistentData().putBoolean(BETRAYAL_NBT_TAG, true);
@@ -359,6 +360,7 @@ public class EmotionBetrayalManager {
     }
 
     public static void tickOutpostCombat(EntityMaid maid) {
+        if (BetrayalOutpostMaidData.isGly(maid)) return;
         if (maid.level() instanceof ServerLevel && maid.isAlive()
                 && !IntimidationManager.isIntimidated(maid)
                 && BetrayalOutpostMaidData.isOutpostMaid(maid) && isBetraying(maid)) {
@@ -457,7 +459,7 @@ public class EmotionBetrayalManager {
         }
 
         if (target != null && BetrayalOutpostMaidData.isOutpostMaid(maid)
-                && maid.tickCount % OUTPOST_RETARGET_INTERVAL == 0) {
+                && (maid.tickCount + maid.getId()) % OUTPOST_RETARGET_INTERVAL == 0) {
             LivingEntity closer = findClearlyCloserOutpostTarget(maid, target);
             if (closer != null) {
                 BetrayalOutpostAlertManager.enterCombat(maid, closer);
@@ -474,6 +476,7 @@ public class EmotionBetrayalManager {
                     maid.getBrain().setMemory(MemoryModuleType.ATTACK_TARGET, target);
                 }
             } else {
+                // 营地内正常活动无需集合；仅真正滞留在营地外时启动一次归位。
                 if (outpost) {
                     maid.getPersistentData().remove(OUTPOST_PURSUIT_TARGET);
                     updateOutpostReturn(maid);
@@ -492,6 +495,10 @@ public class EmotionBetrayalManager {
         }
 
         BetrayalOutpostMaidData.tickDialogue(maid, target);
+
+        // For the subtype this shared method owns selection/pursuit/return only.
+        // Its FIGHT activity uses TLM's normal weapon actions, never the legacy direct-hurt fallback.
+        if (maid instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity) return;
 
         // The three assault maids use TLM TaskAttack's own movement and melee cooldown while working.
         if (outpost && isTlmMeleeActive(maid)) return;
@@ -516,23 +523,12 @@ public class EmotionBetrayalManager {
 
     // ===== 选择目标（优先玩家，其次任何女仆，不检查主人） =====
     private static LivingEntity selectTarget(EntityMaid maid) {
-        if (BetrayalOutpostMaidData.isOutpostMaid(maid)
-                && BetrayalOutpostAlertManager.isRelaxed(maid)) {
+        if (BetrayalOutpostMaidData.isOutpostMaid(maid)) {
             return BetrayalOutpostAlertManager.findRelaxedTarget(maid);
         }
 
         LivingEntity nearestPlayer = findNearestPlayer(maid);
         if (nearestPlayer != null) return nearestPlayer;
-
-        if (BetrayalOutpostMaidData.isOutpostMaid(maid)) {
-            AABB searchArea = BetrayalOutpostMaidData.pursuitSearchArea(maid);
-            return maid.level().getEntitiesOfClass(LivingEntity.class,
-                            searchArea,
-                            living -> BetrayalOutpostAlertManager.isBaseValidTarget(maid, living))
-                    .stream().sorted(java.util.Comparator.comparingDouble(maid::distanceToSqr))
-                    .limit(6).filter(living -> BetrayalOutpostAlertManager.canKeepOrDetectTarget(maid, living))
-                    .findFirst().orElse(null);
-        }
 
         // 攻击任何女仆（包括野生，但野生不会触发求救）
         List<EntityMaid> maids = maid.level().getEntitiesOfClass(EntityMaid.class,
@@ -661,12 +657,12 @@ public class EmotionBetrayalManager {
                                 && BetrayalOutpostAlertManager.isBaseValidTarget(maid, candidate))
                 .stream().sorted(java.util.Comparator.comparingDouble(maid::distanceToSqr))
                 .limit(6)
-                .filter(candidate -> BetrayalOutpostAlertManager.canKeepOrDetectTarget(maid, candidate))
                 .filter(candidate -> {
                     double distance = maid.distanceToSqr(candidate);
                     return distance + OUTPOST_RETARGET_MIN_GAIN_SQR < currentDistance
                             && distance < currentDistance * OUTPOST_RETARGET_DISTANCE_RATIO_SQR;
                 })
+                .filter(candidate -> BetrayalOutpostAlertManager.canKeepOrDetectTarget(maid, candidate))
                 .min(java.util.Comparator.comparingDouble(maid::distanceToSqr))
                 .orElse(null);
     }
@@ -794,7 +790,7 @@ public class EmotionBetrayalManager {
                 && maid.getPersistentData().getBoolean(OUTPOST_RETURN_NEEDED);
     }
 
-    private static void updateOutpostReturn(EntityMaid maid) {
+    public static void updateOutpostReturn(EntityMaid maid) {
         maid.setAggressive(false);
         if (BetrayalOutpostAlertManager.isRestingOrSeekingRest(maid)
                 || BetrayalOutpostMaidData.isMaidWithinReturnArea(maid)
@@ -814,7 +810,7 @@ public class EmotionBetrayalManager {
                 MaidMovementControl.Field.PATH);
     }
 
-    private static void cancelOutpostReturn(EntityMaid maid) {
+    public static void cancelOutpostReturn(EntityMaid maid) {
         stopReturningToOutpost(maid);
         CompoundTag data = maid.getPersistentData();
         data.remove(OUTPOST_RETURN_NEEDED);
@@ -822,7 +818,7 @@ public class EmotionBetrayalManager {
     }
 
     private static void returnToOutpost(EntityMaid maid) {
-        BlockPos home = BetrayalOutpostMaidData.recordedHome(maid);
+        BlockPos home = BetrayalOutpostMaidData.returnAnchor(maid);
         if (home == null || BetrayalOutpostAlertManager.isRestingOrSeekingRest(maid)
                 || BetrayalOutpostMaidData.isMaidWithinReturnArea(maid)
                 || isOutpostReturnMovementUnavailable(maid)) {
@@ -936,6 +932,8 @@ public class EmotionBetrayalManager {
                 || Math.abs(pos.getX() - home.getX()) > 5
                 || Math.abs(pos.getZ() - home.getZ()) > 5
                 || !maid.level().hasChunkAt(pos)) return false;
+        if (maid instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity revenge
+                && !revenge.isSafeCampStandingPosition(pos)) return false;
         BlockPos floor = pos.below();
         return maid.level().getFluidState(floor).isEmpty()
                 && maid.level().getBlockState(floor).isFaceSturdy(maid.level(), floor, Direction.UP)

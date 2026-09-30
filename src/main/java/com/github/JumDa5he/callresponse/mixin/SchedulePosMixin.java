@@ -13,11 +13,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class SchedulePosMixin {
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true, remap = false)
     private void callresponse$pauseScheduleWhileControlled(EntityMaid maid, CallbackInfo ci) {
-        // Outpost maids have their own saved camp boundary and one-shot return.
-        // TLM's smaller sleep restriction otherwise rewrites WALK_TARGET toward the center every 40 ticks.
-        if (MaidMovementControl.controlsSchedule(maid)
+        if (maid instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity
+                || MaidMovementControl.controlsSchedule(maid)
                 || (!maid.level().isClientSide && BetrayalOutpostMaidData.isOutpostMaid(maid))) {
             ci.cancel();
         }
+    }
+    @Inject(method = "restrictTo", at = @At("HEAD"), cancellable = true, remap = false)
+    private void callresponse$independentCampRange(EntityMaid maid, CallbackInfo ci) {
+        // Also covers SchedulePos.load/clear/setHomeModeEnable, not only periodic tick.
+        if (maid instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity) ci.cancel();
     }
 }

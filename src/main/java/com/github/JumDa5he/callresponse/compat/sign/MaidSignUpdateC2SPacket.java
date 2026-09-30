@@ -39,7 +39,10 @@ public record MaidSignUpdateC2SPacket(int maidId, List<String> lines, DyeColor c
             int maidId = buffer.readVarInt();
             boolean clear = buffer.readBoolean();
             DyeColor color = DyeColor.STREAM_CODEC.decode(buffer);
-            int size = Math.min(buffer.readVarInt(), MaidSignManager.MAX_LINES);
+            int size = buffer.readVarInt();
+            if (size < 0 || size > MaidSignManager.MAX_LINES) {
+                throw new io.netty.handler.codec.DecoderException("Invalid maid sign line count: " + size);
+            }
             List<String> lines = new ArrayList<>(size);
             for (int i = 0; i < size; i++) {
                 lines.add(buffer.readUtf(MAX_LINE_BYTES));

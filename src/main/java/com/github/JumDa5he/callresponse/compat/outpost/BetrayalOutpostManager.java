@@ -3,59 +3,74 @@ package com.github.JumDa5he.callresponse.compat.outpost;
 import com.github.JumDa5he.callresponse.CallResponseMod;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionBetrayalManager;
 import com.github.JumDa5he.callresponse.compat.sign.MaidSignManager;
+import net.minecraft.world.level.block.entity.SignText;
+import net.minecraft.world.item.DyeColor;
 import com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidManager;
-import com.github.tartaricacid.touhoulittlemaid.entity.info.ServerCustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
+import com.github.tartaricacid.touhoulittlemaid.entity.info.ServerCustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
+import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.*;
-import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.HoeItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ShovelItem;
+import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
-import net.minecraft.world.level.block.entity.SignText;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
-import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadStructurePlacement;
-import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadStructurePlacement;
+import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadType;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -183,7 +198,6 @@ public final class BetrayalOutpostManager {
                 }
             }
             ServerPlayer skinOwner = nearestPlayer(level, outpost.box());
-            if (skinOwner == null) return;
             InitializationPlan plan = outpost.plan;
             int[] spawnLevels = plan.spawns().stream().mapToInt(spawn -> spawn.pos().getY()).sorted().toArray();
             int homeY = spawnLevels[(spawnLevels.length - 1) / 2];
@@ -198,6 +212,10 @@ public final class BetrayalOutpostManager {
             }
 
             // 先写入世界级持久化标记，再提交方块与实体，避免重启或区块重载重复刷出小队。
+            for (EntityMaid maid : maids) {
+                if (maid instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity revenge
+                        && plan.technicalAnchor() != null) revenge.rememberCampEntrance(outpost.box(), plan.technicalAnchor());
+            }
             savedData.markInitialized(outpost.key());
             savedData.registerStructure(outpost.key(), level, outpost.box(), homeY);
             removeDevelopmentMarkers(level, plan);
@@ -207,7 +225,7 @@ public final class BetrayalOutpostManager {
                 }
             }
             pending.remove(outpost.key());
-            CallResponseMod.LOGGER.info("复仇女仆据点已初始化：{}，皮肤池玩家 {}", outpost.key(), skinOwner.getGameProfile().getName());
+            CallResponseMod.LOGGER.info("复仇女仆据点已初始化：{}，皮肤池玩家 {}", outpost.key(), (skinOwner == null ? "pending" : skinOwner.getGameProfile().getName()));
         } catch (RuntimeException exception) {
             pending.remove(outpost.key());
             CallResponseMod.LOGGER.error("复仇女仆据点初始化失败：{}", outpost.key(), exception);
@@ -245,7 +263,8 @@ public final class BetrayalOutpostManager {
                     outpost.key(), anchors, MAID_COUNT, spawns.size(), MAID_COUNT, fixedSpawns);
         }
         return new InitializationPlan(containers, spawns,
-                markers.stream().map(marker -> marker.getBlockPos().immutable()).toList(), valid);
+                markers.stream().map(marker -> marker.getBlockPos().immutable()).toList(), valid,
+                markers.stream().filter(OutpostMarkerBlockEntity::isAnchor).map(OutpostMarkerBlockEntity::getBlockPos).findFirst().orElse(null));
     }
 
     private static void applyContainerLoot(ServerLevel level, String campKey,
@@ -312,41 +331,22 @@ public final class BetrayalOutpostManager {
                 && (forceGly || level.getRandom().nextFloat() < 0.01F)) {
             roles.set(level.getRandom().nextInt(roles.size()), BetrayalOutpostMaidData.Role.GLY);
         }
-        int maidKills = Math.max(0, skinOwner.getStats().getValue(Stats.ENTITY_KILLED.get(EntityMaid.TYPE)));
 
         List<EntityMaid> maids = new ArrayList<>(MAID_COUNT);
         for (int i = 0; i < MAID_COUNT; i++) {
-            EntityMaid maid = EntityMaid.TYPE.create(level);
+            var maid = com.github.JumDa5he.callresponse.compat.outpost.entity.OutpostEntities.REVENGE_MAID.get().create(level);
             if (maid == null) return List.of();
             BlockPos pos = chosen.get(i).pos();
             maid.moveTo(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D,
                     level.getRandom().nextFloat() * 360.0F, 0.0F);
             maid.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.STRUCTURE, null);
-            maid.setTame(false, false);
-            maid.setOwnerUUID(null);
-            maid.setPersistenceRequired();
-            maid.setModelId(WanderingMaidManager.selectSharedModel(level, skinOwner.getUUID()));
-
-            BetrayalOutpostMaidData.Role role = roles.get(i);
-            BetrayalOutpostMaidData.initialize(maid, group, role, home);
-            maid.getFavorabilityManager().max();
-            maid.setTame(false, false);
-            maid.setOwnerUUID(null);
-            if (role != BetrayalOutpostMaidData.Role.GLY) {
-                applyRevengeHealth(maid, maidKills);
-            }
-            maid.setHealth(maid.getMaxHealth());
-            BetrayalOutpostMaidData.ensureCampSchedule(maid);
-            equipForRole(maid, role, level.getRandom(),
-                    level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT));
-            // These are TLM's first two real default-backpack slots, visible in its inventory GUI.
-            maid.getMaidInv().setStackInSlot(0, new ItemStack(Items.GOLDEN_APPLE, 5 + level.getRandom().nextInt(6)));
-            maid.getMaidInv().setStackInSlot(1, new ItemStack(Items.BAKED_POTATO, 20));
-            setTaskForRole(maid, role);
-            if (role == BetrayalOutpostMaidData.Role.GLY) {
-                maid.setAggressive(false);
-            } else {
-                EmotionBetrayalManager.initializeOutpostBetrayer(maid);
+            initializeMaid(maid, group, roles.get(i), home);
+            if (skinOwner != null) {
+                maid.setModelId(WanderingMaidManager.selectSharedModel(level, skinOwner.getUUID()));
+                if (!BetrayalOutpostMaidData.isGly(maid)) applyRevengeHealth(maid,
+                        Math.max(0, skinOwner.getStats().getValue(Stats.ENTITY_KILLED.get(EntityMaid.TYPE))));
+                maid.setHealth(maid.getMaxHealth());
+                maid.getPersistentData().putBoolean("CallResponseOutpostPersonalized", true);
             }
             maids.add(maid);
         }
@@ -409,6 +409,9 @@ public final class BetrayalOutpostManager {
             }
         }
         savedData.markInitialized(campKey);
+
+        // 调试营地也登记模板自带的表和种子，沿用本地开箱警戒及认可结算。
+        applyContainerLoot(level, campKey, scanAndValidate(level, new PendingOutpost(campKey, box)).containerLoot());
 
         for (OutpostMarkerBlockEntity marker : markers) {
             level.removeBlock(marker.getBlockPos(), false);
@@ -489,13 +492,9 @@ public final class BetrayalOutpostManager {
             Component.translatable("message.callresponse.outpost.sign.gly.2"),
             Component.empty()
     };
-    private static final SignText glySignText = new SignText(
-            glyTexts,
-            glyTexts.clone(),
-            DyeColor.CYAN,
-            true
-    );
-    private static void addGlySign(EntityMaid maid){
+    private static final SignText glySignText = new SignText(glyTexts, glyTexts.clone(), DyeColor.CYAN, true);
+
+    private static void addGlySign(EntityMaid maid) {
         // 彩蛋牌子只作展示：旁边的女仆看到不会被威慑
         MaidSignManager.attach(maid, Items.OAK_SIGN, false);
         MaidSignManager.setText(maid, glySignText);
@@ -525,6 +524,7 @@ public final class BetrayalOutpostManager {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void coordinateOutpostStacking(EntityTickEvent.Post event) {
+        if (event.getEntity() instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity) return;
         if (event.getEntity() instanceof EntityMaid maid && !maid.level().isClientSide
                 && BetrayalOutpostMaidData.isOutpostMaid(maid)) {
             BetrayalOutpostMaidData.ensureUntamed(maid);
@@ -622,9 +622,10 @@ public final class BetrayalOutpostManager {
     }
 
     private static void sendDeathDialogue(ServerLevel level, EntityMaid maid) {
-        Component modelName = ServerCustomPackLoader.SERVER_MAID_MODELS.getInfo(maid.getModelId())
-                .map(info -> ParseI18n.parse(info.getName()))
-                .orElse(Component.literal(maid.getModelId()));
+        Component modelName = maid.hasCustomName() ? maid.getCustomName().copy()
+                : ServerCustomPackLoader.SERVER_MAID_MODELS.getInfo(maid.getModelId())
+                .map(info -> modelNameWithFallback(ParseI18n.parse(info.getName()), maid.getType().getDescription()))
+                .orElse(maid.getType().getDescription());
         Component message = Component.translatable("message.callresponse.outpost.death.format",
                 modelName, deathLine(level, maid));
         double rangeSqr = 64.0D * 64.0D;
@@ -633,16 +634,28 @@ public final class BetrayalOutpostManager {
         }
     }
 
-    /** GLY 的遗言来自 gly_lines.json 的 death_lines；没写或写空时用普通据点死亡台词。 */
+    /** GLY 优先使用资源台词，空池回退普通营地死亡台词。 */
     private static Component deathLine(ServerLevel level, EntityMaid maid) {
         if (BetrayalOutpostMaidData.isGly(maid)) {
             List<String> pool = OutpostGlyDialogue.deathLines();
-            if (!pool.isEmpty()) {
-                return Component.literal(pool.get(level.getRandom().nextInt(pool.size())));
-            }
+            if (!pool.isEmpty()) return Component.literal(pool.get(level.getRandom().nextInt(pool.size())));
         }
-        return Component.translatable("message.callresponse.outpost.death."
-                + (1 + level.getRandom().nextInt(10)));
+        return Component.translatable("message.callresponse.outpost.death." + (1 + level.getRandom().nextInt(10)));
+    }
+
+    // 保留翻译及参数交给接收客户端；缺少模型语言资源时回退到实体名称。
+    private static Component modelNameWithFallback(Component name, Component fallback) {
+        net.minecraft.network.chat.MutableComponent result;
+        if (name.getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents text) {
+            Object[] args = java.util.Arrays.copyOf(text.getArgs(), text.getArgs().length + 1);
+            args[args.length - 1] = fallback;
+            result = Component.translatableWithFallback(text.getKey(), "%" + args.length + "$s", args);
+        } else {
+            result = net.minecraft.network.chat.MutableComponent.create(name.getContents());
+        }
+        result.setStyle(name.getStyle());
+        name.getSiblings().forEach(sibling -> result.append(modelNameWithFallback(sibling, fallback)));
+        return result;
     }
 
     private static void addDrop(LivingDropsEvent event, ServerLevel level, EntityMaid maid, ItemStack stack) {
@@ -722,6 +735,48 @@ public final class BetrayalOutpostManager {
 
     private record InitializationPlan(Map<BlockPos, ResourceKey<LootTable>> containerLoot,
                                       List<MarkerSpawn> spawns, List<BlockPos> markers,
-                                      boolean validSpawnMarkers) {
+                                      boolean validSpawnMarkers, BlockPos technicalAnchor) {
+    }
+    public static void initializeMaid(com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity maid,
+            String group, BetrayalOutpostMaidData.Role role, BlockPos home) {
+        if (maid.isInitialized()) return;
+        ServerLevel level = (ServerLevel) maid.level();
+        maid.setTame(false, false);
+        maid.setOwnerUUID(null);
+        maid.setPersistenceRequired();
+        BetrayalOutpostMaidData.initialize(maid, group, role, home);
+        maid.getFavorabilityManager().max();
+        maid.setTame(false, false);
+        maid.setOwnerUUID(null);
+        maid.setHealth(maid.getMaxHealth());
+        BetrayalOutpostMaidData.ensureCampSchedule(maid);
+        equipForRole(maid, role, level.getRandom(), level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT));
+        maid.getMaidInv().setStackInSlot(0, new ItemStack(Items.GOLDEN_APPLE, 5 + level.getRandom().nextInt(6)));
+        maid.getMaidInv().setStackInSlot(1, new ItemStack(Items.BAKED_POTATO, 20));
+        setTaskForRole(maid, role);
+        if (role != BetrayalOutpostMaidData.Role.GLY) EmotionBetrayalManager.initializeOutpostBetrayer(maid);
+        else maid.setAggressive(false);
+        maid.markInitialized();
+        maid.refreshBrain(level);
+    }
+
+    public static void personalizeStandalone(com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity maid) {
+        if (!(maid.level() instanceof ServerLevel level)
+                || maid.getPersistentData().getBoolean("CallResponseOutpostPersonalized")) return;
+        ServerPlayer reference = level.players().stream().min(Comparator.comparingDouble(maid::distanceToSqr)).orElse(null);
+        if (reference == null) return;
+        maid.setModelId(WanderingMaidManager.selectSharedModel(level, reference.getUUID()));
+        if (!BetrayalOutpostMaidData.isGly(maid)) applyRevengeHealth(maid,
+                Math.max(0, reference.getStats().getValue(Stats.ENTITY_KILLED.get(EntityMaid.TYPE))));
+        maid.setHealth(maid.getMaxHealth());
+        maid.getPersistentData().putBoolean("CallResponseOutpostPersonalized", true);
+    }
+    @SubscribeEvent
+    public void onOutpostCombatHurt(net.neoforged.neoforge.event.entity.living.LivingDamageEvent.Post event) {
+        if (event.getNewDamage() > 0 && event.getEntity() instanceof EntityMaid maid
+                && BetrayalOutpostMaidData.isOutpostMaid(maid)) {
+            Entity source = event.getSource().getEntity();
+            BetrayalOutpostAlertManager.onHurt(maid, source instanceof LivingEntity living ? living : null);
+        }
     }
 }

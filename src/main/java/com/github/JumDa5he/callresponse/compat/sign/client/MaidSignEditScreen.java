@@ -34,7 +34,7 @@ import java.util.List;
  * 换成能回到女仆界面的按钮（原版的“完成”只会把界面关掉）。
  */
 public class MaidSignEditScreen extends AbstractSignEditScreen {
-    private static final Component TITLE = Component.literal("编辑示众牌");
+    private static final Component TITLE = Component.translatable("gui.callresponse.maid_sign.title");
     private static final int SWATCH_SIZE = 12;
     private static final int SWATCH_GAP = 2;
     private static final int SWATCH_PADDING = 4;
@@ -78,11 +78,11 @@ public class MaidSignEditScreen extends AbstractSignEditScreen {
         }
 
         int buttonY = this.height / 4 + 144;
-        this.addRenderableWidget(Button.builder(Component.literal("完成"), ignored -> finish())
+        this.addRenderableWidget(Button.builder(Component.translatable("gui.done"), ignored -> finish())
                 .bounds(this.width / 2 - 100, buttonY, 98, 20).build());
-        this.addRenderableWidget(Button.builder(Component.literal("取消"), ignored -> backToParent())
+        this.addRenderableWidget(Button.builder(Component.translatable("gui.cancel"), ignored -> backToParent())
                 .bounds(this.width / 2, buttonY, 48, 20).build());
-        this.addRenderableWidget(Button.builder(Component.literal("取下示众牌"), ignored -> detach())
+        this.addRenderableWidget(Button.builder(Component.translatable("gui.callresponse.maid_sign.remove"), ignored -> detach())
                 .bounds(this.width / 2 + 50, buttonY, 50, 20).build());
     }
 

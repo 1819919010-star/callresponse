@@ -21,11 +21,18 @@ import net.neoforged.neoforge.common.NeoForge;
 public class CallResponseModClient {
     public CallResponseModClient(IEventBus modEventBus, ModContainer modContainer) {
         // Configured skips mods that already register a screen factory; keep NeoForge's fallback only when absent.
-        if (FMLLoader.getLoadingModList() == null
+        if (FMLLoader.getLoadingModList() != null
+                && FMLLoader.getLoadingModList().getModFileById("cloth_config") != null) {
+            modContainer.registerExtensionPoint(IConfigScreenFactory.class,
+                    (container, parent) -> new com.github.JumDa5he.callresponse.config.client.ClothConfigScreens(parent));
+        } else if (FMLLoader.getLoadingModList() == null
                 || FMLLoader.getLoadingModList().getModFileById("configured") == null) {
             modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
         }
         modEventBus.addListener(ModMenuClientEvents::clientSetup);
+        modEventBus.addListener((net.neoforged.neoforge.client.event.EntityRenderersEvent.RegisterRenderers event) ->
+                event.registerEntityRenderer(com.github.JumDa5he.callresponse.compat.outpost.entity.OutpostEntities.REVENGE_MAID.get(),
+                        com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer::new));
         NeoForge.EVENT_BUS.register(new MaidHungerGuiDisplay());
     }
 

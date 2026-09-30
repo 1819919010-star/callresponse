@@ -52,7 +52,7 @@ import java.util.UUID;
 public class HungerManager {
 
     // ===== 饱食度衰减 =====
-    private static final int HUNGER_DECAY_INTERVAL = 600; // 30秒减1点
+    private static final int HUNGER_DECAY_INTERVAL = 3600; // 3分钟减1点；真实睡眠暂停进度
     private static final float HUNGER_DECAY_AMOUNT = 1.0f;
     private static final String HUNGER_DECAY_PROGRESS_TAG = "CallResponseHungerDecayProgress";
     private static final String HUNGER_DECAY_LAST_TICK_TAG = "CallResponseHungerDecayLastTick";

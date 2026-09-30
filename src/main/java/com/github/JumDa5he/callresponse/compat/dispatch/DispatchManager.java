@@ -5,6 +5,7 @@ import com.github.JumDa5he.callresponse.compat.brain.LazyMaidCommand;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerData;
+import com.github.JumDa5he.callresponse.compat.outpost.OutpostDebugCommand;
 import com.github.JumDa5he.callresponse.compat.state.MaidPathCommand;
 import com.github.JumDa5he.callresponse.compat.outpost.OutpostDebugCommand;
 import com.github.JumDa5he.callresponse.config.DispatchConfig;

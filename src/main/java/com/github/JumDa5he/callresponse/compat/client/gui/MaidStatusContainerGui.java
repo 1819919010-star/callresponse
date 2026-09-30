@@ -61,7 +61,7 @@ public class MaidStatusContainerGui extends AbstractMaidContainerGui<MaidStatusC
 
         // 示众牌：挂上之后才能编辑，没挂上时按钮只作为提示
         if (!expelChoicesOpen) {
-            this.signButton = Button.builder(Component.literal("示众牌"), ignored -> openSignEditor())
+            this.signButton = Button.builder(Component.translatable("gui.callresponse.maid_sign.button"), ignored -> openSignEditor())
                     .bounds(leftPos + 86, topPos + 118, 64, 16)
                     .build();
             this.signButton.active = MaidSignManager.hasSign(maid);
@@ -120,8 +120,8 @@ public class MaidStatusContainerGui extends AbstractMaidContainerGui<MaidStatusC
         if (signButton != null && signButton.isHovered()) {
             boolean hasSign = MaidSignManager.hasSign(maid);
             graphics.renderComponentTooltip(font, List.of(
-                    Component.literal("示众牌"),
-                    Component.literal(hasSign ? "编辑文字与颜色" : "手持告示牌右键女仆挂上")
+                    Component.translatable("gui.callresponse.maid_sign.button"),
+                    Component.translatable(hasSign ? "gui.callresponse.maid_sign.edit_hint" : "gui.callresponse.maid_sign.attach_hint")
             ), mouseX, mouseY);
         }
     }

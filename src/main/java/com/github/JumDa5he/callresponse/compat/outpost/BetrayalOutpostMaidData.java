@@ -1,6 +1,7 @@
 package com.github.JumDa5he.callresponse.compat.outpost;
 
 import com.github.JumDa5he.callresponse.compat.api.AuthorUtil;
+import com.github.JumDa5he.callresponse.compat.intimidation.IntimidationManager;
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntitySit;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
@@ -88,8 +89,11 @@ public final class BetrayalOutpostMaidData {
         data.putLong(NEXT_DIALOGUE_TIME, 0L);
         data.putInt(LAST_ENCOUNTER_LINE, -1);
         data.putInt(LAST_COMBAT_LINE, -1);
+        data.putInt(GLY_LAST_LINE, -1);
+        data.putInt(GLY_LAST_HURT_LINE, -1);
         maid.getPersistentData().put(ROOT, data);
         ((OutpostMaidMarker) maid).callresponse$setOutpostMaid(true);
+        if (maid instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity revenge) revenge.syncRole(role);
     }
 
     /**
@@ -98,6 +102,7 @@ public final class BetrayalOutpostMaidData {
      * 追击仍受有限营地范围约束。
      */
     public static void ensureCampSchedule(EntityMaid maid) {
+        if (maid instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity) return;
         if (!isOutpostMaid(maid)) return;
         BlockPos center = recordedHome(maid);
         if (center == null) return;
@@ -131,11 +136,17 @@ public final class BetrayalOutpostMaidData {
 
     /** Return detection covers normal camp floors; ±2 Y is only for a teleport landing spot. */
     public static boolean isMaidWithinReturnArea(EntityMaid maid) {
+        if (maid instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity revenge
+                && revenge.isInsideCampBuilding(maid.blockPosition())) return true;
         BlockPos center = recordedHome(maid);
         if (center == null) return false;
         double dx = maid.getX() - (center.getX() + 0.5D);
         double dz = maid.getZ() - (center.getZ() + 0.5D);
         double dy = maid.getY() - center.getY();
+        if (maid instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity revenge
+                && group(maid).startsWith("standalone:")) {
+            return revenge.isWithinRestriction(maid.blockPosition()) && !(maid.isInWater() && dy < -2.0D);
+        }
         return dx * dx + dz * dz <= CAMP_ACTIVITY_RADIUS * CAMP_ACTIVITY_RADIUS
                 && dy >= -4.0D && dy <= 16.0D
                 && !(maid.isInWater() && dy < -2.0D);
@@ -211,6 +222,8 @@ public final class BetrayalOutpostMaidData {
     }
 
     public static boolean isOutpostMaid(EntityMaid maid) {
+        if (maid instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity) return true;
+        // Forge persistent data is server-side; the synced marker prevents a client-only fake taming.
         return maid.level().isClientSide
                 ? ((OutpostMaidMarker) maid).callresponse$isOutpostMaid()
                 : maid.getPersistentData().contains(ROOT, CompoundTag.TAG_COMPOUND);
@@ -228,6 +241,8 @@ public final class BetrayalOutpostMaidData {
     }
 
     public static Role role(EntityMaid maid) {
+        if (maid.level().isClientSide && maid instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity revenge)
+            return revenge.clientRole();
         String name = maid.getPersistentData().getCompound(ROOT).getString(ROLE);
         try {
             return Role.valueOf(name);
@@ -241,6 +256,10 @@ public final class BetrayalOutpostMaidData {
             return false;
         }
         String group = group(first);
+        if (first instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity
+                && other instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity
+                && first.getPersistentData().getBoolean(com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity.ALLIED_EGG)
+                && other.getPersistentData().getBoolean(com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity.ALLIED_EGG)) return true;
         return !group.isEmpty() && group.equals(group(other));
     }
 
@@ -366,10 +385,13 @@ public final class BetrayalOutpostMaidData {
         long now = level.getGameTime();
         CompoundTag data = maid.getPersistentData().getCompound(ROOT);
         if (now < data.getLong(GLY_FLEE_UNTIL)) {
+            // EntityTick.Post 不受原版 AI 门禁保护；不能绕过本地威压或 NoAI。
+            if (maid.isNoAi() || IntimidationManager.isIntimidated(maid)) return;
             // 逃跑状态可能因为区块重载丢了移动接管，这里补回来
             if (!MaidMovementControl.isActive(maid, MaidMovementControl.Reason.OUTPOST_GLY_FLEE)) {
                 MaidMovementControl.begin(maid, MaidMovementControl.Reason.OUTPOST_GLY_FLEE,
                         EnumSet.of(MaidMovementControl.Field.PATH, MaidMovementControl.Field.POSE));
+                maid.setInSittingPose(false);
             }
             tickGlyFlee(maid, now);
             return;
@@ -378,6 +400,7 @@ public final class BetrayalOutpostMaidData {
         if (MaidMovementControl.isActive(maid, MaidMovementControl.Reason.OUTPOST_GLY_FLEE)) {
             endGlyFlee(maid);
         }
+        if (maid.isNoAi() || IntimidationManager.isIntimidated(maid)) return;
         tickGlySnowball(maid, level, now);
     }
 
@@ -399,6 +422,7 @@ public final class BetrayalOutpostMaidData {
         maid.setAggressive(false);
         maid.getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET);
         if (!alreadyFleeing) {
+            if (maid.isNoAi() || IntimidationManager.isIntimidated(maid)) return;
             MaidMovementControl.begin(maid, MaidMovementControl.Reason.OUTPOST_GLY_FLEE,
                     EnumSet.of(MaidMovementControl.Field.PATH, MaidMovementControl.Field.POSE));
             maid.setInSittingPose(false);
@@ -480,7 +504,7 @@ public final class BetrayalOutpostMaidData {
         // 睡觉或在座椅上时先不闹
         if (maid.isSleeping() || maid.getVehicle() instanceof EntitySit) return;
 
-        LivingEntity target = BetrayalOutpostAlertManager.findRelaxedTarget(maid);
+        LivingEntity target = BetrayalOutpostAlertManager.findGlySnowballTarget(maid);
         if (target == null || !maid.hasLineOfSight(target)
                 || maid.distanceToSqr(target) > GLY_THROW_RANGE * GLY_THROW_RANGE) {
             data.putLong(GLY_NEXT_SNOWBALL_TIME, now + GLY_SNOWBALL_RETRY);
@@ -525,5 +549,9 @@ public final class BetrayalOutpostMaidData {
         shooter.playSound(SoundEvents.SNOWBALL_THROW, 0.5F,
                 0.4F / (shooter.getRandom().nextFloat() * 0.4F + 0.8F));
         shooter.level().addFreshEntity(snowball);
+    }
+    public static BlockPos returnAnchor(EntityMaid maid) {
+        return maid instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity revenge
+                ? revenge.getCampActivityAnchor() : recordedHome(maid);
     }
 }

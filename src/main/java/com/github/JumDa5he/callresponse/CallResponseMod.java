@@ -25,6 +25,7 @@ public class CallResponseMod {
 
     public CallResponseMod(IEventBus modEventBus, ModContainer modContainer) {
         // 1. 注册物品
+        com.github.JumDa5he.callresponse.compat.outpost.entity.OutpostEntities.TYPES.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModItems.TABS.register(modEventBus);
         ModMenus.MENUS.register(modEventBus);
