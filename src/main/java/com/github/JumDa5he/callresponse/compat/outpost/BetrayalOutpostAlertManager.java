@@ -37,9 +37,12 @@ public final class BetrayalOutpostAlertManager {
     private static final long REACH_CACHE_TICKS = 20L * 2L;
     private static final Map<EntityMaid, Map<UUID, ReachCheck>> REACH_CACHE = new WeakHashMap<>();
     private static final Map<EntityMaid, PathBudget> PATH_BUDGET = new WeakHashMap<>();
+    private static final Map<EntityMaid, SearchCheck> SEARCH_CACHE = new WeakHashMap<>();
+    private static final Map<EntityMaid, Long> LEISURE_AFTER = new WeakHashMap<>();
 
     private record ReachCheck(BlockPos maidPos, BlockPos targetPos, long until, boolean reachable) {}
     private record PathBudget(long tick, int used) {}
+    private record SearchCheck(long until, UUID target) {}
 
     private BetrayalOutpostAlertManager() {
     }
@@ -83,23 +86,62 @@ public final class BetrayalOutpostAlertManager {
 
     public static LivingEntity findRelaxedTarget(EntityMaid maid) {
         if (!(maid.level() instanceof ServerLevel level)) return null;
+        long now = level.getGameTime();
+        SearchCheck cached = SEARCH_CACHE.get(maid);
+        if (cached != null && now < cached.until()) {
+            Entity entity = cached.target() == null ? null : level.getEntity(cached.target());
+            return entity instanceof LivingEntity living && canKeepOrDetectTarget(maid, living) ? living : null;
+        }
         AABB homeArea = BetrayalOutpostMaidData.pursuitSearchArea(maid);
-        return level.getEntitiesOfClass(LivingEntity.class, homeArea,
+        boolean relaxed = isRelaxed(maid);
+        LivingEntity result = level.getEntitiesOfClass(LivingEntity.class, homeArea,
                         target -> isBaseValidTarget(maid, target))
-                .stream().sorted(java.util.Comparator.comparingDouble(maid::distanceToSqr))
+                .stream().sorted(java.util.Comparator.<LivingEntity>comparingInt(
+                        target -> !relaxed && target instanceof Player ? 0 : 1)
+                        .thenComparingDouble(maid::distanceToSqr))
                 .limit(6).filter(target -> canKeepOrDetectTarget(maid, target)).findFirst().orElse(null);
+        // Share the scan between alert, combat selection and leisure checks; stagger whole groups.
+        long next = now + 10 - Math.floorMod(now + maid.getId(), 10);
+        SEARCH_CACHE.put(maid, new SearchCheck(next, result == null ? null : result.getUUID()));
+        return result;
+    }
+
+    public static boolean isCombatRecovery(EntityMaid maid) {
+        return maid.level().getGameTime() < LEISURE_AFTER.getOrDefault(maid, 0L);
+    }
+
+    /** Actual damage interrupts a seat even when the attacker is outside the permitted chase area. */
+    public static void onHurt(EntityMaid maid, LivingEntity attacker) {
+        if (maid.level().isClientSide || !BetrayalOutpostMaidData.isOutpostMaid(maid)
+                || BetrayalOutpostMaidData.isGly(maid) || maid.isNoAi()
+                || com.github.JumDa5he.callresponse.compat.intimidation.IntimidationManager.isIntimidated(maid)
+                || (maid instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity revenge
+                    && com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidBrain.externallyControlled(revenge))) return;
+        LEISURE_AFTER.put(maid, maid.level().getGameTime() + 60);
+        SEARCH_CACHE.remove(maid);
+        interruptLeisure(maid);
+        if (canKeepOrDetectTarget(maid, attacker)) enterCombat(maid, attacker);
+    }
+
+    private static void interruptLeisure(EntityMaid maid) {
+        if (maid.isSleeping()) maid.stopSleeping();
+        if (maid.getVehicle() instanceof EntitySit) maid.stopRiding();
+        if (maid.isInSittingPose()) maid.setInSittingPose(false);
+        if (hasLeisureTarget(maid, true) || hasLeisureWalkTarget(maid)) {
+            maid.getBrain().eraseMemory(InitEntities.TARGET_POS.get());
+            maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+            maid.getBrain().eraseMemory(MemoryModuleType.PATH);
+            maid.getNavigation().stop();
+        }
     }
 
     /** 开始新的床/娱乐行为前检查整个现有营地追击范围。 */
     public static boolean shouldBlockLeisure(EntityMaid maid) {
         if (!(maid.level() instanceof ServerLevel level) || !BetrayalOutpostMaidData.isOutpostMaid(maid)) return false;
+        if (isCombatRecovery(maid)) return true;
         if (EmotionBetrayalManager.isReturningToOutpost(maid)) return true;
         if (canKeepOrDetectTarget(maid, maid.getTarget())) return true;
-        AABB homeArea = BetrayalOutpostMaidData.pursuitSearchArea(maid);
-        return level.getEntitiesOfClass(LivingEntity.class, homeArea,
-                        target -> isBaseValidTarget(maid, target)).stream()
-                .sorted(java.util.Comparator.comparingDouble(maid::distanceToSqr))
-                .limit(6).anyMatch(target -> canKeepOrDetectTarget(maid, target));
+        return findRelaxedTarget(maid) != null;
     }
 
     public static boolean isRelaxed(EntityMaid maid) {
@@ -126,6 +168,7 @@ public final class BetrayalOutpostAlertManager {
 
     public static void enterCombat(EntityMaid maid, LivingEntity target) {
         if (!canKeepOrDetectTarget(maid, target)) return;
+        LEISURE_AFTER.put(maid, maid.level().getGameTime() + 60);
         boolean newEngagement = !isEngagedTarget(maid, target);
         boolean interruptingLeisure = maid.isSleeping()
                 || maid.getVehicle() instanceof EntitySit
@@ -164,6 +207,23 @@ public final class BetrayalOutpostAlertManager {
     }
 
     public static boolean isBaseValidTarget(EntityMaid maid, LivingEntity target) {
+        if (BetrayalOutpostMaidData.isGly(maid)) return false;
+        if (maid instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity
+                && target != null && Math.abs(target.getY() - maid.getY()) > 6.0D) return false;
+        return isCampCandidate(maid, target);
+    }
+
+    /** Snowballs are a GLY pastime, not a combat target or a reason to wake up. */
+    public static LivingEntity findGlySnowballTarget(EntityMaid maid) {
+        if (!(maid.level() instanceof ServerLevel level) || !BetrayalOutpostMaidData.isGly(maid)) return null;
+        return level.getEntitiesOfClass(LivingEntity.class, maid.getBoundingBox().inflate(16.0D),
+                        target -> isCampCandidate(maid, target) && maid.distanceToSqr(target) <= 256.0D
+                                && Math.abs(target.getY() - maid.getY()) <= 6.0D
+                                && maid.hasLineOfSight(target))
+                .stream().min(java.util.Comparator.comparingDouble(maid::distanceToSqr)).orElse(null);
+    }
+
+    private static boolean isCampCandidate(EntityMaid maid, LivingEntity target) {
         if (target == null || target == maid || !target.isAlive()) return false;
         if (!BetrayalOutpostMaidData.isMaidWithinPursuitArea(maid)) return false;
         // TLM TaskAttack drops targets beyond the maid's existing restriction radius.
@@ -178,7 +238,10 @@ public final class BetrayalOutpostAlertManager {
 
     /** A reachable endpoint must be on the target's level and have a clear final attack lane. */
     private static boolean canReachEngagementPosition(EntityMaid maid, LivingEntity target) {
-        if (maid.isPassenger()) return BetrayalOutpostStackManager.isMovementDelegated(maid);
+        // Joy seats are not transport/stack mounts: their passengers must be able to detect an enemy
+        // BEFORE enterCombat dismounts them, otherwise sitting permanently vetoes combat.
+        if (maid.isPassenger() && !(maid.getVehicle() instanceof EntitySit))
+            return BetrayalOutpostStackManager.isMovementDelegated(maid);
         if (maid.isWithinMeleeAttackRange(target) && maid.getSensing().hasLineOfSight(target)) return true;
         if (!(maid.level() instanceof ServerLevel level)) return false;
         long now = level.getGameTime();
@@ -186,14 +249,14 @@ public final class BetrayalOutpostAlertManager {
         ReachCheck cached = byTarget.get(target.getUUID());
         BlockPos maidPos = maid.blockPosition();
         BlockPos targetPos = target.blockPosition();
-        if (cached != null && now < cached.until() && cached.maidPos().distSqr(maidPos) <= 4.0D
-                && cached.targetPos().equals(targetPos)) return cached.reachable();
+        if (cached != null && now < cached.until() && cached.maidPos().distSqr(maidPos) <= 16.0D
+                && cached.targetPos().distSqr(targetPos) <= 4.0D
+                && cached.targetPos().getY() == targetPos.getY()) return cached.reachable();
         PathBudget budget = PATH_BUDGET.get(maid);
-        int used = budget != null && budget.tick() == now ? budget.used() : 0;
-        if (used >= 2) return cached != null && cached.reachable()
-                && cached.targetPos().equals(targetPos)
-                && cached.maidPos().distSqr(maidPos) <= 16.0D;
-        PATH_BUDGET.put(maid, new PathBudget(now, used + 1));
+        boolean sameWindow = budget != null && now - budget.tick() < 10;
+        int used = sameWindow ? budget.used() : 0;
+        if (used >= 2) return cached != null && now < cached.until() && cached.reachable();
+        PATH_BUDGET.put(maid, new PathBudget(sameWindow ? budget.tick() : now, used + 1));
         boolean reachable = hasCompletePathToAttackPosition(level, maid, target, targetPos)
                 || BetrayalOutpostStackManager.canBridgeElevation(maid, target);
         if (byTarget.size() >= 8) byTarget.clear();
@@ -205,21 +268,19 @@ public final class BetrayalOutpostAlertManager {
                                                             LivingEntity target, BlockPos targetPos) {
         BlockPos[] offsets = {BlockPos.ZERO, new BlockPos(0, 0, -1), new BlockPos(0, 0, 1),
                 new BlockPos(1, 0, 0), new BlockPos(-1, 0, 0)};
-        int checks = 0;
+        java.util.Set<BlockPos> candidates = new java.util.HashSet<>();
         for (int dy : new int[]{0, 1, -1}) {
             for (BlockPos offset : offsets) {
                 BlockPos candidate = targetPos.offset(offset.getX(), dy, offset.getZ());
                 if (!safeAttackPosition(level, candidate) || !clearAttackLane(level, maid, target, candidate)) continue;
-                Path path = maid.getNavigation().createPath(candidate, 0);
-                checks++;
-                Node end = path == null ? null : path.getEndNode();
-                if (path != null && path.canReach() && end != null
-                        && end.x == candidate.getX() && end.y == candidate.getY()
-                        && end.z == candidate.getZ()) return true;
-                if (checks >= 5) return false;
+                candidates.add(candidate);
             }
         }
-        return false;
+        if (candidates.isEmpty()) return false;
+        Path path = maid.getNavigation().createPath(candidates, 0);
+        Node end = path == null ? null : path.getEndNode();
+        return path != null && path.canReach() && end != null
+                && candidates.contains(new BlockPos(end.x, end.y, end.z));
     }
 
     private static boolean safeAttackPosition(ServerLevel level, BlockPos pos) {

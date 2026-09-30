@@ -61,6 +61,10 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
     maven {
+        url "https://maven.shedaniel.me"
+        content { includeGroup "me.shedaniel.cloth" }
+    }
+    maven {
         url "https://maven.blamejared.com"
         content {
             includeGroup "vazkii.patchouli"
@@ -82,6 +86,11 @@ repositories {
 }
 
 dependencies {
+    // Optional UI only. ForgeConfigSpec/TOML remain the only configuration store.
+    compileOnly(fg.deobf("me.shedaniel.cloth:cloth-config-forge:11.1.136")) { transitive = false }
+    if (project.hasProperty('withCloth')) {
+        runtimeOnly(fg.deobf("me.shedaniel.cloth:cloth-config-forge:11.1.136")) { transitive = false }
+    }
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
     // 使用 Modrinth Maven 引入 TouhouLittleMaid 1.5.3（Forge 1.20.1）

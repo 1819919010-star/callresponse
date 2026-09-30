@@ -1,6 +1,15 @@
 package com.github.JumDa5he.callresponse.compat;
 
 import com.github.JumDa5he.callresponse.compat.bauble.NoEatBauble;
+import com.github.JumDa5he.callresponse.compat.sign.MaidSignManager;
+import com.github.JumDa5he.callresponse.compat.sign.MaidSignDeterrence;
+import com.github.JumDa5he.callresponse.compat.sign.client.MaidSignTips;
+import com.github.JumDa5he.callresponse.compat.sign.client.MaidSignLayer;
+import com.github.JumDa5he.callresponse.compat.sign.client.MaidSignVanillaLayer;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.GeckoEntityMaidRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.world.entity.Mob;
 import com.github.JumDa5he.callresponse.compat.block.MaidCropSpecialCropHandler;
 import com.github.JumDa5he.callresponse.compat.block.ModBlocks;
 import com.github.JumDa5he.callresponse.compat.brain.CustomExtraMaidBrain;
@@ -97,11 +106,14 @@ public class LittleMaidCompat implements ILittleMaid {
         MinecraftForge.EVENT_BUS.register(new TalkEventManager());
         MinecraftForge.EVENT_BUS.register(new NpcEventManager());
         MinecraftForge.EVENT_BUS.register(new IntimidationManager());
+        MinecraftForge.EVENT_BUS.register(new MaidSignManager());
+        MinecraftForge.EVENT_BUS.register(new MaidSignDeterrence());
         MinecraftForge.EVENT_BUS.register(new FacilityCapacityManager());
         MinecraftForge.EVENT_BUS.register(new BoardGameManager());
         MinecraftForge.EVENT_BUS.register(new CageStructureManager());
         MinecraftForge.EVENT_BUS.register(new CageRescueManager());
         MinecraftForge.EVENT_BUS.register(new BetrayalOutpostManager());
+        MinecraftForge.EVENT_BUS.register(com.github.JumDa5he.callresponse.compat.outpost.OutpostGlyDialogue.class);
         MinecraftForge.EVENT_BUS.register(new OutpostRaidManager());
         MinecraftForge.EVENT_BUS.register(new DisguiseManager());
         MinecraftForge.EVENT_BUS.register(new OutpostDisguiseRelations());
@@ -131,11 +143,24 @@ public class LittleMaidCompat implements ILittleMaid {
     @OnlyIn(Dist.CLIENT)
     public void addMaidTips(MaidTipsOverlay maidTipsOverlay) {
         maidTipsOverlay.addTips("overlay.example.apple.tips", Items.APPLE);
+        MaidSignTips.register(maidTipsOverlay);
     }
 
     @Override
     public void addExtraMaidBrain(ExtraMaidBrainManager manager) {
         manager.addExtraMaidBrain(new CustomExtraMaidBrain());
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void addAdditionMaidLayer(EntityMaidRenderer renderer, EntityRendererProvider.Context context) {
+        renderer.addLayer(new MaidSignVanillaLayer(renderer));
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void addAdditionGeckoMaidLayer(GeckoEntityMaidRenderer<? extends Mob> renderer, EntityRendererProvider.Context context) {
+        renderer.addGeoLayerRenderer(new MaidSignLayer<>(renderer));
     }
 
     @Override

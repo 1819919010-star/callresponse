@@ -3,6 +3,9 @@ package com.github.JumDa5he.callresponse.compat.block;
 import com.github.JumDa5he.callresponse.CallResponseMod;
 import com.github.JumDa5he.callresponse.compat.cage.DarkIronCageBlock;
 import com.github.JumDa5he.callresponse.compat.cage.DarkIronCageBlockEntity;
+import com.github.JumDa5he.callresponse.compat.outpost.OutpostAnchorBlock;
+import com.github.JumDa5he.callresponse.compat.outpost.OutpostSpawnMarkerBlock;
+import com.github.JumDa5he.callresponse.compat.outpost.OutpostMarkerBlockEntity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.DeferredRegister;
@@ -31,6 +34,14 @@ public final class ModBlocks {
     public static final RegistryObject<BlockEntityType<DarkIronCageBlockEntity>> DARK_IRON_CAGE_ENTITY =
             BLOCK_ENTITY_TYPES.register("dark_iron_cage", () ->
                     BlockEntityType.Builder.of(DarkIronCageBlockEntity::new, DARK_IRON_CAGE.get()).build(null));
+
+    public static final RegistryObject<OutpostAnchorBlock> OUTPOST_ANCHOR =
+            BLOCKS.register("outpost_anchor", OutpostAnchorBlock::new);
+    public static final RegistryObject<OutpostSpawnMarkerBlock> OUTPOST_SPAWN_MARKER =
+            BLOCKS.register("outpost_spawn_marker", OutpostSpawnMarkerBlock::new);
+    public static final RegistryObject<BlockEntityType<OutpostMarkerBlockEntity>> OUTPOST_MARKER_ENTITY =
+            BLOCK_ENTITY_TYPES.register("outpost_marker", () -> BlockEntityType.Builder.of(
+                    OutpostMarkerBlockEntity::new, OUTPOST_ANCHOR.get(), OUTPOST_SPAWN_MARKER.get()).build(null));
 
     private ModBlocks() {
     }

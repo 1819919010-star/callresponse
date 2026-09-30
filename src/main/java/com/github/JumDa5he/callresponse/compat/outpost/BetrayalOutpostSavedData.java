@@ -38,6 +38,7 @@ public final class BetrayalOutpostSavedData extends SavedData {
     public static final class CampPlan {
         private final List<SpawnSlot> slots;
         private UUID referencePlayer;
+        private CompoundTag markerLayout = new CompoundTag();
 
         private CampPlan(List<SpawnSlot> slots, UUID referencePlayer) {
             this.slots = slots;
@@ -46,6 +47,7 @@ public final class BetrayalOutpostSavedData extends SavedData {
 
         public List<SpawnSlot> slots() { return List.copyOf(slots); }
         public UUID referencePlayer() { return referencePlayer; }
+        public CompoundTag markerLayout() { return markerLayout.copy(); }
         public boolean needsSpawnWork() {
             return slots.stream().anyMatch(slot -> !slot.spawned() && slot.attempts() < 3);
         }
@@ -117,7 +119,9 @@ public final class BetrayalOutpostSavedData extends SavedData {
             }
             if (slots.size() != 5) continue;
             UUID reference = entry.hasUUID("ReferencePlayer") ? entry.getUUID("ReferencePlayer") : null;
-            data.campPlans.put(entry.getString("Key"), new CampPlan(slots, reference));
+            CampPlan plan = new CampPlan(slots, reference);
+            plan.markerLayout = entry.getCompound("MarkerLayout").copy();
+            data.campPlans.put(entry.getString("Key"), plan);
         }
         return data;
     }
@@ -138,6 +142,16 @@ public final class BetrayalOutpostSavedData extends SavedData {
 
     public CampPlan plan(String key) { return campPlans.get(key); }
 
+    public List<Outpost> pendingInChunk(ServerLevel level, long chunk) {
+        var index = nearbyChunks.get(level.dimension().location().toString());
+        if (index == null) return List.of();
+        return index.getOrDefault(chunk, List.of()).stream().filter(outpost -> {
+            CampPlan plan = campPlans.get(outpost.key());
+            return !skippedLegacy.contains(outpost.key()) && plan != null
+                    && !plan.markerLayout.isEmpty() && plan.needsSpawnWork();
+        }).toList();
+    }
+
     public void createPlan(String key, List<SpawnSlot> slots, UUID referencePlayer) {
         if (slots.size() != 5) throw new IllegalArgumentException("Camp requires five spawn slots");
         if (campPlans.putIfAbsent(key, new CampPlan(new ArrayList<>(slots), referencePlayer)) == null) setDirty();
@@ -147,6 +161,14 @@ public final class BetrayalOutpostSavedData extends SavedData {
         CampPlan plan = campPlans.get(key);
         if (plan != null && plan.referencePlayer == null) {
             plan.referencePlayer = player;
+            setDirty();
+        }
+    }
+
+    public void setMarkerLayout(String key, CompoundTag layout) {
+        CampPlan plan = campPlans.get(key);
+        if (plan != null && plan.markerLayout.isEmpty()) {
+            plan.markerLayout = layout.copy();
             setDirty();
         }
     }
@@ -284,6 +306,9 @@ public final class BetrayalOutpostSavedData extends SavedData {
         for (Map.Entry<String, CampPlan> indexed : campPlans.entrySet()) {
             CompoundTag entry = new CompoundTag();
             entry.putString("Key", indexed.getKey());
+            if (!indexed.getValue().markerLayout.isEmpty()) {
+                entry.put("MarkerLayout", indexed.getValue().markerLayout.copy());
+            }
             if (indexed.getValue().referencePlayer != null) {
                 entry.putUUID("ReferencePlayer", indexed.getValue().referencePlayer);
             }

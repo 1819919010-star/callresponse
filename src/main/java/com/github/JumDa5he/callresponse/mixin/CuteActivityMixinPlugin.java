@@ -37,6 +37,7 @@ public final class CuteActivityMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        if (mixinClassName.contains(".revengecompat.")) return revengeAddonCompatible(targetClassName, mixinClassName);
         if (mixinClassName.endsWith(".client.ConfiguredForgeValueMixin")) {
             try {
                 ClassNode configured = MixinService.getService().getBytecodeProvider().getClassNode(targetClassName);
@@ -110,6 +111,72 @@ public final class CuteActivityMixinPlugin implements IMixinConfigPlugin {
         } catch (RuntimeException | LinkageError ignored) {
             return false;
         }
+    }
+
+    private static boolean revengeAddonCompatible(String target, String mixin) {
+        ClassNode node;
+        try {
+            node = MixinService.getService().getBytecodeProvider().getClassNode(target);
+        } catch (Exception | LinkageError absent) { return false; }
+        if (node == null) return false;
+        String name = mixin.substring(mixin.lastIndexOf('.') + 1);
+        String maidVoid = "(" + MAID + ")V";
+        String maidBool = "(" + MAID + ")Z";
+        boolean ok = switch (name) {
+            case "CuteAnimationEligibilityMixin" -> has(node, "isExcluded", maidBool);
+            case "CuteExtraBehaviorMixin" -> has(node, "onMaidTick", "(" + TICK + ")V");
+            case "MoreAnimationDataMixin" -> has(node, "start", "(" + MAID + "Ljava/lang/String;IIZ)Z")
+                    && has(node, "clientStart", "(" + MAID + "Ljava/lang/String;IIZ)V")
+                    && has(node, "clientStartAt", "(" + MAID + "Ljava/lang/String;JII)V")
+                    && has(node, "clearLocal", maidVoid) && has(node, "clearTransientExpression", maidVoid)
+                    && List.of("serverTick", "freeze").stream().allMatch(n -> has(node, n, maidVoid))
+                    && List.of("shouldForceHuman", "shouldForceFox", "injuredAuto", "autoPet", "autoHug", "randomSleepPose",
+                            "isActive", "isTailInteractionActive", "isFaceInteractionActive")
+                        .stream().allMatch(n -> has(node, n, maidBool))
+                    && List.of("activeAction", "effectiveExpression").stream().allMatch(n -> has(node, n, "(" + MAID + ")Ljava/lang/String;"))
+                    && has(node, "enabledActions", "(" + MAID + "Ljava/lang/String;)Ljava/util/List;");
+            case "MoreAnimationDecisionMixin" -> has(node, "clear", maidVoid) && has(node, "serverTick", maidVoid)
+                    && has(node, "canClaim", "(" + MAID + "Ljava/lang/String;)Z");
+            case "MoreAnimationInteractionMixin" -> has(node, "requestInteraction",
+                    "(" + MAID + "Ljava/lang/String;Lnet/minecraft/world/entity/Entity;)Z")
+                    && has(node, "onDeath", "(Lnet/minecraftforge/event/entity/living/LivingDeathEvent;)V");
+            case "MoreAnimationInjuryMixin" -> has(node, "begin", maidVoid) && has(node, "finish", maidVoid)
+                    && has(node, "serverTick", maidVoid);
+            case "MoreAnimationManualMixin" -> List.of("triggerEarPull", "triggerTailPull", "begin").stream()
+                    .anyMatch(n -> has(node, n, "(Lnet/minecraft/server/level/ServerPlayer;" + MAID + ")V"));
+            case "MoreAnimationFaceMixin" -> has(node, "begin", "(Lnet/minecraft/server/level/ServerPlayer;" + MAID + "Z)V");
+            case "MoreAnimationStandingMixin" -> has(node, "begin", "(Lnet/minecraft/server/level/ServerPlayer;" + MAID + ")Z");
+            case "MoreAnimationPrayMixin" -> has(node, "loadedMaids", "(Lnet/minecraft/server/level/ServerLevel;)Ljava/util/List;")
+                    && has(node, "freezeAndFace", "(" + MAID + "Lnet/minecraft/core/BlockPos;)V");
+            case "AddonYsmOverlayMixin" -> has(node, "after", "(Ljava/lang/Object;F)V")
+                    && node.methods.stream().filter(m -> m.name.equals("after")).anyMatch(m -> {
+                        for (var insn : m.instructions) {
+                            if (insn instanceof MethodInsnNode call && call.owner.equals("java/lang/reflect/Method")
+                                    && call.name.equals("invoke")) {
+                                // Only the reviewed entity-extraction shape; don't hook an unrelated reflection call.
+                                var next = insn.getNext();
+                                while (next != null && next.getOpcode() < 0) next = next.getNext();
+                                if (next instanceof org.objectweb.asm.tree.VarInsnNode store
+                                        && store.getOpcode() == org.objectweb.asm.Opcodes.ASTORE) {
+                                    next = next.getNext();
+                                    while (next != null && next.getOpcode() < 0) next = next.getNext();
+                                    if (!(next instanceof org.objectweb.asm.tree.VarInsnNode load)
+                                            || load.getOpcode() != org.objectweb.asm.Opcodes.ALOAD || load.var != store.var)
+                                        return false;
+                                    next = next.getNext();
+                                    while (next != null && next.getOpcode() < 0) next = next.getNext();
+                                }
+                                return next instanceof org.objectweb.asm.tree.TypeInsnNode type
+                                        && type.getOpcode() == org.objectweb.asm.Opcodes.INSTANCEOF
+                                        && type.desc.equals("com/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid");
+                            }
+                        }
+                        return false;
+                    });
+            default -> false;
+        };
+        if (!ok) LOGGER.warn("Optional revenge-maid isolation skipped: {} has incompatible signature for {}", target, name);
+        return ok;
     }
 
     private static boolean hasOther(String target, String name, String descriptor) {

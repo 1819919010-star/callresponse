@@ -227,6 +227,7 @@ public final class BetrayalOutpostStackManager {
         String group = BetrayalOutpostMaidData.group(maid);
         return level.getEntitiesOfClass(EntityMaid.class, area, candidate -> candidate.isAlive()
                 && BetrayalOutpostMaidData.isOutpostMaid(candidate)
+                && !BetrayalOutpostMaidData.isGly(candidate)
                 && group.equals(BetrayalOutpostMaidData.group(candidate)));
     }
 

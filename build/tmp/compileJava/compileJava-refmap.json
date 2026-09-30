@@ -76,6 +76,9 @@
     "com/github/JumDa5he/callresponse/mixin/LivingEntityMaidBedOrientationMixin": {
       "getBedOrientation": "Lnet/minecraft/world/entity/LivingEntity;m_21259_()Lnet/minecraft/core/Direction;"
     },
+    "com/github/JumDa5he/callresponse/mixin/MaidSignDeathMixin": {
+      "dropEquipment": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_5907_()V"
+    },
     "com/github/JumDa5he/callresponse/mixin/PrincessCarryRemovalMixin": {
       "remove": "Lnet/minecraft/world/entity/Entity;m_142687_(Lnet/minecraft/world/entity/Entity$RemovalReason;)V"
     },
@@ -84,6 +87,9 @@
     },
     "com/github/JumDa5he/callresponse/mixin/accessor/LootTableReferenceAccessor": {
       "name": "f_79754_:Lnet/minecraft/resources/ResourceLocation;"
+    },
+    "com/github/JumDa5he/callresponse/mixin/client/AbstractSignEditScreenAccessor": {
+      "text": "f_276619_:Lnet/minecraft/world/level/block/entity/SignText;"
     },
     "com/github/JumDa5he/callresponse/mixin/OutpostRaidsCenterMixin": {
       "createOrExtendRaid": "Lnet/minecraft/world/entity/raid/Raids;m_37963_(Lnet/minecraft/server/level/ServerPlayer;)Lnet/minecraft/world/entity/raid/Raid;",
@@ -103,6 +109,10 @@
     },
     "com/github/JumDa5he/callresponse/mixin/PrincessCarryControllerMixin": {
       "getControllingPassenger": "Lnet/minecraft/world/entity/Mob;m_6688_()Lnet/minecraft/world/entity/LivingEntity;"
+    },
+    "com/github/JumDa5he/callresponse/mixin/RevengeMaidKillStatMixin": {
+      "killedEntity": "Lnet/minecraft/world/entity/player/Player;m_214076_(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/LivingEntity;)Z",
+      "Lnet/minecraft/world/entity/LivingEntity;getType()Lnet/minecraft/world/entity/EntityType;": "Lnet/minecraft/world/entity/LivingEntity;m_6095_()Lnet/minecraft/world/entity/EntityType;"
     },
     "com/github/JumDa5he/callresponse/compat/emotion/mixin/MixinEntityMaid": {
       "hurt": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_6469_(Lnet/minecraft/world/damagesource/DamageSource;F)Z"
@@ -199,6 +209,9 @@
       "com/github/JumDa5he/callresponse/mixin/LivingEntityMaidBedOrientationMixin": {
         "getBedOrientation": "Lnet/minecraft/world/entity/LivingEntity;m_21259_()Lnet/minecraft/core/Direction;"
       },
+      "com/github/JumDa5he/callresponse/mixin/MaidSignDeathMixin": {
+        "dropEquipment": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_5907_()V"
+      },
       "com/github/JumDa5he/callresponse/mixin/PrincessCarryRemovalMixin": {
         "remove": "Lnet/minecraft/world/entity/Entity;m_142687_(Lnet/minecraft/world/entity/Entity$RemovalReason;)V"
       },
@@ -207,6 +220,9 @@
       },
       "com/github/JumDa5he/callresponse/mixin/accessor/LootTableReferenceAccessor": {
         "name": "f_79754_:Lnet/minecraft/resources/ResourceLocation;"
+      },
+      "com/github/JumDa5he/callresponse/mixin/client/AbstractSignEditScreenAccessor": {
+        "text": "f_276619_:Lnet/minecraft/world/level/block/entity/SignText;"
       },
       "com/github/JumDa5he/callresponse/mixin/OutpostRaidsCenterMixin": {
         "createOrExtendRaid": "Lnet/minecraft/world/entity/raid/Raids;m_37963_(Lnet/minecraft/server/level/ServerPlayer;)Lnet/minecraft/world/entity/raid/Raid;",
@@ -226,6 +242,10 @@
       },
       "com/github/JumDa5he/callresponse/mixin/PrincessCarryControllerMixin": {
         "getControllingPassenger": "Lnet/minecraft/world/entity/Mob;m_6688_()Lnet/minecraft/world/entity/LivingEntity;"
+      },
+      "com/github/JumDa5he/callresponse/mixin/RevengeMaidKillStatMixin": {
+        "killedEntity": "Lnet/minecraft/world/entity/player/Player;m_214076_(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/LivingEntity;)Z",
+        "Lnet/minecraft/world/entity/LivingEntity;getType()Lnet/minecraft/world/entity/EntityType;": "Lnet/minecraft/world/entity/LivingEntity;m_6095_()Lnet/minecraft/world/entity/EntityType;"
       },
       "com/github/JumDa5he/callresponse/compat/emotion/mixin/MixinEntityMaid": {
         "hurt": "Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;m_6469_(Lnet/minecraft/world/damagesource/DamageSource;F)Z"

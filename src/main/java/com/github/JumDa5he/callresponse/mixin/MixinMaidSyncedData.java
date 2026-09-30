@@ -2,6 +2,7 @@ package com.github.JumDa5he.callresponse.mixin;
 
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerData;
+import com.github.JumDa5he.callresponse.compat.sign.MaidSignData;
 import com.github.JumDa5he.callresponse.compat.npc.MaidReviveEventData;
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.JumDa5he.callresponse.compat.state.MaidPathRepair;
@@ -29,6 +30,7 @@ public abstract class MixinMaidSyncedData extends Mob {
         this.getEntityData().define(HungerData.HUNGER_KEY, HungerData.DEFAULT_HUNGER);
         this.getEntityData().define(WanderingMaidData.SPECIAL_SYNC, false);
         this.getEntityData().define(TradingMaidData.TRADING_SYNC, false);
+        this.getEntityData().define(MaidSignData.SYNC, new CompoundTag());
     }
 
     @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
@@ -36,6 +38,7 @@ public abstract class MixinMaidSyncedData extends Mob {
         CompoundTag data = new CompoundTag();
         data.put("Emotions", this.getEntityData().get(EmotionData.EMOTION_KEY));
         data.putFloat("Hunger", this.getEntityData().get(HungerData.HUNGER_KEY));
+        data.put("MaidSign", this.getEntityData().get(MaidSignData.SYNC).copy());
         tag.put(SAVE_KEY, data);
         MaidReviveEventData.writeAdditionalSaveData((EntityMaid) (Object) this, tag);
         MaidMovementControl.sanitizeSave((EntityMaid) (Object) this, tag);
@@ -47,6 +50,7 @@ public abstract class MixinMaidSyncedData extends Mob {
             CompoundTag data = tag.getCompound(SAVE_KEY);
             this.getEntityData().set(EmotionData.EMOTION_KEY, data.getCompound("Emotions"));
             this.getEntityData().set(HungerData.HUNGER_KEY, data.getFloat("Hunger"));
+            this.getEntityData().set(MaidSignData.SYNC, data.getCompound("MaidSign"));
         }
         MaidReviveEventData.readAdditionalSaveData((EntityMaid) (Object) this, tag);
         WanderingMaidData.restoreSyncedFlag((EntityMaid) (Object) this);

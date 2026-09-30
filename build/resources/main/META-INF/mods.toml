@@ -4,7 +4,7 @@ license="All rights reserved"
 
 [[mods]]
 modId="callresponse"
-version="2.2.0"
+version="2.2.1"
 displayName="爱憎分明 - Love & Loathing"
 logoFile=""
 credits="JumDa5he"
@@ -17,6 +17,13 @@ mandatory=false
 versionRange="[47,)"
 ordering="NONE"
 side="BOTH"
+
+[[dependencies.callresponse]]
+modId="cloth_config"
+mandatory=false
+versionRange="[11,12)"
+ordering="AFTER"
+side="CLIENT"
 
 [[dependencies.callresponse]]
 modId="touhou_little_maid"

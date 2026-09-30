@@ -29,7 +29,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class OutpostLootAccessManager {
     private static final Map<UUID, PendingOpen> PENDING = new ConcurrentHashMap<>();
 
-    private record PendingOpen(String dimension, BlockPos pos, long tick, boolean pendingNativeLoot) {}
+    private record PendingLoot(BlockPos pos, boolean pendingNativeLoot) {}
+    private record PendingOpen(String dimension, BlockPos pos, long tick, List<PendingLoot> loot) {}
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRightClick(PlayerInteractEvent.RightClickBlock event) {
@@ -39,18 +40,33 @@ public final class OutpostLootAccessManager {
         BetrayalOutpostSavedData data = BetrayalOutpostSavedData.get(level);
         BetrayalOutpostSavedData.LootChest chest = data.lootChest(level, pos);
         if (chest == null) return;
-        // Either half of a double chest resolves to its one loot-bearing half.
+        // Legacy single-roll doubles alias one half; new doubles may own two independent rolls.
         BlockEntity blockEntity = level.getBlockEntity(chest.pos());
         if (!(blockEntity instanceof RandomizableContainerBlockEntity container)) return;
         BetrayalOutpostSavedData.Outpost camp = data.findByKey(level, chest.campKey());
         if (camp != null && isApproved(player)) {
             OutpostDisguiseRelations.clearOldTargetsNear(player);
         }
-        OutpostLootContainerAccessor access = (OutpostLootContainerAccessor) container;
-        boolean pendingNative = chest.lootTable().equals(access.callresponse$getLootTable())
-                && chest.lootSeed() == access.callresponse$getLootTableSeed();
+        List<PendingLoot> loot = new ArrayList<>();
+        capturePending(level, chest, loot);
+        var state = level.getBlockState(pos);
+        if (state.getBlock() instanceof net.minecraft.world.level.block.ChestBlock
+                && state.getValue(net.minecraft.world.level.block.ChestBlock.TYPE)
+                != net.minecraft.world.level.block.state.properties.ChestType.SINGLE) {
+            BlockPos other = pos.relative(net.minecraft.world.level.block.ChestBlock.getConnectedDirection(state));
+            var companion = data.lootChest(level, other);
+            if (companion != null && !companion.pos().equals(chest.pos())) capturePending(level, companion, loot);
+        }
         PENDING.put(player.getUUID(), new PendingOpen(level.dimension().location().toString(),
-                chest.pos(), level.getGameTime(), pendingNative));
+                chest.pos(), level.getGameTime(), List.copyOf(loot)));
+    }
+
+    private static void capturePending(ServerLevel level, BetrayalOutpostSavedData.LootChest chest,
+                                       List<PendingLoot> loot) {
+        if (!(level.getBlockEntity(chest.pos()) instanceof RandomizableContainerBlockEntity container)) return;
+        OutpostLootContainerAccessor access = (OutpostLootContainerAccessor) container;
+        loot.add(new PendingLoot(chest.pos(), chest.lootTable().equals(access.callresponse$getLootTable())
+                && chest.lootSeed() == access.callresponse$getLootTableSeed()));
     }
 
     @SubscribeEvent
@@ -72,6 +88,13 @@ public final class OutpostLootAccessManager {
         boolean approved = isApproved(player);
         if (approved) OutpostDisguiseRelations.clearOldTargetsNear(player);
         else if (DisguiseManager.isActive(player)) OutpostDisguiseRelations.expose(player, camp);
+        for (PendingLoot roll : pending.loot()) settleRoll(level, player, data, roll, approved);
+    }
+
+    private static void settleRoll(ServerLevel level, ServerPlayer player, BetrayalOutpostSavedData data,
+                                   PendingLoot pending, boolean approved) {
+        var chest = data.lootChest(level, pending.pos());
+        if (chest == null || !(level.getBlockEntity(chest.pos()) instanceof RandomizableContainerBlockEntity container)) return;
         if (data.isChestSettled(chest)) return;
 
         // Commit before giving items. Reopening, another player, and a later block replacement cannot repeat it.

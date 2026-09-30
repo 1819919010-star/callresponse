@@ -55,6 +55,7 @@ public final class IntimidationManager {
     private static final int[] COOLDOWN_MINUTES = {15, 12, 8, 3, 1};
     private static final int[] DURATION_SECONDS = {8, 10, 12, 15, 20};
     private static final Map<UUID, Control> ACTIVE = new ConcurrentHashMap<>();
+    private static final UUID PARADE_SOURCE = new UUID(0L, 0L);
     private static final Map<UUID, Integer> GENERATIONS = new ConcurrentHashMap<>();
     private static final Deque<Reply> REPLIES = new ArrayDeque<>();
     private static final Map<UUID, PendingAiReply> PENDING_AI = new HashMap<>();
@@ -187,6 +188,7 @@ public final class IntimidationManager {
     }
 
     private static void control(ServerPlayer caster, Mob mob, long untilTick) {
+        // Player casts keep their existing damage, emotion and dialogue semantics.
         Control control = ACTIVE.get(mob.getUUID());
         boolean first = control == null || control.mob != mob;
         if (first) {
@@ -203,6 +205,25 @@ public final class IntimidationManager {
         control.lastCaster = caster.getUUID();
         if (mob instanceof EntityMaid maid) handleMaidHit(caster, maid, control);
         syncVisual(control, caster.server.getTickCount());
+    }
+
+    /** Renewable non-player source; never writes NoAI or requires an online caster. */
+    public static void intimidateByParade(Mob mob, int durationTicks) {
+        if (!(mob.level() instanceof ServerLevel level)) return;
+        long now = level.getServer().getTickCount();
+        Control control = ACTIVE.get(mob.getUUID());
+        if (control == null || control.mob != mob) {
+            control = new Control(mob);
+            ACTIVE.put(mob.getUUID(), control);
+            if (mob instanceof EntityMaid maid) {
+                GENERATIONS.merge(maid.getUUID(), 1, Integer::sum);
+                cancelPendingAi(maid.getUUID());
+            }
+            // 正在进行的自主寻路必须先停下，和玩家威压一致
+            mob.getNavigation().stop();
+        }
+        control.sources.merge(PARADE_SOURCE, now + durationTicks, Math::max);
+        syncVisual(control, now);
     }
 
     private static void syncVisual(Control control, long now) {
@@ -263,6 +284,10 @@ public final class IntimidationManager {
             }
             boolean interrupted = false;
             for (Map.Entry<UUID, Long> entry : new ArrayList<>(control.sources.entrySet())) {
+                if (PARADE_SOURCE.equals(entry.getKey())) {
+                    if (entry.getValue() <= now) control.sources.remove(entry.getKey());
+                    continue;
+                }
                 ServerPlayer caster = server.getPlayerList().getPlayer(entry.getKey());
                 if (caster == null || caster.level() != mob.level()) {
                     interrupted = true;
@@ -311,7 +336,7 @@ public final class IntimidationManager {
             else EmotionBetrayalManager.cancelDangerAfterIntimidation(maid);
         }
         if (control.resetForgetting && maid.isAlive()) EmotionForgettingManager.resetAfterIntimidation(maid);
-        if (respond && maid.isAlive() && !maid.isRemoved()) {
+        if (respond && control.lastCaster != null && maid.isAlive() && !maid.isRemoved()) {
             REPLIES.addLast(new Reply(maid, control.lastCaster, generation(maid),
                     mob.level().getServer().getTickCount() + 5));
         }

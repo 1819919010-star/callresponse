@@ -15,6 +15,8 @@ public final class MaidCropClientEvents {
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(com.github.JumDa5he.callresponse.compat.outpost.entity.OutpostEntities.REVENGE_MAID.get(),
+                com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer::new);
         event.registerBlockEntityRenderer(ModBlocks.MAID_CROP_BLOCK_ENTITY.get(), MaidCropBlockRenderer::new);
     }
 }

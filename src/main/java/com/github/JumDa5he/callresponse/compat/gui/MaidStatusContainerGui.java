@@ -4,6 +4,9 @@ import com.github.JumDa5he.callresponse.CallResponseMod;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerData;
 import com.github.JumDa5he.callresponse.compat.menu.MaidStatusContainer;
+import com.github.JumDa5he.callresponse.compat.sign.MaidSignManager;
+import com.github.JumDa5he.callresponse.compat.sign.client.MaidSignEditScreen;
+import java.util.List;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.AbstractMaidContainerGui;
 import net.minecraft.ChatFormatting;
@@ -20,6 +23,7 @@ public class MaidStatusContainerGui extends AbstractMaidContainerGui<MaidStatusC
     private boolean expelChoicesOpen;
     private boolean frightenUsedLocally;
     private Button expelButton;
+    private Button signButton;
 
     public MaidStatusContainerGui(MaidStatusContainer menu, Inventory inventory, Component title) {
         super(menu, inventory, Component.translatable("gui.callresponse.maid_status.title"));
@@ -28,6 +32,7 @@ public class MaidStatusContainerGui extends AbstractMaidContainerGui<MaidStatusC
     @Override
     protected void initAdditionWidgets() {
         this.expelButton = null;
+        this.signButton = null;
 
         if (expelChoicesOpen) {
             Button frighten = Button.builder(Component.translatable(frightenUsedLocally
@@ -53,6 +58,18 @@ public class MaidStatusContainerGui extends AbstractMaidContainerGui<MaidStatusC
                     .build();
             this.addRenderableWidget(this.expelButton);
         }
+        if (!expelChoicesOpen) {
+            this.signButton = Button.builder(Component.translatable("gui.callresponse.maid_sign.button"),
+                            ignored -> openSignEditor())
+                    .bounds(leftPos + 86, topPos + 118, 64, 16).build();
+            this.signButton.active = MaidSignManager.hasSign(maid);
+            this.addRenderableWidget(this.signButton);
+        }
+    }
+
+    private void openSignEditor() {
+        if (maid != null && MaidSignManager.hasSign(maid))
+            Minecraft.getInstance().setScreen(MaidSignEditScreen.create(this, maid, MaidSignManager.get(maid)));
     }
 
     private void frightenMaid() {
@@ -94,6 +111,15 @@ public class MaidStatusContainerGui extends AbstractMaidContainerGui<MaidStatusC
                     leftPos + 166, topPos + 123, 0xFF8B2020);
         } else if (expelButton != null) {
             drawButtonFrame(graphics, expelButton);
+        }
+        if (signButton != null) {
+            signButton.active = MaidSignManager.hasSign(maid);
+            if (signButton.isHovered()) {
+                graphics.renderComponentTooltip(font, List.of(
+                        Component.translatable("gui.callresponse.maid_sign.button"),
+                        Component.translatable(signButton.active ? "gui.callresponse.maid_sign.edit_hint"
+                                : "gui.callresponse.maid_sign.attach_hint")), mouseX, mouseY);
+            }
         }
     }
 

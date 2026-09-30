@@ -89,6 +89,8 @@ public final class DispatchManager {
         event.getDispatcher().register(Commands.literal("callresponse")
                 .then(MaidPathCommand.node())
                 .then(LazyMaidCommand.node())
+                .then(com.github.JumDa5he.callresponse.compat.outpost.OutpostDebugCommand.node("outpost"))
+                .then(com.github.JumDa5he.callresponse.compat.outpost.OutpostDebugCommand.node("betrayal_maid_outpost"))
                 .then(Commands.literal("dispatch")
                         .then(Commands.literal("finish")
                                 .requires(source -> source.hasPermission(2))

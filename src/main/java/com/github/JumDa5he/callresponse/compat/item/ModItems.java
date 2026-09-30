@@ -22,6 +22,10 @@ import java.util.function.Supplier;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, CallResponseMod.MOD_ID);
+    public static final Supplier<Item> ALLIED_REVENGE_MAID_SPAWN_EGG = ITEMS.register("allied_revenge_maid_spawn_egg",
+            () -> new RevengeMaidSpawnEggItem(true));
+    public static final Supplier<Item> REVENGE_MAID_SPAWN_EGG = ITEMS.register("revenge_maid_spawn_egg",
+            () -> new RevengeMaidSpawnEggItem(false));
 
     public static final Supplier<Item> EMOTION_BOOK = ITEMS.register("emotion_book",
             () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
@@ -67,6 +71,8 @@ public class ModItems {
                     .title(Component.translatable("itemGroup.callresponse"))
                     .displayItems((params, output) -> {
                         output.accept(EMOTION_BOOK.get());
+                        output.accept(REVENGE_MAID_SPAWN_EGG.get());
+                        output.accept(ALLIED_REVENGE_MAID_SPAWN_EGG.get());
                         output.accept(NO_EAT_BAUBLE.get());
                         output.accept(MORE_EAT_BAUBLE.get());
                         output.accept(HUNT_ORDER.get());

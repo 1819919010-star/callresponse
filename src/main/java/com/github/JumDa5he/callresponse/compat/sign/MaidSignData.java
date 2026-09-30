@@ -1,0 +1,36 @@
+package com.github.JumDa5he.callresponse.compat.sign;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.entity.SignText;
+
+/**
+ * 女仆身上挂着的“游行示众”告示牌数据。
+ * <p>用原版 {@link SignText} 存文本，编辑器与渲染都能直接复用原版逻辑。
+ * 文字发光，牌面仍遵守环境光照。
+ * <p>{@code item} 记录当初挂上去的是哪种告示牌，取下时原样还给玩家。
+ */
+public record MaidSignData(SignText text, boolean enabled, Item item) {
+    /** 没有挂告示牌。 */
+    public static final MaidSignData EMPTY = new MaidSignData(new SignText(), false, Items.OAK_SIGN);
+
+    public static final Codec<MaidSignData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            SignText.DIRECT_CODEC.fieldOf("text").forGetter(MaidSignData::text),
+            Codec.BOOL.fieldOf("enabled").forGetter(MaidSignData::enabled),
+            // 老存档没有这个字段，回退成橡木告示牌即可
+            BuiltInRegistries.ITEM.byNameCodec().optionalFieldOf("item", Items.OAK_SIGN).forGetter(MaidSignData::item)
+    ).apply(instance, MaidSignData::new));
+
+    public static final net.minecraft.network.syncher.EntityDataAccessor<net.minecraft.nbt.CompoundTag> SYNC =
+            net.minecraft.network.syncher.SynchedEntityData.defineId(
+                    com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid.class,
+                    net.minecraft.network.syncher.EntityDataSerializers.COMPOUND_TAG);
+
+    /** 新建一块强制发光的牌子，并记住它的物品种类。 */
+    public static MaidSignData glowing(SignText text, Item item) {
+        return new MaidSignData(text.setHasGlowingText(true), true, item);
+    }
+}

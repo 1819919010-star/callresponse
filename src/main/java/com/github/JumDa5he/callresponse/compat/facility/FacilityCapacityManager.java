@@ -236,6 +236,23 @@ public final class FacilityCapacityManager {
      * 附近只要存在被《呼应》调过容量的床，就用容量规则选床；否则返回 null 让本体原逻辑继续。
      */
     public static BedSearchResult findCapacityAwareBed(ServerLevel level, EntityMaid maid) {
+        BedCandidates candidates = collectBedCandidates(level, maid);
+        if (!candidates.hasOverride()) return new BedSearchResult(false, null);
+        BlockPos selected = candidates.positions().stream()
+                .filter(maid::isWithinRestriction)
+                .filter(pos -> {
+                    BlockPos center = canonicalize(level, pos);
+                    if (center == null) return false;
+                    return hasCapacityOverride(level, center) ? hasVacancy(level, center)
+                            : !level.getBlockState(center).getValue(BedBlock.OCCUPIED);
+                })
+                .min(Comparator.comparingDouble(pos -> pos.distSqr(maid.blockPosition())))
+                .orElse(null);
+        return new BedSearchResult(true, selected);
+    }
+
+    /** Occupied expanded beds leave TLM's POI index; their capacity records remain authoritative. */
+    public static BedCandidates collectBedCandidates(ServerLevel level, EntityMaid maid) {
         BlockPos searchCenter = maid.getBrainSearchPos();
         int range = (int) maid.getRestrictRadius();
         List<BlockPos> poiBeds = level.getPoiManager()
@@ -255,28 +272,12 @@ public final class FacilityCapacityManager {
                 overrideBeds.add(pos);
             }
         }
-        boolean hasOverride = !overrideBeds.isEmpty();
-        if (!hasOverride) {
-            return new BedSearchResult(false, null);
-        }
         Set<BlockPos> beds = new HashSet<>(poiBeds);
         beds.addAll(overrideBeds);
-        BlockPos selected = beds.stream()
-                .filter(maid::isWithinRestriction)
-                .filter(pos -> {
-                    BlockPos center = canonicalize(level, pos);
-                    if (center == null) {
-                        return false;
-                    }
-                    if (hasCapacityOverride(level, center)) {
-                        return hasVacancy(level, center);
-                    }
-                    return !level.getBlockState(center).getValue(BedBlock.OCCUPIED);
-                })
-                .min(Comparator.comparingDouble(pos -> pos.distSqr(maid.blockPosition())))
-                .orElse(null);
-        return new BedSearchResult(true, selected);
+        return new BedCandidates(!overrideBeds.isEmpty(), List.copyOf(beds));
     }
+
+    public record BedCandidates(boolean hasOverride, List<BlockPos> positions) {}
 
     private static boolean seatPlayerAtClickedOriginalSeat(ServerLevel level, BlockPos center, ServerPlayer player,
                                                             BlockHitResult hit) {

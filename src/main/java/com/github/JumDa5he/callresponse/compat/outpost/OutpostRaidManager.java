@@ -1,25 +1,31 @@
 package com.github.JumDa5he.callresponse.compat.outpost;
 
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.JumDa5he.callresponse.mixin.accessor.MobTargetSelectorAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.NeutralMob;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.RangedAttackGoal;
+import net.minecraft.world.entity.ai.goal.RangedBowAttackGoal;
+import net.minecraft.world.entity.ai.goal.RangedCrossbowAttackGoal;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import java.util.Comparator;
-
-/** 只扩展原版 Raid 的营地触发地点，以及本场 Raider 对营地女仆的目标关系。 */
+/** Adds a target candidate to existing hostile attack AI; only marked camp raids receive extra reach/advance. */
 public final class OutpostRaidManager {
     private static final ThreadLocal<BlockPos> CREATION_CENTER = new ThreadLocal<>();
 
@@ -55,43 +61,42 @@ public final class OutpostRaidManager {
         }
     }
 
-    /** 当前营地 Raid 优先交战复仇女仆；没有女仆时仍交还原版目标逻辑。 */
+    @SubscribeEvent
+    public void onHostileJoin(EntityJoinLevelEvent event) {
+        if (!(event.getLevel() instanceof ServerLevel) || !(event.getEntity() instanceof Mob mob)
+                || !(mob instanceof Enemy) || mob instanceof NeutralMob) return;
+        MobTargetSelectorAccessor goals = (MobTargetSelectorAccessor) mob;
+        // A target alone cannot teach a special mob how to attack. Raiders already have raid combat AI;
+        // other mobs must have a normal melee or ranged attack goal.
+        if (!(mob instanceof Raider) && goals.callresponse$getGoalSelector().getAvailableGoals().stream()
+                .noneMatch(wrapped -> wrapped.getGoal() instanceof MeleeAttackGoal
+                        || wrapped.getGoal() instanceof RangedAttackGoal
+                        || wrapped.getGoal() instanceof RangedBowAttackGoal<?>
+                        || wrapped.getGoal() instanceof RangedCrossbowAttackGoal<?>)) return;
+        if (goals.callresponse$getTargetSelector().getAvailableGoals().stream()
+                .noneMatch(wrapped -> wrapped.getGoal() instanceof OutpostMaidTargetGoal)) {
+            goals.callresponse$getTargetSelector().addGoal(6, new OutpostMaidTargetGoal(mob));
+        }
+    }
+
+    /** A creative/spectator target must not block the camp goal, but valid vanilla targets stay intact. */
     @SubscribeEvent
     public void onRaiderTick(LivingEvent.LivingTickEvent event) {
         if (!(event.getEntity() instanceof Raider raider) || raider.level().isClientSide
-                || !raider.isAlive() || !OutpostMaidTargetGoal.isCampRaid(raider)
-                || !(raider.level() instanceof ServerLevel level)) return;
+                || !raider.isAlive() || !OutpostMaidTargetGoal.isCampRaid(raider)) return;
         LivingEntity current = raider.getTarget();
         if (current instanceof Player player && (player.isCreative() || player.isSpectator())) {
             raider.setTarget(null);
-            raider.getNavigation().stop();
-            current = null;
         }
-        if (raider.tickCount % 10 != 0) return;
-        if (OutpostMaidTargetGoal.isCampTarget(raider, current)) return;
-        EntityMaid nearest = findNearbyCampMaid(level, raider);
-        if (nearest == null) return;
-        raider.setTarget(nearest);
     }
 
     @SubscribeEvent
     public void onRaiderChangeTarget(LivingChangeTargetEvent event) {
         if (!(event.getEntity() instanceof Raider raider)
-                || !(raider.level() instanceof ServerLevel level)
                 || !OutpostMaidTargetGoal.isCampRaid(raider) || event.getNewTarget() == null) return;
-        EntityMaid maid = findNearbyCampMaid(level, raider);
-        if (maid != null) {
-            event.setNewTarget(maid);
-        } else if (event.getNewTarget() instanceof Player player
+        if (event.getNewTarget() instanceof Player player
                 && (player.isCreative() || player.isSpectator())) {
             event.setNewTarget(null);
         }
-    }
-
-    private static EntityMaid findNearbyCampMaid(ServerLevel level, Raider raider) {
-        return level.getEntitiesOfClass(EntityMaid.class,
-                        raider.getBoundingBox().inflate(20.0D, 8.0D, 20.0D),
-                        maid -> OutpostMaidTargetGoal.isCampTarget(raider, maid))
-                .stream().min(Comparator.comparingDouble(raider::distanceToSqr)).orElse(null);
     }
 }
