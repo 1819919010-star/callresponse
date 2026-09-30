@@ -54,6 +54,11 @@ public class ModItems {
     public static final Supplier<Item> DISGUISE_ITEM = ITEMS.register("disguise_item",
             () -> new DisguiseItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
 
+    public static final Supplier<Item> REVENGE_MAID_SPAWN_EGG = ITEMS.register("revenge_maid_spawn_egg",
+            () -> new RevengeMaidSpawnEggItem(false));
+    public static final Supplier<Item> ALLIED_REVENGE_MAID_SPAWN_EGG = ITEMS.register("allied_revenge_maid_spawn_egg",
+            () -> new RevengeMaidSpawnEggItem(true));
+
     // ===== 创造模式物品栏：专属栏位 =====
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CallResponseMod.MOD_ID);
 
@@ -74,6 +79,8 @@ public class ModItems {
                         output.accept(FACILITY_CAPACITY_TOOL.get());
                         output.accept(DARK_IRON_CAGE.get());
                         output.accept(DISGUISE_ITEM.get());
+                        output.accept(REVENGE_MAID_SPAWN_EGG.get());
+                        output.accept(ALLIED_REVENGE_MAID_SPAWN_EGG.get());
                     })
                     .build());
 }

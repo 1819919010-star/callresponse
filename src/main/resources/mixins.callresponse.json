@@ -5,6 +5,18 @@
     "plugin": "com.github.JumDa5he.callresponse.mixin.CuteActivityMixinPlugin",
     "compatibilityLevel": "JAVA_21",
     "mixins": [
+    "RevengeMaidKillStatMixin",
+        "revengecompat.CuteAnimationEligibilityMixin",
+        "revengecompat.CuteExtraBehaviorMixin",
+        "revengecompat.MoreAnimationDataMixin",
+        "revengecompat.MoreAnimationDecisionMixin",
+        "revengecompat.MoreAnimationFaceMixin",
+        "revengecompat.MoreAnimationInjuryMixin",
+        "revengecompat.MoreAnimationInteractionMixin",
+        "revengecompat.MoreAnimationManualMixin",
+        "revengecompat.MoreAnimationPrayMixin",
+        "revengecompat.MoreAnimationStandingMixin",
+    "accessor.EntityMaidHandItemInvoker",
         "MixinCakeEdible",
         "MixinEntityMaid",
         "IntimidatedMobAiMixin",
@@ -70,6 +82,8 @@
         "PrincessCarryRemovalMixin"
     ],
     "client": [
+        "revengecompat.AddonYsmOverlayMixin",
+        "client.AbstractSignEditScreenAccessor",
         "client.ConfiguredNeoForgeValueMixin",
         "cuteactivity.client.CuteScareClientMixin",
         "client.AbstractContainerScreenAccessor",

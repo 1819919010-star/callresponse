@@ -3,6 +3,8 @@ package com.github.JumDa5he.callresponse.compat.client.gui;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerData;
 import com.github.JumDa5he.callresponse.compat.menu.MaidStatusContainer;
+import com.github.JumDa5he.callresponse.compat.sign.MaidSignManager;
+import com.github.JumDa5he.callresponse.compat.sign.client.MaidSignEditScreen;
 import com.github.JumDa5he.callresponse.network.ExpelMaidC2SPacket;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.AbstractMaidContainerGui;
@@ -15,12 +17,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+import java.util.List;
+
 public class MaidStatusContainerGui extends AbstractMaidContainerGui<MaidStatusContainer> {
     private static final ResourceLocation SIDE =
             ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_gui_side.png");
     private boolean expelChoicesOpen;
     private boolean frightenUsedLocally;
     private Button expelButton;
+    private Button signButton;
 
     public MaidStatusContainerGui(MaidStatusContainer menu, Inventory inventory, Component title) {
         super(menu, inventory, Component.literal("女仆状态"));
@@ -29,6 +34,7 @@ public class MaidStatusContainerGui extends AbstractMaidContainerGui<MaidStatusC
     @Override
     protected void initAdditionWidgets() {
         this.expelButton = null;
+        this.signButton = null;
 
         if (expelChoicesOpen) {
             Button frighten = Button.builder(Component.literal(frightenUsedLocally ? "今日已用" : "吓吓你的"),
@@ -52,6 +58,22 @@ public class MaidStatusContainerGui extends AbstractMaidContainerGui<MaidStatusC
                     .build();
             this.addRenderableWidget(this.expelButton);
         }
+
+        // 示众牌：挂上之后才能编辑，没挂上时按钮只作为提示
+        if (!expelChoicesOpen) {
+            this.signButton = Button.builder(Component.translatable("gui.callresponse.maid_sign.button"), ignored -> openSignEditor())
+                    .bounds(leftPos + 86, topPos + 118, 64, 16)
+                    .build();
+            this.signButton.active = MaidSignManager.hasSign(maid);
+            this.addRenderableWidget(this.signButton);
+        }
+    }
+
+    private void openSignEditor() {
+        if (maid == null || !MaidSignManager.hasSign(maid)) {
+            return;
+        }
+        Minecraft.getInstance().setScreen(MaidSignEditScreen.create(this, maid, MaidSignManager.get(maid)));
     }
 
     private void frightenMaid() {
@@ -93,6 +115,14 @@ public class MaidStatusContainerGui extends AbstractMaidContainerGui<MaidStatusC
                     leftPos + 166, topPos + 123, 0xFF8B2020);
         } else if (expelButton != null) {
             drawButtonFrame(graphics, expelButton);
+        }
+
+        if (signButton != null && signButton.isHovered()) {
+            boolean hasSign = MaidSignManager.hasSign(maid);
+            graphics.renderComponentTooltip(font, List.of(
+                    Component.translatable("gui.callresponse.maid_sign.button"),
+                    Component.translatable(hasSign ? "gui.callresponse.maid_sign.edit_hint" : "gui.callresponse.maid_sign.attach_hint")
+            ), mouseX, mouseY);
         }
     }
 

@@ -1,6 +1,5 @@
 package com.github.JumDa5he.callresponse.compat.outpost;
 
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -8,18 +7,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.raid.Raid;
-import net.minecraft.world.entity.raid.Raider;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
-import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 
-import java.util.Comparator;
 
 /** 只扩展原版 Raid 的营地触发地点，以及本场 Raider 对营地女仆的目标关系。 */
 public final class OutpostRaidManager {
@@ -87,43 +80,22 @@ public final class OutpostRaidManager {
         player.removeEffect(MobEffects.BAD_OMEN);
     }
 
-    /** 当前营地 Raid 优先交战复仇女仆；没有女仆时仍交还原版目标逻辑。 */
+    /** 实体每次加入服务端时幂等补充，不改原版目标 Goal 的优先级。 */
     @SubscribeEvent
-    public void onRaiderTick(EntityTickEvent.Post event) {
-        if (!(event.getEntity() instanceof Raider raider) || raider.level().isClientSide
-                || !raider.isAlive() || !OutpostMaidTargetGoal.isCampRaid(raider)
-                || !(raider.level() instanceof ServerLevel level)) return;
-        LivingEntity current = raider.getTarget();
-        if (current instanceof Player player && (player.isCreative() || player.isSpectator())) {
-            raider.setTarget(null);
-            raider.getNavigation().stop();
-            current = null;
-        }
-        if (raider.tickCount % 10 != 0) return;
-        if (OutpostMaidTargetGoal.isCampTarget(raider, current)) return;
-        EntityMaid nearest = findNearbyCampMaid(level, raider);
-        if (nearest == null) return;
-        raider.setTarget(nearest);
-    }
-
-    @SubscribeEvent
-    public void onRaiderChangeTarget(LivingChangeTargetEvent event) {
-        if (!(event.getEntity() instanceof Raider raider)
-                || !(raider.level() instanceof ServerLevel level)
-                || !OutpostMaidTargetGoal.isCampRaid(raider) || event.getNewAboutToBeSetTarget() == null) return;
-        EntityMaid maid = findNearbyCampMaid(level, raider);
-        if (maid != null) {
-            event.setNewAboutToBeSetTarget(maid);
-        } else if (event.getNewAboutToBeSetTarget() instanceof Player player
-                && (player.isCreative() || player.isSpectator())) {
-            event.setNewAboutToBeSetTarget(null);
-        }
-    }
-
-    private static EntityMaid findNearbyCampMaid(ServerLevel level, Raider raider) {
-        return level.getEntitiesOfClass(EntityMaid.class,
-                        raider.getBoundingBox().inflate(20.0D, 8.0D, 20.0D),
-                        maid -> OutpostMaidTargetGoal.isCampTarget(raider, maid))
-                .stream().min(Comparator.comparingDouble(raider::distanceToSqr)).orElse(null);
+    public void onMonsterJoin(net.neoforged.neoforge.event.entity.EntityJoinLevelEvent event) {
+        if (event.getLevel().isClientSide()
+                || !(event.getEntity() instanceof net.minecraft.world.entity.Mob mob)
+                || !(mob instanceof net.minecraft.world.entity.monster.Enemy)
+                || mob instanceof net.minecraft.world.entity.NeutralMob) return;
+        var selector = ((com.github.JumDa5he.callresponse.mixin.accessor.MobTargetSelectorAccessor) mob)
+                .callresponse$getTargetSelector();
+        // 没有常规目标 Goal 的 Brain/特殊攻击生物不在本轮改写范围。
+        if (selector.getAvailableGoals().stream().noneMatch(goal ->
+                goal.getGoal() instanceof net.minecraft.world.entity.ai.goal.target.TargetGoal)
+                || selector.getAvailableGoals().stream().anyMatch(goal ->
+                goal.getGoal() instanceof OutpostMaidTargetGoal)) return;
+        int priority = selector.getAvailableGoals().stream()
+                .mapToInt(net.minecraft.world.entity.ai.goal.WrappedGoal::getPriority).max().orElse(0);
+        selector.addGoal(priority == Integer.MAX_VALUE ? priority : priority + 1, new OutpostMaidTargetGoal(mob));
     }
 }

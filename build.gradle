@@ -73,6 +73,8 @@ neoForge {
 }
 
 dependencies {
+    // 可选客户端配置 UI；不打包、不加入服务端或默认运行依赖。
+    compileOnly "maven.modrinth:cloth-config:15.0.140+neoforge"
     // Touhou Little Maid 1.21.1 NeoForge
     implementation "maven.modrinth:touhou-little-maid:1.5.3-neoforge+mc1.21.1"
     // Jade

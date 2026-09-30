@@ -308,6 +308,7 @@ public final class BetrayalOutpostStackManager {
                     case FARMER, FEEDER -> farmers.add(maid);
                     case SWORDSMAN -> swords.add(maid);
                     case HEAVY -> heavy = maid;
+                    case GLY -> { }
                 }
             }
             Comparator<EntityMaid> byUuid = Comparator.comparing(Entity::getStringUUID);

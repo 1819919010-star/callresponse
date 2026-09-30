@@ -5,6 +5,7 @@ import com.github.JumDa5he.callresponse.compat.brain.LazyMaidCommand;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerData;
+import com.github.JumDa5he.callresponse.compat.outpost.OutpostDebugCommand;
 import com.github.JumDa5he.callresponse.compat.state.MaidPathCommand;
 import com.github.JumDa5he.callresponse.config.DispatchConfig;
 import com.github.JumDa5he.callresponse.mixin.accessor.CompositeEntryBaseAccessor;
@@ -74,6 +75,8 @@ public final class DispatchManager {
         event.getDispatcher().register(Commands.literal("callresponse")
                 .then(MaidPathCommand.node())
                 .then(LazyMaidCommand.node())
+                .then(OutpostDebugCommand.node("outpost"))
+                .then(OutpostDebugCommand.node("betrayal_maid_outpost"))
                 .then(Commands.literal("dispatch")
                         .then(Commands.literal("finish")
                                 .requires(source -> source.hasPermission(2))

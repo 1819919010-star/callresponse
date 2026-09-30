@@ -1,6 +1,8 @@
 package com.github.JumDa5he.callresponse.compat.brain;
 
 import com.github.JumDa5he.callresponse.compat.hunger.HungerData;
+import com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostMaidData;
+import com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderManager;
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
@@ -92,6 +94,12 @@ public final class FeedHungryMaidBehavior extends Behavior<EntityMaid> {
     }
 
     private static boolean canCareForMaid(EntityMaid maid) {
+        if (maid instanceof RevengeMaidEntity) {
+            return maid.isAlive() && BetrayalOutpostMaidData.role(maid) == BetrayalOutpostMaidData.Role.FEEDER
+                    && maid.getBrain().isActive(net.minecraft.world.entity.schedule.Activity.WORK)
+                    && maid.canBrainMoving() && !maid.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_TARGET)
+                    && !MaidMovementControl.controlsPath(maid);
+        }
         return maid.isAlive() && maid.isTame() && maid.getOwnerUUID() != null
                 && TaskFeedOwner.UID.equals(maid.getTask().getUid())
                 && HungerData.get(maid) >= 15.0f
@@ -101,6 +109,7 @@ public final class FeedHungryMaidBehavior extends Behavior<EntityMaid> {
     }
 
     private static boolean ownerNeedsPriorityCare(EntityMaid maid) {
+        if (maid instanceof RevengeMaidEntity) return false;
         LivingEntity owner = maid.getOwner();
         if (!(owner instanceof Player player) || !player.isAlive()) return true;
         if (player.getFoodData().needsFood() || player.getHealth() < player.getMaxHealth() * 0.5f) return true;
@@ -111,13 +120,24 @@ public final class FeedHungryMaidBehavior extends Behavior<EntityMaid> {
 
     @Nullable
     private static EntityMaid findTarget(ServerLevel level, EntityMaid feeder) {
-        UUID ownerId = feeder.getOwnerUUID();
         AABB area = feeder.getBoundingBox().inflate(SEARCH_RADIUS, 4.0, SEARCH_RADIUS);
         return level.getEntitiesOfClass(EntityMaid.class, area, maid -> validTarget(feeder, maid))
-                .stream().min(Comparator.comparingDouble(feeder::distanceToSqr)).orElse(null);
+                .stream().sorted(Comparator.comparingDouble(feeder::distanceToSqr))
+                .filter(target -> !(feeder instanceof RevengeMaidEntity) || feeder.canPathReach(target))
+                .findFirst().orElse(null);
     }
 
     private static boolean validTarget(EntityMaid feeder, @Nullable EntityMaid target) {
+        if (feeder instanceof RevengeMaidEntity) {
+            // Wild sisters do not run the owned-maid HungerManager. Supply real food
+            // when their usable inventory runs out, instead of inventing an owner/hunger loop.
+            return target != null && target != feeder && target.isAlive()
+                    && BetrayalOutpostMaidData.areSisters(feeder, target)
+                    && !hasFood(target.getAvailableInv(true), target)
+                    && SeekFoodBehavior.hasBackpackSpace(target)
+                    && !SeekFoodBehavior.isSeeking(target)
+                    && feeder.isWithinRestriction(target.blockPosition());
+        }
         return target != null && target != feeder && target.isAlive() && target.isTame()
                 && feeder.getOwnerUUID() != null && feeder.getOwnerUUID().equals(target.getOwnerUUID())
                 && HungerData.get(target) < TARGET_HUNGER

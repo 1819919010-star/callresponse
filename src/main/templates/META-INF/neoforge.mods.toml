@@ -42,3 +42,10 @@ license = "${mod_license}"
 
 [[mixins]]
     config = "mixins.callresponse.json"
+
+[[dependencies."${mod_id}"]]
+    modId = "cloth_config"
+    type = "optional"
+    versionRange = "[15.0.140,16)"
+    ordering = "AFTER"
+    side = "CLIENT"

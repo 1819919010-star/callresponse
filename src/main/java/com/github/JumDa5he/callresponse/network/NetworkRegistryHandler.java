@@ -14,6 +14,7 @@ import com.github.JumDa5he.callresponse.compat.npc.NpcEventChoiceC2SPacket;
 import com.github.JumDa5he.callresponse.compat.npc.CloseNpcEventS2CPacket;
 import com.github.JumDa5he.callresponse.compat.npc.OpenNpcEventS2CPacket;
 import com.github.JumDa5he.callresponse.compat.menu.PrincessCarryActionC2SPacket;
+import com.github.JumDa5he.callresponse.compat.sign.MaidSignUpdateC2SPacket;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -35,6 +36,7 @@ public class NetworkRegistryHandler {
         registrar.playToServer(NpcEventChoiceC2SPacket.TYPE, NpcEventChoiceC2SPacket.STREAM_CODEC, NpcEventChoiceC2SPacket::handle);
         registrar.playToServer(PrincessCarryActionC2SPacket.TYPE, PrincessCarryActionC2SPacket.STREAM_CODEC, PrincessCarryActionC2SPacket::handle);
         registrar.playToServer(IntimidationCastC2SPacket.TYPE, IntimidationCastC2SPacket.STREAM_CODEC, IntimidationCastC2SPacket::handle);
+        registrar.playToServer(MaidSignUpdateC2SPacket.TYPE, MaidSignUpdateC2SPacket.STREAM_CODEC, MaidSignUpdateC2SPacket::handle);
 
         // 防服务端崩溃
         if(FMLEnvironment.dist.isClient()){
