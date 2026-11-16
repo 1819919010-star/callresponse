@@ -63,6 +63,7 @@ public final class MaidMovementControl {
         JEALOUSY_CAGE,
         CAGE,
         WANDERING_WAIT,
+        GIFT_DELIVERY,
         PURCHASE_MOVING
     }
 

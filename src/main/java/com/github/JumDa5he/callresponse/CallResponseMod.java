@@ -32,6 +32,7 @@ public class CallResponseMod {
         ModBlocks.BLOCKS.register(modEventBus);
         ModBlocks.BLOCK_ENTITY_TYPES.register(modEventBus);
         ModDisguiseEffects.EFFECTS.register(modEventBus);
+        com.github.JumDa5he.callresponse.compat.gift.ModGiftComponents.COMPONENTS.register(modEventBus);
 
         // 2. 注册配置文件
         modContainer.registerConfig(ModConfig.Type.COMMON, BroadcastConfig.SPEC);

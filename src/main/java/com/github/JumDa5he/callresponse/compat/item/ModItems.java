@@ -58,6 +58,10 @@ public class ModItems {
     public static final Supplier<Item> BIRTHDAY_CARD = ITEMS.register("birthday_card",
             () -> new BirthdayCardItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
 
+    public static final Supplier<Item> GIFT_BOX = ITEMS.register("gift_box",
+            () -> new com.github.JumDa5he.callresponse.compat.gift.GiftBoxItem(
+                    new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
+
     public static final Supplier<Item> REVENGE_MAID_SPAWN_EGG = ITEMS.register("revenge_maid_spawn_egg",
             () -> new RevengeMaidSpawnEggItem(false));
     public static final Supplier<Item> ALLIED_REVENGE_MAID_SPAWN_EGG = ITEMS.register("allied_revenge_maid_spawn_egg",
@@ -84,6 +88,7 @@ public class ModItems {
                         output.accept(DARK_IRON_CAGE.get());
                         output.accept(DISGUISE_ITEM.get());
                         output.accept(BIRTHDAY_CARD.get());
+                        output.accept(GIFT_BOX.get());
                         output.accept(REVENGE_MAID_SPAWN_EGG.get());
                         output.accept(ALLIED_REVENGE_MAID_SPAWN_EGG.get());
                     })

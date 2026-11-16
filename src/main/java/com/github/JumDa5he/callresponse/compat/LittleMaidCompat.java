@@ -27,6 +27,7 @@ import com.github.JumDa5he.callresponse.compat.hunt.HuntGunEventBridge;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderInteractListener;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntOrderManager;
 import com.github.JumDa5he.callresponse.compat.hunt.HuntTargetProtectionBypass;
+import com.github.JumDa5he.callresponse.compat.gift.MaidGiftManager;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerManager;
 import com.github.JumDa5he.callresponse.compat.intimidation.IntimidationManager;
 import com.github.JumDa5he.callresponse.compat.hunger.MaidHungerGuiDisplay;
@@ -119,6 +120,7 @@ public class LittleMaidCompat implements ILittleMaid {
         NeoForge.EVENT_BUS.register(new MaidSignManager());
         NeoForge.EVENT_BUS.register(new MaidSignDeterrence());
         NeoForge.EVENT_BUS.register(new BirthdayManager());
+        NeoForge.EVENT_BUS.register(new MaidGiftManager());
     }
 
     @Override

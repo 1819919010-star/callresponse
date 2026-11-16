@@ -1,0 +1,70 @@
+{
+  "type": "minecraft:advancement_reward",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "rolls": 1.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "touhou_little_maid:power_point",
+          "weight": 8,
+          "functions": [{ "function": "minecraft:set_count", "add": false, "count": { "type": "minecraft:uniform", "min": 1.0, "max": 5.0 } }]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "touhou_little_maid:film",
+          "weight": 6,
+          "functions": [{ "function": "minecraft:set_count", "add": false, "count": { "type": "minecraft:uniform", "min": 1.0, "max": 3.0 } }]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "touhou_little_maid:photo",
+          "weight": 5
+        },
+        {
+          "type": "minecraft:item",
+          "name": "touhou_little_maid:trumpet",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "touhou_little_maid:smart_slab",
+          "weight": 4,
+          "functions": [{ "function": "minecraft:set_count", "add": false, "count": { "type": "minecraft:uniform", "min": 1.0, "max": 2.0 } }]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:gold_ingot",
+          "weight": 4,
+          "functions": [{ "function": "minecraft:set_count", "add": false, "count": { "type": "minecraft:uniform", "min": 1.0, "max": 2.0 } }]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:string",
+          "weight": 6,
+          "functions": [{ "function": "minecraft:set_count", "add": false, "count": { "type": "minecraft:uniform", "min": 1.0, "max": 6.0 } }]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:leather",
+          "weight": 6,
+          "functions": [{ "function": "minecraft:set_count", "add": false, "count": { "type": "minecraft:uniform", "min": 1.0, "max": 4.0 } }]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:paper",
+          "weight": 8,
+          "functions": [{ "function": "minecraft:set_count", "add": false, "count": { "type": "minecraft:uniform", "min": 1.0, "max": 6.0 } }]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:amethyst_shard",
+          "weight": 4,
+          "functions": [{ "function": "minecraft:set_count", "add": false, "count": { "type": "minecraft:uniform", "min": 1.0, "max": 3.0 } }]
+        }
+      ]
+    }
+  ],
+  "random_sequence": "callresponse:gift/trinket"
+}

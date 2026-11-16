@@ -36,6 +36,12 @@ public class InitAttachTypes {
                     .serialize(Codec.BOOL)
                     .sync(ByteBufCodecs.BOOL)
                     .build());
+    // 女仆最后一次送礼的游戏刻（level.getGameTime()），默认 -1 表示还没送过
+    // 用游戏刻而不是“天”，这样 /time set 反复测试时每次起床都能正常触发
+    public static final Supplier<AttachmentType<Long>> MAID_LAST_GIFT_TICK = ATTACHMENT_TYPES.register("maid_last_gift_tick", r ->
+            AttachmentType.builder(h -> -1L)
+                    .serialize(Codec.LONG)
+                    .build());
     public static final Supplier<AttachmentType<MaidSignData>> SYNCED_MAID_SIGN = ATTACHMENT_TYPES.register("maid_sign", r ->
             AttachmentType.builder(h -> MaidSignData.EMPTY)
                     .serialize(MaidSignData.CODEC)

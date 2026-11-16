@@ -1,0 +1,66 @@
+{
+  "type": "minecraft:advancement_reward",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "rolls": 1.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:poppy",
+          "weight": 8,
+          "functions": [{ "function": "minecraft:set_count", "add": false, "count": { "type": "minecraft:uniform", "min": 1.0, "max": 4.0 } }]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:dandelion",
+          "weight": 8,
+          "functions": [{ "function": "minecraft:set_count", "add": false, "count": { "type": "minecraft:uniform", "min": 1.0, "max": 4.0 } }]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:cornflower",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:oxeye_daisy",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:lily_of_the_valley",
+          "weight": 5
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:allium",
+          "weight": 5
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:azure_bluet",
+          "weight": 5
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:sunflower",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:oak_sapling",
+          "weight": 6,
+          "functions": [{ "function": "minecraft:set_count", "add": false, "count": { "type": "minecraft:uniform", "min": 1.0, "max": 3.0 } }]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:bone_meal",
+          "weight": 6,
+          "functions": [{ "function": "minecraft:set_count", "add": false, "count": { "type": "minecraft:uniform", "min": 2.0, "max": 8.0 } }]
+        }
+      ]
+    }
+  ],
+  "random_sequence": "callresponse:gift/flower"
+}
