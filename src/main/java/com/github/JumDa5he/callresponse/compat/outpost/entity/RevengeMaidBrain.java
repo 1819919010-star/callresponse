@@ -113,6 +113,8 @@ public final class RevengeMaidBrain {
                 .map(pos -> !(maid.level().getBlockState(pos).getBlock() instanceof com.github.tartaricacid.touhoulittlemaid.block.BlockMaidBed))
                 .orElse(true))) maid.stopSleeping();
         if (BetrayalOutpostMaidData.isGly(maid)) {
+            // KOIHA 靠近时哪怕在睡也要先醒过来跑路（这条分支睡觉时不会 tick 彩蛋行为）
+            if (maid.isSleeping() && BetrayalOutpostMaidData.isKohaNearby(maid)) maid.stopSleeping();
             if (maid.isSleeping() && MaidMovementControl.isActive(maid, MaidMovementControl.Reason.OUTPOST_GLY_FLEE))
                 maid.stopSleeping(); // Actual hurt-created flee state, never a routine idle wake-up.
             if (!maid.isSleeping()) {

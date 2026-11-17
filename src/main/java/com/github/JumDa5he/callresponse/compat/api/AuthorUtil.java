@@ -7,6 +7,8 @@ import java.util.UUID;
 public final class AuthorUtil {
     public static final UUID GLY = UUID.fromString("91bd580f-5f17-4e30-872f-2e480dd9a220");
     public static final UUID JUMDA5HE = UUID.fromString("3da49788-4b30-45df-b1ca-126ef1757bb4");
+    // 不要再玩 GLY 了饿啊——
+    public static final UUID KOIHA_HOTCH_KISS = UUID.fromString("0c90feab-480a-4e73-831f-e4074c6e4625");
     private AuthorUtil() {}
     public static boolean isGLY(Player player) { return player.getUUID().equals(GLY); }
 

@@ -1,5 +1,6 @@
 package com.github.JumDa5he.callresponse.compat.outpost;
 
+import com.github.JumDa5he.callresponse.compat.api.AuthorUtil;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionBetrayalManager;
 import com.github.JumDa5he.callresponse.compat.disguise.OutpostDisguiseRelations;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockJoy;
@@ -219,7 +220,9 @@ public final class BetrayalOutpostAlertManager {
         return level.getEntitiesOfClass(LivingEntity.class, maid.getBoundingBox().inflate(16.0D),
                         target -> isCampCandidate(maid, target) && maid.distanceToSqr(target) <= 256.0D
                                 && Math.abs(target.getY() - maid.getY()) <= 6.0D
-                                && maid.hasLineOfSight(target))
+                                && maid.hasLineOfSight(target)
+                                // 她自己（GLY）不会拿雪球砸 GLY
+                                && !(target instanceof Player player && AuthorUtil.isGLY(player)))
                 .stream().min(java.util.Comparator.comparingDouble(maid::distanceToSqr)).orElse(null);
     }
 

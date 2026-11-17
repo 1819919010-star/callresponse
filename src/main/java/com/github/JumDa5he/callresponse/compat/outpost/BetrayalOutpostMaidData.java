@@ -70,6 +70,8 @@ public final class BetrayalOutpostMaidData {
     private static final long GLY_FLEE_TICKS = 20L * 8L;
     private static final double GLY_SAFE_DISTANCE = 20.0D;
     private static final float GLY_FLEE_SPEED = 0.9F;
+    /** GLY 对 KOIHA_HOTCH_KISS 的“恐惧半径”：进这个距离就开始跑，跑满 20 格才算安全（留出滞回）。 */
+    private static final double GLY_KOHA_FEAR_RADIUS = 16.0D;
     private static final int ENCOUNTER_LINE_COUNT = 8;
     private static final int COMBAT_LINE_COUNT = 10;
     /** 作者彩蛋（i狐区）专用台词池，正文留空由作者自己写。 */
@@ -383,6 +385,8 @@ public final class BetrayalOutpostMaidData {
     public static void tickGlyBehavior(EntityMaid maid) {
         if (!(maid.level() instanceof ServerLevel level) || !isOutpostMaid(maid) || !isGly(maid)) return;
         long now = level.getGameTime();
+        // 怕 KOIHA 这件事优先于一切：靠近就把逃跑状态开起来，下面统一走逃跑分支
+        tickGlyKohaFear(maid, level, now);
         CompoundTag data = maid.getPersistentData().getCompound(ROOT);
         if (now < data.getLong(GLY_FLEE_UNTIL)) {
             // EntityTick.Post 不受原版 AI 门禁保护；不能绕过本地威压或 NoAI。
@@ -407,6 +411,7 @@ public final class BetrayalOutpostMaidData {
     /** 被攻击：进入逃跑状态，接管移动并且不还手。 */
     public static void startGlyFlee(EntityMaid maid, Entity attacker) {
         if (!(maid.level() instanceof ServerLevel level) || !isOutpostMaid(maid) || !isGly(maid)) return;
+        if (maid.isSleeping()) maid.stopSleeping();
         long now = level.getGameTime();
         CompoundTag data = maid.getPersistentData().getCompound(ROOT);
         boolean alreadyFleeing = data.getLong(GLY_FLEE_UNTIL) > now;
@@ -427,6 +432,40 @@ public final class BetrayalOutpostMaidData {
                     EnumSet.of(MaidMovementControl.Field.PATH, MaidMovementControl.Field.POSE));
             maid.setInSittingPose(false);
         }
+    }
+
+    /**
+     * 彩蛋女仆天生怕 KOIHA_HOTCH_KISS：这个人只要进 16 格，她就把人家当成威胁开始逃跑；
+     * 逃跑期间每 10 刻把威胁点刷新到他脚下，免得跑开 20 格停下、他再走近又反复横跳。
+     */
+    private static void tickGlyKohaFear(EntityMaid maid, ServerLevel level, long now) {
+        ServerPlayer koha = findNearbyKoha(maid, level);
+        if (koha == null) return;
+        CompoundTag data = maid.getPersistentData().getCompound(ROOT);
+        if (data.getLong(GLY_FLEE_UNTIL) <= now) {
+            startGlyFlee(maid, koha);
+            return;
+        }
+        if ((now + maid.getId()) % 10L != 0L) return;
+        data.putLong(GLY_FLEE_UNTIL, now + GLY_FLEE_TICKS);
+        data.putDouble(GLY_THREAT_X, koha.getX());
+        data.putDouble(GLY_THREAT_Y, koha.getY());
+        data.putDouble(GLY_THREAT_Z, koha.getZ());
+        maid.getPersistentData().put(ROOT, data);
+    }
+
+    private static ServerPlayer findNearbyKoha(EntityMaid maid, ServerLevel level) {
+        return level.getEntitiesOfClass(ServerPlayer.class,
+                        maid.getBoundingBox().inflate(GLY_KOHA_FEAR_RADIUS),
+                        player -> !player.isSpectator()
+                                && player.getUUID().equals(AuthorUtil.KOIHA_HOTCH_KISS)
+                                && maid.distanceToSqr(player) <= GLY_KOHA_FEAR_RADIUS * GLY_KOHA_FEAR_RADIUS)
+                .stream().findFirst().orElse(null);
+    }
+
+    /** 供其它 AI 分支用：这人是否近到让 GLY 必须跑（睡觉时也要被叫醒）。 */
+    public static boolean isKohaNearby(EntityMaid maid) {
+        return maid.level() instanceof ServerLevel level && findNearbyKoha(maid, level) != null;
     }
 
     private static void tickGlyFlee(EntityMaid maid, long now) {
