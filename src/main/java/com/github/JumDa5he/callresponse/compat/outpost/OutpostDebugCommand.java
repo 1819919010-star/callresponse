@@ -30,12 +30,11 @@ public final class OutpostDebugCommand {
         ServerLevel level = player.serverLevel();
         boolean generated = BetrayalOutpostManager.debugGenerate(level, player.blockPosition(), player, forceGly);
         if (generated) {
-            context.getSource().sendSuccess(() -> Component.literal(
-                    "[callresponse] 已生成 betrayal_maid_outpost" + (forceGly ? "（强制 GLY）" : "")), false);
+            context.getSource().sendSuccess(() -> Component.translatable(
+                    "command.callresponse.outpost.generated", forceGly), false);
             return 1;
         }
-        context.getSource().sendFailure(Component.literal(
-                "[callresponse] 生成失败：检查 outpost_anchor 和 outpost_spawn_marker 是否完整"));
+        context.getSource().sendFailure(Component.translatable("command.callresponse.outpost.failed"));
         return 0;
     }
 }

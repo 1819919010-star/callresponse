@@ -13,7 +13,7 @@ import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.minecraft.world.damagesource.DamageSource;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
@@ -59,13 +59,12 @@ public final class IdleMaidHurtFleeManager {
         }
     }
 
-    @SubscribeEvent
-    public void onMaidDamaged(LivingDamageEvent.Pre event) {
-        if (!(event.getEntity() instanceof EntityMaid maid) || maid.level().isClientSide
-                || !maid.isAlive() || event.getNewDamage() <= 0 || !isIdleTask(maid)) {
+    public static void onMaidDamaged(EntityMaid maid, DamageSource source) {
+        if (!maid.isAlive() || !isIdleTask(maid)
+                || com.github.JumDa5he.callresponse.compat.wanderingcamp.WanderingCampData.active(maid)) {
             return;
         }
-        Entity attacker = event.getSource().getEntity();
+        Entity attacker = source.getEntity();
         if (attacker == null || attacker == maid || !attacker.isAlive()
                 || attacker.level() != maid.level()) {
             return;
@@ -91,7 +90,7 @@ public final class IdleMaidHurtFleeManager {
         }
 
         // 对齐本体 MaidRunAwayTask：危险时先站起，再交给 WALK_TARGET 寻路。
-        if (maid.isInSittingPose()) {
+        if (maid.isMaidInSittingPose()) {
             maid.setInSittingPose(false);
         }
         maid.setHomeModeEnable(false);
@@ -116,33 +115,26 @@ public final class IdleMaidHurtFleeManager {
                 finish(state, iterator);
                 continue;
             }
-            if (gameTime >= state.nextRepathTick) {
-                updateThreatPosition(state);
-                updateThreatAndPath(state, gameTime, false);
+            updateThreatPosition(state);
+            if (maid.position().distanceToSqr(state.threatPos) >= SAFE_DISTANCE_SQR) {
+                finish(state, iterator);
+                continue;
             }
+            updateThreatAndPath(state, gameTime, false);
         }
     }
 
-    private static void updateThreatAndPath(FleeState state, long gameTime, boolean force) {
+    private static void updateThreatAndPath(FleeState state, long gameTime, boolean forceRepath) {
         EntityMaid maid = state.maid;
-        if (!force && gameTime < state.nextRepathTick) {
-            return;
+        if (forceRepath || state.target == null || gameTime >= state.nextRepathTick || maid.getNavigation().isDone()) {
+            state.target = findAwayTarget(maid, state.threatPos);
+            state.nextRepathTick = gameTime + REPATH_INTERVAL;
         }
-        if (!(maid.level() instanceof ServerLevel level)) {
-            return;
-        }
-        state.nextRepathTick = gameTime + REPATH_INTERVAL;
-        if (maid.distanceToSqr(state.threatPos) >= SAFE_DISTANCE_SQR) {
-            return;
-        }
-        BlockPos target = findAwayTarget(maid, state.threatPos);
-        if (target != null) {
-            state.target = target;
-            maid.getBrain().eraseMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
-            maid.getBrain().setMemory(MemoryModuleType.WALK_TARGET,
-                    new WalkTarget(new BlockPosTracker(target), WALK_SPEED, 1));
-            maid.getNavigation().moveTo(target.getX() + 0.5, target.getY(), target.getZ() + 0.5, WALK_SPEED);
-        }
+        if (state.target == null) return;
+        maid.restrictTo(state.target, TEMP_RESTRICT_RADIUS);
+        maid.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(state.target));
+        maid.getBrain().setMemory(MemoryModuleType.WALK_TARGET,
+                new WalkTarget(new BlockPosTracker(state.target), WALK_SPEED, 1));
     }
 
     /** 复用本体远离苦力怕任务采用的 LandRandomPos，并固定为本功能需要的搜索范围。 */

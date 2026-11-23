@@ -39,6 +39,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -306,6 +307,19 @@ public final class TalkEventManager {
         if (now % SCAN_INTERVAL == 0) {
             scanForNewSessions(level, now);
         }
+    }
+
+    @SubscribeEvent
+    public void onServerStopping(ServerStoppingEvent event) {
+        for (TalkSession session : List.copyOf(SESSIONS)) {
+            endSession(session, EndReason.TOO_FEW);
+        }
+        for (EscapeRun escape : List.copyOf(ESCAPES)) {
+            restore(escape.member);
+        }
+        ESCAPES.clear();
+        BY_MAID.clear();
+        BY_CHUNK.clear();
     }
 
     @SubscribeEvent

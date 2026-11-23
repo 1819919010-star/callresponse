@@ -36,4 +36,8 @@ public final class BetrayalOutpostMaxHealth {
         double limit = Attributes.MAX_HEALTH.value().sanitizeValue(Double.MAX_VALUE);
         return Double.isFinite(limit) && limit > 0.0D ? limit : SAFE_FALLBACK_LIMIT;
     }
+    /** Shared existing revenge formula; callers retain their own base/attribute storage. */
+    public static double computeRevengeHealthBonus(int maidKills, double currentMaxHealth) {
+        return Math.min(Math.max(0, maidKills), Math.max(0.0D, ensureAndGetLimit() - currentMaxHealth));
+    }
 }

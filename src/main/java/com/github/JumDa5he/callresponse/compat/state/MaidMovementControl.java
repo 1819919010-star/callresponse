@@ -57,11 +57,11 @@ public final class MaidMovementControl {
         DOTING_ACTION,
         DOTING_POSSESSIVE,
         DEVOTED_COMBAT,
-        DEVOTED_HEAL,
         IDLE_HURT_FLEE,
         OUTPOST_GLY_FLEE,
         JEALOUSY_CAGE,
         CAGE,
+        WINEFOX_SURRENDER,
         WANDERING_WAIT,
         GIFT_DELIVERY,
         PURCHASE_MOVING
@@ -308,6 +308,17 @@ public final class MaidMovementControl {
                 && maid.getPersistentData().getBoolean("IsBetraying")
                 && root.getCompound(BASELINE).getBoolean("Tame")
                 && root.getCompound(BASELINE).hasUUID("Owner");
+
+        // The removed devoted sacrifice cannot resume. Recover only its old saved ownership of
+        // movement fields, without disturbing another still-active reason's baseline.
+        if (reasons.contains("DEVOTED_HEAL", Tag.TAG_INT)) {
+            int endedMask = reasons.getInt("DEVOTED_HEAL");
+            reasons.remove("DEVOTED_HEAL");
+            int restoreMask = endedMask & ~activeMask(reasons);
+            restoreFields(maid, root.getCompound(BASELINE), restoreMask);
+            clearBaselineFields(root.getCompound(BASELINE), restoreMask);
+            root.remove("Deadline_DEVOTED_HEAL");
+        }
 
         for (String key : reasons.getAllKeys().toArray(String[]::new)) {
             if ((key.equals(Reason.PANIC_HOLD.name()) && keepPanicHold)

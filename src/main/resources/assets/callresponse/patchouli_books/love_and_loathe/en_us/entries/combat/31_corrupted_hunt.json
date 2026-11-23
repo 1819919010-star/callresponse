@@ -1,0 +1,38 @@
+{
+  "name": "Corrupted Pursuit",
+  "icon": "minecraft:respawn_anchor",
+  "category": "callresponse:combat",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Clearing a Camp",
+      "text": "Clear a natural $(l:callresponse:combat/19_revenge_maid_camp)Revenge Maid Camp$(/l) to grant each player inside a level of Corrupted Pursuit for 60 minutes. If already marked, you gain one level and the hour starts over. Each camp pays out once."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Missing Guards",
+      "text": "You do not need five kills. Once spawning ends, keep the camp loaded. When none of its own guards remain inside, players there get the effect. You can spare GLY. If the full roster falls, recorded participants also receive the effect."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "The First Ten Days",
+      "text": "By default, camps award Pursuit after ten full days of Overworld game time. Skipping nights does not help. Earlier clears give no later reward. Setting the protection period to zero opens it immediately. A $(l:callresponse:daily_life/33_malice_potion)Potion of Malice$(/l) also grants Pursuit."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Your Respawn Point",
+      "text": "While marked, come within 10 blocks of your latest personal respawn point in its dimension. Height counts. A bed, respawn anchor or command can set this point. World spawn alone cannot trigger the hunt."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Room to Arrive",
+      "text": "The party needs safe ground at least 10 blocks horizontally from every living, non-spectating player there. A horn sounds and the $(l:callresponse:combat/32_corrupted_wine_fox)Corrupted Wine Fox$(/l) glows when the whole party arrives. Until then you keep the effect. Make room if the site is cramped."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Size of the Party",
+      "text": "At levels I to III, the fox brings five Revenge Maids. Each level from IV adds one, up to 32 followers. Peaceful difficulty and Spectator mode prevent the hunt. Only one pursuit can run per dimension. Defeat its leader before the next can begin."
+    }
+  ]
+}

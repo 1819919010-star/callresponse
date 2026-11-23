@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:chest",
+  "pools": [{"rolls": 1, "entries": [
+    {"type": "minecraft:item", "name": "minecraft:bread", "weight": 3},
+    {"type": "minecraft:item", "name": "minecraft:sweet_berries", "weight": 3},
+    {"type": "minecraft:item", "name": "minecraft:stick", "weight": 2},
+    {"type": "minecraft:item", "name": "minecraft:flint", "weight": 1}
+  ]}]
+}

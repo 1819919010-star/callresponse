@@ -6,6 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
@@ -56,6 +57,7 @@ public class MaidCropBlock extends CropBlock implements EntityBlock {
             var r = new ArrayList<>(super.getDrops(state, params));
             var photo = new ItemStack(ModItems.FREE_PHOTO.get());
             var data = new CompoundTag();
+            data.putString("id", BuiltInRegistries.ENTITY_TYPE.getKey(EntityMaid.TYPE).toString());
             data.putString(EntityMaid.MODEL_ID_TAG, blockEntity.getModelID() == null ? randomID(blockEntity.getLevel()) : blockEntity.getModelID());
             data.putBoolean(EntityMaid.IS_YSM_MODEL_TAG, false);
             photo.set(InitDataComponent.MAID_INFO, CustomData.of(data));

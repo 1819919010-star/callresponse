@@ -66,6 +66,11 @@ public class ModItems {
             () -> new RevengeMaidSpawnEggItem(false));
     public static final Supplier<Item> ALLIED_REVENGE_MAID_SPAWN_EGG = ITEMS.register("allied_revenge_maid_spawn_egg",
             () -> new RevengeMaidSpawnEggItem(true));
+    public static final Supplier<Item> WINE_FOX_SPAWN_EGG = ITEMS.register("corrupted_wine_fox_spawn_egg",
+            WineFoxSpawnEggItem::new);
+    public static final Supplier<Item> REMNANT_MEMORY = ITEMS.register("remnant_memory",
+            () -> new com.github.JumDa5he.callresponse.compat.winefox.RemnantMemoryItem(
+                    new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
 
     // ===== 创造模式物品栏：专属栏位 =====
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CallResponseMod.MOD_ID);
@@ -91,6 +96,12 @@ public class ModItems {
                         output.accept(GIFT_BOX.get());
                         output.accept(REVENGE_MAID_SPAWN_EGG.get());
                         output.accept(ALLIED_REVENGE_MAID_SPAWN_EGG.get());
+                        output.accept(WINE_FOX_SPAWN_EGG.get());
+                        output.accept(REMNANT_MEMORY.get());
+                        output.accept(net.minecraft.world.item.alchemy.PotionContents.createItemStack(Items.POTION,
+                                com.github.JumDa5he.callresponse.compat.winefox.WineFoxPotions.MALICE));
+                        output.accept(net.minecraft.world.item.alchemy.PotionContents.createItemStack(Items.POTION,
+                                com.github.JumDa5he.callresponse.compat.winefox.WineFoxPotions.DESSERT));
                     })
                     .build());
 }

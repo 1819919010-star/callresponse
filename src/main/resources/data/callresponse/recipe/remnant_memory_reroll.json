@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    { "item": "callresponse:remnant_memory" },
+    { "item": "minecraft:ghast_tear" }
+  ],
+  "result": { "id": "callresponse:remnant_memory", "count": 1 }
+}

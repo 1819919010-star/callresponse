@@ -1,7 +1,6 @@
 package com.github.JumDa5he.callresponse.compat.sign;
 
 import com.github.JumDa5he.callresponse.init.InitAttachTypes;
-import com.github.tartaricacid.touhoulittlemaid.api.event.MaidDeathEvent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -163,14 +162,8 @@ public class MaidSignManager {
         event.setCancellationResult(InteractionResult.SUCCESS);
     }
 
-    /**
-     * 女仆死亡时把示众牌掉出来。
-     * <p>{@link MaidDeathEvent} 是在 {@code EntityMaid#die} 里、真正死亡之前触发的，
-     * 保命饰品是在触发事件之前就拦下的，所以这里不用额外判断。
-     */
-    @SubscribeEvent
-    public void onMaidDeath(MaidDeathEvent event) {
-        EntityMaid maid = event.getMaid();
+    /** Called after TLM accepts this death, before serializing the maid into the film. */
+    public static void dropOnDeath(EntityMaid maid) {
         if (maid.level().isClientSide()) {
             return;
         }

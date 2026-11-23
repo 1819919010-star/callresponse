@@ -1,0 +1,29 @@
+{
+  "name": "Potion of Malice",
+  "icon": "callresponse:remnant_memory",
+  "category": "callresponse:daily_life",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "title": "Brewing Malice",
+      "item": "callresponse:remnant_memory",
+      "text": "Place an Awkward Potion in a brewing stand and a Remnant Memory in the ingredient slot. Drink the Potion of Malice yourself, or use it on one of your own tamed, ordinary maids."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Drinking Malice",
+      "text": "One bottle grants $(l:callresponse:combat/31_corrupted_hunt)Corrupted Pursuit$(/l) for 60 minutes. Each bottle you drink while the effect lasts adds one level, up to 255, and refreshes the full hour."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Returning home",
+      "text": "A hunting party can appear when you come within 10 blocks of your personal respawn point in its dimension. A successful ambush consumes the effect. To avoid the pursuit, drink milk before returning."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Giving it to a maid",
+      "text": "Your maid gains 20% attack damage and speed, and 1 Fear per minute. Extra doses keep the same combat bonuses. With AI dialogue enabled and her owner in the same dimension, she may answer a strange whisper about every five minutes."
+    }
+  ]
+}

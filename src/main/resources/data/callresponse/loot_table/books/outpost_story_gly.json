@@ -1,0 +1,49 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_data": {
+                  "CallResponseCampStory": "outpost_story_gly"
+                },
+                "minecraft:custom_name": "{\"translate\":\"book.callresponse.outpost_story_gly.title\"}",
+                "minecraft:written_book_content": {
+                  "title": "outpost_story_gly",
+                  "author": "book.callresponse.outpost_story_gly.author",
+                  "generation": 0,
+                  "resolved": true,
+                  "pages": [
+                    "{\"translate\":\"book.callresponse.outpost_story_gly.page.1\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_gly.page.2\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_gly.page.3\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_gly.page.4\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_gly.page.5\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_gly.page.6\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_gly.page.7\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_gly.page.8\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_gly.page.9\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_gly.page.10\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_gly.page.11\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_gly.page.12\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_gly.page.13\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_gly.page.13.2\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_gly.page.14\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_gly.page.15\"}"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

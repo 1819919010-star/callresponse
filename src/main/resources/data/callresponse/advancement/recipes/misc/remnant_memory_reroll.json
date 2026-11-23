@@ -1,0 +1,17 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_remnant": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [{ "items": "callresponse:remnant_memory" }]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": { "recipe": "callresponse:remnant_memory_reroll" }
+    }
+  },
+  "requirements": [["has_remnant", "has_the_recipe"]],
+  "rewards": { "recipes": ["callresponse:remnant_memory_reroll"] }
+}

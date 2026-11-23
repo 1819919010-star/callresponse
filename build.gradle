@@ -18,6 +18,15 @@ base {
 
 repositories {
     mavenCentral()
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "CurseMaven"
+                url = uri("https://www.cursemaven.com")
+            }
+        }
+        filter { includeModule("curse.maven", "maid-file-manager-1681684") }
+    }
     maven {
         name = "BlameJared"
         url = "https://maven.blamejared.com"
@@ -73,6 +82,10 @@ neoForge {
 }
 
 dependencies {
+    // Pinned upstream optional migration SPI; never embedded in callresponse.
+    def maidFileManager = "curse.maven:maid-file-manager-1681684:8968972" // 1.4.1, NeoForge 1.21.1
+    compileOnly maidFileManager
+    if (project.hasProperty('withMfm')) runtimeOnly maidFileManager
     // 可选客户端配置 UI；不打包、不加入服务端或默认运行依赖。
     compileOnly "maven.modrinth:cloth-config:15.0.140+neoforge"
     // Touhou Little Maid 1.21.1 NeoForge

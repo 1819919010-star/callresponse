@@ -105,8 +105,8 @@ public final class NpcEventManager {
         }
 
         expireIgnoredEvent(maid, gameTime);
-        checkDreamEvent(maid, gameTime);
         checkReviveEvent(maid, gameTime);
+        checkDreamEvent(maid, gameTime);
         checkFoodPromise(maid, gameTime);
         repairMissingDefinition(maid);
         evaluateConditionalEvents(maid, gameTime);
@@ -416,7 +416,6 @@ public final class NpcEventManager {
         Set<String> pending = NpcEventData.pending(maid);
         List<NpcEventDefinition> legalPending = new ArrayList<>();
         for (String id : pending) {
-            if (isReviveEvent(id)) continue;
             NpcEventDefinition definition = NpcEventLoader.get(id);
             if (definition != null && definition.options().size() > 1
                     && now >= NpcEventData.cooldownUntil(maid, id)
@@ -425,7 +424,7 @@ public final class NpcEventManager {
                 legalPending.add(definition);
             }
         }
-        if (!current.isEmpty() && !isReviveEvent(current)) {
+        if (!current.isEmpty()) {
             NpcEventDefinition definition = NpcEventLoader.get(current);
             if (definition != null && definition.options().size() > 1) {
                 long eventTime = NpcEventData.currentEventTime(maid);
@@ -445,10 +444,6 @@ public final class NpcEventManager {
             remaining.remove(id);
         }
         if (!remaining.equals(NpcEventData.pending(maid))) NpcEventData.setPending(maid, remaining);
-    }
-
-    private static boolean isReviveEvent(String id) {
-        return "revive_owner_killed".equals(id) || "revive_other".equals(id);
     }
 
     private static boolean pendingConditionStillValid(EntityMaid maid,
@@ -648,9 +643,7 @@ public final class NpcEventManager {
                 && event.getEntity() != maid && event.getEntity() != maid.getOwner()) {
             NpcEventData.setFlag(maid, "battle_praise", true);
         }
-        if (event.getEntity() instanceof EntityMaid deadMaid) {
-            NpcEventData.remove(deadMaid);
-        }
+        // Maid NPC state is removed only by the native committed-death hook.
     }
 
     /** LivingDamageEvent 位于减伤结算后，只记录真正落到主人血量上的最终伤害。 */

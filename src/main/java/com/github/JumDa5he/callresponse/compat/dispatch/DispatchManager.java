@@ -74,10 +74,12 @@ public final class DispatchManager {
     @SubscribeEvent
     public static void registerCommands(RegisterCommandsEvent event) {
         event.getDispatcher().register(Commands.literal("callresponse")
+                .then(com.github.JumDa5he.callresponse.compat.winefox.RehabilitationCommand.node())
                 .then(MaidPathCommand.node())
                 .then(LazyMaidCommand.node())
                 .then(OutpostDebugCommand.node("outpost"))
                 .then(OutpostDebugCommand.node("betrayal_maid_outpost"))
+                .then(com.github.JumDa5he.callresponse.compat.wanderingcamp.WanderingCampDebugCommand.node())
                 .then(Commands.literal("dispatch")
                         .then(Commands.literal("finish")
                                 .requires(source -> source.hasPermission(2))

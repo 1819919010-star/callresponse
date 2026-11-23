@@ -1,0 +1,29 @@
+{
+  "name": "Dessert Potion",
+  "icon": "minecraft:cake",
+  "category": "callresponse:daily_life",
+  "sortnum": 7,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "title": "Brewing with Cake",
+      "item": "minecraft:cake",
+      "text": "Place an Awkward Potion in a brewing stand and a cake in the ingredient slot. Drink the finished potion yourself, or use it on one of your own tamed, ordinary maids."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Sweetness",
+      "text": "Drinking restores full health at once. For 10 minutes, Sweetness grants 20% more attack damage and 2 extra blocks of attack reach. Another drink heals you again and resets the timer without doubling either bonus."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "A well-fed maid",
+      "text": "While Sweetness lasts, your maid keeps her Trust and her Hunger stays at 15 or higher. For every 30 seconds she spends active in the world, she also gains 1 favorability point."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "A familiar scent",
+      "text": "Another tamed maid without Sweetness may come within 5 blocks and say, “Wow, you smell so sweet!” Each maid who notices the scent can comment once every five minutes."
+    }
+  ]
+}

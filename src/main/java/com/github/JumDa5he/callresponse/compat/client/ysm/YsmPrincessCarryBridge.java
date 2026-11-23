@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.UUID;
+import net.minecraft.world.entity.player.Player;
+import com.github.JumDa5he.callresponse.compat.playercarry.PlayerCarryManager;
 
 /**
  * YSM 2.6.5 的最小软兼容桥，只叠加静态的 carryon:princess 姿势。
@@ -72,6 +75,14 @@ public final class YsmPrincessCarryBridge {
     private YsmPrincessCarryBridge() {
     }
 
+    private static final Map<UUID, Long> PLAYER_FRAMES = new HashMap<>();
+    public static boolean playerRuntimeSeen(Player player) {
+        Long frame = PLAYER_FRAMES.get(player.getUUID());
+        return !disabled && frame != null && player.level().getGameTime() - frame >= 0
+                && player.level().getGameTime() - frame <= 1;
+    }
+    public static void forgetPlayer(UUID player) { PLAYER_FRAMES.remove(player); }
+    public static void clearPlayers() { PLAYER_FRAMES.clear(); }
     private static boolean initialize() {
         if (disabled) return false;
         if (initialized) return true;
@@ -123,10 +134,20 @@ public final class YsmPrincessCarryBridge {
     public static void after(Object animatable) {
         if (!initialize()) return;
         try {
-            if (!(entityAccessor.invoke(animatable) instanceof EntityMaid maid)) return;
+            Object entity = entityAccessor.invoke(animatable);
+            if (entity instanceof Player player) {
+                // YSM's play command returns success even for missing clips. Only suppress the
+                // visual fallback after its real whole-body bone is already horizontal.
+                Object runtime = runtimeAccessor.invoke(animatable);
+                if (PlayerCarryManager.nativePlayerAnimation(player) && horizontalBody(runtime))
+                    PLAYER_FRAMES.put(player.getUUID(), player.level().getGameTime());
+                else PLAYER_FRAMES.remove(player.getUUID());
+                return; // Native YSM plays carryon:princess; never pose a maid as a Player.
+            }
+            if (!(entity instanceof EntityMaid maid)) return;
             boolean carriedPose = maid.getVehicle() instanceof EntityMaid carrier
                     && PrincessCarryManager.isMaidCarrySession(carrier, maid);
-            boolean carrierPose = PrincessCarryManager.isMaidCarrySession(maid);
+            boolean carrierPose = PrincessCarryManager.isMaidCarrySession(maid) || PlayerCarryManager.isHolder(maid);
             if (!carriedPose && !carrierPose) return;
             Object runtime = runtimeAccessor.invoke(animatable);
             if (runtime == null) return;
@@ -156,6 +177,21 @@ public final class YsmPrincessCarryBridge {
             before(animatable);
             disable(error);
         }
+    }
+
+    private static boolean horizontalBody(Object runtime) throws ReflectiveOperationException {
+        if (runtime == null) return false;
+        for (Object bone : ((Map<?, ?>) bonesAccessor.invoke(runtime)).values()) {
+            String name = (String) nameAccessor.invoke(bone);
+            if (!"AllBody".equalsIgnoreCase(name) && !"Root".equalsIgnoreCase(name)) continue;
+            Vector3f bind = (Vector3f) bindRotationAccessor.invoke(bone);
+            float x = ((Number) GET[0].invoke(bone)).floatValue() - bind.x;
+            float y = ((Number) GET[1].invoke(bone)).floatValue() - bind.y;
+            float z = ((Number) GET[2].invoke(bone)).floatValue() - bind.z;
+            Vector3f up = new Vector3f(0, 1, 0).rotateX(x).rotateY(y).rotateZ(z);
+            if (Float.isFinite(up.y) && Math.abs(up.y) < .65F) return true;
+        }
+        return false;
     }
 
     private static void applyRotation(Object bone, float[] values, List<Saved> saved)

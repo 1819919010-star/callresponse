@@ -35,13 +35,9 @@ public class HungerAwareEdibleWrapper implements IMaidEdibleBlock {
     @Override
     public boolean consume(EntityMaid maid, BlockPos pos, BlockState state) {
         if (isBlocked(maid)) return false;
-        // 执行原逻辑
-        boolean result = delegate.consume(maid, pos, state);
-
-        // 增加饱食度（每口固定 +6，可根据需要调整）
+        if (!delegate.consume(maid, pos, state)) return false;
         HungerData.add(maid, NeoForge.EVENT_BUS.post(new MaidEatEvent.Block(maid, pos, state, 6)).getHunger());
-
-        return result;
+        return true;
     }
 
     @Override

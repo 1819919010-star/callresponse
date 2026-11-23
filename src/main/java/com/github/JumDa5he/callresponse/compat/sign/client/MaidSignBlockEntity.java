@@ -38,6 +38,10 @@ public class MaidSignBlockEntity extends SignBlockEntity {
     private BlockState state;
     private SignText text;
 
+    public MaidSignBlockEntity(SignText text) {
+        this(DEFAULT_STATE, text);
+    }
+
     public MaidSignBlockEntity(Item signItem, SignText text) {
         this(wallSignState(signItem), text);
     }

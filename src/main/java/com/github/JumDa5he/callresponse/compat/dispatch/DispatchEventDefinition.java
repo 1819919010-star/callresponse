@@ -51,6 +51,6 @@ public record DispatchEventDefinition(Category category, Component title, Compon
     }
 
     public long rollDurationMillis(RandomSource random) {
-        return Math.clamp(duration.sample(random), 0, 10) * 60_000L;
+        return Math.clamp(duration.sample(random), 10, 60) * 60_000L;
     }
 }

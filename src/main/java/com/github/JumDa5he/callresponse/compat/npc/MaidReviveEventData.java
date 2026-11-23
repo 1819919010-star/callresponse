@@ -21,6 +21,7 @@ public final class MaidReviveEventData {
     private MaidReviveEventData() {}
 
     public static void recordDeath(EntityMaid maid, boolean ownerKilled, long gameTime) {
+        if (com.github.JumDa5he.callresponse.compat.emotion.EmotionBetrayalManager.isActualBetrayal(maid)) return;
         CompoundTag data = data(maid).copy();
         data.putString(LAST_DEATH_TYPE, ownerKilled ? DeathType.OWNER_KILLED.name() : DeathType.OTHER.name());
         data.putBoolean(REVIVE_EVENT_PENDING, true);
@@ -45,6 +46,7 @@ public final class MaidReviveEventData {
     }
 
     public static Optional<String> readyEventId(EntityMaid maid, long gameTime) {
+        if (com.github.JumDa5he.callresponse.compat.emotion.EmotionBetrayalManager.isActualBetrayal(maid)) return Optional.empty();
         CompoundTag data = data(maid);
         if (!data.getBoolean(REVIVE_EVENT_PENDING)
                 || !data.contains(REVIVE_EVENT_READY_TIME, Tag.TAG_LONG)
@@ -58,6 +60,7 @@ public final class MaidReviveEventData {
 
     /** 只处理继承了死亡 NBT 且已经建立复活延迟的新实体，并保证每次复活只重置一次。 */
     public static void resetRevivedDefaultsOnce(EntityMaid maid) {
+        if (com.github.JumDa5he.callresponse.compat.emotion.EmotionBetrayalManager.isActualBetrayal(maid)) return;
         CompoundTag data = data(maid).copy();
         if (!data.getBoolean(REVIVE_EVENT_PENDING)
                 || !data.contains(REVIVE_EVENT_READY_TIME, Tag.TAG_LONG)

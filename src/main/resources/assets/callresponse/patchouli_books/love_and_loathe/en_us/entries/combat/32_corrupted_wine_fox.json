@@ -1,0 +1,44 @@
+{
+  "name": "Corrupted Wine Fox",
+  "icon": "callresponse:corrupted_wine_fox_spawn_egg",
+  "category": "callresponse:combat",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Spotting the Leader",
+      "text": "When the $(l:callresponse:combat/31_corrupted_hunt)pursuit$(/l) horn sounds, look for the glowing fox. She has 400 base health and 20 base attack. Your maid kill count can raise her starting health. Fire and harmful vanilla status effects do not affect her."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Sweep and Spikes",
+      "text": "Within 4 blocks she sweeps enemies in sight. Farther out, up to 12 blocks away, she can drop spikes on two targets at once. Each spike falls straight down where it appeared. Step sideways when you see one overhead, or use solid cover."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Her Last Stand",
+      "text": "The first hit that would take her to 10% health or less leaves her at the threshold. For the next three seconds she can take no further health loss from attacks. She can do this only once. Wait out the protection before striking again."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Choosing a Target",
+      "text": "The fox can recruit unbound Revenge Maids within 10 blocks. When one of her followers dies, the fox inherits that maid's maximum health and attack. Take down the leader first if you want to spare the maids. Her surviving followers surrender for good."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Taking In a Maid",
+      "text": "A surrendered maid stops fighting but can still be hurt. Keep her in an $(l:callresponse:iron_cage/21_capturing_releasing)Iron Cage$(/l) for 10 minutes total. Time pauses outside the cage or while unloaded. She becomes the first captor's tame maid with level 1 favorability, 30 Trust and 70 Fear."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Spoils of the Hunt",
+      "text": "With mob loot enabled, the fox gives 200 XP, a Remnant Memory and one item chosen from her remaining helmet, chestplate and main hand. She also drops 1–2 random maid baubles, 2–4 Ancient Debris and 1–3 Crying Obsidian. Looting can increase both material drops."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "title": "Reading the Memory",
+      "item": "callresponse:remnant_memory",
+      "text": "Each Remnant Memory holds two different stories from a pool of nine. Rereading it reveals the same pair. Craft it with a Ghast Tear for a new memory. Its stories are drawn again and may include one you have already read."
+    }
+  ]
+}

@@ -151,12 +151,13 @@ public class HungerManager {
                 lastEatEmotionChangeTime.put(maidId, gameTime);
             }
             MaidResponder.debug(serverPlayer,
-                    Component.literal("§e[压力] ")
+                    Component.translatable("message.callresponse.debug.stress_prefix")
                             .append(maid.getName())
-                            .append(Component.literal(" 吃了 "))
+                            .append(Component.translatable("message.callresponse.debug.ate_separator"))
                             .append(stack.getDisplayName()) // 直接使用 Component
-                            .append(Component.literal("饥饿度 " + oldHunger + " → " + newHunger
-                                    + (emotionChanged ? "信任度 +1恐惧度 -1" : "")))
+                            .append(Component.translatable(emotionChanged
+                                    ? "message.callresponse.debug.ate_status_changed"
+                                    : "message.callresponse.debug.ate_status", oldHunger, newHunger))
             );
         }
 
@@ -177,6 +178,25 @@ public class HungerManager {
         maid.saveWithoutId(event.getData());
     }
 
+    /** Protection and decay follow actual loaded entity ticks, independent of online owners. */
+    @SubscribeEvent
+    public void onMaidEntityTick(net.neoforged.neoforge.event.tick.EntityTickEvent.Post event) {
+        if (!(event.getEntity() instanceof EntityMaid maid) || maid.level().isClientSide
+                || !maid.isAlive() || !maid.isTame() || maid.getOwnerUUID() == null) return;
+        long tick = maid.level().getGameTime();
+        // 饱食度超过 90 连续 3 秒后锁住所有主动进食；低于 85 才解除。
+        HungerEatingGuard.tick(maid, tick);
+
+        // 1. 饱食度衰减
+        if (advanceHungerDecayClock(maid, tick)) {
+            float current = HungerData.get(maid);
+            if (current > 0) {
+                HungerData.add(maid, -HUNGER_DECAY_AMOUNT);
+            }
+        }
+
+    }
+
     @SubscribeEvent
     public void onServerTick(ServerTickEvent.Post event) {
         for (ServerPlayer player : event.getServer().getPlayerList().getPlayers()) {
@@ -187,17 +207,6 @@ public class HungerManager {
                         if (!maid.isAlive()) return;
 
                         long tick = maid.level().getGameTime();
-
-                        // 饱食度超过 90 连续 3 秒后锁住所有主动进食；低于 85 才解除。
-                        HungerEatingGuard.tick(maid, tick);
-
-                        // 1. 饱食度衰减
-                        if (advanceHungerDecayClock(maid, tick)) {
-                            float current = HungerData.get(maid);
-                            if (current > 0) {
-                                HungerData.add(maid, -HUNGER_DECAY_AMOUNT);
-                            }
-                        }
 
                         // 2. 伤害处理
                         if (tick % DAMAGE_INTERVAL == 0) {

@@ -18,6 +18,15 @@ public abstract class PrincessCarryPassengerMixin {
     private void callresponse$positionPrincessCarryPassenger(Entity passenger, Entity.MoveFunction callback,
                                                               CallbackInfo ci) {
         Entity self = (Entity) (Object) this;
+        if (self instanceof EntityMaid holder && passenger instanceof net.minecraft.world.entity.player.Player player) {
+            Vec3 heldOffset = com.github.JumDa5he.callresponse.compat.playercarry.PlayerCarryManager.offset(holder, player);
+            if (heldOffset != null) {
+                Vec3 heldPosition = holder.position().add(heldOffset.yRot((float) -Math.toRadians(holder.yBodyRot)));
+                callback.accept(player, heldPosition.x, heldPosition.y, heldPosition.z);
+                ci.cancel();
+                return;
+            }
+        }
         if (!(self instanceof EntityMaid carrier) || !(passenger instanceof EntityMaid carried)
                 || !PrincessCarryManager.isMaidCarrySession(carrier, carried)) {
             return;

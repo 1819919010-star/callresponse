@@ -18,7 +18,7 @@ public abstract class PrincessCarryControllerMixin {
     @Inject(method = "getControllingPassenger", at = @At("HEAD"), cancellable = true)
     private void callresponse$keepPrincessCarryCarrierMovable(CallbackInfoReturnable<LivingEntity> cir) {
         Mob self = (Mob) (Object) this;
-        if (self instanceof EntityMaid carrier && PrincessCarryManager.isMaidCarrySession(carrier)) {
+        if (self instanceof EntityMaid carrier && (PrincessCarryManager.isMaidCarrySession(carrier) || com.github.JumDa5he.callresponse.compat.playercarry.PlayerCarryManager.isHolder(carrier))) {
             cir.setReturnValue(null);
         }
     }

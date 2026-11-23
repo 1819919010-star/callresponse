@@ -1,0 +1,38 @@
+{
+  "name": "Bedtime Chatter and Dreams",
+  "icon": "minecraft:red_bed",
+  "category": "callresponse:daily_life",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "At Her Bedside",
+      "text": "Enable your maid’s chat bubbles and let her sleep in a bed on a day or night shift. Her lines are drawn from a built-in set and work with AI chat turned off. The all-day schedule and the Lazy Maid task skip sleep dialogue."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Bedtime Chatter",
+      "text": "Give two of your maids beds within 8 blocks of each other. Day-shift maids chat from 10 pm to 1 am in game time. Night-shift maids chat from 6 to 9 am. Each sleeper has a chance to speak every 10–20 seconds."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Eavesdropping",
+      "text": "Walk within 5 blocks of either sleeper and the group falls silent. Sneak up to listen. You can release sneak if you stand still. If they notice you, stay more than 5 blocks from every sleeper for 10 seconds so they can resume."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Easing Fear",
+      "text": "Each bedtime chat bubble lowers the speaker’s Fear of you by 1. Each maid can lose up to 5 Fear per shift per Minecraft day this way. A maid at 0 Fear keeps her remaining allowance."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Dreaming Alone",
+      "text": "Outside those hours, even a lone sleeper may talk in her sleep every 25–45 seconds. Dreams leave Trust and Fear unchanged. When she wakes, she may speak once if you are within 8 blocks, or 5 during chatter hours."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "A Bad Dream",
+      "text": "Subtract her Trust in you from her Fear of you. The difference gives the chance that her next dream line is a nightmare.$(br2)Below 0: 10%$(br)0–25: 30%$(br)26–50: 50%$(br)51–75: 70%$(br)76 or more: 90%"
+    }
+  ]
+}

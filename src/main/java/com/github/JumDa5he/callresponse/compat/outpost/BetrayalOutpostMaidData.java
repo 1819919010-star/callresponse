@@ -334,7 +334,8 @@ public final class BetrayalOutpostMaidData {
 
     /** 彩蛋女仆：不参与战斗，只在玩家靠近时随机说话。 */
     public static void tickGlyDialogue(EntityMaid maid) {
-        if (!(maid.level() instanceof ServerLevel level) || !isOutpostMaid(maid) || !isGly(maid)) return;
+        if (!(maid.level() instanceof ServerLevel level) || !isOutpostMaid(maid) || !isGly(maid)
+                || IntimidationManager.isIntimidated(maid)) return;
         ServerPlayer nearby = level.getEntitiesOfClass(ServerPlayer.class, maid.getBoundingBox().inflate(32.0D))
                 .stream()
                 .filter(player -> !player.isSpectator() && player.distanceToSqr(maid) <= 32.0D * 32.0D)
@@ -362,7 +363,8 @@ public final class BetrayalOutpostMaidData {
 
     /** 彩蛋女仆被攻击时的台词，独立于日常台词池。 */
     public static void tickGlyHurtDialogue(EntityMaid maid) {
-        if (!(maid.level() instanceof ServerLevel level) || !isOutpostMaid(maid) || !isGly(maid)) return;
+        if (!(maid.level() instanceof ServerLevel level) || !isOutpostMaid(maid) || !isGly(maid)
+                || IntimidationManager.isIntimidated(maid)) return;
         List<String> pool = OutpostGlyDialogue.hurtLines();
         if (pool.isEmpty()) return;
 
@@ -384,6 +386,7 @@ public final class BetrayalOutpostMaidData {
      */
     public static void tickGlyBehavior(EntityMaid maid) {
         if (!(maid.level() instanceof ServerLevel level) || !isOutpostMaid(maid) || !isGly(maid)) return;
+        if (!maid.isAlive() || maid.isRemoved()) return;
         long now = level.getGameTime();
         // 怕 KOIHA 这件事优先于一切：靠近就把逃跑状态开起来，下面统一走逃跑分支
         tickGlyKohaFear(maid, level, now);

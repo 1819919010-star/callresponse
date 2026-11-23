@@ -18,6 +18,7 @@ import com.github.JumDa5he.callresponse.compat.cage.CageStructureManager;
 import com.github.JumDa5he.callresponse.compat.cage.CageRescueManager;
 import com.github.JumDa5he.callresponse.compat.broadcast.actions.BroadcastMovementScheduler;
 import com.github.JumDa5he.callresponse.compat.broadcast.ChatEventListener;
+import com.github.JumDa5he.callresponse.compat.broadcast.BroadcastTools;
 import com.github.JumDa5he.callresponse.compat.dispatch.DispatchEventLoader;
 import com.github.JumDa5he.callresponse.compat.dispatch.DispatchManager;
 import com.github.JumDa5he.callresponse.compat.emotion.*;
@@ -57,6 +58,7 @@ import com.github.JumDa5he.callresponse.compat.talk.TalkEventManager;
 import com.github.JumDa5he.callresponse.compat.trade.TradingMaidManager;
 import com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidManager;
 import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.ai.agent.tool.ToolRegister;
 import com.github.tartaricacid.touhoulittlemaid.api.LittleMaidExtension;
 import com.github.tartaricacid.touhoulittlemaid.api.bauble.IMaidBauble;
 import com.github.tartaricacid.touhoulittlemaid.api.task.meal.IMaidMeal;
@@ -73,6 +75,7 @@ import java.util.List;
 @LittleMaidExtension
 public class LittleMaidCompat implements ILittleMaid {
     public LittleMaidCompat() {
+        com.github.JumDa5he.callresponse.compat.migration.MaidFileManagerCompat.register();
         // 注册所有事件监听
         NeoForge.EVENT_BUS.register(new EmotionEventListener());
         NeoForge.EVENT_BUS.register(new EmotionActiveDialogue());
@@ -85,8 +88,8 @@ public class LittleMaidCompat implements ILittleMaid {
         NeoForge.EVENT_BUS.register(new ChatEventListener());
         NeoForge.EVENT_BUS.register(new BroadcastMovementScheduler());
         NeoForge.EVENT_BUS.register(new EmotionDevotedManager());
+        NeoForge.EVENT_BUS.register(new OwnerAdvancementResponse());
         NeoForge.EVENT_BUS.register(new EmotionForgettingManager());
-        NeoForge.EVENT_BUS.register(new LazyMaidHitHandler());
         NeoForge.EVENT_BUS.register(new SaddlePickupHandler());
         NeoForge.EVENT_BUS.register(new SaddleLaunchHandler());
         NeoForge.EVENT_BUS.register(NoEatBauble.class);
@@ -98,6 +101,7 @@ public class LittleMaidCompat implements ILittleMaid {
         NeoForge.EVENT_BUS.register(HuntTargetProtectionBypass.class);
         HuntGunEventBridge.register();
         NeoForge.EVENT_BUS.register(new WanderingMaidManager());
+        NeoForge.EVENT_BUS.register(new com.github.JumDa5he.callresponse.compat.wanderingcamp.WanderingCampManager());
         NeoForge.EVENT_BUS.register(new TradingMaidManager());
         NeoForge.EVENT_BUS.register(new TalkEventManager());
         NeoForge.EVENT_BUS.register(DispatchManager.class);
@@ -115,12 +119,19 @@ public class LittleMaidCompat implements ILittleMaid {
         NeoForge.EVENT_BUS.register(new OutpostRecognitionManager());
         NeoForge.EVENT_BUS.register(new OutpostLootAccessManager());
         NeoForge.EVENT_BUS.register(new PrincessCarryManager());
+        NeoForge.EVENT_BUS.register(new com.github.JumDa5he.callresponse.compat.playercarry.PlayerCarryManager());
+        NeoForge.EVENT_BUS.register(new com.github.JumDa5he.callresponse.compat.sleep.SleepDialogueManager());
         NeoForge.EVENT_BUS.register(new JealousyCageManager());
         NeoForge.EVENT_BUS.register(NpcEventLoader.class);
         NeoForge.EVENT_BUS.register(new MaidSignManager());
         NeoForge.EVENT_BUS.register(new MaidSignDeterrence());
         NeoForge.EVENT_BUS.register(new BirthdayManager());
         NeoForge.EVENT_BUS.register(new MaidGiftManager());
+    }
+
+    @Override
+    public void registerAITool(ToolRegister register) {
+        BroadcastTools.register(register);
     }
 
     @Override
@@ -132,6 +143,7 @@ public class LittleMaidCompat implements ILittleMaid {
     @Override
     public void addExtraMaidBrain(ExtraMaidBrainManager manager) {
         manager.addExtraMaidBrain(new CustomExtraMaidBrain());
+        manager.addExtraMaidBrain(com.github.JumDa5he.callresponse.compat.wanderingcamp.CampRoutineBehavior.EXTENSION);
     }
 
     @Override

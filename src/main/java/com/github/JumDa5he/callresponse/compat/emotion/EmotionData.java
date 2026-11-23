@@ -48,9 +48,15 @@ public class EmotionData {
     }
 
     public static void set(EntityMaid maid, UUID playerId, int trust, int fear) {
+        var previous = get(maid, playerId);
+        if (com.github.JumDa5he.callresponse.compat.winefox.WineFoxPotions.hasSweetness(maid))
+            trust = Math.max(trust, previous.trust());
         var newMap = new HashMap<>(maid.getData(InitAttachTypes.SYNCED_EMOTION).emotions);
-        newMap.put(playerId, new EmotionValues(trust, fear));
+        var values = new EmotionValues(Math.clamp(trust, 0, 100), Math.clamp(fear, 0, 100));
+        newMap.put(playerId, values);
         maid.setData(InitAttachTypes.SYNCED_EMOTION, new MaidEmotion(Collections.unmodifiableMap(newMap)));
+        EmotionAttributeManager.refresh(maid);
+        if (!values.equals(previous)) PlayerMaidResonance.relationshipChanged(maid, playerId);
     }
 
     /** 复活等明确的新生入口使用；清空全部旧关系后由统一 DEFAULT 提供默认双值。 */
@@ -61,6 +67,8 @@ public class EmotionData {
         trustRemainder.keySet().removeIf(key -> key.startsWith(maidPrefix));
         fearRemainder.keySet().removeIf(key -> key.startsWith(maidPrefix));
         CHAT_FEEDBACK.keySet().removeIf(key -> key.maidId().equals(maid.getUUID()));
+        EmotionAttributeManager.refresh(maid);
+        PlayerMaidResonance.relationshipChanged(maid, maid.getOwnerUUID());
     }
 
     public static void addTrust(EntityMaid maid, UUID playerId, int delta) {
@@ -76,6 +84,7 @@ public class EmotionData {
     }
 
     public static void addTrustFloat(EntityMaid maid, UUID playerId, float delta) {
+        if (delta < 0 && com.github.JumDa5he.callresponse.compat.winefox.WineFoxPotions.hasSweetness(maid)) return;
         String key = maid.getUUID() + ":" + playerId;
         float acc = trustRemainder.getOrDefault(key, 0f) + delta;
         int intPart = (int) acc;

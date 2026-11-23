@@ -156,12 +156,12 @@
       "rolls": 1.0,
       "entries": [
         { "type": "minecraft:empty", "weight": 30 },
-        { "type": "minecraft:item", "name": "minecraft:diamond_sword", "weight": 1, "functions": [{ "function": "minecraft:enchant_with_levels", "levels": { "type": "minecraft:uniform", "min": 25.0, "max": 35.0 }, "options": "#minecraft:on_random_loot" }] },
-        { "type": "minecraft:item", "name": "minecraft:diamond_axe", "weight": 1, "functions": [{ "function": "minecraft:enchant_with_levels", "levels": { "type": "minecraft:uniform", "min": 25.0, "max": 35.0 }, "options": "#minecraft:on_random_loot" }] },
-        { "type": "minecraft:item", "name": "minecraft:diamond_helmet", "weight": 1, "functions": [{ "function": "minecraft:enchant_with_levels", "levels": { "type": "minecraft:uniform", "min": 25.0, "max": 35.0 }, "options": "#minecraft:on_random_loot" }] },
-        { "type": "minecraft:item", "name": "minecraft:diamond_chestplate", "weight": 1, "functions": [{ "function": "minecraft:enchant_with_levels", "levels": { "type": "minecraft:uniform", "min": 25.0, "max": 35.0 }, "options": "#minecraft:on_random_loot" }] },
-        { "type": "minecraft:item", "name": "minecraft:diamond_leggings", "weight": 1, "functions": [{ "function": "minecraft:enchant_with_levels", "levels": { "type": "minecraft:uniform", "min": 25.0, "max": 35.0 }, "options": "#minecraft:on_random_loot" }] },
-        { "type": "minecraft:item", "name": "minecraft:diamond_boots", "weight": 1, "functions": [{ "function": "minecraft:enchant_with_levels", "levels": { "type": "minecraft:uniform", "min": 25.0, "max": 35.0 }, "options": "#minecraft:on_random_loot" }] }
+        { "type": "minecraft:item", "name": "minecraft:diamond_sword", "weight": 1, "functions": [{ "function": "minecraft:enchant_with_levels", "levels": { "type": "minecraft:uniform", "min": 25.0, "max": 35.0 }, "options": "#minecraft:non_treasure" }] },
+        { "type": "minecraft:item", "name": "minecraft:diamond_axe", "weight": 1, "functions": [{ "function": "minecraft:enchant_with_levels", "levels": { "type": "minecraft:uniform", "min": 25.0, "max": 35.0 }, "options": "#minecraft:non_treasure" }] },
+        { "type": "minecraft:item", "name": "minecraft:diamond_helmet", "weight": 1, "functions": [{ "function": "minecraft:enchant_with_levels", "levels": { "type": "minecraft:uniform", "min": 25.0, "max": 35.0 }, "options": "#minecraft:non_treasure" }] },
+        { "type": "minecraft:item", "name": "minecraft:diamond_chestplate", "weight": 1, "functions": [{ "function": "minecraft:enchant_with_levels", "levels": { "type": "minecraft:uniform", "min": 25.0, "max": 35.0 }, "options": "#minecraft:non_treasure" }] },
+        { "type": "minecraft:item", "name": "minecraft:diamond_leggings", "weight": 1, "functions": [{ "function": "minecraft:enchant_with_levels", "levels": { "type": "minecraft:uniform", "min": 25.0, "max": 35.0 }, "options": "#minecraft:non_treasure" }] },
+        { "type": "minecraft:item", "name": "minecraft:diamond_boots", "weight": 1, "functions": [{ "function": "minecraft:enchant_with_levels", "levels": { "type": "minecraft:uniform", "min": 25.0, "max": 35.0 }, "options": "#minecraft:non_treasure" }] }
       ]
     }
   ]

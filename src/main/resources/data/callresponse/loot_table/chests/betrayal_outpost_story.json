@@ -21,6 +21,7 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:written_book",
+          "conditions": [{"condition": "callresponse:camp_story", "book": "outpost_story"}],
           "functions": [
             {
               "function": "minecraft:set_components",
@@ -48,6 +49,21 @@
               "name": {"translate": "book.callresponse.outpost_story.title"}
             }
           ]
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "callresponse:books/outpost_story_recruited",
+          "conditions": [{"condition": "callresponse:camp_story", "book": "outpost_story_recruited"}]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:loot_table",
+          "value": "callresponse:books/outpost_story_gly",
+          "conditions": [{"condition": "callresponse:camp_story", "book": "outpost_story_gly"}]
         }
       ]
     }

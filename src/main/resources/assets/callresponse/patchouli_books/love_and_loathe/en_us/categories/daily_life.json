@@ -1,6 +1,6 @@
 {
   "name": "Daily Life",
-  "description": "Hunger, food baubles, daily events, and dialogue.",
+  "description": "Hunger, food baubles, potions, daily events, and what maids say when awake or asleep.",
   "icon": "callresponse:noeat_bauble",
   "sortnum": 2
 }

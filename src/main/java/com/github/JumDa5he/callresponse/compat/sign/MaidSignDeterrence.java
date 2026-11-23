@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,20 +23,25 @@ import java.util.concurrent.ConcurrentHashMap;
  * 区别只是来源不是玩家。同一主人的女仆还会因此更怕主人（立威）。
  */
 public class MaidSignDeterrence {
-    /** 扫描间隔，2 秒一次。 */
-    private static final int SCAN_INTERVAL = 40;
+    /** 扫描间隔，1 分钟一次。 */
+    private static final int SCAN_INTERVAL = 1200;
     /** 能“看到”的距离。 */
     private static final double SIGHT_RADIUS = 12.0D;
-    /** 单次威慑持续 3 秒；只要还在看，就会被不断续上。 */
+    /** 每次检查触发的威慑持续 3 秒。 */
     private static final int DETERRENCE_TICKS = 60;
     /** 中断超过 5 秒再看到，才算新的一次围观。 */
     private static final int ENCOUNTER_GAP = 100;
     /** 同一主人被“立威”时增加的恐惧。 */
-    private static final int FEAR_AMOUNT = 3;
+    private static final int FEAR_AMOUNT = 1;
     private static final int PRUNE_INTERVAL = 1200;
     private static final long PRUNE_AGE = 24000L;
 
     private static final Map<UUID, Long> LAST_SEEN = new ConcurrentHashMap<>();
+
+    @SubscribeEvent
+    public void onServerStop(ServerStoppingEvent event) {
+        LAST_SEEN.clear();
+    }
 
     @SubscribeEvent
     public void onServerTick(ServerTickEvent.Post event) {

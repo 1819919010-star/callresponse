@@ -8,6 +8,12 @@
       "type": "patchouli:text",
       "title": "女仆之间的谈话",
       "text": "附近有多名女仆时，她们可能互相谈话，为日常生活增添气氛。如果谈话过于频繁，可以在配置中关闭该功能或调整频率。"
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "床边听闻",
+      "entries": ["callresponse:daily_life/35_sleep_talk"],
+      "text": "女仆躺下后，你还可能听见睡前闲聊或梦话。"
     }
   ]
 }

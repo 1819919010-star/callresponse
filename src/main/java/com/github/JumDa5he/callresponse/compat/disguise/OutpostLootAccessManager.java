@@ -10,7 +10,9 @@ import net.minecraft.world.Containers;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
@@ -29,7 +31,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class OutpostLootAccessManager {
     private static final Map<UUID, PendingOpen> PENDING = new ConcurrentHashMap<>();
 
-    private record PendingOpen(String dimension, BlockPos pos, long tick, boolean pendingNativeLoot) {}
+    private record PendingLoot(BlockPos pos, boolean pendingNativeLoot) {}
+    private record PendingOpen(String dimension, BlockPos pos, long tick, List<PendingLoot> loot) {}
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRightClick(PlayerInteractEvent.RightClickBlock event) {
@@ -39,20 +42,33 @@ public final class OutpostLootAccessManager {
         BetrayalOutpostSavedData data = BetrayalOutpostSavedData.get(level);
         BetrayalOutpostSavedData.LootChest chest = data.lootChest(level, pos);
         if (chest == null) return;
-        // Both halves of a double chest resolve to the one template half carrying native loot.
-        BlockPos lootPos = chest.pos();
-        BlockEntity blockEntity = level.getBlockEntity(lootPos);
-        if (!(blockEntity instanceof RandomizableContainerBlockEntity container)) return;
+        // Legacy single-roll doubles alias one half; new doubles may own two independent rolls.
+        BlockEntity blockEntity = level.getBlockEntity(chest.pos());
+        if (!(blockEntity instanceof RandomizableContainerBlockEntity)) return;
         BetrayalOutpostSavedData.Outpost camp = data.findLootCampByKey(level, chest.campKey());
-        if (camp != null && DisguiseManager.isRecognized(player)) {
+        if (camp != null && isApproved(player)) {
             OutpostDisguiseRelations.clearOldTargetsNear(player);
         }
-        OutpostLootContainerAccessor access = (OutpostLootContainerAccessor) container;
-        boolean pendingNative = access.callresponse$getLootTable() != null
-                && chest.lootTable().equals(access.callresponse$getLootTable().location())
-                && chest.lootSeed() == access.callresponse$getLootTableSeed();
+        List<PendingLoot> loot = new ArrayList<>();
+        capturePending(level, chest, loot);
+        var state = level.getBlockState(pos);
+        if (state.getBlock() instanceof ChestBlock
+                && state.getValue(ChestBlock.TYPE) != ChestType.SINGLE) {
+            BlockPos other = pos.relative(ChestBlock.getConnectedDirection(state));
+            var companion = data.lootChest(level, other);
+            if (companion != null && !companion.pos().equals(chest.pos())) capturePending(level, companion, loot);
+        }
         PENDING.put(player.getUUID(), new PendingOpen(level.dimension().location().toString(),
-                lootPos.immutable(), level.getGameTime(), pendingNative));
+                chest.pos(), level.getGameTime(), List.copyOf(loot)));
+    }
+
+    private static void capturePending(ServerLevel level, BetrayalOutpostSavedData.LootChest chest,
+                                       List<PendingLoot> loot) {
+        if (!(level.getBlockEntity(chest.pos()) instanceof RandomizableContainerBlockEntity container)) return;
+        OutpostLootContainerAccessor access = (OutpostLootContainerAccessor) container;
+        loot.add(new PendingLoot(chest.pos(), access.callresponse$getLootTable() != null
+                && chest.lootTable().equals(access.callresponse$getLootTable().location())
+                && chest.lootSeed() == access.callresponse$getLootTableSeed()));
     }
 
     @SubscribeEvent
@@ -67,13 +83,20 @@ public final class OutpostLootAccessManager {
         BetrayalOutpostSavedData.LootChest chest = data.lootChest(level, pending.pos());
         if (chest == null) return;
         BlockEntity blockEntity = level.getBlockEntity(pending.pos());
-        if (!(blockEntity instanceof RandomizableContainerBlockEntity container)) return;
+        if (!(blockEntity instanceof RandomizableContainerBlockEntity)) return;
         BetrayalOutpostSavedData.Outpost camp = data.findLootCampByKey(level, chest.campKey());
         if (camp == null) return;
 
-        boolean approved = DisguiseManager.isRecognized(player);
+        boolean approved = isApproved(player);
         if (approved) OutpostDisguiseRelations.clearOldTargetsNear(player);
         else if (DisguiseManager.isActive(player)) OutpostDisguiseRelations.expose(player, camp);
+        for (PendingLoot roll : pending.loot()) settleRoll(level, player, data, roll, approved);
+    }
+
+    private static void settleRoll(ServerLevel level, ServerPlayer player, BetrayalOutpostSavedData data,
+                                   PendingLoot pending, boolean approved) {
+        var chest = data.lootChest(level, pending.pos());
+        if (chest == null || !(level.getBlockEntity(chest.pos()) instanceof RandomizableContainerBlockEntity container)) return;
         if (data.isChestSettled(chest)) return;
 
         // Commit before giving items. Reopening, another player, and a later block replacement cannot repeat it.
@@ -94,6 +117,10 @@ public final class OutpostLootAccessManager {
             container.setChanged();
             player.displayClientMessage(Component.translatable("message.callresponse.outpost.loot_bonus"), true);
         }
+    }
+
+    private static boolean isApproved(ServerPlayer player) {
+        return DisguiseManager.isRecognized(player);
     }
 
     private static void addOrDrop(ServerLevel level, BlockPos pos,
@@ -129,7 +156,7 @@ public final class OutpostLootAccessManager {
         if (event.getPlayer() instanceof ServerPlayer player) {
             BetrayalOutpostSavedData.Outpost camp = data.findLootCampByKey(level, chest.campKey());
             if (camp != null && DisguiseManager.isActive(player)
-                    && !DisguiseManager.isRecognized(player)) {
+                    && !isApproved(player)) {
                 OutpostDisguiseRelations.expose(player, camp);
             }
         }

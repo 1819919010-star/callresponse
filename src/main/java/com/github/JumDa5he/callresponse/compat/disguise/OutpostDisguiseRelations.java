@@ -3,17 +3,16 @@ package com.github.JumDa5he.callresponse.compat.disguise;
 import com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostMaidData;
 import com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostSavedData;
 import com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostAlertManager;
+import com.github.JumDa5he.callresponse.compat.winefox.WineFoxFaction;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
@@ -28,21 +27,70 @@ import net.neoforged.bus.api.EventPriority;
 
 import java.util.UUID;
 
-/** Only the relationship between a disguised owner/nearby owned maids and one revenge camp. */
+/** Revenge identity owns disguise recognition; a structure only adds its existing camp alarm. */
 public final class OutpostDisguiseRelations {
     private static final String EXPOSURES = "CallResponseOutpostExposures";
+    private static final String PROVOCATIONS = "CallResponseRevengeProvocations";
     private static final int LEAVE_COOLDOWN = 20 * 60 * 5;
 
     public static boolean isPacifiedTarget(EntityMaid revengeMaid, LivingEntity target) {
         if (!BetrayalOutpostMaidData.isOutpostMaid(revengeMaid)
+                || target == null || target.level() != revengeMaid.level()
                 || !(revengeMaid.level() instanceof ServerLevel level)) return false;
+        ServerPlayer owner = ownerOf(level, target);
+        if (owner == null || owner.level() != level || !DisguiseManager.isActive(owner)
+                || isProvokedBy(revengeMaid, owner.getUUID())) return false;
         BetrayalOutpostSavedData.Outpost camp = BetrayalOutpostSavedData.get(level)
                 .findByKey(level, BetrayalOutpostMaidData.group(revengeMaid));
-        if (camp == null || !nearCamp(camp, target, 16)) return false;
-        ServerPlayer owner = ownerOf(level, target);
-        return owner != null && DisguiseManager.isActive(owner)
-                && nearCamp(camp, owner, 24)
-                && (DisguiseManager.isRecognized(owner) || !isExposed(owner, camp));
+        if (camp != null && !DisguiseManager.isRecognized(owner) && isExposed(owner, camp)) return false;
+        // Players are recognized by their actual disguise even without a structure or anchor.
+        if (target == owner) return true;
+        // Keep the camp's existing protection area for owned maids; standalone revenge maids
+        // protect an actually nearby disguised owner and her maid, not a remote/offline owner.
+        return camp != null ? nearCamp(camp, target, 16) && nearCamp(camp, owner, 24)
+                : revengeMaid.distanceToSqr(owner) <= 24 * 24 && target.distanceToSqr(owner) <= 24 * 24;
+    }
+
+    public static boolean isProvokedBy(EntityMaid maid, UUID player) {
+        ListTag entries = maid.getPersistentData().getList(PROVOCATIONS, Tag.TAG_COMPOUND);
+        for (int i = 0; i < entries.size(); i++) {
+            CompoundTag entry = entries.getCompound(i);
+            if (entry.hasUUID("Player") && player.equals(entry.getUUID("Player"))
+                    && entry.getInt("Remaining") > 0) return true;
+        }
+        return false;
+    }
+
+    private static void provoke(EntityMaid maid, ServerPlayer player) {
+        ListTag entries = maid.getPersistentData().getList(PROVOCATIONS, Tag.TAG_COMPOUND);
+        for (int i = 0; i < entries.size(); i++) {
+            CompoundTag entry = entries.getCompound(i);
+            if (entry.hasUUID("Player") && player.getUUID().equals(entry.getUUID("Player"))) {
+                entry.putInt("Remaining", LEAVE_COOLDOWN);
+                maid.getPersistentData().put(PROVOCATIONS, entries);
+                return;
+            }
+        }
+        CompoundTag entry = new CompoundTag();
+        entry.putUUID("Player", player.getUUID());
+        entry.putInt("Remaining", LEAVE_COOLDOWN);
+        entries.add(entry);
+        maid.getPersistentData().put(PROVOCATIONS, entries);
+    }
+
+    private static void tickProvocations(EntityMaid maid) {
+        ListTag entries = maid.getPersistentData().getList(PROVOCATIONS, Tag.TAG_COMPOUND);
+        if (entries.isEmpty()) return;
+        ListTag remaining = new ListTag();
+        for (int i = 0; i < entries.size(); i++) {
+            CompoundTag entry = entries.getCompound(i);
+            int ticks = Math.min(LEAVE_COOLDOWN, entry.getInt("Remaining")) - 1;
+            if (ticks <= 0 || !entry.hasUUID("Player")) continue;
+            entry.putInt("Remaining", ticks);
+            remaining.add(entry);
+        }
+        if (remaining.isEmpty()) maid.getPersistentData().remove(PROVOCATIONS);
+        else maid.getPersistentData().put(PROVOCATIONS, remaining);
     }
 
     public static ServerPlayer ownerOf(ServerLevel level, Entity entity) {
@@ -89,27 +137,31 @@ public final class OutpostDisguiseRelations {
         DisguiseManager.revokeRecognition(player);
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onDamage(LivingDamageEvent.Post event) {
         if (!(event.getEntity() instanceof EntityMaid victim)
                 || !BetrayalOutpostMaidData.isOutpostMaid(victim)
                 || !(victim.level() instanceof ServerLevel level) || event.getNewDamage() <= 0) return;
-        DamageSource source = event.getSource();
-        Entity attacker = source.getEntity();
-        if (attacker == null && source.getDirectEntity() instanceof Projectile projectile) {
-            attacker = projectile.getOwner();
-        }
+        Entity attacker = WineFoxFaction.resolveAttacker(event.getSource());
+        if (WineFoxFaction.blocksAttack(attacker, victim)) return;
         ServerPlayer owner = attacker == null ? null : ownerOf(level, attacker);
-        if (owner == null || !DisguiseManager.isActive(owner)) return;
+        // Record the actual related player even if she disguises only AFTER attacking.
+        // Final positive damage is after armor, resistance and absorption; canceled hits do not arrive here.
+        if (owner == null) return;
+        provoke(victim, owner);
         BetrayalOutpostSavedData.Outpost camp = BetrayalOutpostSavedData.get(level)
                 .findByKey(level, BetrayalOutpostMaidData.group(victim));
         if (camp != null) expose(owner, camp);
+        else DisguiseManager.revokeRecognition(owner);
+        BetrayalOutpostAlertManager.onHurt(victim, attacker instanceof LivingEntity living ? living : null);
     }
 
     @SubscribeEvent
     public void onChangeTarget(LivingChangeTargetEvent event) {
         if (!(event.getEntity() instanceof EntityMaid maid) || event.getNewAboutToBeSetTarget() == null) return;
-        if (BetrayalOutpostMaidData.isOutpostMaid(maid)
+        if (WineFoxFaction.blocksAttack(maid, event.getNewAboutToBeSetTarget())) {
+            event.setNewAboutToBeSetTarget(null);
+        } else if (BetrayalOutpostMaidData.isOutpostMaid(maid)
                 && isPacifiedTarget(maid, event.getNewAboutToBeSetTarget())) {
             event.setNewAboutToBeSetTarget(null);
         } else if (event.getNewAboutToBeSetTarget() instanceof EntityMaid revenge
@@ -121,10 +173,7 @@ public final class OutpostDisguiseRelations {
     /** A stale TLM Brain target or an already-fired projectile must not hurt a pacified player. */
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPacifiedAttack(LivingIncomingDamageEvent event) {
-        Entity attacker = event.getSource().getEntity();
-        if (attacker == null && event.getSource().getDirectEntity() instanceof Projectile projectile) {
-            attacker = projectile.getOwner();
-        }
+        Entity attacker = WineFoxFaction.resolveAttacker(event.getSource());
         if (attacker instanceof EntityMaid revenge && isPacifiedTarget(revenge, event.getEntity())) {
             event.setCanceled(true);
             BetrayalOutpostAlertManager.clearCombat(revenge);
@@ -134,15 +183,20 @@ public final class OutpostDisguiseRelations {
     @SubscribeEvent
     public void onMaidTick(EntityTickEvent.Post event) {
         if (!(event.getEntity() instanceof EntityMaid maid) || maid.level().isClientSide) return;
+        if (BetrayalOutpostMaidData.isOutpostMaid(maid)) {
+            tickProvocations(maid);
+            BetrayalOutpostAlertManager.clearFriendlyTargets(maid);
+        }
         if (!BetrayalOutpostMaidData.isOutpostMaid(maid) && maid.tickCount % 10 != 0) return;
         LivingEntity target = maid.getTarget();
-        if (target == null) target = maid.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
-        if (target == null) return;
-        boolean pacified = BetrayalOutpostMaidData.isOutpostMaid(maid)
+        LivingEntity memory = maid.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
+        if (isPacifiedRelationship(maid, target) || isPacifiedRelationship(maid, memory)) clearPacifiedTarget(maid);
+    }
+
+    private static boolean isPacifiedRelationship(EntityMaid maid, LivingEntity target) {
+        return target != null && (BetrayalOutpostMaidData.isOutpostMaid(maid)
                 ? isPacifiedTarget(maid, target)
-                : target instanceof EntityMaid revenge && isPacifiedTarget(revenge, maid);
-        if (!pacified) return;
-        clearPacifiedTarget(maid);
+                : target instanceof EntityMaid revenge && isPacifiedTarget(revenge, maid));
     }
 
     private static void clearPacifiedTarget(EntityMaid maid) {
@@ -162,11 +216,8 @@ public final class OutpostDisguiseRelations {
         AABB area = owner.getBoundingBox().inflate(48.0D, 24.0D, 48.0D);
         for (EntityMaid maid : level.getEntitiesOfClass(EntityMaid.class, area)) {
             LivingEntity target = maid.getTarget();
-            if (target == null) target = maid.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
-            if (target == null) continue;
-            if (BetrayalOutpostMaidData.isOutpostMaid(maid)
-                    ? isPacifiedTarget(maid, target)
-                    : target instanceof EntityMaid revenge && isPacifiedTarget(revenge, maid)) {
+            LivingEntity memory = maid.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
+            if (isPacifiedRelationship(maid, target) || isPacifiedRelationship(maid, memory)) {
                 clearPacifiedTarget(maid);
             }
         }

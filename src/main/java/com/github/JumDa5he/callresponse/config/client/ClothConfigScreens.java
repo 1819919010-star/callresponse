@@ -63,6 +63,7 @@ public final class ClothConfigScreens extends Screen {
             ConfigBuilder builder = ConfigBuilder.create().setParentScreen(result).setTitle(title);
             ConfigEntryBuilder entries = builder.entryBuilder();
             ModConfigSpec spec = (ModConfigSpec) config.getSpec();
+            Map<List<String>, AbstractConfigListEntry<?>> controls = new HashMap<>();
             for (NeoForgeConfigDraft.Field field : draft.fields()) {
                 String groupKey = spec.getLevelTranslationKey(List.of(field.path().getFirst()));
                 ConfigCategory category = builder.getOrCreateCategory(Component.translatable(groupKey));
@@ -72,8 +73,11 @@ public final class ClothConfigScreens extends Screen {
                         category.addEntry(entries.startTextDescription(text("dispatchRange")).build());
                     }
                 }
-                category.addEntry(entry(entries, draft, field));
+                AbstractConfigListEntry<?> control = entry(entries, draft, field);
+                controls.put(field.path(), control);
+                category.addEntry(control);
             }
+            validateWineFoxRange(controls);
             builder.setSavingRunnable(() -> {
                 result.pending = true;
                 if (!editable(config)) {
@@ -106,6 +110,22 @@ public final class ClothConfigScreens extends Screen {
             SaveResult result = new SaveResult(this);
             result.failed = true;
             minecraft.setScreen(result);
+        }
+    }
+
+    /** Cloth evaluates live widget values; save is disabled before any draft or file changes. */
+    private static void validateWineFoxRange(Map<List<String>, AbstractConfigListEntry<?>> controls) {
+        AbstractConfigListEntry<?> minimum = controls.get(List.of("wine_fox", "minEnchantmentLevel"));
+        AbstractConfigListEntry<?> maximum = controls.get(List.of("wine_fox", "maxEnchantmentLevel"));
+        if (minimum == null || maximum == null) return;
+        for (AbstractConfigListEntry<?> control : List.of(minimum, maximum)) {
+            control.setErrorSupplier(() -> {
+                if (!(control.getValue() instanceof Integer value) || value < 0 || value > 255)
+                    return Optional.of(text("invalid"));
+                if (minimum.getValue() instanceof Integer min && maximum.getValue() instanceof Integer max && min > max)
+                    return Optional.of(Component.translatable(PREFIX + "wineFoxLevelRangeError"));
+                return Optional.empty();
+            });
         }
     }
 

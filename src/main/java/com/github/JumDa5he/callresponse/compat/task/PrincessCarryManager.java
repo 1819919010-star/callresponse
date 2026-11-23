@@ -1,5 +1,6 @@
 package com.github.JumDa5he.callresponse.compat.task;
 
+import com.github.JumDa5he.callresponse.compat.MaidInteractionReach;
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
 import com.github.tartaricacid.touhoulittlemaid.api.event.MaidAndItemTransformEvent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
@@ -133,7 +134,7 @@ public final class PrincessCarryManager {
     }
 
     private static boolean validController(ServerPlayer player, EntityMaid maid) {
-        return maid.isAlive() && maid.isOwnedBy(player) && player.distanceToSqr(maid) <= 36.0D
+        return maid.isAlive() && maid.isOwnedBy(player) && MaidInteractionReach.canReach(player, maid, 6)
                 && PrincessCarryTask.isCurrentTask(maid) && PrincessCarryTask.hasSaddle(maid);
     }
 
@@ -262,6 +263,10 @@ public final class PrincessCarryManager {
     }
 
     public static void releaseCarrier(EntityMaid carrier) {
+        if (com.github.JumDa5he.callresponse.compat.playercarry.PlayerCarryManager.isHolder(carrier)) {
+            com.github.JumDa5he.callresponse.compat.playercarry.PlayerCarryManager.releaseHolder(carrier);
+            return;
+        }
         REQUESTS.remove(carrier.getUUID());
         ActiveCarry active = ACTIVE.remove(carrier.getUUID());
         carrier.setSwingingArms(false);

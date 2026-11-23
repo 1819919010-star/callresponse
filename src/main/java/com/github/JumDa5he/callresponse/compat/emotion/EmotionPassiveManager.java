@@ -2,7 +2,6 @@ package com.github.JumDa5he.callresponse.compat.emotion;
 
 import com.github.JumDa5he.callresponse.compat.api.event.emotion.MaidEmotionEvent;
 import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
-import com.github.JumDa5he.callresponse.compat.talk.TalkEventManager;
 import com.github.JumDa5he.callresponse.config.EmotionPassiveConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.BlockPos;
@@ -13,6 +12,7 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
@@ -672,16 +672,34 @@ public class EmotionPassiveManager {
     @SubscribeEvent
     public void onLivingDeath(LivingDeathEvent event) {
         LivingEntity dead = event.getEntity();
-        if (dead.level().isClientSide) return;
+        if (dead.level().isClientSide || dead instanceof EntityMaid
+                || dead instanceof com.github.JumDa5he.callresponse.compat.winefox.WineFoxEntity) return;
+        settleDeath(dead, event.getSource().getEntity());
+    }
 
+    /** Called once after native death commits, before identity cleanup. */
+    public static void onConfirmedMaidDeath(EntityMaid dead, Entity killer) {
+        if (dead.level().isClientSide) return;
+        settleDeath(dead, killer);
+    }
+
+    public static void onConfirmedWineFoxDeath(com.github.JumDa5he.callresponse.compat.winefox.WineFoxEntity dead,
+                                               net.minecraft.world.entity.Entity killer) {
+        if (!dead.level().isClientSide && dead.isDeathConfirmed()) settleDeath(dead, killer);
+    }
+
+    private static void settleDeath(LivingEntity dead, Entity causing) {
         LivingEntity killer = null;
-        if (event.getSource().getEntity() instanceof LivingEntity) {
-            killer = (LivingEntity) event.getSource().getEntity();
+        if (causing instanceof LivingEntity) {
+            killer = (LivingEntity) causing;
         }
 
-        boolean isMaidDeath = dead instanceof EntityMaid;
+        boolean isMaidDeath = dead instanceof EntityMaid maid
+                && !com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostMaidData.isOutpostMaid(maid);
         boolean isKilledByPlayer = killer instanceof Player;
 
+        final LivingEntity actualKiller = killer;
+        java.util.Set<UUID> settled = new java.util.HashSet<>();
         for (ServerPlayer player : dead.level().getServer().getPlayerList().getPlayers()) {
             boolean isKillerPlayer = killer != null && killer.equals(player);
 
@@ -690,8 +708,8 @@ public class EmotionPassiveManager {
                     .forEach(maid -> {
                         if (!maid.isTame() || maid.getOwner() == null) return;
                         if (EmotionBetrayalManager.isBetraying(maid)) return;
-                        if (TalkEventManager.isParticipant(maid)) return;
                         if (maid.distanceTo(dead) > DEATH_RADIUS) return;
+                        if (maid == dead || !settled.add(maid.getUUID())) return;
 
                         UUID ownerId = getOwnerUUID(maid);
                         if (ownerId == null) return;
@@ -705,37 +723,11 @@ public class EmotionPassiveManager {
                             EmotionData.addFearFloat(maid, ownerId, 0.1f);
                         }
 
-                        if (isMaidDeath && isKilledByPlayer && isKillerPlayer) {
-                            triggerWitnessDialogue(maid, player, dead);
+                        if (isMaidDeath && isKilledByPlayer && actualKiller instanceof ServerPlayer killingPlayer
+                                && maid.isOwnedBy(killingPlayer)) {
+                            triggerWitnessDialogue(maid, killingPlayer, dead);
                         }
                     });
-        }
-    }
-
-    @SubscribeEvent
-    public void onMaidHurt(LivingDamageEvent.Pre event) {
-        if (!(event.getEntity() instanceof EntityMaid maid)) return;
-        if (maid.level().isClientSide) return;
-        if (!maid.isTame() || maid.getOwner() == null) return;
-
-        var canceled = NeoForge.EVENT_BUS.post(new MaidEmotionEvent.MaidPassiveEvent(maid, MaidEmotionEvent.MaidPassiveEvent.Type.HURT)).isCanceled();
-        if(canceled)return;
-
-        if (EmotionBetrayalManager.isBetraying(maid)) return;
-
-        UUID ownerId = getOwnerUUID(maid);
-        if (ownerId == null) return;
-
-        // 小数累积：每 10 次受伤恐惧 +1、信任 -1（参考击杀事件 addFearFloat）
-        EmotionData.addFearFloat(maid, ownerId, 0.1f);
-        EmotionData.addTrustFloat(maid, ownerId, -0.1f);
-
-        if (maid.getOwner() instanceof ServerPlayer owner) {
-            MaidResponder.debug(owner,
-                    Component.translatable("message.callresponse.debug.passive_prefix")
-                            .append(maid.getName())
-                            .append(Component.translatable("message.callresponse.debug.passive_hurt"))
-            );
         }
     }
 

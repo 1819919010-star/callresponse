@@ -14,6 +14,7 @@ public abstract class PrincessCarryRemovalMixin {
     @Inject(method = "remove", at = @At("HEAD"))
     private void callresponse$releasePrincessCarryBeforeRemoval(Entity.RemovalReason reason, CallbackInfo ci) {
         Entity self = (Entity) (Object) this;
+        if (!self.level().isClientSide) com.github.JumDa5he.callresponse.compat.playercarry.PlayerCarryManager.releaseEntity(self);
         if (self instanceof EntityMaid maid && !maid.level().isClientSide) {
             PrincessCarryManager.releaseBeforeRemoval(maid);
         }

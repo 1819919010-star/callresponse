@@ -16,6 +16,7 @@ import com.github.JumDa5he.callresponse.compat.task.PrincessCarryManager;
 import com.github.JumDa5he.callresponse.compat.talk.TalkEventManager;
 import com.github.JumDa5he.callresponse.compat.talk.TalkDialogueBridge;
 import com.github.JumDa5he.callresponse.config.BroadcastConfig;
+import com.github.JumDa5he.callresponse.compat.winefox.WineFoxEntity;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -112,8 +113,12 @@ public final class IntimidationManager {
         }
     }
 
+    private static boolean canControl(Mob mob) {
+        return !(mob instanceof WineFoxEntity);
+    }
+
     public static boolean isIntimidated(Entity entity) {
-        if (!(entity instanceof Mob mob) || mob.level().isClientSide) return false;
+        if (!(entity instanceof Mob mob) || mob.level().isClientSide || !canControl(mob)) return false;
         Control control = ACTIVE.get(mob.getUUID());
         return control != null && control.mob == mob && !control.sources.isEmpty();
     }
@@ -124,7 +129,7 @@ public final class IntimidationManager {
      * 所以不会因为“施法者不在线”被清掉，也不会自己刷回应气泡。
      */
     public static void intimidateByParade(Mob mob, int durationTicks) {
-        if (!(mob.level() instanceof ServerLevel level)) return;
+        if (!canControl(mob) || !(mob.level() instanceof ServerLevel level)) return;
         long now = level.getServer().getTickCount();
         Control control = ACTIVE.get(mob.getUUID());
         if (control == null || control.mob != mob) {
@@ -192,7 +197,7 @@ public final class IntimidationManager {
         int affected = 0;
         for (Mob mob : caster.serverLevel().getEntitiesOfClass(Mob.class,
                 caster.getBoundingBox().inflate(tier.radius()),
-                target -> target.isAlive() && !target.isRemoved()
+                target -> canControl(target) && target.isAlive() && !target.isRemoved()
                         && target.distanceToSqr(caster) <= radiusSq)) {
             try {
                 control(caster, mob, now + tier.durationTicks());
@@ -212,6 +217,7 @@ public final class IntimidationManager {
     }
 
     private static void control(ServerPlayer caster, Mob mob, long untilTick) {
+        if (!canControl(mob)) return;
         Control control = ACTIVE.get(mob.getUUID());
         boolean first = control == null || control.mob != mob;
         if (first) {
@@ -281,6 +287,10 @@ public final class IntimidationManager {
         }
         for (Control control : new ArrayList<>(ACTIVE.values())) {
             Mob mob = control.mob;
+            if (!canControl(mob)) {
+                ACTIVE.remove(mob.getUUID(), control);
+                continue;
+            }
             if (mob.isRemoved() || !mob.isAlive() || !(mob.level() instanceof ServerLevel)) {
                 release(mob, false);
                 continue;

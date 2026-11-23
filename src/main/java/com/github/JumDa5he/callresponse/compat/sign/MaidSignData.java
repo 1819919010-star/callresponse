@@ -19,7 +19,7 @@ import net.minecraft.world.level.block.entity.SignText;
  */
 public record MaidSignData(SignText text, boolean enabled, Item item, boolean scareOnlookers) {
     /** 没有挂告示牌。 */
-    public static final MaidSignData EMPTY = new MaidSignData(new SignText(), false, Items.OAK_SIGN, true);
+    public static final MaidSignData EMPTY = new MaidSignData(new SignText(), false, Items.OAK_SIGN, false);
 
     public static final Codec<MaidSignData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             SignText.DIRECT_CODEC.fieldOf("text").forGetter(MaidSignData::text),

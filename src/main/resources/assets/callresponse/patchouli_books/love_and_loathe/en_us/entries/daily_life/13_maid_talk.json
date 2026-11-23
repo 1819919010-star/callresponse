@@ -8,6 +8,12 @@
       "type": "patchouli:text",
       "title": "Conversations Between Maids",
       "text": "When several maids are nearby, they may begin talking with one another and add a little life to the household. If these conversations happen too often, disable the feature or adjust its frequency in the configuration."
+    },
+    {
+      "type": "patchouli:relations",
+      "title": "At the Bedside",
+      "entries": ["callresponse:daily_life/35_sleep_talk"],
+      "text": "Even after your maids lie down, you may hear them chatting or talking in their sleep."
     }
   ]
 }

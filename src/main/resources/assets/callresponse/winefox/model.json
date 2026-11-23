@@ -1,0 +1,149 @@
+{
+  "pack_name": "入魔酒狐 · Gecko 测试版",
+  "version": "1.0.1",
+  "author": [
+    "完美冻结",
+    "星屑海螺",
+    "哥斯拉（映素团队）",
+    "白帆小喵",
+    "蓝玫瑰",
+    "墨染逝羽",
+    "Maks怜悯",
+    "浅陌菌",
+    "祸御神",
+    "羊毛"
+  ],
+  "description": [
+    "基于入魔酒狐无面具脉络版。仅四类基础动作与愤怒表情。"
+  ],
+  "date": "2026-10-14",
+  "model_list": [
+    {
+      "name": "入魔酒狐 · 按需怒视",
+      "model_id": "callresponse:corrupted_wine_fox",
+      "is_gecko": true,
+      "model": "callresponse:winefox/corrupted_wine_fox.geo.json",
+      "texture": "callresponse:winefox/skin.png",
+      "animation": [
+        "callresponse:winefox/corrupted_wine_fox.animation.json"
+      ],
+      "render_entity_scale": 0.65,
+      "show_backpack": false,
+      "show_custom_head": false,
+      "description": [
+        "平时保留原表情；仅生气状态和受击使用怒视。",
+        "受击0.5秒，双手与尾巴防挡。敌对实体状态需代码接入。"
+      ],
+      "texture_variants": [
+        "callresponse:winefox/skin.png",
+        "callresponse:winefox/skin_white.png"
+      ]
+    }
+  ],
+  "source_attribution": {
+    "name": "入魔酒狐（无面具脉络版）",
+    "tips": "一只爱喝葡萄酒的狐娘。\nA fox girl who loves to drink wine.\n乱舞参考自 VRChat 的永雏塔菲动画。\n音乐为改编的 Zufolo Impazzito。",
+    "license": {
+      "type": "CC BY-NC-SA 4.0"
+    },
+    "authors": [
+      {
+        "name": "完美冻结",
+        "role": "模型原作",
+        "avatar": "avatar/wmdj.jpg",
+        "contact": {
+          "Afdian": "https://afdian.com/a/6TGESILA",
+          "Bilibili": "https://space.bilibili.com/17798027"
+        },
+        "comment": "OwO"
+      },
+      {
+        "name": "星屑海螺",
+        "role": "动画原作",
+        "avatar": "avatar/hl.png",
+        "contact": {
+          "Afdian": "https://afdian.com/a/lucia2048",
+          "Bilibili": "https://space.bilibili.com/14975572"
+        },
+        "comment": "漂泊于群星之中"
+      },
+      {
+        "name": "哥斯拉（映素团队）",
+        "role": "模型修改",
+        "avatar": "avatar/gsl.png",
+        "contact": {
+          "Afdian": "https://afdian.com/a/6TGESILA",
+          "Bilibili": "https://space.bilibili.com/17798027"
+        },
+        "comment": "一个MC模型/YSM作者，想法很多，时间很少"
+      },
+      {
+        "name": "白帆小喵",
+        "role": "新版材质",
+        "avatar": "avatar/bfxm.jpg",
+        "comment": "一只爱玩mc的小猫咪罢了qwq",
+        "contact": {
+          "Bilibili": "https://space.bilibili.com/492836494"
+        }
+      },
+      {
+        "name": "蓝玫瑰",
+        "role": "UI 材质/贴图",
+        "avatar": "avatar/lmg.png",
+        "contact": {
+          "Bilibili": "https://space.bilibili.com/11814817"
+        },
+        "comment": "8月24号，传奇永不落幕"
+      },
+      {
+        "name": "墨染逝羽",
+        "role": "面具模型",
+        "avatar": "avatar/mrsy.png",
+        "comment": "事到如今，先摸鱼吧",
+        "contact": {
+          "Bilibili": "https://space.bilibili.com/5718046"
+        }
+      },
+      {
+        "name": "Maks怜悯",
+        "role": "载具模型",
+        "avatar": "avatar/maks.jpg",
+        "comment": "ysm人偶制作中～",
+        "contact": {
+          "Bilibili": "https://space.bilibili.com/352177387"
+        }
+      },
+      {
+        "name": "浅陌菌",
+        "role": "模型修改",
+        "avatar": "avatar/nico.png",
+        "comment": "最美好的前途，可不要对我冷酷",
+        "contact": {
+          "Bilibili": "https://space.bilibili.com/14975572"
+        }
+      },
+      {
+        "name": "祸御神",
+        "role": "动画修改",
+        "avatar": "avatar/hys.png",
+        "comment": "五十代精神病人",
+        "contact": {
+          "Bilibili": "https://space.bilibili.com/164557734"
+        }
+      },
+      {
+        "name": "羊毛",
+        "role": "音效/动画修改",
+        "avatar": "avatar/wool.png",
+        "comment": "喵喵喵喵",
+        "contact": {
+          "Bilibili": "https://space.bilibili.com/85335217"
+        }
+      }
+    ],
+    "link": {
+      "home": "https://modrinth.com/mod/yes-steve-model",
+      "donate": "https://afdian.com/a/ysmmod"
+    }
+  }
+}

@@ -65,6 +65,11 @@ public final class NeoForgeConfigDraft {
                 throw new IOException("Live configuration changed; reopen the editor");
             }
         }
+        if (spec == EmotionPassiveConfig.SPEC) {
+            int min = effectiveInt(List.of("wine_fox", "minEnchantmentLevel"));
+            int max = effectiveInt(List.of("wine_fox", "maxEnchantmentLevel"));
+            if (min > max) throw new IOException("Wine Fox minimum enchantment level must not exceed maximum");
+        }
         if (fields.stream().noneMatch(f -> !Objects.equals(f.original(), edits.getOrDefault(f.path(), f.original())))) return;
         if (!Arrays.equals(openedBytes, Files.readAllBytes(path))) {
             throw new IOException("Configuration changed externally; reopen the editor");
@@ -104,6 +109,11 @@ public final class NeoForgeConfigDraft {
         } finally {
             Files.deleteIfExists(staged);
         }
+    }
+
+    private int effectiveInt(List<String> path) {
+        Field field = fields.stream().filter(f -> f.path().equals(path)).findFirst().orElseThrow();
+        return (Integer) edits.getOrDefault(path, field.original());
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

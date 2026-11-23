@@ -7,6 +7,7 @@ import com.github.JumDa5he.callresponse.compat.datagen.DataGenerators;
 import com.github.JumDa5he.callresponse.network.NetworkRegistryHandler;
 import com.github.JumDa5he.callresponse.compat.item.ModItems;
 import com.github.JumDa5he.callresponse.compat.menu.ModMenus;
+import com.github.JumDa5he.callresponse.compat.story.CampStoryCondition;
 import com.github.JumDa5he.callresponse.config.BroadcastConfig;
 import com.github.JumDa5he.callresponse.config.EmotionPassiveConfig;
 import com.github.JumDa5he.callresponse.config.DispatchConfig;
@@ -26,13 +27,21 @@ public class CallResponseMod {
     public CallResponseMod(IEventBus modEventBus, ModContainer modContainer) {
         // 1. 注册物品
         com.github.JumDa5he.callresponse.compat.outpost.entity.OutpostEntities.TYPES.register(modEventBus);
+        com.github.JumDa5he.callresponse.compat.winefox.WineFoxEntities.TYPES.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModItems.TABS.register(modEventBus);
         ModMenus.MENUS.register(modEventBus);
+        CampStoryCondition.TYPES.register(modEventBus);
         ModBlocks.BLOCKS.register(modEventBus);
         ModBlocks.BLOCK_ENTITY_TYPES.register(modEventBus);
+        com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostStructure.TYPE.getId();
+        com.github.JumDa5he.callresponse.compat.wanderingcamp.WanderingCampStructure.TYPES.register(modEventBus);
         ModDisguiseEffects.EFFECTS.register(modEventBus);
         com.github.JumDa5he.callresponse.compat.gift.ModGiftComponents.COMPONENTS.register(modEventBus);
+        com.github.JumDa5he.callresponse.compat.winefox.WineFoxEffects.EFFECTS.register(modEventBus);
+        com.github.JumDa5he.callresponse.compat.winefox.WineFoxPotions.POTIONS.register(modEventBus);
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.register(
+                new com.github.JumDa5he.callresponse.compat.broadcast.EventDialogueBridge());
 
         // 2. 注册配置文件
         modContainer.registerConfig(ModConfig.Type.COMMON, BroadcastConfig.SPEC);

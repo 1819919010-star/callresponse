@@ -17,11 +17,14 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.chat.Component;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.http.HttpRequest;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Pattern;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -35,10 +38,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public final class BirthdayGreetingPrompter {
     /** 普通玩家的内置兜底提示词，同时也是 AI 生成失败时的落点。 */
-    public static final String FALLBACK_PROMPT = "今天是主人的生日，请向主人送上一句真挚的生日祝福。";
+    public static final String FALLBACK_PROMPT = "今天过生日的是主人，不是你。你正在给主人庆祝生日，请对主人本人送上1～2句真挚的生日祝福。";
     /** 作者彩蛋的内置兜底提示词。 */
     public static final String FALLBACK_PROMPT_IFOX =
-            "今天是主人的生日。他平时总爱抱着酒狐到处跑，请先用一句温柔又带点调侃的话送上生日祝福。";
+            "今天过生日的是主人，不是你。你是送祝福的一方。主人平时总爱抱着酒狐到处跑，请向他送上温柔又带点调侃的生日祝福。";
+
+    private static final Pattern MAID_BIRTHDAY = Pattern.compile(
+            "(?:今天|今日|今儿)(?:是|是我过|轮到)?(?:我|自己)的?生日"
+                    + "|(?:谢谢|感谢).{0,12}(?:主人|你).{0,8}(?:给|为|陪)我.{0,6}(?:过生日|庆生|庆祝生日)"
+                    + "|(?:主人|你).{0,6}陪我.{0,6}过生日|\\bmy birthday\\b", Pattern.CASE_INSENSITIVE);
 
     /** AI 写提示词的等待上限，超过就直接用兜底提示词。 */
     private static final long PROMPT_TIMEOUT_MILLIS = 4000L;
@@ -138,7 +146,25 @@ public final class BirthdayGreetingPrompter {
         int month = date.getMonthValue();
         int day = date.getDayOfMonth();
         String template = isChinese(player) ? promptSet.userZh() : promptSet.userEn();
-        return template.formatted(month, day, ownerName, maidName);
+        return ownershipFacts(player) + "\n" + template.formatted(month, day, ownerName, maidName);
+    }
+
+    static String ownershipFacts(ServerPlayer player) {
+        String name = player.getName().getString();
+        return isChinese(player)
+                ? "今天过生日的是你的主人「" + name + "」，也就是当前玩家。不是你自己或其他女仆的生日。"
+                    + "你是给主人送祝福的一方：按现有人格和情感对主人本人说1～2句生日祝福，"
+                    + "不要说‘谢谢主人给我过生日’、‘今天是我的生日’或‘主人来陪我过生日’。"
+                : "Today is the birthday of your master, the current player \"" + name
+                    + "\". It is NOT your birthday or another maid's birthday. You are wishing your master a happy birthday. "
+                    + "Use your own personality and feelings for 1-2 sentences addressed to your master. "
+                    + "Do not say it is my birthday or thank your master for celebrating your birthday.";
+    }
+
+    static boolean isMaidBirthdayReply(String text) {
+        if (text == null) return true;
+        return MAID_BIRTHDAY.matcher(text.toLowerCase(Locale.ROOT).replaceAll("[\\s，,。.!！?？、]", "")).find()
+                || Pattern.compile("\\bmy birthday\\b", Pattern.CASE_INSENSITIVE).matcher(text).find();
     }
 
     private static boolean isChinese(ServerPlayer player) {
@@ -184,7 +210,13 @@ public final class BirthdayGreetingPrompter {
                 return;
             }
             try {
-                MaidResponder.processBroadcast(player, List.of(maid), prompt, false);
+                MaidResponder.replyToEvent(player, maid, ownershipFacts(player) + "\n" + prompt,
+                        Component.translatable("bubble.callresponse.birthday.1", player.getName()),
+                        value -> value.isAlive() && !value.isRemoved() && value.isTame()
+                                && player.getUUID().equals(value.getOwnerUUID()) && value.level() == player.level()
+                                && !com.github.JumDa5he.callresponse.compat.intimidation.IntimidationManager.isIntimidated(value)
+                                && !com.github.JumDa5he.callresponse.compat.talk.TalkEventManager.isParticipant(value),
+                        text -> !isMaidBirthdayReply(text));
             } catch (Exception exception) {
                 CallResponseMod.LOGGER.error("[生日] 女仆生日祝福发送失败", exception);
             }

@@ -45,6 +45,8 @@ public final class BroadcastDialogueTracker {
             return null;
         }
         int start = message.indexOf(MARKER_PREFIX);
+        int eventStart = message.indexOf(EventDialogueBridge.MARKER);
+        if (eventStart >= 0 && (start < 0 || eventStart < start)) start = eventStart;
         if (start < 0) {
             return message;
         }

@@ -36,6 +36,35 @@ public final class CuteActivityMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        if (mixinClassName.endsWith(".MaidSpellRevengeDamageMixin")) {
+            var loading = FMLLoader.getLoadingModList();
+            if (loading == null || loading.getModFileById("touhou_little_maid_spell") == null) return false;
+            try {
+                ClassNode node = MixinService.getService().getBytecodeProvider().getClassNode(targetClassName);
+                if (verifiedSpellIdentityRule(node)) {
+                    LOGGER.info("Maid Spell NeoForge identity hook verified; narrow revenge damage compatibility enabled");
+                    return true;
+                }
+            } catch (Exception | LinkageError absent) {
+                LOGGER.warn("Maid Spell identity hook unavailable; revenge damage integration skipped", absent);
+                return false;
+            }
+            LOGGER.warn("Maid Spell identity rule differs from the verified NeoForge rule; revenge damage integration skipped");
+            return false;
+        }
+        if (mixinClassName.endsWith(".MaidFileManagerNbtMixin")) {
+            if (FMLLoader.getLoadingModList().getModFileById("maid_file_manager") == null) return false;
+            try {
+                ClassNode node = MixinService.getService().getBytecodeProvider().getClassNode(targetClassName);
+                boolean valid = has(node, "doSerializeMaid", "(" + MAID + ")Lio/github/zgxhzhr/maidfm/data/MaidFileData;")
+                        && has(node, "loadMaidNbt", "(" + MAID + "Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/nbt/CompoundTag;ZZ)V");
+                if (!valid) LOGGER.warn("Maid File Manager NBT hooks are incompatible; callresponse cross-version NBT conversion disabled");
+                return valid;
+            } catch (Exception | LinkageError absent) {
+                LOGGER.warn("Maid File Manager NBT hooks unavailable; callresponse cross-version NBT conversion disabled", absent);
+                return false;
+            }
+        }
         if (mixinClassName.contains(".revengecompat.")) return revengeAddonCompatible(targetClassName, mixinClassName);
         if (mixinClassName.endsWith(".client.ConfiguredNeoForgeValueMixin")) {
             try {
@@ -60,6 +89,16 @@ public final class CuteActivityMixinPlugin implements IMixinConfigPlugin {
 
         String simple = mixinClassName.substring(mixinClassName.lastIndexOf('.') + 1);
         boolean compatible = switch (simple) {
+            case "CuteCampDialogueMixin" -> has(node, "add", "(" + MAID
+                    + "Lcom/github/tartaricacid/touhoulittlemaid/entity/chatbubble/IChatBubbleData;)V");
+            case "CuteCampCombatStateMixin" -> node.fields.stream().filter(field ->
+                    ((field.name.equals("wildMaidTargetUUID") || field.name.equals("fightArenaTargetUUID"))
+                            && field.desc.equals("Ljava/util/UUID;"))
+                    || ((field.name.equals("wildMaidLastAttackTick") || field.name.equals("fightArenaLastAttackTick"))
+                            && field.desc.equals("J"))
+                    || (field.name.equals("wildMaidSavedTask")
+                            && field.desc.equals("Lcom/github/tartaricacid/touhoulittlemaid/api/task/IMaidTask;")))
+                    .count() == 5;
             case "CuteScareServerMixin" -> has(node, "onLivingDamage", "(" + DAMAGE + ")V");
             case "CuteScareClientMixin" -> has(node, "isScareActive", "(" + MAID + ")Z")
                     && hasOther("cn.autoforged.maid_cute_activity.AnimBookData",
@@ -92,7 +131,9 @@ public final class CuteActivityMixinPlugin implements IMixinConfigPlugin {
                     && has(node, "manageWildMaidCombat", "(" + MAID + LONELY_STATE + "J)V")
                     && has(node, "enterWildMaidAttackMode", "(" + MAID + LONELY_STATE + ")V")
                     && has(node, "restoreWildMaidAttackMode", "(" + MAID + LONELY_STATE + ")V")
-                    && has(node, "tryTriggerBegForMercyTalk", "(" + MAID + LONELY_STATE + "J)V");
+                    && has(node, "tryTriggerBegForMercyTalk", "(" + MAID + LONELY_STATE + "J)V")
+                    && has(node, "manageFightArenaCombat", "(" + MAID + LONELY_STATE + "J)V")
+                    && has(node, "broadcastMessage", "(" + MAID + "Lnet/minecraft/network/chat/Component;)V");
             case "CuteLonelinessBaoTouMixin" -> has(node, "onLivingDamage", "(" + DAMAGE + ")V")
                     && invokes(node, "onLivingDamage", "handleWildMaidRetaliation", 6);
             default -> false;
@@ -100,6 +141,52 @@ public final class CuteActivityMixinPlugin implements IMixinConfigPlugin {
         if (!compatible) LOGGER.warn("Cute Activity {} signature differs; skipping {} integration",
                 targetClassName, simple);
         return compatible;
+    }
+
+    /** Follow the actual first List.add lambda handle, not its compiler-generated number. */
+    private static boolean verifiedSpellIdentityRule(ClassNode node) {
+        String event = "net/neoforged/neoforge/event/entity/living/LivingIncomingDamageEvent";
+        if (node == null || !node.fields.stream().anyMatch(f -> f.name.equals("commonHurtHandlers")
+                && f.desc.equals("Ljava/util/List;") && (f.access & org.objectweb.asm.Opcodes.ACC_STATIC) != 0)) return false;
+        for (MethodNode reset : node.methods) {
+            if (!reset.name.equals("resetCommonDamageCalc") || !reset.desc.equals("()V")) continue;
+            for (var instruction : reset.instructions) {
+                if (!(instruction instanceof org.objectweb.asm.tree.InvokeDynamicInsnNode lambda)
+                        || !lambda.desc.equals("()Ljava/util/function/BiFunction;")) continue;
+                var previous = instruction.getPrevious();
+                while (previous != null && previous.getOpcode() < 0) previous = previous.getPrevious();
+                var next = instruction.getNext();
+                while (next != null && next.getOpcode() < 0) next = next.getNext();
+                if (!(previous instanceof org.objectweb.asm.tree.FieldInsnNode field)
+                        || field.getOpcode() != org.objectweb.asm.Opcodes.GETSTATIC || !field.owner.equals(node.name)
+                        || !field.name.equals("commonHurtHandlers")
+                        || !(next instanceof MethodInsnNode add) || !add.owner.equals("java/util/List")
+                        || !add.name.equals("add") || !add.desc.equals("(Ljava/lang/Object;)Z")) return false;
+                for (Object argument : lambda.bsmArgs) {
+                    if (!(argument instanceof org.objectweb.asm.Handle handle) || !handle.getOwner().equals(node.name)) continue;
+                    for (MethodNode rule : node.methods) {
+                        if (!rule.name.equals(handle.getName()) || !rule.desc.equals("(L" + event + ";" + MAID + ")Ljava/lang/Void;")) continue;
+                        var ops = new java.util.ArrayList<org.objectweb.asm.tree.AbstractInsnNode>();
+                        for (var op : rule.instructions) if (op.getOpcode() >= 0) ops.add(op);
+                        // getEntity; maid/player instanceof branches; two setCanceled(true); null return only.
+                        int[] shape = {25,182,58,25,193,153,25,4,182,167,25,193,153,25,4,182,1,176};
+                        if (ops.size() != shape.length) return false;
+                        for (int i = 0; i < shape.length; i++) if (ops.get(i).getOpcode() != shape[i]) return false;
+                        if (!(ops.get(1) instanceof MethodInsnNode get) || !get.owner.equals(event)
+                                || !get.name.equals("getEntity") || !get.desc.equals("()Lnet/minecraft/world/entity/LivingEntity;")) return false;
+                        if (!((org.objectweb.asm.tree.TypeInsnNode)ops.get(4)).desc.equals("com/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid")
+                                || !((org.objectweb.asm.tree.TypeInsnNode)ops.get(11)).desc.equals("net/minecraft/world/entity/player/Player")) return false;
+                        for (int i : new int[]{8,15}) {
+                            var call = (MethodInsnNode)ops.get(i);
+                            if (!call.owner.equals(event) || !call.name.equals("setCanceled") || !call.desc.equals("(Z)V")) return false;
+                        }
+                        return true;
+                    }
+                }
+                return false; // Never search later callbacks for another plausible-looking rule.
+            }
+        }
+        return false;
     }
 
     private static boolean cuteActivityDiscovered() {

@@ -51,6 +51,12 @@ public final class NpcEventSavedData extends SavedData {
         });
     }
 
+    /** Read-only migration snapshot; no default creation or dirtying. */
+    public CompoundTag peek(UUID maidId) {
+        CompoundTag data = entries.get(maidId);
+        return data == null ? null : data.copy();
+    }
+
     public void replace(UUID maidId, CompoundTag data) {
         entries.put(maidId, data.copy());
         setDirty();

@@ -24,6 +24,10 @@ public final class PrincessCarryScreen extends MaidTaskConfigGui<PrincessCarryCo
     protected void initAdditionWidgets() {
         int x = leftPos + 104;
         int y = topPos + 89;
+        addRenderableWidget(Button.builder(Component.translatable("gui.callresponse.princess_carry.player"), button -> {
+            PacketDistributor.sendToServer(new com.github.JumDa5he.callresponse.compat.playercarry.PickUpPlayerC2SPacket(maid.getId()));
+            onClose();
+        }).pos(x, y - 24).size(128, 20).build());
         addRenderableWidget(Button.builder(Component.translatable("gui.callresponse.princess_carry.maid"),
                         button -> send())
                 .pos(x, y).size(128, 20).build());

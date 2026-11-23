@@ -1,0 +1,61 @@
+{
+  "type": "minecraft:chest",
+  "pools": [{
+    "rolls": {"type": "minecraft:uniform", "min": 2, "max": 4},
+    "entries": [
+      {"type": "minecraft:item", "name": "minecraft:bread", "weight": 3, "functions": [{"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 1, "max": 2}}]},
+      {"type": "minecraft:item", "name": "minecraft:sweet_berries", "weight": 4, "functions": [{"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 2, "max": 5}}]},
+      {"type": "minecraft:item", "name": "minecraft:stone", "weight": 4, "functions": [{"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 2, "max": 5}}]},
+      {"type": "minecraft:item", "name": "minecraft:iron_ingot", "weight": 1}
+    ]
+  }, {
+  "rolls": 1,
+  "entries": [
+    {
+      "type": "minecraft:item",
+      "name": "minecraft:written_book",
+      "conditions": [{"condition": "callresponse:camp_story", "book": "wandering_camp_diary"}],
+      "functions": [
+        {
+          "function": "minecraft:set_components",
+          "components": {
+            "minecraft:custom_data": {
+              "CallResponseWanderingDiary": true
+            },
+            "minecraft:written_book_content": {
+              "title": "流浪日记",
+              "author": "一个路过这里的女仆",
+              "generation": 0,
+              "resolved": true,
+              "pages": [
+                "{\"translate\":\"book.callresponse.wandering_camp_diary.page.1\"}",
+                "{\"translate\":\"book.callresponse.wandering_camp_diary.page.2\"}",
+                "{\"translate\":\"book.callresponse.wandering_camp_diary.page.3\"}",
+                "{\"translate\":\"book.callresponse.wandering_camp_diary.page.4\"}",
+                "{\"translate\":\"book.callresponse.wandering_camp_diary.page.5\"}",
+                "{\"translate\":\"book.callresponse.wandering_camp_diary.page.6\"}"
+              ]
+            }
+          }
+        },
+        {
+          "function": "minecraft:set_name",
+          "name": {
+            "translate": "book.callresponse.wandering_camp_diary.title"
+          }
+        }
+      ]
+    },
+    {
+      "type": "minecraft:loot_table",
+      "value": "callresponse:books/wandering_sage_diary",
+      "conditions": [{"condition": "callresponse:camp_story", "book": "wandering_sage_diary"}]
+    },
+    {
+      "type": "minecraft:loot_table",
+      "value": "callresponse:books/wandering_gly_diary",
+      "conditions": [{"condition": "callresponse:camp_story", "book": "wandering_gly_diary"}]
+    }
+  ]
+}]
+}

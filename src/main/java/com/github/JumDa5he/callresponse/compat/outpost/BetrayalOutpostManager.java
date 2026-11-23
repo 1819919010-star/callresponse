@@ -1,6 +1,25 @@
 package com.github.JumDa5he.callresponse.compat.outpost;
 
 import com.github.JumDa5he.callresponse.CallResponseMod;
+import com.github.JumDa5he.callresponse.compat.story.CampStoryBooks;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.state.properties.ChestType;
+import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import java.nio.charset.StandardCharsets;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.IOException;
+import java.util.UUID;
+
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionBetrayalManager;
 import com.github.JumDa5he.callresponse.compat.sign.MaidSignManager;
 import net.minecraft.world.level.block.entity.SignText;
@@ -15,6 +34,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.FullChunkStatus;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
@@ -51,12 +71,11 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadStructurePlacement;
-import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadType;
+import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.minecraft.world.damagesource.DamageSource;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
@@ -67,6 +86,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -91,17 +111,20 @@ public final class BetrayalOutpostManager {
     private static final Set<ResourceKey<LootTable>> OUTPOST_LOOT = Set.of(
             KITCHEN_LOOT, STORAGE_LOOT, ENCHANTED_LOOT, VALUABLE_LOOT, STORY_LOOT);
     private static final int MAID_COUNT = 5;
-    private static final int STRUCTURE_SPACING = 36;
-    private static final int STRUCTURE_SEPARATION = 16;
-    private static final int STRUCTURE_SALT = 14357625;
-    private static final RandomSpreadStructurePlacement STRUCTURE_PLACEMENT =
-            new RandomSpreadStructurePlacement(STRUCTURE_SPACING, STRUCTURE_SEPARATION,
-                    RandomSpreadType.LINEAR, STRUCTURE_SALT);
+    private static BetrayalOutpostManager instance;
+    private static final ResourceLocation LAYOUT_ID = ResourceLocation.fromNamespaceAndPath("callresponse", "outpost/betrayal_maid_outpost_layout.json");
+    private static final ResourceLocation STORY_TABLE = ResourceLocation.fromNamespaceAndPath("callresponse", "chests/betrayal_outpost_story");
+    private static final String GLY_BOOK_RECEIPT = "callresponse:outpost_gly_book_issued";
+    private static final int MAX_SPAWN_ATTEMPTS = 3;
+    private static final long RETRY_TICKS = 20L;
+    public static final int NATURAL_CLEAR_REWARD_TICKS = 72000;
+    private static final Set<UUID> DELIVERING_CLEAR_REWARDS = new java.util.HashSet<>();
 
     private final Map<ResourceKey<Level>, Queue<Long>> pendingChunks = new ConcurrentHashMap<>();
     private final Map<ResourceKey<Level>, Set<Long>> queuedChunks = new ConcurrentHashMap<>();
 
     public BetrayalOutpostManager() {
+        instance = this;
         // 世界读取实体 NBT 之前先准备好允许上限，避免真实大生命在加载时被原版 1024 裁剪。
         BetrayalOutpostMaxHealth.ensureAndGetLimit();
     }
@@ -119,12 +142,11 @@ public final class BetrayalOutpostManager {
 
     @SubscribeEvent
     public void onChunkLoad(ChunkEvent.Load event) {
-        if (!(event.getLevel() instanceof ServerLevel level)) return;
-        ChunkPos pos = event.getChunk().getPos();
-        // 结构使用固定 random_spread 网格；只有每个 36×36 区域中的候选起点才可能持有结构 Start。
-        // 在 ChunkEvent 内只做纯数学判断，不读取结构数据，也不触发任何同步区块加载。
-        ChunkPos candidate = STRUCTURE_PLACEMENT.getPotentialStructureChunk(level.getSeed(), pos.x, pos.z);
-        if (!candidate.equals(pos)) return;
+        if (!(event.getLevel() instanceof ServerLevel level)
+                || !(event.getChunk() instanceof LevelChunk chunk)) return;
+        ChunkPos pos = chunk.getPos();
+        // Queue actual starts from this already loaded chunk, never a hard-coded spacing/salt candidate.
+        // Resolve the camp identity on the existing server-tick path; do not load other chunks here.
         long packed = pos.toLong();
         Set<Long> queued = queuedChunks.computeIfAbsent(level.dimension(), ignored -> ConcurrentHashMap.newKeySet());
         if (queued.add(packed)) {
@@ -135,8 +157,9 @@ public final class BetrayalOutpostManager {
     @SubscribeEvent
     public void onLevelTick(LevelTickEvent.Post event) {
         if (!(event.getLevel() instanceof ServerLevel level)) return;
-        inspectOneLoadedChunk(level);
+        for (int i = 0; i < 8; i++) inspectOneLoadedChunk(level);
         initializeOneReadyOutpost(level);
+        if (level.getGameTime() % 20 == 0) checkNaturalCampArea(level);
     }
 
     private void inspectOneLoadedChunk(ServerLevel level) {
@@ -149,6 +172,12 @@ public final class BetrayalOutpostManager {
         LevelChunk chunk = level.getChunkSource().getChunkNow(ChunkPos.getX(packed), ChunkPos.getZ(packed));
         if (chunk == null) return;
 
+        // Command-placed camps have no vanilla StructureStart. Resume their persisted slots too.
+        for (var saved : BetrayalOutpostSavedData.get(level).pendingInChunk(level, packed)) {
+            pendingOutposts.computeIfAbsent(level.dimension(), ignored -> new ConcurrentHashMap<>())
+                    .putIfAbsent(saved.key(), new PendingOutpost(saved.key(), saved.box(), BlockPos.ZERO, Rotation.NONE));
+        }
+
         for (Map.Entry<Structure, StructureStart> entry : chunk.getAllStarts().entrySet()) {
             StructureStart start = entry.getValue();
             if (start == null || !start.isValid()) continue;
@@ -157,80 +186,120 @@ public final class BetrayalOutpostManager {
             BoundingBox box = start.getBoundingBox();
             String key = structureKey(level, box);
             BetrayalOutpostSavedData data = BetrayalOutpostSavedData.get(level);
-            if (data.contains(key)) {
+            data.confirmNaturalStructure(key);
+            if (data.isLegacySkipped(key) || data.contains(key) && data.plan(key) == null) {
+                // A confirmed start whose initialization already ended can still be cleared.
                 data.registerStructure(key, level, box, (box.minY() + box.maxY()) / 2);
-            } else {
-                pendingOutposts.computeIfAbsent(level.dimension(), ignored -> new ConcurrentHashMap<>())
-                        .putIfAbsent(key, new PendingOutpost(key, box));
+                data.markNaturalSpawnFinished(key);
+                continue;
             }
+            if (data.plan(key) != null && !data.plan(key).needsInitialization()) continue;
+            PoolElementStructurePiece piece = start.getPieces().stream()
+                    .filter(candidate -> candidate instanceof PoolElementStructurePiece)
+                    .map(candidate -> (PoolElementStructurePiece) candidate).findFirst().orElse(null);
+            if (piece == null) {
+                CallResponseMod.LOGGER.error("复仇女仆据点 {} 没有可用的结构模板片段", key);
+                data.registerStructure(key, level, box, (box.minY() + box.maxY()) / 2);
+                data.markNaturalSpawnFinished(key);
+                continue;
+            }
+            PendingOutpost natural = new PendingOutpost(key, box, piece.getPosition(), piece.getRotation());
+            natural.natural = true;
+            pendingOutposts.computeIfAbsent(level.dimension(), ignored -> new ConcurrentHashMap<>())
+                    .putIfAbsent(key, natural);
         }
     }
 
     private void initializeOneReadyOutpost(ServerLevel level) {
+        initializeOneReadyOutpost(level, null);
+    }
+
+    private void initializeOneReadyOutpost(ServerLevel level, String preferredKey) {
         Map<String, PendingOutpost> pending = pendingOutposts.get(level.dimension());
         if (pending == null || pending.isEmpty()) return;
         BetrayalOutpostSavedData savedData = BetrayalOutpostSavedData.get(level);
-        pending.entrySet().removeIf(entry -> savedData.contains(entry.getKey()));
         PendingOutpost outpost = pending.values().stream()
-                .filter(candidate -> allChunksLoaded(level, candidate.box()))
+                .filter(candidate -> candidate.nextAttempt <= level.getGameTime()
+                        && (preferredKey == null || preferredKey.equals(candidate.key))
+                        && allChunksLoaded(level, candidate.box))
                 .findFirst().orElse(null);
         if (outpost == null) return;
-        if (savedData.contains(outpost.key())) {
-            pending.remove(outpost.key());
-            return;
-        }
+        outpost.nextAttempt = level.getGameTime() + RETRY_TICKS;
         try {
-            if (!outpost.prepared) {
-                // The template already owns its LootTables. Register the placed containers before
-                // waiting for a skin-pool player or attempting to create any maids.
-                InitializationPlan plan = scanAndValidate(level, outpost);
-                int homeY = plan.validSpawnMarkers()
-                        ? plan.spawns().stream().mapToInt(spawn -> spawn.pos().getY()).sorted()
-                                .skip((MAID_COUNT - 1) / 2).findFirst().orElse(outpost.box().minY())
-                        : (outpost.box().minY() + outpost.box().maxY()) / 2;
-                savedData.registerStructure(outpost.key(), level, outpost.box(), homeY);
-                applyContainerLoot(level, outpost.key(), plan.containerLoot());
-                outpost.plan = plan;
-                outpost.prepared = true;
-                if (!plan.validSpawnMarkers()) {
-                    pending.remove(outpost.key());
-                    return;
-                }
-            }
-            ServerPlayer skinOwner = nearestPlayer(level, outpost.box());
-            InitializationPlan plan = outpost.plan;
-            int[] spawnLevels = plan.spawns().stream().mapToInt(spawn -> spawn.pos().getY()).sorted().toArray();
-            int homeY = spawnLevels[(spawnLevels.length - 1) / 2];
-            BlockPos home = new BlockPos(
-                    (outpost.box().minX() + outpost.box().maxX()) / 2,
-                    homeY,
-                    (outpost.box().minZ() + outpost.box().maxZ()) / 2);
-            List<EntityMaid> maids = createMaidGroup(level, plan.spawns(), outpost.key(), home, skinOwner, false);
-            if (maids.size() != MAID_COUNT) {
-                CallResponseMod.LOGGER.error("复仇女仆据点 {} 无法创建完整的五人小队，本次不初始化", outpost.key());
+            var existing = savedData.plan(outpost.key);
+            if (existing != null && !existing.needsSpawnWork() && existing.needsStoryWork()) {
+                placeStoryBooks(level, savedData, outpost.key);
+                if (!existing.needsStoryWork()) pending.remove(outpost.key);
                 return;
             }
-
-            // 先写入世界级持久化标记，再提交方块与实体，避免重启或区块重载重复刷出小队。
-            for (EntityMaid maid : maids) {
-                if (maid instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity revenge
-                        && plan.technicalAnchor() != null) revenge.rememberCampEntrance(outpost.box(), plan.technicalAnchor());
+            if (outpost.layout == null) {
+                var plan = savedData.plan(outpost.key);
+                outpost.layout = plan != null && !plan.markerLayout().isEmpty()
+                        ? decodeMarkerLayout(plan.markerLayout())
+                        : plan != null ? readLayout(level) : scanMarkerLayout(level, outpost.box);
             }
-            savedData.markInitialized(outpost.key());
-            savedData.registerStructure(outpost.key(), level, outpost.box(), homeY);
-            removeDevelopmentMarkers(level, plan);
-            for (EntityMaid maid : maids) {
-                if (!level.addFreshEntity(maid)) {
-                    CallResponseMod.LOGGER.error("复仇女仆据点 {} 的女仆 {} 生成失败", outpost.key(), maid.getUUID());
+            if (outpost.layout == null) {
+                InitializationPlan nativeLoot = scanAndValidate(level, outpost);
+                savedData.registerStructure(outpost.key, level, outpost.box, (outpost.box.minY() + outpost.box.maxY()) / 2);
+                applyContainerLoot(level, outpost.key, nativeLoot.containerLoot());
+                if (outpost.natural) savedData.markNaturalSpawnFinished(outpost.key);
+                pending.remove(outpost.key);
+                return;
+            }
+            CampLayout layout = outpost.layout;
+            BlockPos home = worldPos(outpost, layout.center());
+            if (!savedData.contains(outpost.key)) {
+                // Register the real StructureStart and its native loot independently of maid success.
+                ServerPlayer firstPlayer = nearestPlayer(level, outpost.box);
+                savedData.createPlan(outpost.key, newSpawnPlan(level, outpost.key, layout, outpost.forceGly),
+                        firstPlayer == null ? null : firstPlayer.getUUID(), outpost.natural);
+                for (ContainerInfo chest : layout.containers()) {
+                    if (STORY_TABLE.equals(chest.table())) {
+                        BlockPos pos = worldPos(outpost, chest.pos());
+                        savedData.setStoryChest(savedData.plan(outpost.key), pos, CampStoryBooks.registerChoice(level, pos, STORY_TABLE));
+                        break;
+                    }
+                }
+                savedData.setMarkerLayout(outpost.key, encodeMarkerLayout(layout));
+                savedData.markInitialized(outpost.key);
+                savedData.registerStructure(outpost.key, level, outpost.box, home);
+                CallResponseMod.LOGGER.info("Outpost registered: {}, {} spawn markers, {} native loot containers",
+                        outpost.key, layout.spawnCandidates().size(), layout.containers().size());
+            }
+            // A reload between registration and completion resumes only unfinished slots.
+            if (savedData.plan(outpost.key) == null) {
+                pending.remove(outpost.key);
+                return;
+            }
+            savedData.markInitialized(outpost.key);
+            savedData.registerStructure(outpost.key, level, outpost.box, home);
+            registerMissingContainers(level, savedData, outpost, layout);
+            for (BlockPos marker : layout.markers()) {
+                if (level.getBlockEntity(marker) instanceof OutpostMarkerBlockEntity) {
+                    level.setBlock(marker, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
                 }
             }
-            pending.remove(outpost.key());
-            CallResponseMod.LOGGER.info("复仇女仆据点已初始化：{}，皮肤池玩家 {}", outpost.key(), (skinOwner == null ? "pending" : skinOwner.getGameProfile().getName()));
+            spawnMissingMaids(level, savedData, outpost, layout, home);
+            placeStoryBooks(level, savedData, outpost.key);
+            settleNaturalCamp(level, savedData, outpost.key);
+            personalizeMaids(level, savedData, outpost.key, outpost.box);
+            if (!savedData.plan(outpost.key).needsInitialization()) pending.remove(outpost.key);
         } catch (RuntimeException exception) {
-            pending.remove(outpost.key());
-            CallResponseMod.LOGGER.error("复仇女仆据点初始化失败：{}", outpost.key(), exception);
+            if (++outpost.failures >= MAX_SPAWN_ATTEMPTS) {
+                pending.remove(outpost.key);
+                savedData.skipLegacy(outpost.key);
+                var plan = savedData.plan(outpost.key);
+                if (outpost.natural || plan != null && plan.natural()) {
+                    savedData.registerStructure(outpost.key, level, outpost.box, (outpost.box.minY() + outpost.box.maxY()) / 2);
+                    savedData.markNaturalSpawnFinished(outpost.key);
+                }
+            }
+            CallResponseMod.LOGGER.error("Outpost initialization failed ({}/{}): {}",
+                    outpost.failures, MAX_SPAWN_ATTEMPTS, outpost.key, exception);
         }
     }
+
+
 
     private static InitializationPlan scanAndValidate(ServerLevel level, PendingOutpost outpost) {
         Map<BlockPos, ResourceKey<LootTable>> containers = new HashMap<>();
@@ -254,6 +323,7 @@ public final class BetrayalOutpostManager {
         }
 
         List<OutpostMarkerBlockEntity> markers = collectMarkers(level, box);
+        markers.removeIf(OutpostMarkerBlockEntity::isWanderingCamp);
         long anchors = markers.stream().filter(OutpostMarkerBlockEntity::isAnchor).count();
         List<MarkerSpawn> spawns = toSpawns(markers);
         long fixedSpawns = spawns.stream().filter(spawn -> spawn.role().toMaidRole() != null).count();
@@ -274,7 +344,15 @@ public final class BetrayalOutpostManager {
             BlockEntity blockEntity = level.getBlockEntity(entry.getKey());
             if (blockEntity instanceof RandomizableContainerBlockEntity container
                     && entry.getValue().equals(container.getLootTable())) {
-                data.registerLootChest(level, campKey, entry.getKey(),
+                BlockPos pos = entry.getKey();
+                BlockPos otherHalf = null;
+                BlockState state = container.getBlockState();
+                if (state.getBlock() instanceof ChestBlock && state.getValue(ChestBlock.TYPE) != ChestType.SINGLE) {
+                    BlockPos partner = pos.relative(ChestBlock.getConnectedDirection(state));
+                    if (level.getBlockEntity(partner) instanceof RandomizableContainerBlockEntity companion
+                            && companion.getLootTable() == null) otherHalf = partner;
+                }
+                data.registerLootChest(level, campKey, pos, otherHalf,
                         container.getLootTable().location(), container.getLootTableSeed());
             }
         }
@@ -359,65 +437,22 @@ public final class BetrayalOutpostManager {
      * 让不祥之兆可以在调试营地里正常触发袭击。forceGly 为 true 时本次强制一只 GLY。
      */
     public static boolean debugGenerate(ServerLevel level, BlockPos origin, ServerPlayer player, boolean forceGly) {
-        ResourceLocation templateId =
-                ResourceLocation.fromNamespaceAndPath(CallResponseMod.MOD_ID, "betrayal_maid_outpost_final");
-        StructureTemplate template = level.getStructureManager().getOrCreate(templateId);
-        StructurePlaceSettings settings = new StructurePlaceSettings();
-        if (!template.placeInWorld(level, origin, origin, settings, level.getRandom(), Block.UPDATE_ALL)) {
-            return false;
-        }
-
-        net.minecraft.core.Vec3i size = template.getSize();
-        int minX = origin.getX();
-        int minY = origin.getY();
-        int minZ = origin.getZ();
-        int maxX = minX + size.getX() - 1;
-        int maxY = minY + size.getY() - 1;
-        int maxZ = minZ + size.getZ() - 1;
-
-        BoundingBox box = new BoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
-        List<OutpostMarkerBlockEntity> markers = collectMarkers(level, box);
-
-        List<OutpostMarkerBlockEntity> anchors = markers.stream()
-                .filter(OutpostMarkerBlockEntity::isAnchor).toList();
-        if (anchors.size() != 1) {
-            CallResponseMod.LOGGER.error("调试生成失败：需要 1 个 outpost_anchor，实际 {}", anchors.size());
-            return false;
-        }
-        BlockPos home = anchors.get(0).getBlockPos();
-
-        // 调试营地也要写进世界数据，否则 findAt 找不到营地，不祥之兆不会转成营地袭击。
-        String campKey = structureKey(level, box);
-        BetrayalOutpostSavedData savedData = BetrayalOutpostSavedData.get(level);
-        savedData.registerStructure(campKey, level, box, home.getY());
-
-        List<MarkerSpawn> spawns = toSpawns(markers);
-        if (spawns.size() < MAID_COUNT) {
-            CallResponseMod.LOGGER.error("调试生成失败：出生标记不足 {} 个，实际 {}", MAID_COUNT, spawns.size());
-            return false;
-        }
-
-        List<EntityMaid> maids = createMaidGroup(level, spawns, campKey, home, player, forceGly);
-        if (maids.size() != MAID_COUNT) {
-            CallResponseMod.LOGGER.error("调试生成失败：无法按标记凑出 {} 人小队（固定角色标记过多或候选点不足）", MAID_COUNT);
-            return false;
-        }
-        for (EntityMaid maid : maids) {
-            if (!level.addFreshEntity(maid)) {
-                CallResponseMod.LOGGER.error("调试生成失败：女仆 {} 未能加入世界", maid.getUUID());
-                return false;
-            }
-        }
-        savedData.markInitialized(campKey);
-
-        // 调试营地也登记模板自带的表和种子，沿用本地开箱警戒及认可结算。
-        applyContainerLoot(level, campKey, scanAndValidate(level, new PendingOutpost(campKey, box)).containerLoot());
-
-        for (OutpostMarkerBlockEntity marker : markers) {
-            level.removeBlock(marker.getBlockPos(), false);
-        }
-        CallResponseMod.LOGGER.info("调试生成复仇女仆据点：{}，campKey={}，forceGly={}", origin, campKey, forceGly);
-        return true;
+        if (instance == null) return false;
+        StructureTemplate template = level.getStructureManager().getOrCreate(
+                ResourceLocation.fromNamespaceAndPath("callresponse", "betrayal_maid_outpost_final"));
+        var size = template.getSize();
+        BoundingBox box = new BoundingBox(origin.getX(), origin.getY(), origin.getZ(),
+                origin.getX() + size.getX() - 1, origin.getY() + size.getY() - 1, origin.getZ() + size.getZ() - 1);
+        String key = structureKey(level, box);
+        if (BetrayalOutpostSavedData.get(level).contains(key)) return false;
+        if (!template.placeInWorld(level, origin, origin,
+                new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(),
+                level.getRandom(), Block.UPDATE_ALL)) return false;
+        PendingOutpost pending = new PendingOutpost(key, box, origin, Rotation.NONE);
+        pending.forceGly = forceGly;
+        instance.pendingOutposts.computeIfAbsent(level.dimension(), ignored -> new ConcurrentHashMap<>()).put(key, pending);
+        instance.initializeOneReadyOutpost(level, key);
+        return BetrayalOutpostSavedData.get(level).plan(key) != null;
     }
 
     /** 击杀数直接写入真实 MAX_HEALTH，不再创建第二层伤害血池。 */
@@ -426,8 +461,7 @@ public final class BetrayalOutpostManager {
         AttributeInstance maxHealth = maid.getAttribute(Attributes.MAX_HEALTH);
         if (maxHealth == null) return;
 
-        double limit = BetrayalOutpostMaxHealth.ensureAndGetLimit();
-        double bonus = Math.min(maidKills, Math.max(0.0D, limit - maid.getMaxHealth()));
+        double bonus = BetrayalOutpostMaxHealth.computeRevengeHealthBonus(maidKills, maid.getMaxHealth());
         maxHealth.setBaseValue(maxHealth.getBaseValue() + bonus);
         maid.setHealth(maid.getMaxHealth());
     }
@@ -472,7 +506,7 @@ public final class BetrayalOutpostManager {
             }
             case GLY -> {
                 giveGlyBoombox(maid);
-                addGlySign(maid);
+                addGlySign(maid, false);
             }
         }
     }
@@ -494,9 +528,8 @@ public final class BetrayalOutpostManager {
     };
     private static final SignText glySignText = new SignText(glyTexts, glyTexts.clone(), DyeColor.CYAN, true);
 
-    private static void addGlySign(EntityMaid maid) {
-        // 彩蛋牌子只作展示：旁边的女仆看到不会被威慑
-        MaidSignManager.attach(maid, Items.OAK_SIGN, false);
+    public static void addGlySign(EntityMaid maid, boolean scareOnlookers) {
+        MaidSignManager.attach(maid, Items.OAK_SIGN, scareOnlookers);
         MaidSignManager.setText(maid, glySignText);
     }
 
@@ -524,6 +557,8 @@ public final class BetrayalOutpostManager {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void coordinateOutpostStacking(EntityTickEvent.Post event) {
+        if (event.getEntity() instanceof EntityMaid surrendered
+                && com.github.JumDa5he.callresponse.compat.winefox.WineFoxSurrender.isSurrendered(surrendered)) return;
         if (event.getEntity() instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity) return;
         if (event.getEntity() instanceof EntityMaid maid && !maid.level().isClientSide
                 && BetrayalOutpostMaidData.isOutpostMaid(maid)) {
@@ -550,7 +585,13 @@ public final class BetrayalOutpostManager {
         if (!(event.getEntity() instanceof EntityMaid victim)
                 || !BetrayalOutpostMaidData.isOutpostMaid(victim)) return;
 
-        Entity attacker = event.getSource().getEntity();
+        Entity attacker = com.github.JumDa5he.callresponse.compat.winefox.WineFoxFaction.resolveAttacker(event.getSource());
+        if (com.github.JumDa5he.callresponse.compat.winefox.WineFoxFaction.blocksAttack(attacker, victim)) {
+            if (attacker instanceof EntityMaid attackingMaid)
+                BetrayalOutpostAlertManager.clearFriendlyTargets(attackingMaid);
+            event.setCanceled(true);
+            return;
+        }
         if (attacker instanceof EntityMaid attackingMaid
                 && BetrayalOutpostMaidData.areSisters(attackingMaid, victim)) {
             attackingMaid.setTarget(null);
@@ -561,17 +602,21 @@ public final class BetrayalOutpostManager {
     }
 
     /** GLY 只说话不还手；受到有来源的攻击时从 hurt_lines 里说一句。 */
-    @SubscribeEvent
-    public void onGlyHurt(LivingDamageEvent.Pre event) {
-        if (!(event.getEntity() instanceof EntityMaid maid) || maid.level().isClientSide) return;
-        if (!BetrayalOutpostMaidData.isOutpostMaid(maid) || !BetrayalOutpostMaidData.isGly(maid)) return;
-        if (event.getSource().is(DamageTypes.STARVE)) return;
-        if (event.getSource().getEntity() == null && event.getSource().getDirectEntity() == null) return;
+    public static void onGlyHurt(EntityMaid maid, DamageSource source) {
+        if (!BetrayalOutpostMaidData.isOutpostMaid(maid) || !BetrayalOutpostMaidData.isGly(maid)
+                || com.github.JumDa5he.callresponse.compat.winefox.WineFoxSurrender.isSurrendered(maid)
+                || source.is(DamageTypes.STARVE)) return;
+        Entity attacker = source.getEntity();
+        if (attacker == null) attacker = source.getDirectEntity();
+        if (attacker == null) return;
         BetrayalOutpostMaidData.tickGlyHurtDialogue(maid);
-        Entity attacker = event.getSource().getEntity();
-        if (attacker != null && attacker != maid) {
-            BetrayalOutpostMaidData.startGlyFlee(maid, attacker);
-        }
+        BetrayalOutpostMaidData.startGlyFlee(maid, attacker);
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void preventGlyCombat(net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent event) {
+        if (event.getEntity() instanceof EntityMaid maid && BetrayalOutpostMaidData.isOutpostMaid(maid)
+                && BetrayalOutpostMaidData.isGly(maid)) event.setNewAboutToBeSetTarget(null);
     }
 
     @SubscribeEvent
@@ -674,14 +719,7 @@ public final class BetrayalOutpostManager {
     }
 
     private static ServerPlayer nearestPlayer(ServerLevel level, BoundingBox box) {
-        double centerX = (box.minX() + box.maxX() + 1) * 0.5D;
-        double centerY = (box.minY() + box.maxY() + 1) * 0.5D;
-        double centerZ = (box.minZ() + box.maxZ() + 1) * 0.5D;
-        return level.getServer().getPlayerList().getPlayers().stream()
-                // 这里只用玩家 UUID 选择一次流浪名册皮肤；旁观/创造玩家也必须能触发结构初始化。
-                .filter(player -> player.serverLevel() == level && player.isAlive())
-                .min(Comparator.comparingDouble(player -> player.distanceToSqr(centerX, centerY, centerZ)))
-                .orElse(null);
+        return nearestPlayerWithin(level, box, Double.POSITIVE_INFINITY);
     }
 
     private static String structureKey(ServerLevel level, BoundingBox box) {
@@ -718,21 +756,439 @@ public final class BetrayalOutpostManager {
     private record MarkerSpawn(BlockPos pos, OutpostMarkerRole role) {
     }
 
+    @SubscribeEvent
+    public void onPlayerTick(PlayerTickEvent.Post event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)
+                || player.tickCount % 20 != 0) return;
+        deliverClearRewards(player);
+        ServerLevel level = player.serverLevel();
+        BetrayalOutpostSavedData data = BetrayalOutpostSavedData.get(level);
+        BetrayalOutpostSavedData.Outpost camp = data.findAt(level, player.blockPosition());
+        if (camp != null && data.plan(camp.key()) != null && data.plan(camp.key()).needsPersonalization()) {
+            personalizeMaids(level, data, camp.key(), camp.box());
+        }
+    }
+
+    private static List<BetrayalOutpostSavedData.SpawnSlot> newSpawnPlan(ServerLevel level, String key, CampLayout layout, boolean forceGly) {
+        List<Integer> shuffled = new ArrayList<>();
+        List<Integer> fixed = new ArrayList<>();
+        for (int i = 0; i < layout.spawnCandidates().size(); i++) {
+            if (layout.roles().get(i) == OutpostMarkerRole.NONE) shuffled.add(i);
+            else fixed.add(i);
+        }
+        Collections.shuffle(shuffled, new java.util.Random(level.getRandom().nextLong()));
+        if (fixed.size() > 5 || fixed.size() + shuffled.size() < 5) {
+            throw new IllegalStateException("Camp markers cannot supply exactly five roles");
+        }
+        fixed.addAll(shuffled.subList(0, 5 - fixed.size()));
+        shuffled = fixed;
+        List<BetrayalOutpostMaidData.Role> roles = new ArrayList<>(List.of(
+                BetrayalOutpostMaidData.Role.HEAVY,
+                BetrayalOutpostMaidData.Role.SWORDSMAN,
+                BetrayalOutpostMaidData.Role.SWORDSMAN,
+                BetrayalOutpostMaidData.Role.FARMER,
+                BetrayalOutpostMaidData.Role.FEEDER));
+        List<BetrayalOutpostMaidData.Role> assigned = new ArrayList<>();
+        for (int index : shuffled) {
+            var role = layout.roles().get(index).toMaidRole();
+            assigned.add(role);
+            if (role != null) roles.remove(role);
+        }
+        Collections.shuffle(roles, new java.util.Random(level.getRandom().nextLong()));
+        int spare = 0;
+        for (int i = 0; i < assigned.size(); i++) {
+            if (assigned.get(i) == null) assigned.set(i, roles.get(spare++));
+        }
+        if (!assigned.contains(BetrayalOutpostMaidData.Role.GLY)
+                && (forceGly || level.getRandom().nextFloat() < 0.01F)) {
+            assigned.set(level.getRandom().nextInt(5), BetrayalOutpostMaidData.Role.GLY);
+        }
+        List<BetrayalOutpostSavedData.SpawnSlot> slots = new ArrayList<>(5);
+        for (int i = 0; i < 5; i++) {
+            UUID id = UUID.nameUUIDFromBytes((key + "|revenge-maid|" + i).getBytes(StandardCharsets.UTF_8));
+            slots.add(new BetrayalOutpostSavedData.SpawnSlot(shuffled.get(i), assigned.get(i).name(), id, 0, false, false));
+        }
+        return slots;
+    }
+
+    private static void registerMissingContainers(ServerLevel level, BetrayalOutpostSavedData data,
+                                                  PendingOutpost outpost, CampLayout layout) {
+        for (ContainerInfo container : layout.containers()) {
+            data.registerLootChest(level, outpost.key, worldPos(outpost, container.pos()),
+                    container.otherHalf() == null ? null : worldPos(outpost, container.otherHalf()),
+                    container.table(), container.seed());
+        }
+    }
+
+    private static void spawnMissingMaids(ServerLevel level, BetrayalOutpostSavedData data,
+                                          PendingOutpost outpost, CampLayout layout, BlockPos home) {
+        List<BetrayalOutpostSavedData.SpawnSlot> slots = data.plan(outpost.key).slots();
+        for (int i = 0; i < slots.size(); i++) {
+            BetrayalOutpostSavedData.SpawnSlot slot = slots.get(i);
+            if (slot.spawned() || slot.attempts() >= MAX_SPAWN_ATTEMPTS) continue;
+            Entity existing = level.getEntity(slot.entityId());
+            if (existing instanceof EntityMaid maid && BetrayalOutpostMaidData.isOutpostMaid(maid)
+                    && outpost.key.equals(BetrayalOutpostMaidData.group(maid))) {
+                if (BetrayalOutpostMaidData.isGly(maid)) data.confirmStoryGly(data.plan(outpost.key));
+                data.updateSlot(outpost.key, i, new BetrayalOutpostSavedData.SpawnSlot(
+                        slot.candidate(), slot.role(), slot.entityId(), slot.attempts(), true, false));
+                continue;
+            }
+            BlockPos pos = worldPos(outpost, layout.spawnCandidates().get(slot.candidate()));
+            if (existing != null || !level.getBlockState(pos).isAir()
+                    || !level.getBlockState(pos.above()).isAir()
+                    || !level.getBlockState(pos.below()).isFaceSturdy(level, pos.below(), net.minecraft.core.Direction.UP)) {
+                recordSpawnFailure(data, outpost.key, i, slot, "出生位置被占用或没有安全地面：" + pos);
+                continue;
+            }
+            try {
+                EntityMaid maid = createOutpostMaid(level, pos, home, outpost.key, slot);
+                if (maid instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity revenge)
+                    revenge.rememberCampEntrance(outpost.box, home);
+                if (maid == null || !level.addFreshEntity(maid)) {
+                    recordSpawnFailure(data, outpost.key, i, slot, "女仆未能加入世界：" + pos);
+                    continue;
+                }
+                // A slot becomes complete only after the real entity successfully enters the level.
+                if (BetrayalOutpostMaidData.isGly(maid)) data.confirmStoryGly(data.plan(outpost.key));
+                data.updateSlot(outpost.key, i, new BetrayalOutpostSavedData.SpawnSlot(
+                        slot.candidate(), slot.role(), slot.entityId(), slot.attempts(), true, false));
+            } catch (RuntimeException exception) {
+                recordSpawnFailure(data, outpost.key, i, slot, "实体初始化异常：" + pos);
+                CallResponseMod.LOGGER.error("复仇女仆据点 {} 第 {} 个出生位异常", outpost.key, i + 1, exception);
+            }
+        }
+    }
+
+    public static boolean useRecruitedStory(ServerLevel level, BlockPos pos) {
+        var plan = BetrayalOutpostSavedData.get(level).storyPlanAt(level, pos, STORY_TABLE);
+        return plan == null ? CampStoryBooks.selectNew(level, pos) : plan.recruitedStory();
+    }
+
+    public static boolean hasStoryGly(ServerLevel level, BlockPos pos) {
+        var plan = BetrayalOutpostSavedData.get(level).storyPlanAt(level, pos, STORY_TABLE);
+        return plan != null && plan.hasStoryGly();
+    }
+
+    public static boolean storyPending(ServerLevel level, BlockPos pos) {
+        var data = BetrayalOutpostSavedData.get(level);
+        var plan = data.storyPlanAt(level, pos, STORY_TABLE);
+        if (plan != null) return plan.storyGlyPending();
+        // A first personal opening can arrive before the queued StructureStart is processed.
+        var pending = instance == null ? null : instance.pendingOutposts.get(level.dimension());
+        if (pending != null && pending.values().stream()
+                .anyMatch(camp -> camp.box.isInside(pos) && data.plan(camp.key) == null)) return true;
+        var chunk = level.getChunkSource().getChunkNow(pos.getX() >> 4, pos.getZ() >> 4);
+        var structure = level.registryAccess().registryOrThrow(Registries.STRUCTURE).get(STRUCTURE_ID);
+        if (chunk == null || structure == null) return false;
+        if (awaitingStoryRegistration(level, data, pos, chunk.getStartForStructure(structure))) return true;
+        for (long packed : chunk.getReferencesForStructure(structure)) {
+            LevelChunk startChunk = level.getChunkSource().getChunkNow(ChunkPos.getX(packed), ChunkPos.getZ(packed));
+            if (startChunk == null || awaitingStoryRegistration(level, data, pos, startChunk.getStartForStructure(structure)))
+                return true;
+        }
+        return false;
+    }
+
+    private static boolean awaitingStoryRegistration(ServerLevel level, BetrayalOutpostSavedData data,
+                                                       BlockPos pos, StructureStart start) {
+        if (start == null || !start.isValid() || !start.getBoundingBox().isInside(pos)) return false;
+        String camp = structureKey(level, start.getBoundingBox());
+        return data.plan(camp) == null && !data.isLegacySkipped(camp);
+    }
+
+    /** Only a physical vanilla fill writes this receipt; personal rolls never settle another inventory. */
+    public static void markTableGly(ServerLevel level, RandomizableContainerBlockEntity chest) {
+        var data = BetrayalOutpostSavedData.get(level);
+        var plan = data.storyPlanAt(level, chest.getBlockPos(), STORY_TABLE);
+        if (plan == null || !plan.hasStoryGly()) return;
+        chest.getPersistentData().putUUID(GLY_BOOK_RECEIPT, plan.instanceId());
+        chest.setChanged();
+        data.markStoryIssued(plan, true);
+    }
+
+    private static void placeStoryBooks(ServerLevel level, BetrayalOutpostSavedData data, String camp) {
+        var plan = data.plan(camp);
+        if (!plan.needsStoryWork()) return;
+        BlockPos pos = plan.storyChest();
+        var binding = data.lootChest(level, pos);
+        if (!(level.getBlockEntity(pos) instanceof RandomizableContainerBlockEntity chest)) {
+            data.retireStoryChest(plan);
+            return;
+        }
+        boolean bound = binding != null && camp.equals(binding.campKey()) && STORY_TABLE.equals(binding.lootTable());
+        var table = chest.getLootTable();
+        boolean personal = CampStoryBooks.isPersonalChest(chest);
+        if ((table != null && STORY_TABLE.equals(table.location()) && (bound || personal && binding == null))
+                || (table == null && personal && bound)) {
+            // The table owns unopened chests, including each independent personal roll.
+            // Clearing the pending table here would prevent later conversion by Lootr.
+            data.markStoryIssued(plan, false);
+            if (plan.hasStoryGly()) data.markStoryIssued(plan, true);
+            return;
+        }
+        if (!bound || table != null || personal) {
+            data.retireStoryChest(plan);
+            return;
+        }
+        CompoundTag chestData = chest.getPersistentData();
+        if (!STORY_TABLE.toString().equals(chestData.getString(CampStoryBooks.TABLE_RECEIPT))) {
+            // Coordinates alone are insufficient: a player may have replaced the original chest.
+            data.retireStoryChest(plan);
+            return;
+        }
+        // The native story table supplies exactly one regular book, including if a hopper or
+        // player already unpacked it. Never replace an item the player took with a second book.
+        if (!plan.normalStoryIssued()) data.markStoryIssued(plan, false);
+        if (!plan.needsStoryWork()) return;
+        if (chestData.hasUUID(GLY_BOOK_RECEIPT) && plan.instanceId().equals(chestData.getUUID(GLY_BOOK_RECEIPT))) {
+            data.markStoryIssued(plan, true);
+            return;
+        }
+        for (int slot = 0; slot < chest.getContainerSize(); slot++) {
+            if (!chest.getItem(slot).isEmpty()) continue;
+            chest.setItem(slot, CampStoryBooks.OUTPOST_GLY.create());
+            chestData.putUUID(GLY_BOOK_RECEIPT, plan.instanceId());
+            chest.setChanged();
+            data.markStoryIssued(plan, true);
+            return;
+        }
+        // A full story chest keeps its pending receipt until a slot is free.
+    }
+
+    private static void recordSpawnFailure(BetrayalOutpostSavedData data, String key, int index,
+                                           BetrayalOutpostSavedData.SpawnSlot slot, String reason) {
+        int attempts = slot.attempts() + 1;
+        data.updateSlot(key, index, new BetrayalOutpostSavedData.SpawnSlot(
+                slot.candidate(), slot.role(), slot.entityId(), attempts, false, false));
+        CallResponseMod.LOGGER.error("复仇女仆据点 {} 第 {} 个出生位失败（{}/{}）：{}",
+                key, index + 1, attempts, MAX_SPAWN_ATTEMPTS, reason);
+    }
+
+    private static EntityMaid createOutpostMaid(ServerLevel level, BlockPos pos, BlockPos home,
+                                                 String group, BetrayalOutpostSavedData.SpawnSlot slot) {
+        var maid = com.github.JumDa5he.callresponse.compat.outpost.entity.OutpostEntities.REVENGE_MAID.get().create(level);
+        if (maid == null) return null;
+        maid.moveTo(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D,
+                level.getRandom().nextFloat() * 360.0F, 0.0F);
+        maid.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.STRUCTURE, null);
+        maid.setUUID(slot.entityId());
+        initializeMaid(maid, group, BetrayalOutpostMaidData.Role.valueOf(slot.role()), home);
+        return maid;
+    }
+
+
+    private static void personalizeMaids(ServerLevel level, BetrayalOutpostSavedData data,
+                                         String campKey, BoundingBox box) {
+        BetrayalOutpostSavedData.CampPlan plan = data.plan(campKey);
+        if (plan.referencePlayer() == null) {
+            ServerPlayer nearby = nearestPlayerWithin(level, box, 64.0D);
+            if (nearby == null) return;
+            data.setReferencePlayer(campKey, nearby.getUUID());
+        }
+        ServerPlayer reference = level.getServer().getPlayerList().getPlayer(plan.referencePlayer());
+        if (reference == null) return;
+        int maidKills = Math.max(0, reference.getStats().getValue(Stats.ENTITY_KILLED.get(EntityMaid.TYPE)));
+        List<BetrayalOutpostSavedData.SpawnSlot> slots = plan.slots();
+        for (int i = 0; i < slots.size(); i++) {
+            BetrayalOutpostSavedData.SpawnSlot slot = slots.get(i);
+            if (!slot.spawned() || slot.personalized()) continue;
+            Entity entity = level.getEntity(slot.entityId());
+            if (entity instanceof EntityMaid maid && BetrayalOutpostMaidData.isOutpostMaid(maid)
+                    && campKey.equals(BetrayalOutpostMaidData.group(maid))) {
+                if (!maid.getPersistentData().getBoolean("CallResponseOutpostPersonalized")) {
+                    maid.setModelId(WanderingMaidManager.selectSharedModel(level, reference.getUUID()));
+                    if (!BetrayalOutpostMaidData.isGly(maid)) applyRevengeHealth(maid, maidKills);
+                    maid.setHealth(maid.getMaxHealth());
+                    maid.getPersistentData().putBoolean("CallResponseOutpostPersonalized", true);
+                }
+            }
+            // A missing entity may already have been killed. Never recreate it for personalization.
+            data.updateSlot(campKey, i, new BetrayalOutpostSavedData.SpawnSlot(
+                    slot.candidate(), slot.role(), slot.entityId(), slot.attempts(), true, true));
+        }
+    }
+
+    private static CampLayout readLayout(ServerLevel level) {
+        try (Reader reader = new InputStreamReader(level.getServer().getResourceManager()
+                .getResource(LAYOUT_ID).orElseThrow(() -> new IOException("Missing " + LAYOUT_ID))
+                .open(), StandardCharsets.UTF_8)) {
+            JsonObject object = JsonParser.parseReader(reader).getAsJsonObject();
+            BlockPos center = parsePos(object.getAsJsonArray("center"));
+            List<BlockPos> candidates = new ArrayList<>();
+            for (var point : object.getAsJsonArray("spawnCandidates")) {
+                candidates.add(parsePos(point.getAsJsonArray()));
+            }
+            List<ContainerInfo> containers = new ArrayList<>();
+            for (var entry : object.getAsJsonArray("containers")) {
+                JsonObject container = entry.getAsJsonObject();
+                BlockPos other = container.get("otherHalf").isJsonNull() ? null
+                        : parsePos(container.getAsJsonArray("otherHalf"));
+                containers.add(new ContainerInfo(parsePos(container.getAsJsonArray("pos")), other,
+                        ResourceLocation.parse(container.get("table").getAsString()), 0L));
+            }
+            if (candidates.size() != 10 || containers.size() != 15) {
+                throw new IllegalStateException("Unexpected camp layout size");
+            }
+            return new CampLayout(center, List.copyOf(candidates), List.copyOf(containers),
+                    Collections.nCopies(candidates.size(), OutpostMarkerRole.NONE), List.of(), false);
+        } catch (IOException | RuntimeException exception) {
+            CallResponseMod.LOGGER.error("复仇女仆营地布局资源无法加载：{}", LAYOUT_ID, exception);
+            return null;
+        }
+    }
+
+    private static BlockPos parsePos(JsonArray array) {
+        if (array.size() != 3) throw new IllegalStateException("Expected XYZ in camp layout");
+        return new BlockPos(array.get(0).getAsInt(), array.get(1).getAsInt(), array.get(2).getAsInt());
+    }
+
+    private static BlockPos worldPos(PendingOutpost outpost, BlockPos local) {
+        if (outpost.layout != null && outpost.layout.worldCoordinates()) return local;
+        return outpost.origin.offset(StructureTemplate.transform(local, Mirror.NONE, outpost.rotation, BlockPos.ZERO));
+    }
+
+    /** Only loaded block entities: no volume scan, ore scan or forced chunk load. */
+    private static CampLayout scanMarkerLayout(ServerLevel level, BoundingBox box) {
+        List<OutpostMarkerBlockEntity> markers = new ArrayList<>();
+        List<ContainerInfo> containers = new ArrayList<>();
+        for (int x = box.minX() >> 4; x <= box.maxX() >> 4; x++) {
+            for (int z = box.minZ() >> 4; z <= box.maxZ() >> 4; z++) {
+                LevelChunk chunk = level.getChunkSource().getChunkNow(x, z);
+                if (chunk == null) continue;
+                for (BlockEntity entity : chunk.getBlockEntities().values()) {
+                    BlockPos pos = entity.getBlockPos();
+                    if (!box.isInside(pos)) continue;
+                    if (entity instanceof OutpostMarkerBlockEntity marker) {
+                        markers.add(marker);
+                    } else if (entity instanceof RandomizableContainerBlockEntity chest) {
+                        CompoundTag nbt = entity.saveWithoutMetadata(level.registryAccess());
+                        var pendingTable = chest.getLootTable();
+                        ResourceLocation table = pendingTable == null
+                                ? ResourceLocation.tryParse(nbt.getString("LootTable")) : pendingTable.location();
+                        // A player/hopper can unpack the original story table before a complete
+                        // structure is ready. The native fill hook leaves its receipt in that chest.
+                        if (!nbt.contains("LootTable") && STORY_TABLE.toString().equals(
+                                nbt.getCompound("NeoForgeData").getString(CampStoryBooks.TABLE_RECEIPT))) {
+                            table = STORY_TABLE;
+                        }
+                        if (table == null || !table.getNamespace().equals("callresponse")
+                                || !Set.of("chests/betrayal_outpost_kitchen", "chests/betrayal_outpost_storage",
+                                "chests/betrayal_outpost_enchanted", "chests/betrayal_outpost_valuables",
+                                "chests/betrayal_outpost_story").contains(table.getPath())) continue;
+                        BlockPos other = null;
+                        var state = entity.getBlockState();
+                        if (state.getBlock() instanceof ChestBlock && state.getValue(ChestBlock.TYPE) != ChestType.SINGLE) {
+                            other = pos.relative(ChestBlock.getConnectedDirection(state));
+                            BlockEntity companion = level.getBlockEntity(other);
+                            // New collaborator templates can intentionally give each half its own roll.
+                            // Only alias an empty half; never make two loot-bearing halves alias each other.
+                            if (companion != null && companion.saveWithoutMetadata(level.registryAccess()).contains("LootTable")) other = null;
+                        }
+                        containers.add(new ContainerInfo(pos.immutable(), other, table, nbt.getLong("LootTableSeed")));
+                    }
+                }
+            }
+        }
+        // The same technical block can belong to an explicitly different camp type.
+        markers.removeIf(OutpostMarkerBlockEntity::isWanderingCamp);
+        var anchors = markers.stream().filter(OutpostMarkerBlockEntity::isAnchor).toList();
+        if (anchors.size() != 1) {
+            CallResponseMod.LOGGER.warn("Outpost {} has {} anchors; leaving legacy/unmarked structure untouched", box, anchors.size());
+            return null;
+        }
+        var spawns = markers.stream().filter(marker -> !marker.isAnchor())
+                .sorted(Comparator.comparingLong(marker -> marker.getBlockPos().asLong())).toList();
+        return new CampLayout(anchors.get(0).getBlockPos().immutable(),
+                spawns.stream().map(marker -> marker.getBlockPos().immutable()).toList(), List.copyOf(containers),
+                spawns.stream().map(OutpostMarkerBlockEntity::spawnRole).toList(),
+                markers.stream().map(marker -> marker.getBlockPos().immutable()).toList(), true);
+    }
+
+    /** Snapshot before markers are removed; failed slots resume without re-drawing GLY or roles. */
+    private static CompoundTag encodeMarkerLayout(CampLayout layout) {
+        CompoundTag tag = new CompoundTag();
+        tag.putLong("Center", layout.center().asLong());
+        ListTag spawns = new ListTag();
+        for (int i = 0; i < layout.spawnCandidates().size(); i++) {
+            CompoundTag point = new CompoundTag();
+            point.putLong("Pos", layout.spawnCandidates().get(i).asLong());
+            point.putString("Role", layout.roles().get(i).name());
+            spawns.add(point);
+        }
+        tag.put("Spawns", spawns);
+        ListTag containers = new ListTag();
+        for (ContainerInfo container : layout.containers()) {
+            CompoundTag entry = new CompoundTag();
+            entry.putLong("Pos", container.pos().asLong());
+            if (container.otherHalf() != null) entry.putLong("Other", container.otherHalf().asLong());
+            entry.putString("Table", container.table().toString());
+            entry.putLong("Seed", container.seed());
+            containers.add(entry);
+        }
+        tag.put("Containers", containers);
+        tag.putLongArray("Markers", layout.markers().stream().mapToLong(BlockPos::asLong).toArray());
+        return tag;
+    }
+
+    private static CampLayout decodeMarkerLayout(CompoundTag tag) {
+        List<BlockPos> spawns = new ArrayList<>();
+        List<OutpostMarkerRole> roles = new ArrayList<>();
+        for (Tag value : tag.getList("Spawns", Tag.TAG_COMPOUND)) {
+            CompoundTag point = (CompoundTag) value;
+            spawns.add(BlockPos.of(point.getLong("Pos")));
+            roles.add(OutpostMarkerRole.valueOf(point.getString("Role")));
+        }
+        List<ContainerInfo> containers = new ArrayList<>();
+        for (Tag value : tag.getList("Containers", Tag.TAG_COMPOUND)) {
+            CompoundTag entry = (CompoundTag) value;
+            containers.add(new ContainerInfo(BlockPos.of(entry.getLong("Pos")),
+                    entry.contains("Other") ? BlockPos.of(entry.getLong("Other")) : null,
+                    ResourceLocation.parse(entry.getString("Table")), entry.getLong("Seed")));
+        }
+        return new CampLayout(BlockPos.of(tag.getLong("Center")), spawns, containers, roles,
+                java.util.Arrays.stream(tag.getLongArray("Markers")).mapToObj(BlockPos::of).toList(), true);
+    }
+
+
+    private static ServerPlayer nearestPlayerWithin(ServerLevel level, BoundingBox box, double range) {
+        double centerX = (box.minX() + box.maxX() + 1) * 0.5D;
+        double centerY = (box.minY() + box.maxY() + 1) * 0.5D;
+        double centerZ = (box.minZ() + box.maxZ() + 1) * 0.5D;
+        return level.getServer().getPlayerList().getPlayers().stream()
+                // 这里只用玩家 UUID 选择一次流浪名册皮肤；旁观/创造玩家也必须能触发结构初始化。
+                .filter(player -> player.serverLevel() == level && player.isAlive()
+                        && player.distanceToSqr(centerX, centerY, centerZ) <= range * range)
+                .min(Comparator.comparingDouble(player -> player.distanceToSqr(centerX, centerY, centerZ)))
+                .orElse(null);
+    }
+
+
+    private record ContainerInfo(BlockPos pos, BlockPos otherHalf, ResourceLocation table, long seed) {}
+    private record CampLayout(BlockPos center, List<BlockPos> spawnCandidates, List<ContainerInfo> containers,
+                              List<OutpostMarkerRole> roles, List<BlockPos> markers, boolean worldCoordinates) {}
+
     private static final class PendingOutpost {
         private final String key;
         private final BoundingBox box;
-        private InitializationPlan plan;
-        private boolean prepared;
-
-        private PendingOutpost(String key, BoundingBox box) {
-            this.key = key;
-            this.box = box;
-        }
+        private final BlockPos origin;
+        private final Rotation rotation;
+        private long nextAttempt;
+        private CampLayout layout;
+        private int failures;
+        private boolean forceGly;
+        private boolean natural;
 
         private String key() { return key; }
         private BoundingBox box() { return box; }
+        private PendingOutpost(String key, BoundingBox box) { this(key, box, BlockPos.ZERO, Rotation.NONE); }
+        private PendingOutpost(String key, BoundingBox box, BlockPos origin, Rotation rotation) {
+            this.key = key;
+            this.box = box;
+            this.origin = origin;
+            this.rotation = rotation;
+        }
     }
-
     private record InitializationPlan(Map<BlockPos, ResourceKey<LootTable>> containerLoot,
                                       List<MarkerSpawn> spawns, List<BlockPos> markers,
                                       boolean validSpawnMarkers, BlockPos technicalAnchor) {
@@ -745,7 +1201,9 @@ public final class BetrayalOutpostManager {
         maid.setOwnerUUID(null);
         maid.setPersistenceRequired();
         BetrayalOutpostMaidData.initialize(maid, group, role, home);
-        maid.getFavorabilityManager().max();
+        // Use the fixed vanilla level, not an add-on's expanded maximum.
+        var favorability = maid.getFavorabilityManager();
+        favorability.add(favorability.getPointByLevel(3) - maid.getFavorability());
         maid.setTame(false, false);
         maid.setOwnerUUID(null);
         maid.setHealth(maid.getMaxHealth());
@@ -773,10 +1231,160 @@ public final class BetrayalOutpostManager {
     }
     @SubscribeEvent
     public void onOutpostCombatHurt(net.neoforged.neoforge.event.entity.living.LivingDamageEvent.Post event) {
+        if (event.getNewDamage() > 0) recordCampCombat(event.getEntity(), event.getSource());
+        if (event.getEntity() instanceof EntityMaid surrendered
+                && com.github.JumDa5he.callresponse.compat.winefox.WineFoxSurrender.isSurrendered(surrendered)) return;
         if (event.getNewDamage() > 0 && event.getEntity() instanceof EntityMaid maid
                 && BetrayalOutpostMaidData.isOutpostMaid(maid)) {
             Entity source = event.getSource().getEntity();
             BetrayalOutpostAlertManager.onHurt(maid, source instanceof LivingEntity living ? living : null);
         }
     }
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onNaturalCampAttack(LivingIncomingDamageEvent event) {
+        if (event.getAmount() > 0) recordCampCombat(event.getEntity(), event.getSource());
+    }
+
+    /** A real attributed attack is sufficient, including a hit blocked by a player's shield. */
+    public static void recordCampCombat(LivingEntity victim, net.minecraft.world.damagesource.DamageSource source) {
+        if (!(victim.level() instanceof ServerLevel)) return;
+        Entity actor = attackActor(source);
+        if (victim instanceof EntityMaid guard) registerCampParticipant(guard, actor);
+        if (actor instanceof EntityMaid guard && victim instanceof ServerPlayer player)
+            registerCampParticipant(guard, player);
+    }
+
+    private static Entity attackActor(net.minecraft.world.damagesource.DamageSource source) {
+        if (source == null) return null;
+        Entity actor = source.getEntity() != null ? source.getEntity() : source.getDirectEntity();
+        Set<UUID> visited = new java.util.HashSet<>();
+        for (int depth = 0; actor instanceof net.minecraft.world.entity.projectile.Projectile projectile
+                && depth < 8 && visited.add(actor.getUUID()); depth++) {
+            Entity owner = projectile.getOwner();
+            if (owner == null) return null;
+            actor = owner;
+        }
+        return actor;
+    }
+
+    private static void registerCampParticipant(EntityMaid guard, Entity actor) {
+        if (!(guard.level() instanceof ServerLevel level) || actor == null || actor.level() != level
+                || !BetrayalOutpostMaidData.isOutpostMaid(guard) || BetrayalOutpostMaidData.isGly(guard)
+                || com.github.JumDa5he.callresponse.compat.winefox.WineFoxSurrender.isSurrendered(guard)) return;
+        UUID owner = null;
+        if (actor instanceof ServerPlayer player) {
+            if (player.isSpectator()) return;
+            owner = player.getUUID();
+        } else if (actor instanceof net.minecraft.world.entity.OwnableEntity owned) {
+            owner = owned.getOwnerUUID(); // Standard owner UUID remains useful while the player is offline.
+        }
+        if (owner == null) return;
+        BetrayalOutpostSavedData data = BetrayalOutpostSavedData.get(level);
+        String group = BetrayalOutpostMaidData.group(guard);
+        var camp = data.findByKey(level, group);
+        if (camp == null) return;
+        double radius = BetrayalOutpostMaidData.CAMP_ACTIVITY_RADIUS;
+        if (actor.distanceToSqr(camp.center().getX() + 0.5D, camp.center().getY(), camp.center().getZ() + 0.5D)
+                <= radius * radius) data.recordParticipant(group, guard.getUUID(), owner);
+    }
+
+    /** Invoked only from the existing EntityMaid death-confirmed paths, never LivingDeathEvent. */
+    public static void onConfirmedGuardDeath(EntityMaid maid, net.minecraft.world.damagesource.DamageSource source) {
+        if (!(maid.level() instanceof ServerLevel level) || !BetrayalOutpostMaidData.isOutpostMaid(maid)
+                || BetrayalOutpostMaidData.isGly(maid)) return;
+        registerCampParticipant(maid, attackActor(source));
+        BetrayalOutpostSavedData data = BetrayalOutpostSavedData.get(level);
+        String group = BetrayalOutpostMaidData.group(maid);
+        if (data.confirmGuardDeath(group, maid.getUUID())) settleNaturalCamp(level, data, group);
+    }
+
+    public static boolean naturalRewardsAllowed(long overworldGameTime, int protectionDays) {
+        return Math.max(0L, overworldGameTime) / 24000L >= Math.max(0, Math.min(100, protectionDays));
+    }
+
+    private static void settleNaturalCamp(ServerLevel level, BetrayalOutpostSavedData data, String group) {
+        var plan = data.plan(group);
+        if (plan == null || !plan.natural() || plan.rewardSettled()) return;
+        var camp = data.findByKey(level, group);
+        List<ServerPlayer> inside = camp == null ? List.of()
+                : level.getPlayers(player -> camp.box().isInside(player.blockPosition()));
+        Set<UUID> insideIds = playerIds(inside);
+        if (!data.settleClearedCamp(group, naturalRewardsAllowed(level), insideIds)) return;
+        inside.forEach(BetrayalOutpostManager::deliverClearRewards);
+        for (UUID participant : plan.participants()) {
+            if (insideIds.contains(participant)) continue;
+            ServerPlayer player = level.getServer().getPlayerList().getPlayer(participant);
+            if (player != null) deliverClearRewards(player);
+        }
+    }
+
+    /** Recheck occupied natural camps even when a guard went missing without a death event. */
+    static void checkNaturalCampArea(ServerLevel level) {
+        if (level.players().isEmpty()) return;
+        var data = BetrayalOutpostSavedData.get(level);
+        Map<BetrayalOutpostSavedData.Outpost, List<ServerPlayer>> occupied = new HashMap<>();
+        for (ServerPlayer player : level.players()) {
+            for (var camp : data.naturalCampsAt(level, player.blockPosition())) {
+                occupied.computeIfAbsent(camp, ignored -> new ArrayList<>()).add(player);
+            }
+        }
+        for (var entry : occupied.entrySet()) {
+            var camp = entry.getKey();
+            BoundingBox box = camp.box();
+            if (!campEntitiesLoaded(level, box)) continue;
+            var guards = level.getEntitiesOfClass(EntityMaid.class, AABB.of(box), maid -> maid.isAlive()
+                    && box.isInside(maid.blockPosition()) && camp.key().equals(BetrayalOutpostMaidData.group(maid))
+                    && !BetrayalOutpostMaidData.isGly(maid));
+            if (!guards.isEmpty()) continue;
+            List<ServerPlayer> inside = entry.getValue();
+            if (data.settleEmptyCamp(camp.key(), naturalRewardsAllowed(level), playerIds(inside))) {
+                inside.forEach(BetrayalOutpostManager::deliverClearRewards);
+            }
+        }
+    }
+
+    private static boolean campEntitiesLoaded(ServerLevel level, BoundingBox box) {
+        for (int x = box.minX() >> 4; x <= box.maxX() >> 4; x++) {
+            for (int z = box.minZ() >> 4; z <= box.maxZ() >> 4; z++) {
+                LevelChunk chunk = level.getChunkSource().getChunkNow(x, z);
+                if (chunk == null || !chunk.getFullStatus().isOrAfter(FullChunkStatus.FULL)
+                        || !level.areEntitiesLoaded(ChunkPos.asLong(x, z))) return false;
+            }
+        }
+        return true;
+    }
+
+    private static Set<UUID> playerIds(List<ServerPlayer> players) {
+        Set<UUID> ids = new HashSet<>();
+        for (ServerPlayer player : players) ids.add(player.getUUID());
+        return ids;
+    }
+
+    private static boolean naturalRewardsAllowed(ServerLevel level) {
+        return naturalRewardsAllowed(level.getServer().overworld().getGameTime(),
+                com.github.JumDa5he.callresponse.config.EmotionPassiveConfig.NATURAL_PURSUIT_PROTECTION_DAYS.get());
+    }
+
+    @SubscribeEvent
+    public void onClearRewardLogin(net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) deliverClearRewards(player);
+    }
+
+    /** Serialized on the server; failed application remains pending and retries at most once per second. */
+    public static void deliverClearRewards(ServerPlayer player) {
+        if (!player.isAlive() || player.isRemoved() || !DELIVERING_CLEAR_REWARDS.add(player.getUUID())) return;
+        try {
+            BetrayalOutpostSavedData data = BetrayalOutpostSavedData.get(player.serverLevel());
+            int remainingBudget = 8;
+            for (UUID camp : data.pendingClearRewards(player.getUUID())) {
+                if (remainingBudget-- <= 0) break;
+                if (!com.github.JumDa5he.callresponse.compat.winefox.WineFoxPotions
+                        .applyMaliceReward(player, NATURAL_CLEAR_REWARD_TICKS)) break;
+                data.consumeClearReward(player.getUUID(), camp);
+            }
+        } finally {
+            DELIVERING_CLEAR_REWARDS.remove(player.getUUID());
+        }
+    }
+
 }

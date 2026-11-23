@@ -12,11 +12,11 @@ public abstract class MoreAnimationPrayMixin {
     @Inject(method="loadedMaids", at=@At("RETURN"), cancellable=true)
     private static void candidates(net.minecraft.server.level.ServerLevel level,
             CallbackInfoReturnable<java.util.List<? extends EntityMaid>> cir) {
-        cir.setReturnValue(cir.getReturnValue().stream().filter(m -> !(m instanceof RevengeMaidEntity)).toList());
+        cir.setReturnValue(cir.getReturnValue().stream().filter(m -> !com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeAddonIsolation.blocksControl(m)).toList());
     }
     @Inject(method="freezeAndFace", at=@At("HEAD"), cancellable=true)
     private static void freeze(EntityMaid maid, net.minecraft.core.BlockPos pos, CallbackInfo ci) {
-        if (maid instanceof RevengeMaidEntity) ci.cancel();
+        if (com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeAddonIsolation.blocksControl(maid)) ci.cancel();
     }
 }
 

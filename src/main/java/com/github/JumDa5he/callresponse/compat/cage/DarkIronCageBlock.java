@@ -123,6 +123,8 @@ public final class DarkIronCageBlock extends BaseEntityBlock {
     public void setPlacedBy(Level level, BlockPos pos, BlockState state,
                             @Nullable LivingEntity placer, ItemStack stack) {
         level.setBlock(pos.above(), state.setValue(HALF, DoubleBlockHalf.UPPER), Block.UPDATE_ALL);
+        if (!level.isClientSide && placer instanceof Player player
+                && level.getBlockEntity(pos) instanceof DarkIronCageBlockEntity cage) cage.setPlacer(player);
     }
 
     @Override

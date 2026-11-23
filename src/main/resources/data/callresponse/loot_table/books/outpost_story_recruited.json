@@ -1,0 +1,71 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:written_book",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_data": {
+                  "CallResponseCampStory": "outpost_story_recruited"
+                },
+                "minecraft:custom_name": "{\"translate\":\"book.callresponse.outpost_story_recruited.title\"}",
+                "minecraft:written_book_content": {
+                  "title": "outpost_story_recruited",
+                  "author": "book.callresponse.outpost_story_recruited.author",
+                  "generation": 0,
+                  "resolved": true,
+                  "pages": [
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.1\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.2\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.3\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.4\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.5\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.6\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.7\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.8\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.9\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.10\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.11\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.12\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.13\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.14\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.15\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.16\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.17\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.18\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.19\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.20\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.21\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.22\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.23\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.24\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.25\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.26\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.27\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.28\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.29\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.30\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.31\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.32\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.33\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.34\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.35\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.36\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.37\"}",
+                    "{\"translate\":\"book.callresponse.outpost_story_recruited.page.38\"}"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

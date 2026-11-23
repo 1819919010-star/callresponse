@@ -1,0 +1,38 @@
+{
+  "name": "魔怨追猎",
+  "icon": "minecraft:respawn_anchor",
+  "category": "callresponse:combat",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "清空复仇营地",
+      "text": "清空一座自然生成的$(l:callresponse:combat/19_revenge_maid_camp)复仇女仆营地$(/l)后，留在营地内的玩家各获得一级魔怨追猎，持续 60 分钟。若效果还在，等级加一，时长重置。每座营地只结算一次。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "营地里只有四人？",
+      "text": "无需凑齐五次击杀。等营地生成完毕并保持周围区块加载，结构范围内的本营守卫清空后，在场玩家就能领取效果。遇见 GLY 可以留她活着。若完整营地的守卫全部阵亡，已记录的参战者也有一份。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "新世界的保护期",
+      "text": "默认要等主世界实际运行满 10 个游戏日，清营才会发放追猎。睡觉跳过夜晚不会缩短这段时间。保护期内已清空的营地不会补发。配置为 0 天时立即开放；饮用$(l:callresponse:daily_life/33_malice_potion)憎意药水$(/l)也能获得追猎。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "回到自己的重生点",
+      "text": "带着效果，回到你最近设置的个人重生点所在维度，靠近到 10 格以内。高低差也算距离。床、重生锚或指令设置的个人重生点都有效。没有个人重生点时，回到世界出生地也无法触发。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "给追兵留出空地",
+      "text": "追兵需要安全落脚点，全队每个人与在场存活的非旁观玩家都要相隔至少 10 格水平距离。听到号角、看到发光的$(l:callresponse:combat/32_corrupted_wine_fox)入魔酒狐$(/l)，才是整队到达，此时效果被消耗。若地形太挤，效果会保留，可以腾出空间再等。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "追兵有多少？",
+      "text": "追猎 I～III 级时，酒狐带来 5 名复仇女仆。自 IV 级起，每多一级再加一名，最多 32 名部下。和平难度和旁观模式下不会触发。同一维度一次只有一场追猎，先击败领队才能迎来下一队。"
+    }
+  ]
+}

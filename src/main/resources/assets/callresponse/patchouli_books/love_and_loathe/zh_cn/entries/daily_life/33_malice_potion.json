@@ -1,0 +1,29 @@
+{
+  "name": "憎意药水",
+  "icon": "callresponse:remnant_memory",
+  "category": "callresponse:daily_life",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "title": "酿造憎意",
+      "item": "callresponse:remnant_memory",
+      "text": "把粗制的药水放入酿造台的瓶槽，顶部放入一份残忆，即可酿出「憎意」。你可以自己饮用，也可以手持药瓶，右键喂给自己驯服的普通女仆。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "主人饮用",
+      "text": "喝下一瓶会获得 60 分钟的$(l:callresponse:combat/31_corrupted_hunt)魔怨追猎$(/l)。效果还在时，每喝一瓶升一级，并将时间刷新至 60 分钟，最高 255 级。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "带着魔怨回家",
+      "text": "在个人重生点所在维度，进入该点 10 格内，追猎队就有机会现身。追猎成功发动时会消耗效果。若想避开这次追猎，可在回去前喝牛奶清除魔怨。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "喂给女仆",
+      "text": "女仆获得 60 分钟的强化，攻击力和攻击速度各提高 20%，每分钟恐惧增加 1 点。叠层不会再提高这两项攻击加成。开启 AI 对话且主人在同一维度时，她约每 5 分钟有机会回应一次神秘的低语。"
+    }
+  ]
+}

@@ -68,6 +68,11 @@ public class RevengeMaidEntity extends EntityMaid implements net.minecraft.world
     // Keep stairs/ladder navigation, but never authorize a balcony drop because of a large health pool.
     @Override public int getMaxFallDistance() { return 2; }
 
+    /** 1.21 native melee hits and pursuit stopping both use this entry, not the old 1.20 range method. */
+    @Override public boolean isWithinMeleeAttackRange(LivingEntity target) {
+        return distanceToSqr(target) <= 4.0D * 4.0D;
+    }
+
     @Override public float getPathfindingMalus(net.minecraft.world.level.pathfinder.PathType type) {
         float cost = super.getPathfindingMalus(type);
         return safety != null ? safety.escapePathCost(type, cost) : cost;
@@ -75,7 +80,8 @@ public class RevengeMaidEntity extends EntityMaid implements net.minecraft.world
 
     @Override public boolean hurt(net.minecraft.world.damagesource.DamageSource source, float amount) {
         boolean hurt = super.hurt(source, amount);
-        if (hurt && !level().isClientSide && safety != null) safety.onHurt(this, source);
+        if (hurt && !level().isClientSide && safety != null
+                && !com.github.JumDa5he.callresponse.compat.winefox.WineFoxSurrender.isSurrendered(this)) safety.onHurt(this, source);
         return hurt;
     }
 
@@ -137,6 +143,7 @@ public class RevengeMaidEntity extends EntityMaid implements net.minecraft.world
         RevengeMaidBrain.register(getBrain());
     }
     @Override protected void customServerAiStep() {
+        if (com.github.JumDa5he.callresponse.compat.winefox.WineFoxSurrender.isSurrendered(this)) return;
         if (!isInitialized()) initializeStandalone();
         if (RevengeMaidBrain.externallyControlled(this)) {
             safety.release(this);
@@ -206,6 +213,11 @@ public class RevengeMaidEntity extends EntityMaid implements net.minecraft.world
     }
     @Override public boolean canAttack(LivingEntity target) {
         return BetrayalOutpostAlertManager.canKeepOrDetectTarget(this, target);
+    }
+    /** Recheck a running bow/crossbow task before its baubles or projectile launch. */
+    @Override public void performRangedAttack(LivingEntity target, float distanceFactor) {
+        if (!level().isClientSide && !BetrayalOutpostAlertManager.isBaseValidTarget(this, target)) return;
+        super.performRangedAttack(target, distanceFactor);
     }
     @Override public net.minecraft.world.phys.AABB searchDimension() {
         return BetrayalOutpostMaidData.pursuitSearchArea(this);
