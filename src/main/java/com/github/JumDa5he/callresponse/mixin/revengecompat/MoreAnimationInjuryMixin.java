@@ -12,11 +12,11 @@ public abstract class MoreAnimationInjuryMixin {
     @Shadow private static void finish(EntityMaid maid) { throw new AssertionError(); }
     @Inject(method="begin", at=@At("HEAD"), cancellable=true)
     private static void begin(EntityMaid maid, CallbackInfo ci) {
-        if (maid instanceof RevengeMaidEntity) ci.cancel();
+        if (com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeAddonIsolation.blocksControl(maid)) ci.cancel();
     }
     @Inject(method="serverTick", at=@At("HEAD"), cancellable=true)
     private static void tick(EntityMaid maid, CallbackInfo ci) {
-        if (maid instanceof RevengeMaidEntity) { finish(maid); ci.cancel(); }
+        if (com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeAddonIsolation.blocksControl(maid)) { finish(maid); ci.cancel(); }
     }
 }
 

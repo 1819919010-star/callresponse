@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.*;
 public abstract class MoreAnimationStandingMixin {
     @Inject(method="begin", at=@At("HEAD"), cancellable=true)
     private static void begin(net.minecraft.server.level.ServerPlayer player, EntityMaid maid, CallbackInfoReturnable<Boolean> ci) {
-        if (maid instanceof RevengeMaidEntity) ci.setReturnValue(false);
+        if (com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeAddonIsolation.blocksControl(maid)) ci.setReturnValue(false);
     }
 }
 

@@ -12,11 +12,11 @@ public abstract class MoreAnimationDecisionMixin {
     @Shadow public static void clear(EntityMaid maid) { throw new AssertionError(); }
     @Inject(method="serverTick", at=@At("HEAD"), cancellable=true)
     private static void tick(EntityMaid maid, CallbackInfo ci) {
-        if (maid instanceof RevengeMaidEntity) { clear(maid); ci.cancel(); }
+        if (com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeAddonIsolation.blocksControl(maid)) { clear(maid); ci.cancel(); }
     }
     @Inject(method="canClaim", at=@At("HEAD"), cancellable=true)
     private static void claim(EntityMaid maid, String name, CallbackInfoReturnable<Boolean> cir) {
-        if (maid instanceof RevengeMaidEntity) cir.setReturnValue(false);
+        if (com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeAddonIsolation.blocksControl(maid)) cir.setReturnValue(false);
     }
 }
 

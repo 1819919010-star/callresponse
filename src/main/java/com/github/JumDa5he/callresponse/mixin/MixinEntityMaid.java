@@ -5,6 +5,7 @@ import com.github.JumDa5he.callresponse.compat.broadcast.MaidResponder;
 import com.github.JumDa5he.callresponse.compat.damage.OwnerDamageContext;
 import com.github.JumDa5he.callresponse.compat.damage.OwnerDamageSource;
 import com.github.JumDa5he.callresponse.compat.damage.ProtectionBreakLevel;
+import com.github.JumDa5he.callresponse.compat.disguise.OutpostDisguiseRelations;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionActiveDialogue;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionBetrayalManager;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
@@ -15,6 +16,9 @@ import com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostAlertManag
 import com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostMaidData;
 import com.github.JumDa5he.callresponse.compat.outpost.OutpostMaidMarker;
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
+import com.github.JumDa5he.callresponse.compat.winefox.WineFoxFaction;
+import com.github.JumDa5he.callresponse.compat.winefox.WineFoxSurrender;
+import com.github.JumDa5he.callresponse.compat.winefox.WineFoxGrowth;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -39,16 +43,26 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityMaid.class)
-public abstract class MixinEntityMaid extends Mob implements OutpostMaidMarker {
+public abstract class MixinEntityMaid extends Mob implements OutpostMaidMarker, WineFoxSurrender.State {
+    @Unique private boolean callresponse$deathEmotionsSettled;
+    @Unique private DamageSource callresponse$confirmedDeathSource;
+    @Unique private java.util.UUID callresponse$contributionLeader;
+    @Unique private double callresponse$contributionHealth, callresponse$contributionAttack;
+    @Unique private boolean callresponse$contributionSettled;
+    @Unique private boolean callresponse$surrenderPhysics;
+    @Unique private net.minecraft.world.entity.ai.goal.GoalSelector callresponse$surrenderLookGoals;
     private MixinEntityMaid() { super(null, null); }
 
     @Unique
     private static final EntityDataAccessor<Boolean> callresponse$OUTPOST_MAID =
             SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
+    @Unique private static final EntityDataAccessor<Integer> callresponse$SURRENDER_TICKS =
+            SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.INT);
 
     @Inject(method = "defineSynchedData", at = @At("TAIL"))
     private void callresponse$defineOutpostMaid(CallbackInfo ci) {
         getEntityData().define(callresponse$OUTPOST_MAID, false);
+        getEntityData().define(callresponse$SURRENDER_TICKS, -1);
     }
 
     @Override
@@ -59,6 +73,67 @@ public abstract class MixinEntityMaid extends Mob implements OutpostMaidMarker {
     @Override
     public void callresponse$setOutpostMaid(boolean outpostMaid) {
         getEntityData().set(callresponse$OUTPOST_MAID, outpostMaid);
+    }
+
+    @Override public int callresponse$surrenderTicks() { return getEntityData().get(callresponse$SURRENDER_TICKS); }
+    @Override public void callresponse$setSurrenderTicks(int value) { getEntityData().set(callresponse$SURRENDER_TICKS, value); }
+
+    /** Local EntityMaid override: optional controls cannot re-enable a surrendered maid's AI. */
+    @Override public boolean isNoAi() {
+        return WineFoxSurrender.isSurrendered((EntityMaid) (Object) this) || super.isNoAi();
+    }
+    /** NoAI still blocks all autonomous AI. Only native travel may integrate external velocity. */
+    @Override public boolean isEffectiveAi() {
+        return callresponse$surrenderPhysics && !level().isClientSide || super.isEffectiveAi();
+    }
+    @Override public void setTarget(LivingEntity target) {
+        super.setTarget(WineFoxSurrender.isSurrendered((EntityMaid) (Object) this) ? null : target);
+    }
+
+    @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
+    private void callresponse$restoreSurrender(net.minecraft.nbt.CompoundTag tag, CallbackInfo ci) {
+        WineFoxSurrender.restore((EntityMaid) (Object) this);
+    }
+    @Inject(method = "customServerAiStep", at = @At("HEAD"), cancellable = true)
+    private void callresponse$stopSurrenderedBrain(CallbackInfo ci) {
+        if (WineFoxSurrender.isSurrendered((EntityMaid) (Object) this)) ci.cancel();
+    }
+    @Inject(method = "canBrainMoving", at = @At("HEAD"), cancellable = true, remap = false)
+    private void callresponse$stopSurrenderedWork(CallbackInfoReturnable<Boolean> cir) {
+        if (WineFoxSurrender.isSurrendered((EntityMaid) (Object) this)) cir.setReturnValue(false);
+    }
+    @Inject(method = "travel", at = @At("HEAD"), cancellable = true)
+    private void callresponse$stopSurrenderedTravel(Vec3 requested, CallbackInfo ci) {
+        if (WineFoxSurrender.isSurrendered((EntityMaid) (Object) this)) {
+            boolean previous = callresponse$surrenderPhysics;
+            callresponse$surrenderPhysics = true;
+            try {
+                // Mob.NoAI normally also disables LivingEntity.travel's physical integration.
+                // No serverAiStep/Brain/Goal/navigation is run inside this narrow travel scope.
+                super.travel(Vec3.ZERO);
+            } finally { callresponse$surrenderPhysics = previous; }
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "aiStep", at = @At("TAIL"))
+    private void callresponse$surrenderLook(CallbackInfo ci) {
+        EntityMaid maid = (EntityMaid) (Object) this;
+        if (level().isClientSide || !isAlive() || !WineFoxSurrender.isSurrendered(maid)) return;
+        if (callresponse$surrenderLookGoals == null) {
+            callresponse$surrenderLookGoals = new net.minecraft.world.entity.ai.goal.GoalSelector(() -> level().getProfiler());
+            callresponse$surrenderLookGoals.addGoal(0,
+                    new net.minecraft.world.entity.ai.goal.LookAtPlayerGoal(maid, Player.class, 8.0F));
+            callresponse$surrenderLookGoals.addGoal(1, new net.minecraft.world.entity.ai.goal.RandomLookAroundGoal(maid));
+        }
+        // NoAI deliberately skips Mob's normal controller tick. This separate selector has no
+        // walking/attacking behavior and never ticks MoveControl, navigation or the maid Brain.
+        getSensing().tick();
+        if ((tickCount + getId()) % 2 == 0) callresponse$surrenderLookGoals.tick();
+        else callresponse$surrenderLookGoals.tickRunningGoals(false);
+        getLookControl().tick();
+        yHeadRot = yBodyRot + net.minecraft.util.Mth.clamp(net.minecraft.util.Mth.wrapDegrees(yHeadRot - yBodyRot),
+                -getMaxHeadYRot(), getMaxHeadYRot());
     }
 
     /** 只在据点复仇女仆真实睡眠/娱乐时将 TLM 传感器范围缩半。 */
@@ -82,7 +157,7 @@ public abstract class MixinEntityMaid extends Mob implements OutpostMaidMarker {
     @Inject(method = "canAttack", at = @At("HEAD"), cancellable = true)
     private void callresponse$allowHuntTarget(LivingEntity target, CallbackInfoReturnable<Boolean> cir) {
         EntityMaid maid = (EntityMaid) (Object) this;
-        if (BetrayalOutpostMaidData.areSisters(maid, target)) {
+        if (BetrayalOutpostMaidData.areSisters(maid, target) || WineFoxFaction.blocksAttack(maid, target)) {
             cir.setReturnValue(false);
             return;
         }
@@ -96,10 +171,35 @@ public abstract class MixinEntityMaid extends Mob implements OutpostMaidMarker {
         }
     }
 
+    /** Recheck before TLM invokes melee baubles, sweep or role-specific extra attacks. */
+    @Inject(method = "doHurtTarget", at = @At("HEAD"), cancellable = true)
+    private void callresponse$rejectInvalidRevengeMelee(Entity target, CallbackInfoReturnable<Boolean> cir) {
+        EntityMaid maid = (EntityMaid) (Object) this;
+        if (!maid.level().isClientSide && BetrayalOutpostMaidData.isOutpostMaid(maid)
+                && target instanceof LivingEntity living && !BetrayalOutpostAlertManager.isBaseValidTarget(maid, living)) {
+            cir.setReturnValue(false);
+        }
+    }
+
     @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)
     private void example$onHurtHead(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         EntityMaid maid = (EntityMaid) (Object) this;
         if (maid.level().isClientSide) return;
+
+        // Check the attributable source before the existing maid-to-maid generic-source bridge.
+        Entity attributedAttacker = WineFoxFaction.resolveAttacker(source);
+        if (WineFoxFaction.blocksAttack(attributedAttacker, maid)
+                || attributedAttacker instanceof EntityMaid revenge
+                && OutpostDisguiseRelations.isPacifiedTarget(revenge, maid)) {
+            cir.setReturnValue(false);
+            return;
+        }
+
+        // Preserve source qualification BEFORE the existing maid-to-maid generic-source bridge.
+        if (com.github.JumDa5he.callresponse.compat.wanderingcamp.WanderingBehaviorAuthority.blocksDamage(source)) {
+            cir.setReturnValue(false);
+            return;
+        }
 
         Entity directEntity = source.getDirectEntity();
 
@@ -119,33 +219,6 @@ public abstract class MixinEntityMaid extends Mob implements OutpostMaidMarker {
             return;
         }
 
-
-        if (isOwnerAttack && !EmotionBetrayalManager.isBetraying(maid)) {
-            ServerPlayer player = OwnerDamageSource.findServerPlayer(maid, source);
-            // 保持旧语义：只有主人近距离明确瞄准的直接攻击改变情感；
-            // 投射物、TNT 和枪械仍可造成伤害，但不会被误算成一次近战“教训”。
-            if (player != null && isAimingAtMaid(player, maid) && !isSplashDamage(source)) {
-                float damage = Math.max(amount, 0);
-                int fearDelta = Math.min((int) (1 + damage * 1.5), 4);
-                int trustDelta = Math.max(-(1 + (int) (damage * 0.5)), -2);
-
-                EmotionData.EmotionValues old = EmotionData.get(maid, player.getUUID());
-                EmotionData.addFear(maid, player.getUUID(), fearDelta);
-                EmotionData.addTrust(maid, player.getUUID(), trustDelta);
-                EmotionData.EmotionValues now = EmotionData.get(maid, player.getUUID());
-
-                MaidResponder.debug(player,
-                        "§e[情感] 教训女仆(mixin) → 信任 " + trustDelta +
-                        " (" + old.trust() + "→" + now.trust() + "), 恐惧 " + fearDelta +
-                        " (" + old.fear() + "→" + now.fear() + ")");
-
-                if (LazyMaidHitHandler.isLazyMode(maid)) {
-                    LazyMaidHitHandler.triggerEscape(maid, player);
-                } else {
-                    EmotionActiveDialogue.tryInteractDialogue(maid, player);
-                }
-            }
-        }
 
         // BASIC 只建立前置放行凭证，随后继续执行 EntityMaid 原本的 hurt：
         // TLM 限伤、护甲、无敌帧、饰品与死亡保护都照常结算。
@@ -213,9 +286,26 @@ public abstract class MixinEntityMaid extends Mob implements OutpostMaidMarker {
 
     @Inject(method = "die", at = @At("HEAD"))
     private void callresponse$trackOwnerDamageDeath(DamageSource source, CallbackInfo ci) {
+        callresponse$confirmedDeathSource = source;
         EntityMaid maid = (EntityMaid) (Object) this;
+        if (!this.dead && !maid.level().isClientSide && WineFoxFaction.isRevenge(maid)) {
+            callresponse$contributionLeader = WineFoxFaction.leaderOf(maid);
+            callresponse$contributionHealth = maid.getMaxHealth();
+            callresponse$contributionAttack = maid.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
+        }
         if (OwnerDamageContext.isUltimate(maid, source)) {
             OwnerDamageContext.markDeathStarted(maid, source);
+        }
+    }
+
+    @Inject(method = "die", at = @At("RETURN"))
+    private void callresponse$commitRevengeContribution(DamageSource source, CallbackInfo ci) {
+        if (this.dead && !callresponse$contributionSettled && !level().isClientSide) {
+            callresponse$contributionSettled = true;
+            WineFoxGrowth.onMaidDeath((EntityMaid) (Object) this, callresponse$contributionLeader,
+                    callresponse$contributionHealth, callresponse$contributionAttack);
+            com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostManager.onConfirmedGuardDeath(
+                    (EntityMaid) (Object) this, source);
         }
     }
 
@@ -224,10 +314,43 @@ public abstract class MixinEntityMaid extends Mob implements OutpostMaidMarker {
     private void callresponse$recordReviveEventDeathType(CallbackInfo ci) {
         EntityMaid maid = (EntityMaid) (Object) this;
         if (maid.level().isClientSide) return;
-        DamageSource source = maid.getLastDamageSource();
+        // Existing ultimate-owner damage can enter Mob.die directly. Its confirmed native
+        // equipment path is still a valid receipt; capture before TLM empties any real slots.
+        if (this.dead && !callresponse$contributionSettled && WineFoxFaction.isRevenge(maid)) {
+            if (callresponse$contributionLeader == null) {
+                callresponse$contributionLeader = WineFoxFaction.leaderOf(maid);
+                callresponse$contributionHealth = maid.getMaxHealth();
+                callresponse$contributionAttack = maid.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
+            }
+            callresponse$contributionSettled = true;
+            WineFoxGrowth.onMaidDeath(maid, callresponse$contributionLeader,
+                    callresponse$contributionHealth, callresponse$contributionAttack);
+            com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostManager.onConfirmedGuardDeath(
+                    maid, callresponse$confirmedDeathSource);
+        }
+        if (this.dead && !callresponse$deathEmotionsSettled) {
+            callresponse$deathEmotionsSettled = true;
+            DamageSource deathSource = callresponse$confirmedDeathSource;
+            com.github.JumDa5he.callresponse.compat.emotion.EmotionPassiveManager.onConfirmedMaidDeath(
+                    maid, deathSource == null ? null : deathSource.getEntity());
+            com.github.JumDa5he.callresponse.compat.npc.NpcEventData.remove(maid);
+        }
+        if (this.dead && EmotionBetrayalManager.isBetraying(maid)) {
+            EmotionBetrayalManager.onConfirmedDeath(maid);
+        }
+        if (!this.dead || EmotionBetrayalManager.isActualBetrayal(maid)) return;
+        DamageSource source = callresponse$confirmedDeathSource;
         boolean ownerKilled = source != null && (OwnerDamageSource.isCurrentOwnerSource(maid, source)
                 || OwnerDamageContext.hasActiveDamage(maid, source));
         MaidReviveEventData.recordDeath(maid, ownerKilled, maid.level().getGameTime());
+    }
+
+    @Inject(method = "tameMaid", at = @At("HEAD"), cancellable = true, remap = false)
+    private void callresponse$rejectBetrayerTaming(net.minecraft.world.item.ItemStack stack, Player player,
+            CallbackInfoReturnable<net.minecraft.world.InteractionResult> cir) {
+        if (EmotionBetrayalManager.isActualBetrayal((EntityMaid) (Object) this)) {
+            cir.setReturnValue(net.minecraft.world.InteractionResult.PASS);
+        }
     }
 
     @Unique

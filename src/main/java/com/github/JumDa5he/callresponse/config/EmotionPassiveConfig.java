@@ -17,6 +17,10 @@ public class EmotionPassiveConfig {
     public static final ForgeConfigSpec.BooleanValue WANDERING_TRADER_MAID_TRADE_ENABLED;
     public static final ForgeConfigSpec.IntValue DOTING_POSSESSIVE_INTERVAL_MINUTES;
     public static final ForgeConfigSpec.IntValue DOTING_POSSESSIVE_DURATION_SECONDS;
+    public static final ForgeConfigSpec.IntValue WINE_FOX_ENCHANTMENT_COUNT;
+    public static final ForgeConfigSpec.IntValue WINE_FOX_MIN_ENCHANTMENT_LEVEL;
+    public static final ForgeConfigSpec.IntValue WINE_FOX_MAX_ENCHANTMENT_LEVEL;
+    public static final ForgeConfigSpec.IntValue NATURAL_PURSUIT_PROTECTION_DAYS;
 
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
@@ -67,6 +71,25 @@ public class EmotionPassiveConfig {
         DOTING_POSSESSIVE_DURATION_SECONDS = builder
                 .translation("callresponse.configuration.dotingPossessiveDuration")
                 .defineInRange("durationSeconds", 20, 10, 120);
+        builder.pop();
+
+        builder.translation("callresponse.configuration.wineFox").push("wine_fox");
+        NATURAL_PURSUIT_PROTECTION_DAYS = builder
+                .comment("Natural outpost-clear rewards start after this many overworld game-time days. Protected clears are settled without deferred rewards; potions and commands are unaffected.")
+                .translation("callresponse.configuration.naturalPursuitProtectionDays")
+                .defineInRange("naturalPursuitProtectionDays", 10, 0, 100);
+        WINE_FOX_ENCHANTMENT_COUNT = builder
+                .comment("Only newly spawned Wine Fox equipment. Each item draws 1..this many enchantments; 0 disables enchantments.")
+                .translation("callresponse.configuration.wineFoxEnchantmentCount")
+                .defineInRange("equipmentEnchantmentCount", 3, 0, 10);
+        WINE_FOX_MIN_ENCHANTMENT_LEVEL = builder
+                .comment("Inclusive level range for newly generated equipment. A rolled zero adds no enchantment.")
+                .translation("callresponse.configuration.wineFoxMinEnchantmentLevel")
+                .defineInRange("minEnchantmentLevel", 1, 0, 255);
+        WINE_FOX_MAX_ENCHANTMENT_LEVEL = builder
+                .comment("If TOML minimum exceeds maximum, generation uses the sorted range without rewriting the file.")
+                .translation("callresponse.configuration.wineFoxMaxEnchantmentLevel")
+                .defineInRange("maxEnchantmentLevel", 2, 0, 255);
         builder.pop();
         SPEC = builder.build();
     }

@@ -1,0 +1,24 @@
+{
+  "name": "憎意药水",
+  "icon": "minecraft:potion{Potion:\"callresponse:malice\"}",
+  "category": "callresponse:daily_life",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "title": "酿造憎意",
+      "item": "minecraft:potion{Potion:\"callresponse:malice\"}",
+      "text": "把粗制药水放进酿造台的瓶槽，以上方的一份$(l:combat/21_corrupted_wine_fox)残忆$(/l)作材料，即可酿出憎意。自己饮用，或手持药水右键自家驯服的普通女仆。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "玩家饮用",
+      "text": "第一瓶给予 1 级魔怨追猎。效果还在时，每多喝一瓶便再升 1 级，最高 255 级，并将剩余时间刷新为 1 小时。$(br2)回到自己最新设置的个人重生点附近，就可能引来$(l:combat/20_corrupted_hunt)魔怨追猎$(/l)。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "喂给女仆",
+      "text": "她的攻击力和攻速各提高 20%，每过 1 分钟对主人的恐惧增加 1 点。继续喂药会刷新时长，战斗加成始终是 20%。$(br2)药效期间，她约每 5 分钟有一次 AI 低语机会。只有玩家身上的魔怨会引来追猎。"
+    }
+  ]
+}

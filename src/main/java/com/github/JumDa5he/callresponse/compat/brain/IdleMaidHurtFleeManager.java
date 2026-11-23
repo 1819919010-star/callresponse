@@ -63,7 +63,8 @@ public final class IdleMaidHurtFleeManager {
     @SubscribeEvent
     public void onMaidDamaged(LivingDamageEvent event) {
         if (!(event.getEntity() instanceof EntityMaid maid) || maid.level().isClientSide
-                || !maid.isAlive() || event.getAmount() <= 0 || !isIdleTask(maid)) {
+                || !maid.isAlive() || event.getAmount() <= 0 || !isIdleTask(maid)
+                || com.github.JumDa5he.callresponse.compat.wanderingcamp.WanderingCampData.active(maid)) {
             return;
         }
         Entity attacker = event.getSource().getEntity();

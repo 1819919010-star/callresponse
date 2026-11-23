@@ -174,6 +174,8 @@ public final class WanderingMaidManager {
             return false;
         }
         maid.finalizeSpawn(level, level.getCurrentDifficultyAt(spawnPos), MobSpawnType.EVENT, null, null);
+        maid.getFavorabilityManager().add(maid.getFavorabilityManager().getPointByLevel(2) - maid.getFavorability());
+        maid.setHealth(maid.getMaxHealth());
         maid.setModelId(selectSharedModel(level, player.getUUID()));
         maid.setPersistenceRequired();
         WanderingMaidData.initialize(maid, player.getUUID(), level.getGameTime());

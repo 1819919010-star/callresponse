@@ -67,6 +67,7 @@ public class EmotionDotingManager {
     // 占有欲只在一次尝试开始时发言；发作期间持续赶走其他女仆，结束后恢复普通行为。
     private static final Map<UUID, Long> lastPossessiveAttemptTime = new ConcurrentHashMap<>();
     private static final Map<UUID, Long> possessiveUntilTime = new ConcurrentHashMap<>();
+    private static final Map<UUID, Long> nextPossessiveAttackTime = new ConcurrentHashMap<>();
     private static final Map<UUID, Long> lastActionTime = new ConcurrentHashMap<>();
     private static final Map<UUID, Long> lastDialogueTime = new ConcurrentHashMap<>();
 
@@ -139,6 +140,8 @@ public class EmotionDotingManager {
         int calm = maid.getPersistentData().getInt(CALM_TICKS);
         if (calm > 0) maid.getPersistentData().putInt(CALM_TICKS, calm - 1);
         if (maid.tickCount % 20 != 0) return;
+        long now = maid.level().getGameTime();
+        nextPossessiveAttackTime.computeIfPresent(maid.getUUID(), (id, until) -> now >= until ? null : until);
         ServerPlayer owner = maid.getOwnerUUID() == null ? null
                 : maid.level().getServer().getPlayerList().getPlayer(maid.getOwnerUUID());
         updateAloneBonus(maid, owner, owner != null && isDoting(maid, owner),
@@ -334,6 +337,13 @@ public class EmotionDotingManager {
             walkTo(maid, target.blockPosition());
             return true;
         }
+
+        long now = maid.level().getGameTime();
+        if (now < nextPossessiveAttackTime.getOrDefault(maid.getUUID(), Long.MIN_VALUE)) return true;
+        // Match TLM 1.5.3 MaidMeleeAttack.create(20), including current attack-speed modifiers.
+        double attackSpeed = maid.getAttributeValue(Attributes.ATTACK_SPEED);
+        long cooldown = attackSpeed > 0 ? (long) (20 / attackSpeed) : 20;
+        nextPossessiveAttackTime.put(maid.getUUID(), now + cooldown);
 
         // 视觉攻击（不造成实际伤害）
         maid.swing(InteractionHand.MAIN_HAND);
@@ -623,6 +633,7 @@ public class EmotionDotingManager {
         possessiveUntilTime.remove(maidId);
         lastActionTime.remove(maidId);
         lastDialogueTime.remove(maidId);
+        nextPossessiveAttackTime.remove(maidId);
         pendingTasks.remove(maidId);
         AttributeInstance attack = maid.getAttribute(Attributes.ATTACK_DAMAGE);
         if (attack != null) attack.removeModifier(ALONE_ATTACK_UUID);
@@ -647,6 +658,7 @@ public class EmotionDotingManager {
         if (event.getEntity() instanceof EntityMaid maid && !event.getLevel().isClientSide()) {
             pendingTasks.remove(maid.getUUID());
             possessiveUntilTime.remove(maid.getUUID());
+            nextPossessiveAttackTime.remove(maid.getUUID());
             nextAloneHeart.remove(maid.getUUID());
         }
     }
@@ -655,6 +667,7 @@ public class EmotionDotingManager {
     public void onServerStopping(ServerStoppingEvent event) {
         pendingTasks.clear();
         possessiveUntilTime.clear();
+        nextPossessiveAttackTime.clear();
         nextAloneHeart.clear();
     }
 }

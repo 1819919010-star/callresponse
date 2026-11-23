@@ -2,13 +2,21 @@ package com.github.JumDa5he.callresponse.compat.sign.client;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SignBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.WallSignBlock;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.entity.SignText;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.WoodType;
 
 import java.util.UUID;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 只存在于客户端的“假告示牌”方块实体。
@@ -25,13 +33,41 @@ public class MaidSignBlockEntity extends SignBlockEntity {
     private static final BlockState SIGN_STATE =
             Blocks.OAK_WALL_SIGN.defaultBlockState().setValue(WallSignBlock.FACING, Direction.SOUTH);
 
-    private final BlockState state;
+    private static final Map<WoodType, BlockState> WALL_SIGN_STATES = new ConcurrentHashMap<>();
+    private BlockState state;
     private SignText text;
 
     public MaidSignBlockEntity(SignText text) {
-        super(BlockPos.ZERO, SIGN_STATE);
-        this.state = SIGN_STATE;
+        this(SIGN_STATE, text);
+    }
+
+    public MaidSignBlockEntity(Item signItem, SignText text) {
+        this(wallSignState(signItem), text);
+    }
+
+    private MaidSignBlockEntity(BlockState state, SignText text) {
+        super(BlockPos.ZERO, state);
+        this.state = state;
         this.text = text;
+    }
+
+    public void setSignState(BlockState state) {
+        this.state = state;
+    }
+
+    public static BlockState wallSignState(Item signItem) {
+        WoodType wood = signItem instanceof BlockItem blockItem
+                && blockItem.getBlock() instanceof SignBlock signBlock ? signBlock.type() : WoodType.OAK;
+        return WALL_SIGN_STATES.computeIfAbsent(wood, MaidSignBlockEntity::findWallSignState);
+    }
+
+    private static BlockState findWallSignState(WoodType wood) {
+        for (Block block : BuiltInRegistries.BLOCK) {
+            if (block instanceof WallSignBlock wallSign && wallSign.type() == wood) {
+                return wallSign.defaultBlockState().setValue(WallSignBlock.FACING, Direction.SOUTH);
+            }
+        }
+        return SIGN_STATE;
     }
 
     public void setSignText(SignText text) {

@@ -2,6 +2,7 @@ package com.github.JumDa5he.callresponse.compat.outpost;
 
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionBetrayalManager;
 import com.github.JumDa5he.callresponse.compat.disguise.OutpostDisguiseRelations;
+import com.github.JumDa5he.callresponse.compat.winefox.WineFoxFaction;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockJoy;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockMaidBed;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntitySit;
@@ -97,7 +98,8 @@ public final class BetrayalOutpostAlertManager {
         LivingEntity result = level.getEntitiesOfClass(LivingEntity.class, homeArea,
                         target -> isBaseValidTarget(maid, target))
                 .stream().sorted(java.util.Comparator.<LivingEntity>comparingInt(
-                        target -> !relaxed && target instanceof Player ? 0 : 1)
+                        target -> com.github.JumDa5he.callresponse.compat.winefox.WineFoxPursuit.isPreferredTarget(maid, target) ? 0 : 1)
+                        .thenComparingInt(target -> !relaxed && target instanceof Player ? 0 : 1)
                         .thenComparingDouble(maid::distanceToSqr))
                 .limit(6).filter(target -> canKeepOrDetectTarget(maid, target)).findFirst().orElse(null);
         // Share the scan between alert, combat selection and leisure checks; stagger whole groups.
@@ -225,6 +227,7 @@ public final class BetrayalOutpostAlertManager {
 
     private static boolean isCampCandidate(EntityMaid maid, LivingEntity target) {
         if (target == null || target == maid || !target.isAlive()) return false;
+        if (WineFoxFaction.blocksAttack(maid, target)) return false;
         if (!BetrayalOutpostMaidData.isMaidWithinPursuitArea(maid)) return false;
         // TLM TaskAttack drops targets beyond the maid's existing restriction radius.
         if (maid.distanceToSqr(target) > (double) BetrayalOutpostMaidData.CAMP_ACTIVITY_RADIUS
@@ -335,9 +338,39 @@ public final class BetrayalOutpostAlertManager {
         maid.getPersistentData().remove(ENGAGED_TARGET);
     }
 
+    /** Only retire combat references that became friendly; unrelated work/rest movement stays owned. */
+    public static void clearFriendlyTargets(EntityMaid maid) {
+        if (!(maid.level() instanceof ServerLevel level) || !BetrayalOutpostMaidData.isOutpostMaid(maid)) return;
+        LivingEntity target = maid.getTarget();
+        LivingEntity memory = maid.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
+        LivingEntity engaged = resolveEngagedTarget(level, maid);
+        boolean changed = false;
+        if (WineFoxFaction.blocksAttack(maid, target)) { maid.setTarget(null); changed = true; }
+        if (WineFoxFaction.blocksAttack(maid, memory)) {
+            maid.getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET);
+            changed = true;
+        }
+        if (WineFoxFaction.blocksAttack(maid, engaged)) { clearEngagement(maid); changed = true; }
+        LivingEntity hurtBy = maid.getLastHurtByMob();
+        if (WineFoxFaction.blocksAttack(maid, hurtBy)) maid.setLastHurtByMob(null);
+        LivingEntity hurtMemory = maid.getBrain().getMemory(MemoryModuleType.HURT_BY_ENTITY).orElse(null);
+        if (WineFoxFaction.blocksAttack(maid, hurtMemory)) {
+            maid.getBrain().eraseMemory(MemoryModuleType.HURT_BY_ENTITY);
+            maid.getBrain().eraseMemory(MemoryModuleType.HURT_BY);
+        }
+        if (!changed) return;
+        SEARCH_CACHE.remove(maid);
+        REACH_CACHE.remove(maid);
+        if (maid.getTarget() == null && !maid.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_TARGET)) {
+            clearCombat(maid);
+        }
+    }
+
     public static void clearCombat(EntityMaid maid) {
         boolean preserveLeisurePath = maid.isSleeping()
-                || hasLeisureTarget(maid, true) || hasLeisureWalkTarget(maid);
+                || hasLeisureTarget(maid, true) || hasLeisureWalkTarget(maid)
+                || com.github.JumDa5he.callresponse.compat.state.MaidMovementControl.controlsPath(maid)
+                || maid.getBrain().isActive(Activity.PANIC);
         clearEngagement(maid);
         maid.setTarget(null);
         maid.getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET);

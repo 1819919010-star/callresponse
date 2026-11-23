@@ -58,6 +58,11 @@ public final class ForgeConfigDraft {
             Object value = edits.getOrDefault(field.path(), field.original());
             if (!field.definition().test(value)) throw new IOException("Invalid option: " + field.path());
         }
+        if (spec == EmotionPassiveConfig.SPEC) {
+            int min = effectiveInt(List.of("wine_fox", "minEnchantmentLevel"));
+            int max = effectiveInt(List.of("wine_fox", "maxEnchantmentLevel"));
+            if (min > max) throw new IOException("Wine Fox minimum enchantment level must not exceed maximum");
+        }
         if (fields.stream().noneMatch(f -> !Objects.equals(f.original(), edits.getOrDefault(f.path(), f.original())))) return;
         Path path = config.getFullPath();
         // Do not overwrite changes made by a text editor/another configuration screen while this draft was open.
@@ -96,5 +101,10 @@ public final class ForgeConfigDraft {
         } finally {
             Files.deleteIfExists(staged);
         }
+    }
+
+    private int effectiveInt(List<String> path) {
+        Field field = fields.stream().filter(f -> f.path().equals(path)).findFirst().orElseThrow();
+        return (Integer) edits.getOrDefault(path, field.original());
     }
 }

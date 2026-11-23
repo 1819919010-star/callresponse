@@ -1,0 +1,4 @@
+{
+  "placement": {"type": "minecraft:random_spread", "salt": 17846103, "separation": 12, "spacing": 26},
+  "structures": [{"structure": "callresponse:wandering_maid_camp", "weight": 1}]
+}

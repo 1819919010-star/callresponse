@@ -31,6 +31,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -173,6 +174,19 @@ public class HungerManager {
         maid.saveWithoutId(event.getData());
     }
 
+    /** 生理时钟随女仆自身服务端更新，强加载时不依赖附近玩家或主人在线。 */
+    @SubscribeEvent
+    public void onMaidTick(LivingEvent.LivingTickEvent event) {
+        if (!(event.getEntity() instanceof EntityMaid maid) || maid.level().isClientSide
+                || !maid.isAlive() || !maid.isTame() || maid.getOwnerUUID() == null) return;
+        long tick = maid.level().getGameTime();
+        // 保持原顺序、阈值与计时：先过饱禁食，再自然衰减；真实睡眠暂停衰减。
+        HungerEatingGuard.tick(maid, tick);
+        if (advanceHungerDecayClock(maid, tick) && HungerData.get(maid) > 0) {
+            HungerData.add(maid, -HUNGER_DECAY_AMOUNT);
+        }
+    }
+
     @SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
@@ -184,17 +198,6 @@ public class HungerManager {
                         if (!maid.isAlive()) return;
 
                         long tick = maid.level().getGameTime();
-
-                        // 饱食度超过 90 连续 3 秒后锁住所有主动进食；低于 85 才解除。
-                        HungerEatingGuard.tick(maid, tick);
-
-                        // 1. 饱食度衰减
-                        if (advanceHungerDecayClock(maid, tick)) {
-                            float current = HungerData.get(maid);
-                            if (current > 0) {
-                                HungerData.add(maid, -HUNGER_DECAY_AMOUNT);
-                            }
-                        }
 
                         // 2. 伤害处理
                         if (tick % DAMAGE_INTERVAL == 0) {
@@ -694,7 +697,6 @@ public class HungerManager {
         if (speed != null) speed.removeModifier(SPEED_EFFECT_UUID);
         HungerEatingGuard.clear(maid);
         if (!maid.getPersistentData().getBoolean(OVERFED_DEATH_TAG)) return;
-        if (maid.getPersistentData().getBoolean("DevotedSacrifice")) return;
 
         if (!event.getSource().is(DamageTypes.STARVE) || HungerData.get(maid) < 91) {
             maid.getPersistentData().remove(OVERFED_DEATH_TAG);

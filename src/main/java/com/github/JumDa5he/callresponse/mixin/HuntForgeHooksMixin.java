@@ -51,6 +51,12 @@ public abstract class HuntForgeHooksMixin {
                 && OwnerDamageContext.isUltimate(maid, source)) {
             cir.setReturnValue(OwnerDamageContext.rawDamage(maid, amount));
         }
+        // This existing final return hook also restores forced damage. Settle here so its
+        // cancellable return cannot skip a later, lower-priority emotion injection.
+        if (target instanceof EntityMaid maid) {
+            com.github.JumDa5he.callresponse.compat.emotion.EmotionHurtSettlement.apply(
+                    maid, source, cir.getReturnValue());
+        }
     }
 
     @Inject(method = "onLivingDeath", at = @At("RETURN"), cancellable = true, remap = false)

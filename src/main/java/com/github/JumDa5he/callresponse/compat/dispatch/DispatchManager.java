@@ -91,6 +91,8 @@ public final class DispatchManager {
                 .then(LazyMaidCommand.node())
                 .then(com.github.JumDa5he.callresponse.compat.outpost.OutpostDebugCommand.node("outpost"))
                 .then(com.github.JumDa5he.callresponse.compat.outpost.OutpostDebugCommand.node("betrayal_maid_outpost"))
+                .then(com.github.JumDa5he.callresponse.compat.wanderingcamp.WanderingCampDebugCommand.node())
+                .then(com.github.JumDa5he.callresponse.compat.winefox.RehabilitationCommand.node())
                 .then(Commands.literal("dispatch")
                         .then(Commands.literal("finish")
                                 .requires(source -> source.hasPermission(2))

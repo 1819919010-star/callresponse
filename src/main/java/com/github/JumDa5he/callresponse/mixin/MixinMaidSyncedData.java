@@ -1,6 +1,7 @@
 package com.github.JumDa5he.callresponse.mixin;
 
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
+import com.github.JumDa5he.callresponse.compat.emotion.EmotionBetrayalManager;
 import com.github.JumDa5he.callresponse.compat.hunger.HungerData;
 import com.github.JumDa5he.callresponse.compat.sign.MaidSignData;
 import com.github.JumDa5he.callresponse.compat.npc.MaidReviveEventData;
@@ -30,6 +31,7 @@ public abstract class MixinMaidSyncedData extends Mob {
         this.getEntityData().define(HungerData.HUNGER_KEY, HungerData.DEFAULT_HUNGER);
         this.getEntityData().define(WanderingMaidData.SPECIAL_SYNC, false);
         this.getEntityData().define(TradingMaidData.TRADING_SYNC, false);
+        this.getEntityData().define(EmotionBetrayalManager.BETRAYING_SYNC, false);
         this.getEntityData().define(MaidSignData.SYNC, new CompoundTag());
     }
 
@@ -42,6 +44,13 @@ public abstract class MixinMaidSyncedData extends Mob {
         tag.put(SAVE_KEY, data);
         MaidReviveEventData.writeAdditionalSaveData((EntityMaid) (Object) this, tag);
         MaidMovementControl.sanitizeSave((EntityMaid) (Object) this, tag);
+        com.github.JumDa5he.callresponse.compat.winefox.WineFoxPotions.writeMaidState((EntityMaid) (Object) this, tag);
+        com.github.JumDa5he.callresponse.compat.winefox.PotionDialogue.writeMaidState((EntityMaid) (Object) this, tag);
+    }
+
+    @Inject(method = "readAdditionalSaveData", at = @At("HEAD"))
+    private void callresponse$beforeLoadEmotionAttributes(CompoundTag tag, CallbackInfo ci) {
+        com.github.JumDa5he.callresponse.compat.emotion.EmotionAttributeManager.beforeLoad((EntityMaid) (Object) this);
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
@@ -55,8 +64,13 @@ public abstract class MixinMaidSyncedData extends Mob {
         MaidReviveEventData.readAdditionalSaveData((EntityMaid) (Object) this, tag);
         WanderingMaidData.restoreSyncedFlag((EntityMaid) (Object) this);
         TradingMaidData.restoreSyncedFlag((EntityMaid) (Object) this);
+        EmotionBetrayalManager.restoreSyncedFlag((EntityMaid) (Object) this);
         MaidPathRepair.cleanupKnownSpeedPollution((EntityMaid) (Object) this,
                 tag.contains(SAVE_KEY, net.minecraft.nbt.Tag.TAG_COMPOUND), true);
         MaidMovementControl.recoverOnLoad((EntityMaid) (Object) this);
+        com.github.JumDa5he.callresponse.compat.emotion.EmotionAttributeManager.refresh((EntityMaid) (Object) this);
+        com.github.JumDa5he.callresponse.compat.winefox.WineFoxPotions.readMaidState((EntityMaid) (Object) this, tag);
+        com.github.JumDa5he.callresponse.compat.winefox.PotionDialogue.readMaidState((EntityMaid) (Object) this, tag);
+        com.github.JumDa5he.callresponse.compat.emotion.MaidReleaseHealth.readMarker((EntityMaid) (Object) this, tag);
     }
 }

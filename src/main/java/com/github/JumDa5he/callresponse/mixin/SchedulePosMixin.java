@@ -13,6 +13,7 @@ public abstract class SchedulePosMixin {
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true, remap = false)
     private void callresponse$pauseScheduleWhileControlled(EntityMaid maid, CallbackInfo ci) {
         if (maid instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity
+                || com.github.JumDa5he.callresponse.compat.wanderingcamp.WanderingCampData.active(maid)
                 || MaidMovementControl.controlsSchedule(maid)) {
             ci.cancel();
         }
@@ -21,6 +22,7 @@ public abstract class SchedulePosMixin {
     @Inject(method = "restrictTo", at = @At("HEAD"), cancellable = true, remap = false)
     private void callresponse$independentCampRange(EntityMaid maid, CallbackInfo ci) {
         // Also covers SchedulePos.load/clear/setHomeModeEnable, not only periodic tick.
-        if (maid instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity) ci.cancel();
+        if (maid instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity
+                || com.github.JumDa5he.callresponse.compat.wanderingcamp.WanderingCampData.active(maid)) ci.cancel();
     }
 }

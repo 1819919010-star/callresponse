@@ -31,6 +31,7 @@ public final class BetrayalOutpostSavedData extends SavedData {
     private final Set<String> settledChests = new HashSet<>();
     private final Set<String> removedChests = new HashSet<>();
     private final Map<String, CampPlan> campPlans = new HashMap<>();
+    private final Map<UUID, Set<UUID>> pendingClearRewards = new HashMap<>();
 
     public record LootChest(String campKey, String dimension, BlockPos pos,
                             BlockPos otherHalf, ResourceLocation lootTable, long lootSeed) {}
@@ -39,18 +40,68 @@ public final class BetrayalOutpostSavedData extends SavedData {
         private final List<SpawnSlot> slots;
         private UUID referencePlayer;
         private CompoundTag markerLayout = new CompoundTag();
+        private UUID instanceId;
+        private boolean sourceKnown;
+        private boolean natural;
+        private boolean cleared;
+        private boolean rewardSettled;
+        private BlockPos storyChest;
+        private boolean storyChoiceKnown;
+        private boolean recruitedStory;
+        private boolean normalStoryIssued;
+        private boolean glyStoryEligible;
+        private boolean glyStoryIssued;
+        private final Set<UUID> deadGuards = new HashSet<>();
+        private final Set<UUID> participants = new HashSet<>();
 
-        private CampPlan(List<SpawnSlot> slots, UUID referencePlayer) {
+        private CampPlan(List<SpawnSlot> slots, UUID referencePlayer, UUID instanceId) {
             this.slots = slots;
             this.referencePlayer = referencePlayer;
+            this.instanceId = instanceId;
         }
 
         public List<SpawnSlot> slots() { return List.copyOf(slots); }
         public UUID referencePlayer() { return referencePlayer; }
         public CompoundTag markerLayout() { return markerLayout.copy(); }
+        public UUID instanceId() { return instanceId; }
+        public boolean natural() { return natural; }
+        public boolean cleared() { return cleared; }
+        public boolean rewardSettled() { return rewardSettled; }
+        public Set<UUID> participants() { return Set.copyOf(participants); }
+        public Set<UUID> deadGuards() { return Set.copyOf(deadGuards); }
+        public boolean isGuard(UUID entity) {
+            return slots.stream().anyMatch(slot -> slot.entityId().equals(entity) && isCombatRole(slot.role()));
+        }
+        public boolean completeGuardRoster() {
+            return slots.size() == 5 && slots.stream().map(SpawnSlot::entityId).distinct().count() == 5
+                    && slots.stream().allMatch(slot -> "GLY".equals(slot.role()) || isCombatRole(slot.role()) && slot.spawned())
+                    && slots.stream().anyMatch(slot -> isCombatRole(slot.role()));
+        }
+        public boolean allGuardsConfirmedDead() {
+            return completeGuardRoster() && slots.stream().filter(slot -> isCombatRole(slot.role()))
+                    .allMatch(slot -> deadGuards.contains(slot.entityId()));
+        }
+        private static boolean isCombatRole(String role) {
+            return "HEAVY".equals(role) || "SWORDSMAN".equals(role) || "FARMER".equals(role) || "FEEDER".equals(role);
+        }
         public boolean needsSpawnWork() {
             return slots.stream().anyMatch(slot -> !slot.spawned() && slot.attempts() < 3);
         }
+        public BlockPos storyChest() { return storyChest; }
+        public boolean recruitedStory() { return recruitedStory; }
+        public boolean normalStoryIssued() { return normalStoryIssued; }
+        public boolean hasGlyStory() {
+            // Older Lootr conversions could retire the shared chest before GLY joined.
+            return glyStoryEligible || slots.stream().anyMatch(slot -> "GLY".equals(slot.role()) && slot.spawned());
+        }
+        public boolean awaitsGlyStory() {
+            return !hasGlyStory() && slots.stream().anyMatch(slot ->
+                    "GLY".equals(slot.role()) && !slot.spawned() && slot.attempts() < 3);
+        }
+        public boolean needsStoryWork() {
+            return storyChest != null && (!normalStoryIssued || glyStoryEligible && !glyStoryIssued);
+        }
+        public boolean needsInitialization() { return needsSpawnWork() || needsStoryWork(); }
         public boolean needsPersonalization() {
             return slots.stream().anyMatch(slot -> slot.spawned() && !slot.personalized());
         }
@@ -117,11 +168,38 @@ public final class BetrayalOutpostSavedData extends SavedData {
                     // Broken callresponse-only progress must not make the world unloadable.
                 }
             }
-            if (slots.size() != 5) continue;
+            // An empty roster is valid only for a natural structure explicitly saved as unspawnable.
+            if (slots.size() != 5 && !(entry.getBoolean("UnspawnableStructure") && savedSlots.isEmpty()
+                    && entry.contains("Slots", Tag.TAG_LIST) && entry.getBoolean("SourceKnown")
+                    && entry.getBoolean("Natural"))) continue;
             UUID reference = entry.hasUUID("ReferencePlayer") ? entry.getUUID("ReferencePlayer") : null;
-            CampPlan plan = new CampPlan(slots, reference);
+            UUID instance = entry.hasUUID("Instance") ? entry.getUUID("Instance")
+                    : UUID.nameUUIDFromBytes(("callresponse:camp-instance|" + entry.getString("Key"))
+                            .getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            CampPlan plan = new CampPlan(slots, reference, instance);
             plan.markerLayout = entry.getCompound("MarkerLayout").copy();
+            plan.sourceKnown = entry.getBoolean("SourceKnown");
+            plan.natural = plan.sourceKnown && entry.getBoolean("Natural");
+            plan.cleared = entry.getBoolean("Cleared");
+            plan.rewardSettled = entry.getBoolean("RewardSettled");
+            if (entry.contains("StoryChest", Tag.TAG_LONG)) plan.storyChest = BlockPos.of(entry.getLong("StoryChest"));
+            plan.recruitedStory = entry.getBoolean("RecruitedStory");
+            plan.normalStoryIssued = entry.getBoolean("NormalStoryIssued");
+            plan.glyStoryEligible = entry.getBoolean("GlyStoryEligible");
+            plan.glyStoryIssued = entry.getBoolean("GlyStoryIssued");
+            plan.storyChoiceKnown = entry.getBoolean("StoryChoiceKnown") || plan.storyChest != null
+                    || plan.recruitedStory || plan.normalStoryIssued || plan.glyStoryEligible || plan.glyStoryIssued;
+            readIds(entry, "DeadGuards", plan.deadGuards);
+            readIds(entry, "Participants", plan.participants);
             data.campPlans.put(entry.getString("Key"), plan);
+        }
+        ListTag pending = tag.getList("PendingClearRewards", Tag.TAG_COMPOUND);
+        for (int i = 0; i < pending.size(); i++) {
+            CompoundTag entry = pending.getCompound(i);
+            if (!entry.hasUUID("Player")) continue;
+            Set<UUID> camps = new HashSet<>();
+            readIds(entry, "Camps", camps);
+            if (!camps.isEmpty()) data.pendingClearRewards.put(entry.getUUID("Player"), camps);
         }
         return data;
     }
@@ -142,19 +220,146 @@ public final class BetrayalOutpostSavedData extends SavedData {
 
     public CampPlan plan(String key) { return campPlans.get(key); }
 
+    record StoryCamp(String key, CampPlan plan, boolean choiceKnown) {}
+
+    StoryCamp storyCampAt(ServerLevel level, BlockPos pos, ResourceLocation table, boolean personalChest) {
+        String dim = level.dimension().location().toString();
+        String chestKey = chestKey(dim, pos);
+        // Even after a prior Lootr conversion retired the shared-chest receipt, its captured
+        // table binding and normal-story choice still describe this exact original position.
+        LootChest bound = lootChests.get(chestKey);
+        if (bound != null && table.equals(bound.lootTable()) && (personalChest || !removedChests.contains(chestKey))) {
+            CampPlan plan = campPlans.get(bound.campKey());
+            if (plan != null) return new StoryCamp(bound.campKey(), plan, plan.storyChoiceKnown);
+        }
+        if (!personalChest) return null;
+        var index = nearbyChunks.get(dim);
+        if (index == null) return null;
+        for (Outpost camp : index.getOrDefault(ChunkPos.asLong(pos), List.of())) {
+            if (!camp.box().isInside(pos)) continue;
+            CampPlan plan = campPlans.get(camp.key());
+            if (plan != null && (plan.storyChest == null || plan.storyChest.equals(pos)))
+                return new StoryCamp(camp.key(), plan, plan.storyChoiceKnown);
+        }
+        return null;
+    }
+
     public List<Outpost> pendingInChunk(ServerLevel level, long chunk) {
         var index = nearbyChunks.get(level.dimension().location().toString());
         if (index == null) return List.of();
         return index.getOrDefault(chunk, List.of()).stream().filter(outpost -> {
             CampPlan plan = campPlans.get(outpost.key());
             return !skippedLegacy.contains(outpost.key()) && plan != null
-                    && !plan.markerLayout.isEmpty() && plan.needsSpawnWork();
+                    && !plan.markerLayout.isEmpty() && plan.needsInitialization();
         }).toList();
     }
 
     public void createPlan(String key, List<SpawnSlot> slots, UUID referencePlayer) {
+        createPlan(key, slots, referencePlayer, false);
+    }
+
+    public void createPlan(String key, List<SpawnSlot> slots, UUID referencePlayer, boolean natural) {
         if (slots.size() != 5) throw new IllegalArgumentException("Camp requires five spawn slots");
-        if (campPlans.putIfAbsent(key, new CampPlan(new ArrayList<>(slots), referencePlayer)) == null) setDirty();
+        CampPlan plan = new CampPlan(new ArrayList<>(slots), referencePlayer, UUID.randomUUID());
+        plan.sourceKnown = true;
+        plan.natural = natural;
+        if (campPlans.putIfAbsent(key, plan) == null) setDirty();
+    }
+
+    /** Keeps the structure searchable when a verified natural start could not finish initialization. */
+    public void registerUnspawnableNaturalStructure(String key, ServerLevel level, BoundingBox box) {
+        CampPlan plan = campPlans.get(key);
+        if (plan == null) {
+            plan = new CampPlan(List.of(), null, UUID.randomUUID());
+            plan.sourceKnown = true;
+            plan.natural = true;
+            campPlans.put(key, plan);
+            setDirty();
+        } else if (!plan.natural()) {
+            return;
+        }
+        markInitialized(key);
+        registerStructure(key, level, box, (box.minY() + box.maxY()) / 2);
+    }
+
+    /** A genuine saved StructureStart may identify old plans; debug plans are explicitly non-natural. */
+    public void confirmNaturalStructure(String key) {
+        CampPlan plan = campPlans.get(key);
+        if (plan != null && !plan.sourceKnown) {
+            plan.sourceKnown = true;
+            plan.natural = true;
+            setDirty();
+        }
+    }
+
+    public boolean recordParticipant(String key, UUID guard, UUID player) {
+        CampPlan plan = campPlans.get(key);
+        if (plan == null || !plan.natural || plan.rewardSettled || !plan.isGuard(guard)
+                || player == null || player.equals(new UUID(0, 0))) return false;
+        boolean added = plan.participants.add(player);
+        if (added) setDirty();
+        return added;
+    }
+
+    /** Only the existing confirmed native death hook supplies this receipt; absence never does. */
+    public boolean confirmGuardDeath(String key, UUID guard) {
+        CampPlan plan = campPlans.get(key);
+        if (plan == null || !plan.natural || plan.rewardSettled || !plan.isGuard(guard)) return false;
+        boolean added = plan.deadGuards.add(guard);
+        if (added) setDirty();
+        return added;
+    }
+
+    /** Completion and reward suppression are final, even if the protection setting changes later. */
+    public boolean settleClearedCamp(String key, boolean rewardsAllowed) {
+        return settleClearedCamp(key, rewardsAllowed, false, Set.of());
+    }
+
+    /** The server verifies the entity-loaded structure before supplying areaCleared. */
+    public boolean settleClearedCamp(String key, boolean rewardsAllowed, boolean areaCleared, Set<UUID> playersInside) {
+        CampPlan plan = campPlans.get(key);
+        if (plan == null || !plan.natural || plan.rewardSettled || !(areaCleared || plan.allGuardsConfirmedDead())) return false;
+        plan.cleared = true;
+        plan.rewardSettled = true;
+        if (rewardsAllowed) {
+            Set<UUID> recipients = new HashSet<>(plan.participants);
+            recipients.addAll(playersInside);
+            for (UUID player : recipients) {
+                pendingClearRewards.computeIfAbsent(player, ignored -> new HashSet<>()).add(plan.instanceId);
+            }
+        }
+        setDirty();
+        return true;
+    }
+
+    public Set<UUID> pendingClearRewards(UUID player) {
+        return Set.copyOf(pendingClearRewards.getOrDefault(player, Set.of()));
+    }
+
+    public void consumeClearReward(UUID player, UUID campInstance) {
+        Set<UUID> pending = pendingClearRewards.get(player);
+        if (pending != null && pending.remove(campInstance)) {
+            if (pending.isEmpty()) pendingClearRewards.remove(player);
+            setDirty();
+        }
+    }
+
+    private static void readIds(CompoundTag parent, String key, Set<UUID> target) {
+        ListTag entries = parent.getList(key, Tag.TAG_COMPOUND);
+        for (int i = 0; i < entries.size(); i++) {
+            CompoundTag entry = entries.getCompound(i);
+            if (entry.hasUUID("Id")) target.add(entry.getUUID("Id"));
+        }
+    }
+
+    private static ListTag writeIds(Set<UUID> ids) {
+        ListTag entries = new ListTag();
+        for (UUID id : ids) {
+            CompoundTag entry = new CompoundTag();
+            entry.putUUID("Id", id);
+            entries.add(entry);
+        }
+        return entries;
     }
 
     public void setReferencePlayer(String key, UUID player) {
@@ -171,6 +376,34 @@ public final class BetrayalOutpostSavedData extends SavedData {
             plan.markerLayout = layout.copy();
             setDirty();
         }
+    }
+
+    public void setStoryChest(CampPlan plan, BlockPos pos, boolean recruited) {
+        if (plan.storyChest != null) return;
+        plan.storyChest = pos.immutable();
+        plan.storyChoiceKnown = true;
+        plan.recruitedStory = recruited;
+        setDirty();
+    }
+
+    public void confirmStoryGly(CampPlan plan) {
+        if (plan.storyChest != null && !plan.glyStoryEligible) {
+            plan.glyStoryEligible = true;
+            setDirty();
+        }
+    }
+
+    public void retireStoryChest(CampPlan plan) {
+        if (plan.storyChest != null) {
+            plan.storyChest = null;
+            setDirty();
+        }
+    }
+
+    public void markStoryIssued(CampPlan plan, boolean gly) {
+        if (gly) plan.glyStoryIssued = true;
+        else plan.normalStoryIssued = true;
+        setDirty();
     }
 
     public void updateSlot(String key, int index, SpawnSlot slot) {
@@ -200,6 +433,16 @@ public final class BetrayalOutpostSavedData extends SavedData {
             if (initialized.contains(outpost.key()) && outpost.contains(pos)) return outpost;
         }
         return null;
+    }
+
+    public List<Outpost> unsettledNaturalOutpostsAt(ServerLevel level, BlockPos pos) {
+        var index = nearbyChunks.get(level.dimension().location().toString());
+        if (index == null) return List.of();
+        long chunk = ChunkPos.asLong(pos.getX() >> 4, pos.getZ() >> 4);
+        return index.getOrDefault(chunk, List.of()).stream().filter(outpost -> {
+            CampPlan plan = campPlans.get(outpost.key());
+            return plan != null && plan.natural && !plan.rewardSettled && outpost.box().isInside(pos);
+        }).toList();
     }
 
     public Outpost findByKey(ServerLevel level, String key) {
@@ -250,6 +493,8 @@ public final class BetrayalOutpostSavedData extends SavedData {
         String key = chestKey(chest.dimension(), chest.pos());
         boolean newlySettled = settledChests.add(key);
         boolean newlyRemoved = removedChests.add(key);
+        var plan = campPlans.get(chest.campKey());
+        if (plan != null && chest.pos().equals(plan.storyChest)) retireStoryChest(plan);
         if (newlySettled || newlyRemoved) setDirty();
     }
 
@@ -306,6 +551,21 @@ public final class BetrayalOutpostSavedData extends SavedData {
         for (Map.Entry<String, CampPlan> indexed : campPlans.entrySet()) {
             CompoundTag entry = new CompoundTag();
             entry.putString("Key", indexed.getKey());
+            CampPlan plan = indexed.getValue();
+            entry.putUUID("Instance", plan.instanceId);
+            entry.putBoolean("SourceKnown", plan.sourceKnown);
+            entry.putBoolean("Natural", plan.natural);
+            if (plan.slots.isEmpty()) entry.putBoolean("UnspawnableStructure", true);
+            entry.putBoolean("Cleared", plan.cleared);
+            entry.putBoolean("RewardSettled", plan.rewardSettled);
+            if (plan.storyChest != null) entry.putLong("StoryChest", plan.storyChest.asLong());
+            if (plan.storyChoiceKnown) entry.putBoolean("StoryChoiceKnown", true);
+            entry.putBoolean("RecruitedStory", plan.recruitedStory);
+            entry.putBoolean("NormalStoryIssued", plan.normalStoryIssued);
+            entry.putBoolean("GlyStoryEligible", plan.glyStoryEligible);
+            entry.putBoolean("GlyStoryIssued", plan.glyStoryIssued);
+            entry.put("DeadGuards", writeIds(plan.deadGuards));
+            entry.put("Participants", writeIds(plan.participants));
             if (!indexed.getValue().markerLayout.isEmpty()) {
                 entry.put("MarkerLayout", indexed.getValue().markerLayout.copy());
             }
@@ -327,6 +587,14 @@ public final class BetrayalOutpostSavedData extends SavedData {
             plans.add(entry);
         }
         tag.put("CampPlans", plans);
+        ListTag pending = new ListTag();
+        pendingClearRewards.forEach((player, camps) -> {
+            CompoundTag entry = new CompoundTag();
+            entry.putUUID("Player", player);
+            entry.put("Camps", writeIds(camps));
+            pending.add(entry);
+        });
+        tag.put("PendingClearRewards", pending);
         return tag;
     }
 }

@@ -43,6 +43,12 @@ public final class ModBlocks {
             BLOCK_ENTITY_TYPES.register("outpost_marker", () -> BlockEntityType.Builder.of(
                     OutpostMarkerBlockEntity::new, OUTPOST_ANCHOR.get(), OUTPOST_SPAWN_MARKER.get()).build(null));
 
+    public static final RegistryObject<com.github.JumDa5he.callresponse.compat.wanderingcamp.WanderingCampAnchorBlock> WANDERING_CAMP_ANCHOR =
+            BLOCKS.register("wandering_camp_anchor", com.github.JumDa5he.callresponse.compat.wanderingcamp.WanderingCampAnchorBlock::new);
+    public static final RegistryObject<BlockEntityType<com.github.JumDa5he.callresponse.compat.wanderingcamp.WanderingCampAnchorEntity>> WANDERING_CAMP_ANCHOR_ENTITY =
+            BLOCK_ENTITY_TYPES.register("wandering_camp_anchor", () -> BlockEntityType.Builder.of(
+                    com.github.JumDa5he.callresponse.compat.wanderingcamp.WanderingCampAnchorEntity::new, WANDERING_CAMP_ANCHOR.get()).build(null));
+
     private ModBlocks() {
     }
 }

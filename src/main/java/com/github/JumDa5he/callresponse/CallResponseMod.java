@@ -1,6 +1,9 @@
 package com.github.JumDa5he.callresponse;
 
 import com.github.JumDa5he.callresponse.compat.gui.CopyEntityUuidS2CPacket;
+import com.github.JumDa5he.callresponse.compat.birthday.BirthdaySetC2SPacket;
+import com.github.JumDa5he.callresponse.compat.birthday.BirthdaySyncS2CPacket;
+import com.github.JumDa5he.callresponse.compat.birthday.OpenBirthdayScreenS2CPacket;
 import com.github.JumDa5he.callresponse.compat.gui.DropMaidC2SPacket;
 import com.github.JumDa5he.callresponse.compat.gui.ExpelMaidC2SPacket;
 import com.github.JumDa5he.callresponse.compat.gui.EmotionBookUpdateC2SPacket;
@@ -59,7 +62,7 @@ public class CallResponseMod {
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     // ===== 网络通道（饱食度同步） =====
-    private static final String PROTOCOL_VERSION = "4";
+    private static final String PROTOCOL_VERSION = "8";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
              new ResourceLocation(MOD_ID, "main"),
             () -> PROTOCOL_VERSION,
@@ -71,12 +74,20 @@ public class CallResponseMod {
         // ===== 1. 注册物品 =====
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         ModItems.ITEMS.register(modBus);
+        com.github.JumDa5he.callresponse.compat.story.CampStoryLootEntry.TYPES.register(modBus);
         com.github.JumDa5he.callresponse.compat.outpost.entity.OutpostEntities.TYPES.register(modBus);
+        com.github.JumDa5he.callresponse.compat.winefox.WineFoxEntities.TYPES.register(modBus);
         ModItems.TABS.register(modBus);
         ModMenus.MENUS.register(modBus);
         ModBlocks.BLOCKS.register(modBus);
         ModBlocks.BLOCK_ENTITY_TYPES.register(modBus);
+        com.github.JumDa5he.callresponse.compat.outpost.BetrayalOutpostStructure.TYPE.getId();
+        com.github.JumDa5he.callresponse.compat.wanderingcamp.WanderingCampStructure.TYPES.register(modBus);
         ModDisguiseEffects.EFFECTS.register(modBus);
+        com.github.JumDa5he.callresponse.compat.winefox.WineFoxEffects.EFFECTS.register(modBus);
+        com.github.JumDa5he.callresponse.compat.winefox.WineFoxPotions.POTIONS.register(modBus);
+        modBus.addListener((net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent event) ->
+                event.enqueueWork(com.github.JumDa5he.callresponse.compat.winefox.WineFoxPotions::registerBrewing));
 
         // ===== 2. 注册配置文件 =====
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, BroadcastConfig.SPEC);
@@ -198,6 +209,33 @@ public class CallResponseMod {
                 com.github.JumDa5he.callresponse.compat.sign.MaidSignUpdateC2SPacket::decode,
                 com.github.JumDa5he.callresponse.compat.sign.MaidSignUpdateC2SPacket::handle,
                 java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_SERVER));
+
+        CHANNEL.registerMessage(id++, BirthdaySetC2SPacket.class,
+                BirthdaySetC2SPacket::encode, BirthdaySetC2SPacket::decode, BirthdaySetC2SPacket::handle,
+                java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_SERVER));
+        CHANNEL.registerMessage(id++, BirthdaySyncS2CPacket.class,
+                BirthdaySyncS2CPacket::encode, BirthdaySyncS2CPacket::decode, BirthdaySyncS2CPacket::handle,
+                java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(id++, OpenBirthdayScreenS2CPacket.class,
+                OpenBirthdayScreenS2CPacket::encode, OpenBirthdayScreenS2CPacket::decode, OpenBirthdayScreenS2CPacket::handle,
+                java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
+
+        CHANNEL.registerMessage(id++, com.github.JumDa5he.callresponse.compat.playercarry.PlayerCarrySyncS2CPacket.class,
+                com.github.JumDa5he.callresponse.compat.playercarry.PlayerCarrySyncS2CPacket::encode,
+                com.github.JumDa5he.callresponse.compat.playercarry.PlayerCarrySyncS2CPacket::decode,
+                com.github.JumDa5he.callresponse.compat.playercarry.PlayerCarrySyncS2CPacket::handle,
+                java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(id++, com.github.JumDa5he.callresponse.compat.playercarry.PickUpPlayerC2SPacket.class,
+                com.github.JumDa5he.callresponse.compat.playercarry.PickUpPlayerC2SPacket::encode,
+                com.github.JumDa5he.callresponse.compat.playercarry.PickUpPlayerC2SPacket::decode,
+                com.github.JumDa5he.callresponse.compat.playercarry.PickUpPlayerC2SPacket::handle,
+                java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_SERVER));
+
+        CHANNEL.registerMessage(id++, com.github.JumDa5he.callresponse.compat.winefox.OpenRemnantMemoryS2CPacket.class,
+                com.github.JumDa5he.callresponse.compat.winefox.OpenRemnantMemoryS2CPacket::encode,
+                com.github.JumDa5he.callresponse.compat.winefox.OpenRemnantMemoryS2CPacket::decode,
+                com.github.JumDa5he.callresponse.compat.winefox.OpenRemnantMemoryS2CPacket::handle,
+                java.util.Optional.of(net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT));
 
         // ===== 3. 注册 ILittleMaid 扩展（在 MaidEdibleBlockManager.init() 之前执行） =====
         // 这个扩展会包装所有方块食物，增加饱食度同步逻辑

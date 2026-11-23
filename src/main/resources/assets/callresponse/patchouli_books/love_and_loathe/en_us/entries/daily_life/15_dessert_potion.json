@@ -1,0 +1,24 @@
+{
+  "name": "Dessert Potion",
+  "icon": "minecraft:potion{Potion:\"callresponse:dessert\"}",
+  "category": "callresponse:daily_life",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "title": "Brewing Dessert",
+      "item": "minecraft:potion{Potion:\"callresponse:dessert\"}",
+      "text": "Brew an Awkward Potion with a Cake. Drink it yourself, or use the bottle on one of your tame maids."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Sweetness",
+      "text": "Each drink restores full health. For 10 minutes the drinker gains 20% attack damage and 2 blocks of attack reach. Drinking again renews the duration. The 20% applies after flat bonuses such as the owner's Fear resonance."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "A Sweet Scent",
+      "text": "A sweet maid keeps her Trust, gains 1 favorability every 30 seconds and stays at 15 Hunger or higher. A tame maid within 5 blocks who lacks Sweetness may say “Wow, you smell so sweet!” Each speaker can say it once every 5 minutes."
+    }
+  ]
+}

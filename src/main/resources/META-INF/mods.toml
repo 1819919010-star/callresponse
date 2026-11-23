@@ -4,7 +4,7 @@ license="All rights reserved"
 
 [[mods]]
 modId="callresponse"
-version="2.2.1"
+version="${mod_version}"
 displayName="爱憎分明 - Love & Loathing"
 logoFile=""
 credits="JumDa5he"

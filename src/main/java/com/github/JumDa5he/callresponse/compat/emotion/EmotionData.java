@@ -36,6 +36,7 @@ public class EmotionData {
             "懂了", "明白了", "可以", "有用", "不错", "好耶", "太好了", "谢谢", "感谢");
 
     public static void addTrustFloat(EntityMaid maid, UUID playerId, float delta) {
+        if (delta < 0 && com.github.JumDa5he.callresponse.compat.winefox.WineFoxPotions.hasSweetness(maid)) return;
         String key = maid.getUUID() + ":" + playerId;
         float acc = trustRemainder.getOrDefault(key, 0f) + delta;
         int intPart = (int) acc;
@@ -82,6 +83,9 @@ public class EmotionData {
     }
 
     public static void set(EntityMaid maid, UUID playerId, int trust, int fear) {
+        // Runtime writes only: native NBT restoration assigns EMOTION_KEY directly.
+        if (com.github.JumDa5he.callresponse.compat.winefox.WineFoxPotions.hasSweetness(maid))
+            trust = Math.max(trust, get(maid, playerId).trust());
         CompoundTag synced = maid.getEntityData().get(EMOTION_KEY).copy();
         if (synced.isEmpty() && maid.getPersistentData().contains(EMOTION_TAG)) {
             synced = maid.getPersistentData().getCompound(EMOTION_TAG).copy();
@@ -91,6 +95,7 @@ public class EmotionData {
         playerData.putInt("fear", Math.max(0, Math.min(100, fear)));
         synced.put(playerId.toString(), playerData);
         maid.getEntityData().set(EMOTION_KEY, synced);
+        EmotionAttributeManager.refresh(maid);
     }
 
     /** 复活等明确的新生入口使用；清空全部旧关系后由统一 DEFAULT 提供默认双值。 */
@@ -101,6 +106,7 @@ public class EmotionData {
         trustRemainder.keySet().removeIf(key -> key.startsWith(maidPrefix));
         fearRemainder.keySet().removeIf(key -> key.startsWith(maidPrefix));
         CHAT_FEEDBACK.keySet().removeIf(key -> key.maidId().equals(maid.getUUID()));
+        EmotionAttributeManager.refresh(maid);
     }
 
     public static void addTrust(EntityMaid maid, UUID playerId, int delta) {

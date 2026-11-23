@@ -5,6 +5,9 @@ import com.github.JumDa5he.callresponse.compat.emotion.EmotionBetrayalManager;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.brain.JealousyCageManager;
 import com.github.JumDa5he.callresponse.compat.state.MaidMovementControl;
+import com.github.JumDa5he.callresponse.compat.winefox.WineFoxSurrender;
+import com.github.JumDa5he.callresponse.compat.winefox.WineFoxRehabilitation;
+import com.github.JumDa5he.callresponse.compat.winefox.WineFoxEntity;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -54,10 +57,18 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
     private static final int GOLDEN_EFFECT_DURATION = 60;
     private static final String CAGE_EMOTION_UNTIL = "CallResponseCageEmotionUntil";
     private static final String CAGE_WITNESS_UNTIL = "CallResponseCageWitnessUntil";
+    private static final String WINE_FOX_CAGE = "CallResponseWineFoxCage";
+    private static final int WINE_FOX_ESCAPE_TICKS = 60, WINE_FOX_RETRY_TICKS = 20;
+    private enum WineFoxEscapeState { NONE, CAPTURED, ESCAPING, RELEASED }
+    private WineFoxEscapeState wineFoxEscapeState = WineFoxEscapeState.NONE;
+    private int wineFoxEscapeTicks, wineFoxRetryTicks;
+    private long lastWineFoxTick = Long.MIN_VALUE;
 
     private UUID occupantId;
     private Component occupantName = Component.empty();
     private UUID captorId;
+    private UUID placerId;
+    private int rehabilitationRetryDelay;
     private Component captorName = Component.empty();
     private CageOrigin origin = CageOrigin.NORMAL;
     private int missingEntityTicks;
@@ -95,6 +106,14 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
             return;
         }
         Entity entity = level.getEntity(cage.occupantId);
+        if (entity instanceof WineFoxEntity fox && fox.isDeathConfirmed()) {
+            cage.unbindWineFox(fox);
+            cage.clearOccupant();
+            return;
+        }
+        // A missing UUID during entity/chunk loading is not a dead or lost boss.
+        if (entity == null && (cage.wineFoxEscapeState == WineFoxEscapeState.CAPTURED
+                || cage.wineFoxEscapeState == WineFoxEscapeState.ESCAPING)) return;
         if (!(entity instanceof LivingEntity living) || !living.isAlive() || living.isRemoved()) {
             if (++cage.missingEntityTicks >= MISSING_ENTITY_GRACE_TICKS) {
                 cage.clearOccupant();
@@ -107,11 +126,16 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
             return;
         }
         cage.missingEntityTicks = 0;
+        if (living instanceof WineFoxEntity fox && !cage.canClaimWineFox(fox)) {
+            cage.clearOccupant(); return; // Do not pull a prisoner out of another valid cage first.
+        }
         cage.ensureMaidCageControl(living);
         cage.keepInsideBoundary(living);
         cage.applyEnvironment(level, living, environment);
         cage.tickPrisonerSpeech(level, living);
         cage.tickBetrayalMaid(level, living);
+        cage.tickSurrenderedMaid(living);
+        if (living instanceof WineFoxEntity fox && fox.isAlive()) cage.tickWineFoxEscape(level, fox);
     }
 
     public boolean isOccupied() {
@@ -130,6 +154,8 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
         if (level == null || level.isClientSide || isOccupied() || !living.isAlive() || living.isSpectator()) {
             return false;
         }
+        if (wineFoxEscapeState == WineFoxEscapeState.RELEASED
+                || living instanceof WineFoxEntity fox && !canClaimWineFox(fox)) return false;
         living.stopRiding();
         occupantWasNoGravity = living.isNoGravity();
         living.setNoGravity(false);
@@ -149,9 +175,24 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
         nextBetrayalSpeechTime = level.getGameTime() + BETRAYAL_SPEECH_INTERVAL
                 + living.getRandom().nextInt(201);
         betrayalStrippingComplete = false;
+        if (living instanceof EntityMaid maid && WineFoxSurrender.isSurrendered(maid)) {
+            WineFoxSurrender.recordCaptor(maid, captorId != null ? captorId : placerId);
+            captorId = WineFoxSurrender.captor(maid);
+            CompoundTag surrender = maid.getPersistentData().getCompound(WineFoxSurrender.ROOT);
+            if (captor != null && captor.getUUID().equals(captorId) && !surrender.contains("CaptorName"))
+                surrender.putString("CaptorName", Component.Serializer.toJson(captor.getDisplayName()));
+            captorName = readComponent(surrender, "CaptorName");
+        }
         beginMaidCageControl(living);
         placeAtCageCenter(living);
         applyCageEmotion(living, captor);
+        if (living instanceof WineFoxEntity fox) {
+            bindWineFox(fox);
+            wineFoxEscapeState = WineFoxEscapeState.CAPTURED;
+            wineFoxEscapeTicks = WINE_FOX_ESCAPE_TICKS;
+            wineFoxRetryTicks = 0;
+            lastWineFoxTick = level.getGameTime();
+        }
         syncOccupied(true);
         setChanged();
         return true;
@@ -161,6 +202,7 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
         LivingEntity living = occupant();
         if (living != null) {
             clearGoldenAppleEffects(living);
+            if (living instanceof WineFoxEntity fox) unbindWineFox(fox);
             endMaidCageControl(living);
             Vec3 exit = exitPosition();
             if (living instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
@@ -216,6 +258,43 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
     public void setOrigin(CageOrigin value) {
         origin = value == null ? CageOrigin.NORMAL : value;
         setChanged();
+    }
+
+    /** Placement ownership is only a fallback when automatic contact captures a surrendered maid. */
+    public void setPlacer(Player player) {
+        if (level != null && !level.isClientSide && placerId == null) {
+            placerId = player.getUUID();
+            setChanged();
+        }
+    }
+
+    private void tickSurrenderedMaid(LivingEntity living) {
+        if (!(living instanceof EntityMaid prisoner) || !WineFoxSurrender.isSurrendered(prisoner)
+                || !living.getUUID().equals(occupantId)) return;
+        if (!WineFoxSurrender.tickInCage(prisoner, captorId != null ? captorId : placerId)) return;
+        // A failed creation/addition leaves the real prisoner and completed progress untouched.
+        if (rehabilitationRetryDelay > 0) { rehabilitationRetryDelay--; return; }
+        rehabilitationRetryDelay = 20;
+        WineFoxRehabilitation.convert(prisoner, WineFoxSurrender.captor(prisoner), this);
+    }
+
+    /** Switch the cage to the already joined, tamed maid before the source is discarded. */
+    public boolean replaceRehabilitatedOccupant(EntityMaid prisoner, EntityMaid replacement) {
+        if (isRemoved() || occupant() != prisoner) return false;
+        clearGoldenAppleEffects(prisoner);
+        endMaidCageControl(prisoner);
+        occupantId = replacement.getUUID();
+        occupantName = CageEntityNameHelper.displayName(replacement);
+        captorId = replacement.getOwnerUUID();
+        occupantWasNoGravity = false;
+        origin = CageOrigin.NORMAL;
+        missingEntityTicks = 0;
+        betrayalStrippingComplete = true;
+        rehabilitationRetryDelay = 0;
+        beginMaidCageControl(replacement);
+        placeAtCageCenter(replacement);
+        setChanged();
+        return true;
     }
 
     public boolean usesLogicalContainment(@Nullable Entity entity) {
@@ -358,6 +437,106 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
         return new Vec3(worldPosition.getX() + 0.5D + front.getStepX() * 2.0D,
                 worldPosition.getY() + 0.05D,
                 worldPosition.getZ() + 0.5D + front.getStepZ() * 2.0D);
+    }
+
+    /** A reciprocal claim prevents two cages from counting down for the same real entity. */
+    private boolean canClaimWineFox(WineFoxEntity fox) {
+        CompoundTag link = fox.getPersistentData().getCompound(WINE_FOX_CAGE);
+        if (!link.contains("Pos") || !link.contains("Dimension")) return true;
+        if (ownsWineFoxLink(link)) return true;
+        ServerLevel previous = null;
+        for (ServerLevel candidate : ((ServerLevel) level).getServer().getAllLevels())
+            if (candidate.dimension().location().toString().equals(link.getString("Dimension"))) previous = candidate;
+        BlockPos position = BlockPos.of(link.getLong("Pos"));
+        if (previous == null || !previous.hasChunkAt(position)) return false; // Unknown is not released.
+        return !(previous.getBlockEntity(position) instanceof DarkIronCageBlockEntity cage)
+                || !fox.getUUID().equals(cage.occupantId);
+    }
+
+    private boolean ownsWineFoxLink(CompoundTag link) {
+        return link.contains("Pos") && link.getLong("Pos") == worldPosition.asLong()
+                && level.dimension().location().toString().equals(link.getString("Dimension"));
+    }
+
+    private void bindWineFox(WineFoxEntity fox) {
+        CompoundTag link = new CompoundTag();
+        link.putLong("Pos", worldPosition.asLong());
+        link.putString("Dimension", level.dimension().location().toString());
+        fox.getPersistentData().put(WINE_FOX_CAGE, link);
+    }
+
+    private void unbindWineFox(WineFoxEntity fox) {
+        if (ownsWineFoxLink(fox.getPersistentData().getCompound(WINE_FOX_CAGE)))
+            fox.getPersistentData().remove(WINE_FOX_CAGE);
+    }
+
+    private void tickWineFoxEscape(ServerLevel server, WineFoxEntity fox) {
+        if (wineFoxEscapeState == WineFoxEscapeState.RELEASED || isRemoved()) return;
+        if (!canClaimWineFox(fox)) { clearOccupant(); return; }
+        if (wineFoxEscapeState == WineFoxEscapeState.NONE) {
+            // Existing world cages already support this entity; initialize only their missing new timer.
+            bindWineFox(fox);
+            wineFoxEscapeState = WineFoxEscapeState.CAPTURED;
+            wineFoxEscapeTicks = WINE_FOX_ESCAPE_TICKS;
+        }
+        if (lastWineFoxTick == server.getGameTime()) return;
+        lastWineFoxTick = server.getGameTime();
+        if (wineFoxEscapeState == WineFoxEscapeState.CAPTURED && --wineFoxEscapeTicks > 0) {
+            setChanged(); return;
+        }
+        wineFoxEscapeTicks = 0;
+        wineFoxEscapeState = WineFoxEscapeState.ESCAPING;
+        setChanged();
+        if (wineFoxRetryTicks > 0) { wineFoxRetryTicks--; return; }
+        Vec3 exit = safeWineFoxExit(server, fox);
+        if (exit == null) { wineFoxRetryTicks = WINE_FOX_RETRY_TICKS; return; }
+        clearGoldenAppleEffects(fox);
+        boolean gravity = occupantWasNoGravity;
+        unbindWineFox(fox);
+        fox.getNavigation().stop();
+        fox.setPos(exit.x, exit.y, exit.z); // Same object/UUID: never serialize, spawn or finalizeSpawn.
+        fox.setDeltaMovement(Vec3.ZERO);
+        fox.setNoGravity(gravity);
+        fox.fallDistance = 0;
+        clearOccupant(); // onRemove must see no prisoner, so it cannot move/release her a second time.
+        wineFoxEscapeState = WineFoxEscapeState.RELEASED;
+        setChanged();
+        server.setBlock(worldPosition, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(),
+                net.minecraft.world.level.block.Block.UPDATE_ALL | net.minecraft.world.level.block.Block.UPDATE_SUPPRESS_DROPS);
+        fox.cageEscapeDialogue(); // Bubble only, exactly once after this capture's successful release.
+    }
+
+    private @Nullable Vec3 safeWineFoxExit(ServerLevel server, WineFoxEntity fox) {
+        int[] heights = {0, 1, -1, 2, -2, 3, -3, 4, -4};
+        for (int radius = 1; radius <= 6; radius++)
+            for (int dy : heights)
+                for (int dx = -radius; dx <= radius; dx++)
+                    for (int dz = -radius; dz <= radius; dz++) {
+                        if (Math.max(Math.abs(dx), Math.abs(dz)) != radius) continue;
+                        BlockPos feet = worldPosition.offset(dx, dy, dz);
+                        Vec3 exit = new Vec3(feet.getX() + .5, feet.getY(), feet.getZ() + .5);
+                        AABB box = fox.getBoundingBox().move(exit.subtract(fox.position()));
+                        BlockPos low = BlockPos.containing(box.minX, box.minY - 1, box.minZ);
+                        BlockPos high = BlockPos.containing(box.maxX, box.maxY, box.maxZ);
+                        if (box.minY <= server.getMinBuildHeight() || box.maxY >= server.getMaxBuildHeight()
+                                || !server.hasChunksAt(low, high) || !server.getWorldBorder().isWithinBounds(box)
+                                || !server.loadedAndEntityCanStandOn(feet.below(), fox)
+                                || !server.noCollision(fox, box)) continue;
+                        boolean safe = true;
+                        for (BlockPos p : BlockPos.betweenClosed(low, high)) {
+                            BlockState state = server.getBlockState(p);
+                            if (!state.getFluidState().isEmpty() || state.is(ModBlocks.DARK_IRON_CAGE.get())
+                                    || state.is(net.minecraft.tags.BlockTags.FIRE)
+                                    || state.is(net.minecraft.world.level.block.Blocks.MAGMA_BLOCK)
+                                    || state.is(net.minecraft.world.level.block.Blocks.CACTUS)
+                                    || state.is(net.minecraft.world.level.block.Blocks.SWEET_BERRY_BUSH)
+                                    || state.is(net.minecraft.world.level.block.Blocks.WITHER_ROSE)
+                                    || state.is(net.minecraft.world.level.block.Blocks.POWDER_SNOW)
+                                    || net.minecraft.world.level.block.CampfireBlock.isLitCampfire(state)) { safe = false; break; }
+                        }
+                        if (safe) return exit;
+                    }
+        return null;
     }
 
     private void applyEnvironment(ServerLevel serverLevel, LivingEntity living, CageEnvironment environment) {
@@ -527,7 +706,7 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
 
     /** 仅自然结构中仍被本铁笼收容的女仆会定时求救，不调用 AI。 */
     private void tickPrisonerSpeech(ServerLevel serverLevel, LivingEntity living) {
-        if (!(living instanceof EntityMaid maid) || origin == CageOrigin.NORMAL) {
+        if (!(living instanceof EntityMaid maid) || origin == CageOrigin.NORMAL || WineFoxSurrender.isSurrendered(maid)) {
             return;
         }
         long now = serverLevel.getGameTime();
@@ -553,7 +732,7 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
 
     /** 背叛女仆入笼后一件件卸下全部装备，并以固定语言键定时放狠话。 */
     private void tickBetrayalMaid(ServerLevel serverLevel, LivingEntity living) {
-        if (!(living instanceof EntityMaid maid) || !EmotionBetrayalManager.isBetraying(maid)) {
+        if (!(living instanceof EntityMaid maid) || !EmotionBetrayalManager.isBetraying(maid) || WineFoxSurrender.isSurrendered(maid)) {
             return;
         }
         long now = serverLevel.getGameTime();
@@ -642,6 +821,10 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
 
     private void clearOccupant() {
         clearGoldenAppleEffects(occupant());
+        if (occupant() instanceof WineFoxEntity fox) unbindWineFox(fox);
+        wineFoxEscapeState = WineFoxEscapeState.NONE;
+        wineFoxEscapeTicks = wineFoxRetryTicks = 0;
+        lastWineFoxTick = Long.MIN_VALUE;
         occupantId = null;
         occupantName = Component.empty();
         captorId = null;
@@ -653,6 +836,7 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
         nextBetrayalSpeechTime = 0L;
         betrayalStrippingComplete = false;
         hasLastSafePosition = false;
+        rehabilitationRetryDelay = 0;
         syncOccupied(false);
         setChanged();
     }
@@ -668,9 +852,13 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
+        tag.putString("WineFoxEscapeState", wineFoxEscapeState.name());
+        tag.putInt("WineFoxEscapeTicks", wineFoxEscapeTicks);
+        tag.putInt("WineFoxRetryTicks", wineFoxRetryTicks);
         if (occupantId != null) tag.putUUID("Occupant", occupantId);
         if (!occupantName.getString().isBlank()) tag.putString("OccupantName", Component.Serializer.toJson(occupantName));
         if (captorId != null) tag.putUUID("Captor", captorId);
+        if (placerId != null) tag.putUUID("Placer", placerId);
         if (!captorName.getString().isBlank()) tag.putString("CaptorName", Component.Serializer.toJson(captorName));
         tag.putString("Origin", origin.name());
         tag.putBoolean("OccupantWasNoGravity", occupantWasNoGravity);
@@ -692,9 +880,16 @@ public final class DarkIronCageBlockEntity extends BlockEntity {
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
+        wineFoxEscapeState = WineFoxEscapeState.NONE;
+        for (WineFoxEscapeState state : WineFoxEscapeState.values())
+            if (state.name().equals(tag.getString("WineFoxEscapeState"))) wineFoxEscapeState = state;
+        wineFoxEscapeTicks = net.minecraft.util.Mth.clamp(tag.getInt("WineFoxEscapeTicks"), 0, WINE_FOX_ESCAPE_TICKS);
+        wineFoxRetryTicks = net.minecraft.util.Mth.clamp(tag.getInt("WineFoxRetryTicks"), 0, WINE_FOX_RETRY_TICKS);
+        lastWineFoxTick = Long.MIN_VALUE;
         occupantId = tag.hasUUID("Occupant") ? tag.getUUID("Occupant") : null;
         occupantName = readComponent(tag, "OccupantName");
         captorId = tag.hasUUID("Captor") ? tag.getUUID("Captor") : null;
+        placerId = tag.hasUUID("Placer") ? tag.getUUID("Placer") : null;
         captorName = readComponent(tag, "CaptorName");
         origin = CageOrigin.byName(tag.getString("Origin"));
         occupantWasNoGravity = tag.getBoolean("OccupantWasNoGravity");

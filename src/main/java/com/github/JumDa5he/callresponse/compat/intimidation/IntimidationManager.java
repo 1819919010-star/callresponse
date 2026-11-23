@@ -15,6 +15,7 @@ import com.github.JumDa5he.callresponse.compat.npc.NpcEventManager;
 import com.github.JumDa5he.callresponse.compat.task.PrincessCarryManager;
 import com.github.JumDa5he.callresponse.compat.talk.TalkEventManager;
 import com.github.JumDa5he.callresponse.compat.talk.TalkDialogueBridge;
+import com.github.JumDa5he.callresponse.compat.winefox.WineFoxEntity;
 import com.github.JumDa5he.callresponse.config.BroadcastConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.particles.ParticleTypes;
@@ -112,9 +113,14 @@ public final class IntimidationManager {
     }
 
     public static boolean isIntimidated(Entity entity) {
-        if (!(entity instanceof Mob mob) || mob.level().isClientSide) return false;
+        if (!(entity instanceof Mob mob) || mob.level().isClientSide || !canControl(mob)) return false;
         Control control = ACTIVE.get(mob.getUUID());
         return control != null && control.mob == mob && !control.sources.isEmpty();
+    }
+
+    /** Exact independent elite identity; ordinary monsters and all maid identities keep their rules. */
+    private static boolean canControl(Mob mob) {
+        return !(mob instanceof WineFoxEntity);
     }
 
     /** Captured by our own asynchronous LLM callbacks to invalidate pre-cast speech. */
@@ -168,7 +174,7 @@ public final class IntimidationManager {
         int affected = 0;
         for (Mob mob : caster.serverLevel().getEntitiesOfClass(Mob.class,
                 caster.getBoundingBox().inflate(tier.radius()),
-                target -> target.isAlive() && !target.isRemoved()
+                target -> canControl(target) && target.isAlive() && !target.isRemoved()
                         && target.distanceToSqr(caster) <= radiusSq)) {
             try {
                 control(caster, mob, now + tier.durationTicks());
@@ -188,6 +194,7 @@ public final class IntimidationManager {
     }
 
     private static void control(ServerPlayer caster, Mob mob, long untilTick) {
+        if (!canControl(mob)) return;
         // Player casts keep their existing damage, emotion and dialogue semantics.
         Control control = ACTIVE.get(mob.getUUID());
         boolean first = control == null || control.mob != mob;
@@ -209,7 +216,7 @@ public final class IntimidationManager {
 
     /** Renewable non-player source; never writes NoAI or requires an online caster. */
     public static void intimidateByParade(Mob mob, int durationTicks) {
-        if (!(mob.level() instanceof ServerLevel level)) return;
+        if (!canControl(mob) || !(mob.level() instanceof ServerLevel level)) return;
         long now = level.getServer().getTickCount();
         Control control = ACTIVE.get(mob.getUUID());
         if (control == null || control.mob != mob) {
@@ -278,6 +285,11 @@ public final class IntimidationManager {
         }
         for (Control control : new ArrayList<>(ACTIVE.values())) {
             Mob mob = control.mob;
+            if (!canControl(mob)) {
+                // A stale runtime entry must never freeze or run a restoration side effect on this elite.
+                ACTIVE.remove(mob.getUUID(), control);
+                continue;
+            }
             if (mob.isRemoved() || !mob.isAlive() || !(mob.level() instanceof ServerLevel)) {
                 release(mob, false);
                 continue;

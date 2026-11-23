@@ -23,6 +23,7 @@ public class HungerData {
 
     public static void set(EntityMaid maid, float value) {
         float minimum = BaubleDetector.hasNoEat(maid) ? NoEatBauble.MIN_HUNGER : MIN_HUNGER;
+        if (com.github.JumDa5he.callresponse.compat.winefox.WineFoxPotions.hasSweetness(maid)) minimum = Math.max(minimum, 15);
         float clamped = Math.max(minimum, Math.min(MAX_HUNGER, value));
         maid.getEntityData().set(HUNGER_KEY, clamped);
     }

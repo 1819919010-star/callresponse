@@ -1,3 +1,17 @@
+import java.security.MessageDigest
+
+buildscript {
+    repositories {
+        ivy {
+            name = 'MaidFileManagerReleases'
+            url = uri('https://github.com/zgxhzhr/MaidFileManager/releases/download/')
+            patternLayout { artifact 'v[revision]-all/[artifact]-[revision].[ext]' }
+            metadataSources { artifact() }
+            content { includeModule('io.github.zgxhzhr', 'maid_file_manager-forge-1.20.1') }
+        }
+    }
+}
+
 plugins {
     id 'eclipse'
     id 'idea'
@@ -59,7 +73,27 @@ mixin {
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
+def mfmGroup = 'io.github.zgxhzhr'
+def mfmModule = 'maid_file_manager-forge-1.20.1'
+def mfmVersion = '1.4.1'
+def mfmRelease = "${mfmGroup}:${mfmModule}:${mfmVersion}"
+def mfmSha256 = '0462b3d3e2d0f9565f8c44a35e6dd9954c1aba032badf8a451022edb4fd7d805'
+
+// Resolve the original independently of ForgeGradle's project repositories and remapping.
+def mfmDownload = buildscript.configurations.detachedConfiguration(buildscript.dependencies.create("${mfmRelease}@jar"))
+mfmDownload.transitive = false
+def mfmJar = mfmDownload.singleFile
+def mfmActual = MessageDigest.getInstance('SHA-256').digest(mfmJar.bytes).encodeHex().toString()
+if (mfmActual != mfmSha256) {
+    throw new GradleException("Unexpected SHA-256 for ${mfmRelease}: expected ${mfmSha256}, got ${mfmActual}")
+}
+
 repositories {
+    flatDir {
+        name = 'VerifiedMaidFileManager'
+        dirs mfmJar.parentFile
+        content { includeVersion(mfmGroup, mfmModule, mfmVersion) }
+    }
     maven {
         url "https://maven.shedaniel.me"
         content { includeGroup "me.shedaniel.cloth" }
@@ -86,6 +120,10 @@ repositories {
 }
 
 dependencies {
+    compileOnly(fg.deobf(mfmRelease)) { transitive = false }
+    if (project.hasProperty('withMfm')) {
+        runtimeOnly(fg.deobf(mfmRelease)) { transitive = false }
+    }
     // Optional UI only. ForgeConfigSpec/TOML remain the only configuration store.
     compileOnly(fg.deobf("me.shedaniel.cloth:cloth-config-forge:11.1.136")) { transitive = false }
     if (project.hasProperty('withCloth')) {

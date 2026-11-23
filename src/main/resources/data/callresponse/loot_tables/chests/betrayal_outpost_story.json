@@ -19,8 +19,8 @@
       "rolls": 1.0,
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "minecraft:written_book",
+          "type": "callresponse:camp_story",
+          "book": "outpost_story",
           "functions": [
             {
               "function": "minecraft:set_nbt",
@@ -31,6 +31,19 @@
               "name": {"translate": "book.callresponse.outpost_story.title"}
             }
           ]
+        },
+        {
+          "type": "callresponse:camp_story",
+          "book": "outpost_story_recruited"
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "callresponse:camp_story",
+          "book": "outpost_story_gly"
         }
       ]
     }

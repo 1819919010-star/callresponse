@@ -14,7 +14,7 @@ public abstract class MoreAnimationManualMixin {
     // These targets expose different names with the same signature; the plugin checks each target.
     @Inject(method={"triggerEarPull", "triggerTailPull", "begin"}, at=@At("HEAD"), cancellable=true, require=0)
     private static void start(net.minecraft.server.level.ServerPlayer player, EntityMaid maid, CallbackInfo ci) {
-        if (maid instanceof RevengeMaidEntity) ci.cancel();
+        if (com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeAddonIsolation.blocksControl(maid)) ci.cancel();
     }
 }
 

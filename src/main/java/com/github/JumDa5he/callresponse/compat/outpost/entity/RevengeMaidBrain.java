@@ -29,13 +29,13 @@ public final class RevengeMaidBrain {
     private RevengeMaidBrain() {}
 
     public static Brain.Provider<EntityMaid> provider() {
-        return Brain.provider(List.of(MemoryModuleType.PATH, MemoryModuleType.DOORS_TO_CLOSE,
+        return Brain.provider(RevengeMaidMemoryCompat.extend(List.of(MemoryModuleType.PATH, MemoryModuleType.DOORS_TO_CLOSE,
                 MemoryModuleType.LOOK_TARGET, MemoryModuleType.WALK_TARGET,
                 MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.ATTACK_TARGET,
                 MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleType.HURT_BY,
                 MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.NEAREST_LIVING_ENTITIES,
                 MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES, InitEntities.TARGET_POS.get(),
-                InitEntities.MAID_EDIBLE_BLOCK_ACTION.get()),
+                InitEntities.MAID_EDIBLE_BLOCK_ACTION.get())),
                 List.of(InitEntities.MAID_NEAREST_LIVING_ENTITY_SENSOR.get(), SensorType.HURT_BY));
     }
 

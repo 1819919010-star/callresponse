@@ -11,6 +11,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /** 在 Entity 真正从世界移除前解除公主抱，作为事件之外的最终安全兜底。 */
 @Mixin(Entity.class)
 public abstract class PrincessCarryRemovalMixin {
+    @Inject(method = "setRemoved", at = @At("HEAD"))
+    private void callresponse$releaseHeldPlayerBeforeUnload(Entity.RemovalReason reason, CallbackInfo ci) {
+        Entity self = (Entity) (Object) this;
+        if (!self.level().isClientSide) com.github.JumDa5he.callresponse.compat.playercarry.PlayerCarryManager.releaseEntity(self);
+    }
+
     @Inject(method = "remove", at = @At("HEAD"))
     private void callresponse$releasePrincessCarryBeforeRemoval(Entity.RemovalReason reason, CallbackInfo ci) {
         Entity self = (Entity) (Object) this;

@@ -23,7 +23,8 @@ public abstract class PrincessCarryCarrierPoseMixin {
                                                    CallbackInfoReturnable<Boolean> cir) {
         GeckoMaidEntity<?> gecko = (GeckoMaidEntity<?>) (Object) this;
         if (!(gecko.getMaid().asEntity() instanceof EntityMaid carrier)
-                || !PrincessCarryManager.isMaidCarrySession(carrier)) {
+                || !(PrincessCarryManager.isMaidCarrySession(carrier)
+                || com.github.JumDa5he.callresponse.compat.playercarry.PlayerCarryManager.isHolder(carrier))) {
             return;
         }
 

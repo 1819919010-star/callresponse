@@ -7,9 +7,14 @@ import com.github.JumDa5he.callresponse.compat.emotion.EmotionDotingManager;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionPrompt;
 import com.github.JumDa5he.callresponse.compat.talk.TalkEventManager;
 import com.github.JumDa5he.callresponse.compat.intimidation.IntimidationManager;
+import com.github.JumDa5he.callresponse.compat.wanderingcamp.WanderingBehaviorAuthority;
 import com.github.JumDa5he.callresponse.config.BroadcastConfig;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.ChatClientInfo;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatManager;
+import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.DefaultLLMSite;
+import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.openai.LLMOpenAISite;
+import com.github.tartaricacid.touhoulittlemaid.capability.ChatTokensCapabilityProvider;
+import com.github.tartaricacid.touhoulittlemaid.config.subconfig.AIConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,8 +24,66 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
+import java.util.function.Predicate;
+import org.apache.commons.lang3.StringUtils;
 
 public final class MaidResponder {
+
+    /** Potion event uses the same persona/history/provider and limiter, with bubble-only delivery. */
+    public static boolean replyToPotionEvent(ServerPlayer player, EntityMaid maid, String prompt,
+                                             Predicate<EntityMaid> eligible, Predicate<String> validText) {
+        UUID id = null;
+        try {
+            if (!canStartPotionEvent(player, maid) || !eligible.test(maid)) return false;
+            id = EventDialogueBridge.preparePotion(player, maid, eligible, validText);
+            if (id == null) return false;
+            if (!DialogueApiLimiter.tryAcquire()) { EventDialogueBridge.fail(id, maid); return false; }
+            String message = BroadcastDialogueTracker.mark(buildConversationMessage(
+                    EventDialogueBridge.mark(prompt, id), EmotionPrompt.buildEmotionContext(maid, player)), player.getUUID());
+            maid.getAiChatManager().chat(message, createClientInfo(player, maid), player);
+            return true;
+        } catch (Exception failure) {
+            CallResponseMod.LOGGER.debug("Potion dialogue unavailable", failure);
+            if (id != null) EventDialogueBridge.fail(id, maid);
+            return false;
+        }
+    }
+
+    /** Mirror TLM 1.5.3's pre-callback exits before reserving a potion request or emitting chat tips. */
+    static boolean canStartPotionEvent(ServerPlayer player, EntityMaid maid) {
+        if (!AIConfig.LLM_ENABLED.get() || WanderingBehaviorAuthority.rejectsDialogue(maid)) return false;
+        var manager = maid.getAiChatManager();
+        var site = manager.getLLMSite();
+        if (site == null || !site.enabled()) return false;
+        if (!player.getCapability(ChatTokensCapabilityProvider.CHAT_TOKENS_CAP)
+                .map(tokens -> tokens.getCount() < AIConfig.MAX_TOKENS_PER_PLAYER.get()).orElse(false)) return false;
+        // Other compatible/local providers may legitimately need no key; match only TLM's own early exit.
+        if (site.id().equals(DefaultLLMSite.DEEPSEEK.id()) && site instanceof LLMOpenAISite openAI
+                && StringUtils.isBlank(openAI.secretKey())) return false;
+        // Auto-generating a persona has a different callback and cannot complete this event request.
+        return StringUtils.isNotBlank(manager.customSetting) || manager.getSetting().isPresent();
+    }
+
+    /** Same persona/history/provider channel as broadcasts, with one-shot event validation. */
+    public static void replyToEvent(ServerPlayer player, EntityMaid maid, String prompt, Component fallback,
+                                    Predicate<EntityMaid> eligible, Predicate<String> validText) {
+        var id = EventDialogueBridge.prepare(player, maid, fallback, eligible, validText);
+        try {
+            var manager = maid.getAiChatManager();
+            var site = manager.getLLMSite();
+            if (!DialogueApiLimiter.tryAcquire() || site == null || !site.enabled()) {
+                EventDialogueBridge.fail(id, maid);
+                return;
+            }
+            String message = BroadcastDialogueTracker.mark(buildConversationMessage(
+                    EventDialogueBridge.mark(prompt, id), EmotionPrompt.buildEmotionContext(maid, player)), player.getUUID());
+            manager.chat(message, createClientInfo(player, maid), player);
+        } catch (Exception failure) {
+            CallResponseMod.LOGGER.debug("Event dialogue unavailable; using fixed reply", failure);
+            EventDialogueBridge.fail(id, maid);
+        }
+    }
 
     public static void debug(Player player, String msg) {
         debug(player, Component.literal(msg));

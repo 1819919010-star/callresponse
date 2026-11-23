@@ -1,0 +1,54 @@
+{
+  "name": "Corrupted Wine Fox",
+  "icon": "callresponse:corrupted_wine_fox_spawn_egg",
+  "category": "callresponse:combat",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Meet the Wine Fox",
+      "text": "The Corrupted Wine Fox has two appearances. Both carry a netherite sword and wear a hidden set of netherite armor. She is a hostile elite and cannot be tamed. Red text announces her party's arrival during a $(l:callresponse:combat/20_corrupted_hunt)Corrupted Pursuit$(/l)."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Watch Her Blade",
+      "text": "She has 400 base health and 20 base attack damage. Each ordinary maid you have killed adds 1 to the starting health of the fox you draw out, up to the health cap. She spots foes within 32 blocks. Her sweep hits visible foes within 4 blocks for 120% of her attack damage."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Dodge the Spikes",
+      "text": "Beyond 4 blocks and up to 12, spikes fall on up to two targets for 80% of her attack damage each. Once a spike appears, sidestep its landing spot or take cover under solid blocks. Both attacks share a 1.5-second cooldown. Beyond her reach, she gives chase."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Last Stand",
+      "text": "The first hit that would bring her to 10% health or lower stops there, even if it would kill her. For the next 3 seconds she takes no damage and can still fight. Use that time to get clear. She can make this stand only once."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Breaking Free",
+      "text": "Fire damage, Intimidation, harmful vanilla effects and Bad Omen have no effect on her. An Iron Cage holds her for about 3 seconds before she breaks out if she can land safely. Boats and minecarts cannot hold her for long either."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Choose Your Target",
+      "text": "She recruits leaderless Revenge Maids within 10 blocks unless they have surrendered. Followers of different foxes are allies. If one of her followers dies, she gains that maid's max health and attack damage. Defeat the fox first and her surviving followers surrender."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "A Home for Prisoners",
+      "text": "Keep a surrendered maid in a loaded $(l:callresponse:iron_cage/20_cage_basics)Iron Cage$(/l) for 10 minutes. Time outside pauses her progress. Once rehabilitated, she joins her first captor as an ordinary maid with level 1 favorability, 30 Trust and 70 Fear."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Spoils of Battle",
+      "text": "The fox drops 200 XP, one Remnant Memory and either her helmet, chestplate or sword. The piece keeps its enchantments and never breaks. She also drops 1–2 maid baubles, 2–4 ancient debris and 1–3 crying obsidian. Looting can increase both material drops."
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Rereading Memories",
+      "recipe": "callresponse:remnant_memory_reroll",
+      "text": "Use a Remnant Memory to read the same two of nine passages as often as you like. Craft a fresh one to draw another pair. Familiar passages can appear again."
+    }
+  ]
+}

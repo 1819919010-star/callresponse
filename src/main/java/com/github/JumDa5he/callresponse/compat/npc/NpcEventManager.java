@@ -646,9 +646,7 @@ public final class NpcEventManager {
                 && event.getEntity() != maid && event.getEntity() != maid.getOwner()) {
             NpcEventData.setFlag(maid, "battle_praise", true);
         }
-        if (event.getEntity() instanceof EntityMaid deadMaid) {
-            NpcEventData.remove(deadMaid);
-        }
+        // NPC records are removed by the confirmed native equipment/death hook, not this cancelable event.
     }
 
     /** LivingDamageEvent 位于减伤结算后，只记录真正落到主人血量上的最终伤害。 */

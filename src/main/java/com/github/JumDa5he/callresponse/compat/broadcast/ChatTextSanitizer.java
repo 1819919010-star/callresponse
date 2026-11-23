@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 public final class ChatTextSanitizer {
     private static final int MAX_LENGTH = 180;
     private static final Pattern INTERNAL_MARKER = Pattern.compile(
-            "\\[\\[CALLRESPONSE_(?:TALK|BROADCAST):[^]]+]]");
+            "\\[\\[CALLRESPONSE_(?:TALK|BROADCAST|EVENT):[^]]+]]");
     private static final Pattern LABEL_ONLY_LINE = Pattern.compile(
             "(?m)^\\s*(?:回复|台词|分析|旁白)\\s*[:：]?\\s*$");
     private static final Pattern LEADING_LABEL = Pattern.compile(

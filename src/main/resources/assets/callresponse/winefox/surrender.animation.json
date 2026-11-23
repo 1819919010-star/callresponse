@@ -1,0 +1,1549 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "surrender": {
+      "loop": "hold_on_last_frame",
+      "animation_length": 1,
+      "bones": {
+        "LeftLeg": {
+          "rotation": [
+            -10,
+            0,
+            0
+          ]
+        },
+        "LeftLowerLeg": {
+          "rotation": [
+            100.5,
+            0,
+            0
+          ]
+        },
+        "LeftFoot": {
+          "rotation": [
+            64,
+            0,
+            0
+          ],
+          "position": [
+            0,
+            -0.0052,
+            0.59607
+          ]
+        },
+        "RightLeg": {
+          "rotation": [
+            -10,
+            0,
+            0
+          ]
+        },
+        "RightLowerLeg": {
+          "rotation": [
+            100.5,
+            0,
+            0
+          ]
+        },
+        "RightFoot": {
+          "rotation": [
+            64,
+            0,
+            0
+          ],
+          "position": [
+            0,
+            -0.0052,
+            0.59607
+          ]
+        },
+        "Root": {
+          "position": [
+            0,
+            -9.09471,
+            1.34013
+          ]
+        },
+        "UpBody": {
+          "rotation": [
+            4,
+            0,
+            0
+          ]
+        },
+        "UpperBody": {
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        "Head": {
+          "rotation": [
+            12,
+            0,
+            0
+          ]
+        },
+        "clothe": {
+          "rotation": [
+            -4,
+            0,
+            0
+          ],
+          "position": [
+            0,
+            0,
+            0
+          ]
+        },
+        "LeftClothe": {
+          "rotation": [
+            2,
+            4,
+            -2
+          ],
+          "position": [
+            0.16,
+            -0.1,
+            0.05
+          ],
+          "scale": [
+            1,
+            0.89,
+            0.97
+          ]
+        },
+        "RightClothe": {
+          "rotation": [
+            2,
+            -4,
+            2
+          ],
+          "position": [
+            -0.16,
+            -0.1,
+            0.05
+          ],
+          "scale": [
+            1,
+            0.89,
+            0.97
+          ]
+        },
+        "FrontClothe": {
+          "rotation": [
+            2.5,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            0.9,
+            1
+          ]
+        },
+        "BackClothe": {
+          "rotation": [
+            19,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            0.88,
+            1
+          ]
+        },
+        "LeftArm": {
+          "rotation": [
+            -15.84335,
+            -58.36072,
+            -131.025
+          ]
+        },
+        "LeftForeArm": {
+          "rotation": [
+            -4.53289,
+            0.11339,
+            0.26726
+          ]
+        },
+        "RightArm": {
+          "rotation": [
+            -15.84335,
+            58.36072,
+            131.025
+          ]
+        },
+        "RightForeArm": {
+          "rotation": [
+            -4.53289,
+            -0.11339,
+            -0.26726
+          ]
+        },
+        "Tail": {
+          "rotation": [
+            7,
+            0,
+            0
+          ]
+        },
+        "Tail2": {
+          "rotation": [
+            -35,
+            0,
+            0
+          ]
+        },
+        "Tail3": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "Tail4": {
+          "rotation": [
+            -23,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail64": {
+          "rotation": [
+            7,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail65": {
+          "rotation": [
+            -35,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail66": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail67": {
+          "rotation": [
+            -23,
+            0,
+            0
+          ]
+        },
+        "MTail2": {
+          "rotation": [
+            -3.3164,
+            4.6835,
+            10.6276
+          ]
+        },
+        "Tail8": {
+          "rotation": [
+            7,
+            0,
+            0
+          ]
+        },
+        "Tail9": {
+          "rotation": [
+            -35,
+            0,
+            0
+          ]
+        },
+        "Tail10": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "Tail11": {
+          "rotation": [
+            -23,
+            0,
+            0
+          ]
+        },
+        "ysmGlowMTail11": {
+          "rotation": [
+            -3.3164,
+            4.6835,
+            10.6276
+          ]
+        },
+        "ysmGlowTail71": {
+          "rotation": [
+            7,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail72": {
+          "rotation": [
+            -35,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail73": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail74": {
+          "rotation": [
+            -23,
+            0,
+            0
+          ]
+        },
+        "MTail3": {
+          "rotation": [
+            -3.3164,
+            -4.6835,
+            -10.6276
+          ]
+        },
+        "Tail15": {
+          "rotation": [
+            7,
+            0,
+            0
+          ]
+        },
+        "Tail16": {
+          "rotation": [
+            -35,
+            0,
+            0
+          ]
+        },
+        "Tail17": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "Tail18": {
+          "rotation": [
+            -23,
+            0,
+            0
+          ]
+        },
+        "ysmGlowMTail12": {
+          "rotation": [
+            -3.3164,
+            -4.6835,
+            -10.6276
+          ]
+        },
+        "ysmGlowTail78": {
+          "rotation": [
+            7,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail79": {
+          "rotation": [
+            -35,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail80": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail81": {
+          "rotation": [
+            -23,
+            0,
+            0
+          ]
+        },
+        "MTail4": {
+          "rotation": [
+            -20.5741,
+            9.3242,
+            33.5194
+          ]
+        },
+        "Tail22": {
+          "rotation": [
+            7,
+            0,
+            0
+          ]
+        },
+        "Tail23": {
+          "rotation": [
+            -35,
+            0,
+            0
+          ]
+        },
+        "Tail24": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "Tail25": {
+          "rotation": [
+            -23,
+            0,
+            0
+          ]
+        },
+        "ysmGlowMTail13": {
+          "rotation": [
+            -20.5741,
+            9.3242,
+            33.5194
+          ]
+        },
+        "ysmGlowTail85": {
+          "rotation": [
+            7,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail86": {
+          "rotation": [
+            -35,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail87": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail88": {
+          "rotation": [
+            -23,
+            0,
+            0
+          ]
+        },
+        "MTail5": {
+          "rotation": [
+            -20.5741,
+            -9.3242,
+            -33.5195
+          ]
+        },
+        "Tail29": {
+          "rotation": [
+            7,
+            0,
+            0
+          ]
+        },
+        "Tail30": {
+          "rotation": [
+            -35,
+            0,
+            0
+          ]
+        },
+        "Tail31": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "Tail32": {
+          "rotation": [
+            -23,
+            0,
+            0
+          ]
+        },
+        "ysmGlowMTail14": {
+          "rotation": [
+            -20.5741,
+            -9.3242,
+            -33.5195
+          ]
+        },
+        "ysmGlowTail92": {
+          "rotation": [
+            7,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail93": {
+          "rotation": [
+            -35,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail94": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail95": {
+          "rotation": [
+            -23,
+            0,
+            0
+          ]
+        },
+        "MTail6": {
+          "rotation": [
+            11.1096,
+            -28.8189,
+            8.689
+          ]
+        },
+        "Tail36": {
+          "rotation": [
+            7,
+            0,
+            0
+          ]
+        },
+        "Tail37": {
+          "rotation": [
+            -15,
+            0,
+            0
+          ]
+        },
+        "Tail38": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "Tail39": {
+          "rotation": [
+            -23,
+            0,
+            0
+          ]
+        },
+        "ysmGlowMTail15": {
+          "rotation": [
+            11.1096,
+            -28.8189,
+            8.689
+          ]
+        },
+        "ysmGlowTail99": {
+          "rotation": [
+            7,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail100": {
+          "rotation": [
+            -15,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail101": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail102": {
+          "rotation": [
+            -23,
+            0,
+            0
+          ]
+        },
+        "MTail7": {
+          "rotation": [
+            11.1096,
+            28.8189,
+            -8.689
+          ]
+        },
+        "Tail43": {
+          "rotation": [
+            7,
+            0,
+            0
+          ]
+        },
+        "Tail44": {
+          "rotation": [
+            -15,
+            0,
+            0
+          ]
+        },
+        "Tail45": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "Tail46": {
+          "rotation": [
+            -23,
+            0,
+            0
+          ]
+        },
+        "ysmGlowMTail16": {
+          "rotation": [
+            11.1096,
+            28.8189,
+            -8.689
+          ]
+        },
+        "ysmGlowTail106": {
+          "rotation": [
+            7,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail107": {
+          "rotation": [
+            -15,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail108": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail109": {
+          "rotation": [
+            -23,
+            0,
+            0
+          ]
+        },
+        "MTail8": {
+          "rotation": [
+            -24.6228,
+            -12.2118,
+            60.5416
+          ]
+        },
+        "Tail50": {
+          "rotation": [
+            7,
+            0,
+            0
+          ]
+        },
+        "Tail51": {
+          "rotation": [
+            -25,
+            0,
+            0
+          ]
+        },
+        "Tail52": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "Tail53": {
+          "rotation": [
+            -23,
+            0,
+            0
+          ]
+        },
+        "ysmGlowMTail17": {
+          "rotation": [
+            -24.6228,
+            -12.2118,
+            60.5416
+          ]
+        },
+        "ysmGlowTail113": {
+          "rotation": [
+            7,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail114": {
+          "rotation": [
+            -25,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail115": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail116": {
+          "rotation": [
+            -23,
+            0,
+            0
+          ]
+        },
+        "MTail9": {
+          "rotation": [
+            -24.6228,
+            12.2118,
+            -60.5416
+          ]
+        },
+        "Tail57": {
+          "rotation": [
+            7,
+            0,
+            0
+          ]
+        },
+        "Tail58": {
+          "rotation": [
+            -25,
+            0,
+            0
+          ]
+        },
+        "Tail59": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "Tail60": {
+          "rotation": [
+            -23,
+            0,
+            0
+          ]
+        },
+        "ysmGlowMTail18": {
+          "rotation": [
+            -24.6228,
+            12.2118,
+            -60.5416
+          ]
+        },
+        "ysmGlowTail120": {
+          "rotation": [
+            7,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail121": {
+          "rotation": [
+            -25,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail122": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail123": {
+          "rotation": [
+            -23,
+            0,
+            0
+          ]
+        },
+        "WeiBa": {
+          "rotation": [
+            -4,
+            0,
+            0
+          ],
+          "position": [
+            0,
+            0.1496,
+            0.0105
+          ]
+        },
+        "ysmGlowWeiBa": {
+          "rotation": [
+            -4,
+            0,
+            0
+          ],
+          "position": [
+            0,
+            0.1496,
+            0.0105
+          ]
+        },
+        "EyeBrow": {
+          "position": [
+            0,
+            -0.5,
+            0
+          ]
+        },
+        "Eyelid": {
+          "position": [
+            0,
+            -0.3,
+            0
+          ],
+          "scale": [
+            1,
+            0.78,
+            1
+          ]
+        },
+        "RightEyePublic": {
+          "scale": 0
+        },
+        "LeftEyePublic": {
+          "scale": 0
+        },
+        "Ear": {
+          "position": [
+            0,
+            -1.9,
+            0
+          ]
+        },
+        "Mouth_chill": {
+          "position": [
+            0,
+            0,
+            -1
+          ]
+        },
+        "Left_ear": {
+          "rotation": [
+            14.2092,
+            -43.4654,
+            14.7155
+          ]
+        },
+        "Right_ear": {
+          "rotation": [
+            29.2505,
+            -19.3884,
+            -19.6736
+          ]
+        },
+        "ysmGlowRightEyePublic2": {
+          "scale": 0
+        },
+        "ysmGlowLeftEyePublic2": {
+          "scale": 0
+        },
+        "Mouth_smile2": {
+          "scale": 0
+        },
+        "Mouth_smile": {
+          "scale": 0
+        },
+        "Mouth_surprise": {
+          "scale": 0
+        },
+        "FL2": {
+          "rotation": [
+            8.5,
+            0,
+            0
+          ]
+        },
+        "FR2": {
+          "rotation": [
+            8.5,
+            0,
+            0
+          ]
+        },
+        "FM2": {
+          "rotation": [
+            8.5,
+            0,
+            0
+          ]
+        },
+        "FFM2_1": {
+          "rotation": [
+            1.5,
+            0,
+            0
+          ]
+        },
+        "FFM1_1": {
+          "rotation": [
+            1.5,
+            0,
+            0
+          ]
+        },
+        "FFM3_1": {
+          "rotation": [
+            1.5,
+            0,
+            0
+          ]
+        },
+        "LF": {
+          "rotation": [
+            -2.5,
+            0,
+            0
+          ]
+        },
+        "RF": {
+          "rotation": [
+            -2.5,
+            0,
+            0
+          ]
+        },
+        "LF2": {
+          "rotation": [
+            3,
+            0,
+            0
+          ]
+        },
+        "RF2": {
+          "rotation": [
+            3,
+            0,
+            0
+          ]
+        },
+        "LF3": {
+          "rotation": [
+            6,
+            0,
+            0
+          ]
+        },
+        "RF3": {
+          "rotation": [
+            6,
+            0,
+            0
+          ]
+        },
+        "LM3": {
+          "rotation": [
+            2,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            0.98,
+            0.92
+          ]
+        },
+        "RM3": {
+          "rotation": [
+            2,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            0.98,
+            0.92
+          ]
+        },
+        "LB2": {
+          "rotation": [
+            7,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            0.98,
+            1
+          ]
+        },
+        "RB2": {
+          "rotation": [
+            7,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            0.98,
+            1
+          ]
+        },
+        "LB3": {
+          "rotation": [
+            -3,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            0.98,
+            1
+          ]
+        },
+        "RB3": {
+          "rotation": [
+            -3,
+            0,
+            0
+          ],
+          "scale": [
+            1,
+            0.98,
+            1
+          ]
+        },
+        "BL2": {
+          "rotation": [
+            14,
+            0,
+            0
+          ]
+        },
+        "BM2": {
+          "rotation": [
+            14,
+            0,
+            0
+          ]
+        },
+        "BR2": {
+          "rotation": [
+            14,
+            0,
+            0
+          ]
+        },
+        "BL3": {
+          "rotation": [
+            -26,
+            0,
+            0
+          ]
+        },
+        "BM3": {
+          "rotation": [
+            -26,
+            0,
+            0
+          ]
+        },
+        "BR3": {
+          "rotation": [
+            -26,
+            0,
+            0
+          ]
+        },
+        "MTail1": {
+          "rotation": [
+            0.3,
+            0,
+            0
+          ]
+        },
+        "Tail5": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "Tail6": {
+          "rotation": [
+            -14,
+            0,
+            0
+          ]
+        },
+        "Tail7": {
+          "rotation": [
+            -8,
+            0,
+            0
+          ]
+        },
+        "ysmGlowMTail10": {
+          "rotation": [
+            0.3,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail68": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail69": {
+          "rotation": [
+            -14,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail70": {
+          "rotation": [
+            -8,
+            0,
+            0
+          ]
+        },
+        "Tail12": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "Tail13": {
+          "rotation": [
+            -14,
+            0,
+            0
+          ]
+        },
+        "Tail14": {
+          "rotation": [
+            -8,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail75": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail76": {
+          "rotation": [
+            -14,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail77": {
+          "rotation": [
+            -8,
+            0,
+            0
+          ]
+        },
+        "Tail19": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "Tail20": {
+          "rotation": [
+            -14,
+            0,
+            0
+          ]
+        },
+        "Tail21": {
+          "rotation": [
+            -8,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail82": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail83": {
+          "rotation": [
+            -14,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail84": {
+          "rotation": [
+            -8,
+            0,
+            0
+          ]
+        },
+        "Tail26": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "Tail27": {
+          "rotation": [
+            -14,
+            0,
+            0
+          ]
+        },
+        "Tail28": {
+          "rotation": [
+            -8,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail89": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail90": {
+          "rotation": [
+            -14,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail91": {
+          "rotation": [
+            -8,
+            0,
+            0
+          ]
+        },
+        "Tail33": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "Tail34": {
+          "rotation": [
+            -14,
+            0,
+            0
+          ]
+        },
+        "Tail35": {
+          "rotation": [
+            -8,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail96": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail97": {
+          "rotation": [
+            -14,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail98": {
+          "rotation": [
+            -8,
+            0,
+            0
+          ]
+        },
+        "Tail40": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "Tail41": {
+          "rotation": [
+            -14,
+            0,
+            0
+          ]
+        },
+        "Tail42": {
+          "rotation": [
+            -8,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail103": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail104": {
+          "rotation": [
+            -14,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail105": {
+          "rotation": [
+            -8,
+            0,
+            0
+          ]
+        },
+        "Tail47": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "Tail48": {
+          "rotation": [
+            -14,
+            0,
+            0
+          ]
+        },
+        "Tail49": {
+          "rotation": [
+            -8,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail110": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail111": {
+          "rotation": [
+            -14,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail112": {
+          "rotation": [
+            -8,
+            0,
+            0
+          ]
+        },
+        "Tail54": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "Tail55": {
+          "rotation": [
+            -14,
+            0,
+            0
+          ]
+        },
+        "Tail56": {
+          "rotation": [
+            -8,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail117": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail118": {
+          "rotation": [
+            -14,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail119": {
+          "rotation": [
+            -8,
+            0,
+            0
+          ]
+        },
+        "Tail61": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "Tail62": {
+          "rotation": [
+            -14,
+            0,
+            0
+          ]
+        },
+        "Tail63": {
+          "rotation": [
+            -8,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail124": {
+          "rotation": [
+            -20,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail125": {
+          "rotation": [
+            -14,
+            0,
+            0
+          ]
+        },
+        "ysmGlowTail126": {
+          "rotation": [
+            -8,
+            0,
+            0
+          ]
+        },
+        "RightEyebrow": {
+          "rotation": [
+            0,
+            0,
+            -10
+          ]
+        },
+        "LeftEyebrow": {
+          "rotation": [
+            0,
+            0,
+            10
+          ]
+        },
+        "kongju": {
+          "position": [
+            -0.00240648,
+            0.05,
+            -1.0
+          ],
+          "scale": [
+            0.997695463,
+            1.0,
+            1.0
+          ]
+        },
+        "jingya": {
+          "scale": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "position": [
+            0.0,
+            0.05,
+            0.0
+          ]
+        },
+        "xiao": {
+          "scale": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "position": [
+            0.0,
+            0.1,
+            0.0
+          ]
+        },
+        "weixiao": {
+          "scale": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "position": [
+            0.0,
+            0.075,
+            -1.0
+          ]
+        }
+      }
+    }
+  }
+}

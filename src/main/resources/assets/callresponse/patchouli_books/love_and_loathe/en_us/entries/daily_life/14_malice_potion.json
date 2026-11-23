@@ -1,0 +1,24 @@
+{
+  "name": "Potion of Malice",
+  "icon": "minecraft:potion{Potion:\"callresponse:malice\"}",
+  "category": "callresponse:daily_life",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "title": "Brewing Malice",
+      "item": "minecraft:potion{Potion:\"callresponse:malice\"}",
+      "text": "Brew an Awkward Potion with a $(l:combat/21_corrupted_wine_fox)Remnant Memory$(/l). Drink it yourself, or use the bottle on one of your tame maids."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Drinking Malice",
+      "text": "The first bottle grants level 1 of Corrupted Pursuit. Each further drink adds one level, up to 255, and resets the timer to one hour. Return near your latest personal respawn point to trigger the $(l:combat/20_corrupted_hunt)pursuit$(/l)."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Feeding a Maid",
+      "text": "She gains 20% attack damage and attack speed and 1 Fear toward you per minute. More bottles renew the hour at the same combat bonus. She may whisper through AI about every 5 minutes. Only a player can draw the hunting party."
+    }
+  ]
+}

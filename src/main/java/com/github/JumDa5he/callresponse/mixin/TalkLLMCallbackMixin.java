@@ -2,6 +2,7 @@ package com.github.JumDa5he.callresponse.mixin;
 
 import com.github.JumDa5he.callresponse.compat.broadcast.BroadcastDialogueTracker;
 import com.github.JumDa5he.callresponse.compat.broadcast.ChatTextSanitizer;
+import com.github.JumDa5he.callresponse.compat.broadcast.EventDialogueBridge;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionData;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionActiveDialogue;
 import com.github.JumDa5he.callresponse.compat.intimidation.IntimidationManager;
@@ -34,6 +35,9 @@ public abstract class TalkLLMCallbackMixin {
     @Unique private UUID callresponse$talkRequestId;
     @Unique private UUID callresponse$broadcastPlayerId;
     @Unique private int callresponse$intimidationGeneration;
+    @Unique private UUID callresponse$eventRequestId;
+    @Unique private boolean callresponse$eventDelivery;
+    @Unique private boolean callresponse$potionRequest;
 
     @Inject(method = "<init>(Lcom/github/tartaricacid/touhoulittlemaid/ai/manager/entity/MaidAIChatManager;Ljava/util/List;Z)V",
             at = @At("TAIL"))
@@ -41,10 +45,44 @@ public abstract class TalkLLMCallbackMixin {
                                               boolean subagents, CallbackInfo ci) {
         callresponse$talkRequestId = TalkDialogueBridge.findRequestId(messages);
         callresponse$broadcastPlayerId = BroadcastDialogueTracker.findPlayerId(messages);
+        callresponse$eventRequestId = EventDialogueBridge.findRequest(messages);
+        callresponse$potionRequest = EventDialogueBridge.isPotionRequest(callresponse$eventRequestId, maid);
+        if (callresponse$eventRequestId != null) {
+            needAddTools = false;
+            EventDialogueBridge.bind(callresponse$eventRequestId, maid, waitingChatBubbleId);
+        }
         if (maid != null) callresponse$intimidationGeneration = IntimidationManager.generation(maid);
         if (callresponse$talkRequestId != null) {
             needAddTools = false;
         }
+    }
+
+    /** needAddTools only omits the schema; reject unsolicited tool results before TLM executes or records them. */
+    @Inject(method = "onFunctionCall", at = @At("HEAD"), cancellable = true)
+    private void callresponse$noPotionTools(CallbackInfo ci) {
+        if (!callresponse$potionRequest) return;
+        ci.cancel();
+        EventDialogueBridge.fail(callresponse$eventRequestId, maid);
+    }
+
+    /** Resolve this event on the server before the native callback writes history, starts TTS or displays text. */
+    @Inject(method = "onSuccess", at = @At("HEAD"), cancellable = true)
+    private void callresponse$validateEventReply(ResponseChat response, CallbackInfo ci) {
+        if (callresponse$eventRequestId == null || (callresponse$eventDelivery
+                && maid.level() instanceof ServerLevel level && level.getServer().isSameThread())) return;
+        ci.cancel();
+        EventDialogueBridge.complete(callresponse$eventRequestId, maid, response, validated -> {
+            callresponse$eventDelivery = true;
+            try { ((LLMCallback)(Object)this).onSuccess(validated); }
+            finally { callresponse$eventDelivery = false; }
+        });
+    }
+
+    @Inject(method = "onFailure", at = @At("HEAD"), cancellable = true)
+    private void callresponse$eventFailure(HttpRequest request, Throwable throwable, int errorCode, CallbackInfo ci) {
+        if (callresponse$eventRequestId == null) return;
+        EventDialogueBridge.fail(callresponse$eventRequestId, maid);
+        ci.cancel();
     }
 
     /** 只清理本附属发起的回复，并在本体写历史、TTS、气泡之前替换参数。 */

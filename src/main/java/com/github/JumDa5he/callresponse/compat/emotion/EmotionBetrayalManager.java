@@ -18,6 +18,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -43,8 +46,6 @@ import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -62,6 +63,10 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class EmotionBetrayalManager {
+
+    /** Client prediction must see the same identity as the server's persistent IsBetraying tag. */
+    public static final EntityDataAccessor<Boolean> BETRAYING_SYNC =
+            SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
 
     // ===== 配置参数 =====
     private static final int TRUST_THRESHOLD = 10;
@@ -130,7 +135,6 @@ public class EmotionBetrayalManager {
             if (data.contains(key, CompoundTag.TAG_LONG)) data.putLong(key, data.getLong(key) + 1L);
         }
     }
-    private static final Map<UUID, Boolean> isBetraying = new ConcurrentHashMap<>();
     private static final Map<UUID, Integer> attackCooldown = new ConcurrentHashMap<>();
     private static final Map<UUID, Integer> attackCountMap = new ConcurrentHashMap<>();
     private static final Map<UUID, Long> lastReplyTimeMap = new ConcurrentHashMap<>();
@@ -141,21 +145,22 @@ public class EmotionBetrayalManager {
     private record VictimFleeState(EntityMaid victim, UUID attackerId, long until) {
     }
 
-    // ===== 检查背叛状态（先内存，再从NBT恢复） =====
+    // ===== 服务端持久身份与客户端同步镜像 =====
     public static boolean isBetraying(EntityMaid maid) {
-        UUID maidId = maid.getUUID();
-        if (isBetraying.containsKey(maidId)) {
-            return isBetraying.get(maidId);
+        return maid.level().isClientSide ? maid.getEntityData().get(BETRAYING_SYNC)
+                : maid.getPersistentData().getBoolean(BETRAYAL_NBT_TAG);
+    }
+
+    public static void restoreSyncedFlag(EntityMaid maid) {
+        if (!maid.level().isClientSide) {
+            maid.getEntityData().set(BETRAYING_SYNC, isBetraying(maid));
         }
-        CompoundTag data = maid.getPersistentData();
-        if (data.contains(BETRAYAL_NBT_TAG)) {
-            boolean state = data.getBoolean(BETRAYAL_NBT_TAG);
-            if (state) {
-                isBetraying.put(maidId, true);
-            }
-            return state;
-        }
-        return false;
+    }
+
+    private static void setBetraying(EntityMaid maid, boolean value) {
+        if (value) maid.getPersistentData().putBoolean(BETRAYAL_NBT_TAG, true);
+        else maid.getPersistentData().remove(BETRAYAL_NBT_TAG);
+        restoreSyncedFlag(maid);
     }
 
     /** 真正由情绪系统触发的背叛；据点复仇女仆只复用战斗执行，不属于这类事件。 */
@@ -164,21 +169,27 @@ public class EmotionBetrayalManager {
     }
 
     private static void ensureUntamed(EntityMaid maid) {
+        if (maid.getOwnerUUID() != null && isActualBetrayal(maid)
+                && !maid.getPersistentData().hasUUID("CallResponseBetrayalFormerOwner")) {
+            maid.getPersistentData().putUUID("CallResponseBetrayalFormerOwner", maid.getOwnerUUID());
+        }
         if (maid.isTame()) maid.setTame(false);
         if (maid.getOwnerUUID() != null) maid.setOwnerUUID(null);
     }
 
     @SubscribeEvent
     public void onBetrayerJoin(EntityJoinLevelEvent event) {
-        if (!event.getLevel().isClientSide() && event.getEntity() instanceof EntityMaid maid
-                && isActualBetrayal(maid)) ensureUntamed(maid);
+        if (!event.getLevel().isClientSide() && event.getEntity() instanceof EntityMaid maid) {
+            restoreSyncedFlag(maid);
+            if (isActualBetrayal(maid)) ensureUntamed(maid);
+        }
     }
 
     @SubscribeEvent
     public void onBetrayerTick(LivingEvent.LivingTickEvent event) {
-        if (event.getEntity() instanceof EntityMaid maid && !maid.level().isClientSide
-                && isActualBetrayal(maid) && (maid.isTame() || maid.getOwnerUUID() != null)) {
-            ensureUntamed(maid);
+        if (event.getEntity() instanceof EntityMaid maid && !maid.level().isClientSide) {
+            restoreSyncedFlag(maid);
+            if (isActualBetrayal(maid) && (maid.isTame() || maid.getOwnerUUID() != null)) ensureUntamed(maid);
         }
     }
 
@@ -186,8 +197,7 @@ public class EmotionBetrayalManager {
     public static void initializeOutpostBetrayer(EntityMaid maid) {
         if (BetrayalOutpostMaidData.isGly(maid)) return;
         UUID maidId = maid.getUUID();
-        isBetraying.put(maidId, true);
-        maid.getPersistentData().putBoolean(BETRAYAL_NBT_TAG, true);
+        setBetraying(maid, true);
         dangerTimer.remove(maidId);
         attackCooldown.remove(maidId);
         if (maid.isInSittingPose()) maid.setInSittingPose(false);
@@ -371,19 +381,17 @@ public class EmotionBetrayalManager {
         UUID id = maid.getUUID();
         dangerTimer.remove(id);
         if (!maid.isAlive() || BetrayalOutpostMaidData.isOutpostMaid(maid)) return;
-        // Mark only for the synchronous, normal death chain; its existing death listener
+        // Mark only for the synchronous, normal death chain; committed dropEquipment
         // performs exactly one configured explosion. If protection keeps her alive,
         // remove the marker and never retry this one-shot attempt.
-        maid.getPersistentData().putBoolean(BETRAYAL_NBT_TAG, true);
-        isBetraying.put(id, true);
+        setBetraying(maid, true);
         try {
             maid.hurt(maid.damageSources().generic(), maid.getHealth() + maid.getMaxHealth() + 1.0F);
         } catch (RuntimeException ex) {
             CallResponseMod.LOGGER.warn("Suppressed betrayal death safely aborted for maid {}", id, ex);
         } finally {
             if (maid.isAlive()) {
-                isBetraying.remove(id);
-                maid.getPersistentData().remove(BETRAYAL_NBT_TAG);
+                setBetraying(maid, false);
             }
         }
     }
@@ -392,8 +400,7 @@ public class EmotionBetrayalManager {
         UUID maidId = maid.getUUID();
         if (isBetraying(maid)) return;
 
-        isBetraying.put(maidId, true);
-        maid.getPersistentData().putBoolean(BETRAYAL_NBT_TAG, true); // 持久化
+        setBetraying(maid, true);
         MaidMovementControl.begin(maid, MaidMovementControl.Reason.BETRAYAL,
                 java.util.EnumSet.of(MaidMovementControl.Field.PATH, MaidMovementControl.Field.POSE,
                         MaidMovementControl.Field.TASK, MaidMovementControl.Field.OWNER));
@@ -432,14 +439,6 @@ public class EmotionBetrayalManager {
         if (IntimidationManager.isIntimidated(maid)) return;
 
         UUID maidId = maid.getUUID();
-
-        // 确保内存状态一致（如果内存中不存在但NBT存在，恢复）
-        if (!isBetraying.containsKey(maidId) && maid.getPersistentData().contains(BETRAYAL_NBT_TAG)) {
-            boolean state = maid.getPersistentData().getBoolean(BETRAYAL_NBT_TAG);
-            if (state) {
-                isBetraying.put(maidId, true);
-            }
-        }
 
         boolean outpost = BetrayalOutpostMaidData.isOutpostMaid(maid);
         // TLM's ATTACK_TARGET memory is authoritative for its movement and weapon behaviors.
@@ -595,7 +594,7 @@ public class EmotionBetrayalManager {
             float finalDamage = Math.max(2.0f, (float) baseDamage);
 
             boolean success = player.hurt(player.damageSources().mobAttack(maid), finalDamage);
-            if (!success) {
+            if (!success && !BetrayalOutpostMaidData.isOutpostMaid(maid)) {
                 player.hurt(player.damageSources().generic(), finalDamage);
             }
 
@@ -1007,24 +1006,24 @@ public class EmotionBetrayalManager {
         maid.playSound(SoundEvents.GENERIC_EXPLODE, 2.0f, 1.0f);
     }
 
-    // ===== 监听女仆死亡 =====
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onMaidDeath(LivingDeathEvent event) {
-        if (!(event.getEntity() instanceof EntityMaid maid)) return;
+    /** Called only from native dropEquipment after LivingEntity.dead is committed. */
+    public static void onConfirmedDeath(EntityMaid maid) {
+        if (maid.level().isClientSide) return;
         UUID maidId = maid.getUUID();
         suppressedDanger.remove(maidId);
 
         if (isBetraying(maid)) {
             MaidMovementControl.abortAll(maid, MaidMovementControl.AbortCause.DEATH);
-            // TLM creates a tombstone whenever Owner UUID is still present in dropEquipment().
-            // The one-shot death after intimidation sets the betrayal marker without entering
-            // the normal betrayal transition, so clear ownership on confirmed death as well.
-            if (!maid.level().isClientSide) ensureUntamed(maid);
-            if (!BetrayalOutpostMaidData.isOutpostMaid(maid)) {
+            // Before the tombstone branch extracts any inventory, clear real ownership.
+            ensureUntamed(maid);
+            if (maid.getPersistentData().getBoolean("CallResponseBetrayalDeathSettled")) return;
+            maid.getPersistentData().putBoolean("CallResponseBetrayalDeathSettled", true);
+            if (isActualBetrayal(maid)) {
                 triggerExplosion(maid);
+                // The ownerless native branch creates no grave and transfers no inventory.
+                // Reuse the tested real-slot transfer inside Forge's captured drops, after the explosion.
+                com.github.JumDa5he.callresponse.compat.wanderingcamp.WanderingCampDeathDrops.transferCommittedInventory(maid);
             }
-            isBetraying.remove(maidId);
-            maid.getPersistentData().remove(BETRAYAL_NBT_TAG);
             dangerTimer.remove(maidId);
             attackCooldown.remove(maidId);
             attackCountMap.remove(maidId);
@@ -1036,9 +1035,10 @@ public class EmotionBetrayalManager {
 
     // ===== 重置 =====
     public static void resetBetrayal(EntityMaid maid) {
+        // Hunting/cache maintenance cannot turn a surviving betrayer into a normal maid.
+        if (isActualBetrayal(maid)) return;
         UUID maidId = maid.getUUID();
-        isBetraying.remove(maidId);
-        maid.getPersistentData().remove(BETRAYAL_NBT_TAG);
+        setBetraying(maid, false);
         dangerTimer.remove(maidId);
         suppressedDanger.remove(maidId);
         attackCooldown.remove(maidId);
@@ -1057,11 +1057,19 @@ public class EmotionBetrayalManager {
     public void onMaidLeave(EntityLeaveLevelEvent event) {
         if (event.getEntity() instanceof EntityMaid maid && !event.getLevel().isClientSide()) {
             suppressedDanger.remove(maid.getUUID());
+            dangerTimer.remove(maid.getUUID());
+            attackCooldown.remove(maid.getUUID());
+            attackCountMap.remove(maid.getUUID());
+            lastReplyTimeMap.remove(maid.getUUID());
         }
     }
 
     @SubscribeEvent
     public void onServerStopping(ServerStoppingEvent event) {
         suppressedDanger.clear();
+        dangerTimer.clear();
+        attackCooldown.clear();
+        attackCountMap.clear();
+        lastReplyTimeMap.clear();
     }
 }

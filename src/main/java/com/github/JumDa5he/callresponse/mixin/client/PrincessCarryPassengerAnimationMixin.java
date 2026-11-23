@@ -15,7 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class PrincessCarryPassengerAnimationMixin {
     @Inject(method = "doTest", at = @At("HEAD"), cancellable = true)
     private void callresponse$skipPassengerAnimation(Mob mob, CallbackInfoReturnable<String> cir) {
-        if (mob instanceof EntityMaid carrier && PrincessCarryManager.isMaidCarrySession(carrier)) {
+        if (mob instanceof EntityMaid carrier && (PrincessCarryManager.isMaidCarrySession(carrier)
+                || com.github.JumDa5he.callresponse.compat.playercarry.PlayerCarryManager.isHolder(carrier))) {
             cir.setReturnValue("");
         }
     }

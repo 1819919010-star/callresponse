@@ -37,7 +37,17 @@ public class MaidSignManager {
     }
 
     public static void attach(EntityMaid maid, Item signItem) {
-        set(maid, MaidSignData.glowing(new SignText(), signItem));
+        attach(maid, signItem, true);
+    }
+
+    /** Decorative signs (GLY) do not intimidate onlookers. */
+    public static boolean scaresOnlookers(EntityMaid maid) {
+        if (!hasSign(maid)) return false;
+        return get(maid).scareOnlookers();
+    }
+
+    public static void attach(EntityMaid maid, Item signItem, boolean scareOnlookers) {
+        set(maid, MaidSignData.glowing(new SignText(), signItem, scareOnlookers));
     }
 
     /** 取下告示牌，并把它还给发起者（背包放不下就掉在脚下）。 */
@@ -66,8 +76,9 @@ public class MaidSignManager {
     }
 
     public static void setText(EntityMaid maid, SignText text) {
-        // 只换文本和颜色，物品种类保持原样
-        set(maid, MaidSignData.glowing(text, get(maid).item()));
+        // Editing preserves both the item and the sign's deterrence rule.
+        MaidSignData current = get(maid);
+        set(maid, MaidSignData.glowing(text, current.item(), current.scareOnlookers()));
     }
 
     /** 把牌子上的四行文字拼成一段纯文本。 */

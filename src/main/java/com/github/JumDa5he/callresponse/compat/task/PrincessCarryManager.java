@@ -263,6 +263,10 @@ public final class PrincessCarryManager {
     }
 
     public static void releaseCarrier(EntityMaid carrier) {
+        if (com.github.JumDa5he.callresponse.compat.playercarry.PlayerCarryManager.isHolder(carrier)) {
+            com.github.JumDa5he.callresponse.compat.playercarry.PlayerCarryManager.releaseHolder(carrier);
+            return;
+        }
         REQUESTS.remove(carrier.getUUID());
         ActiveCarry active = ACTIVE.remove(carrier.getUUID());
         carrier.setSwingingArms(false);

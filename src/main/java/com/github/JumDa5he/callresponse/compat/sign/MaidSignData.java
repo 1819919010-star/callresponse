@@ -13,15 +13,17 @@ import net.minecraft.world.level.block.entity.SignText;
  * 文字发光，牌面仍遵守环境光照。
  * <p>{@code item} 记录当初挂上去的是哪种告示牌，取下时原样还给玩家。
  */
-public record MaidSignData(SignText text, boolean enabled, Item item) {
+public record MaidSignData(SignText text, boolean enabled, Item item, boolean scareOnlookers) {
     /** 没有挂告示牌。 */
-    public static final MaidSignData EMPTY = new MaidSignData(new SignText(), false, Items.OAK_SIGN);
+    public static final MaidSignData EMPTY = new MaidSignData(new SignText(), false, Items.OAK_SIGN, true);
 
     public static final Codec<MaidSignData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             SignText.DIRECT_CODEC.fieldOf("text").forGetter(MaidSignData::text),
             Codec.BOOL.fieldOf("enabled").forGetter(MaidSignData::enabled),
             // 老存档没有这个字段，回退成橡木告示牌即可
-            BuiltInRegistries.ITEM.byNameCodec().optionalFieldOf("item", Items.OAK_SIGN).forGetter(MaidSignData::item)
+            BuiltInRegistries.ITEM.byNameCodec().optionalFieldOf("item", Items.OAK_SIGN).forGetter(MaidSignData::item),
+            // Old saves keep the original deterrence behavior.
+            Codec.BOOL.optionalFieldOf("scare_onlookers", true).forGetter(MaidSignData::scareOnlookers)
     ).apply(instance, MaidSignData::new));
 
     public static final net.minecraft.network.syncher.EntityDataAccessor<net.minecraft.nbt.CompoundTag> SYNC =
@@ -31,6 +33,10 @@ public record MaidSignData(SignText text, boolean enabled, Item item) {
 
     /** 新建一块强制发光的牌子，并记住它的物品种类。 */
     public static MaidSignData glowing(SignText text, Item item) {
-        return new MaidSignData(text.setHasGlowingText(true), true, item);
+        return glowing(text, item, true);
+    }
+
+    public static MaidSignData glowing(SignText text, Item item, boolean scareOnlookers) {
+        return new MaidSignData(text.setHasGlowingText(true), true, item, scareOnlookers);
     }
 }

@@ -1,0 +1,24 @@
+{
+  "name": "甜点药水",
+  "icon": "minecraft:potion{Potion:\"callresponse:dessert\"}",
+  "category": "callresponse:daily_life",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "title": "酿造甜点药水",
+      "item": "minecraft:potion{Potion:\"callresponse:dessert\"}",
+      "text": "把粗制药水放进酿造台的瓶槽，在上方放入蛋糕。酿好后可以自己喝，也可以手持药水右键自家驯服的普通女仆。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "香甜",
+      "text": "喝下时立即回满生命，并获得 10 分钟香甜。攻击力提高 20%，攻击距离增加 2 格。再次饮用会回满生命、刷新时间，加成只算一份。$(br2)主人的 Fear 共鸣等固定攻击加成也参与这次 20% 乘算。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "女仆身上的香味",
+      "text": "香甜期间，女仆的信任不会降低，每 30 秒好感度增加 1 点，饥饿值最低为 15。$(br2)走到她身边 5 格内的另一名普通家养女仆，如果身上没有香甜，可能会说「哇，你好香啊！」同一位说话者每 5 分钟最多说一次。"
+    }
+  ]
+}

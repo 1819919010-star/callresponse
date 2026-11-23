@@ -33,14 +33,14 @@ public abstract class WanderingMaidVanillaTameMixin {
     @Inject(method = "setTame", at = @At("HEAD"), cancellable = true)
     private void callresponse$keepBetrayerUntamed(boolean tame, CallbackInfo ci) {
         Object self = this;
-        if (tame && self instanceof EntityMaid maid && !maid.level().isClientSide
+        if (tame && self instanceof EntityMaid maid
                 && EmotionBetrayalManager.isActualBetrayal(maid)) ci.cancel();
     }
 
     @Inject(method = "setOwnerUUID", at = @At("HEAD"), cancellable = true)
     private void callresponse$keepBetrayerOwnerless(UUID ownerId, CallbackInfo ci) {
         Object self = this;
-        if (ownerId != null && self instanceof EntityMaid maid && !maid.level().isClientSide
+        if (ownerId != null && self instanceof EntityMaid maid
                 && EmotionBetrayalManager.isActualBetrayal(maid)) ci.cancel();
     }
 }

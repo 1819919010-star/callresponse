@@ -1,0 +1,12 @@
+{
+  "elements": [{
+    "element": {
+      "element_type": "minecraft:single_pool_element",
+      "location": "callresponse:wandering_maid_camp",
+      "processors": {"processors": []},
+      "projection": "rigid"
+    },
+    "weight": 1
+  }],
+  "fallback": "minecraft:empty"
+}

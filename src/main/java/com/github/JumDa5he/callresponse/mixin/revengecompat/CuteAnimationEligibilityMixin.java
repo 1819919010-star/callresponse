@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.*;
 public abstract class CuteAnimationEligibilityMixin {
     @Inject(method="isExcluded", at=@At("HEAD"), cancellable=true)
     private static void excluded(EntityMaid maid, CallbackInfoReturnable<Boolean> cir) {
-        if (maid instanceof RevengeMaidEntity) cir.setReturnValue(true);
+        if (com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeAddonIsolation.blocksControl(maid)) cir.setReturnValue(true);
     }
 }
 

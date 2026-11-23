@@ -1,0 +1,43 @@
+{
+  "name": "Sleep Talk",
+  "icon": "minecraft:light_blue_bed",
+  "category": "callresponse:daily_life",
+  "sortnum": 7,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "At the bedside",
+      "text": "Give your tamed maid a day or night shift. Once she falls asleep, watch her speech bubbles. Make sure bubbles are enabled.$(br2)An all-day shift, sitting, lazing around or being carried won't trigger sleep talk."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "“Are you asleep?”",
+      "text": "Place two of your maids' beds within 8 blocks. Both maids must be asleep during their chatter hours.$(br2)Day-shift maids chat at world ticks 16000–18999. Night-shift maids chat at ticks 0–2999. Each tries to speak every 10–20 seconds."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Listening in",
+      "text": "Sneak up to the beds. Once still, you can release sneak and look around. Walk within 5 blocks of any maid in the group and they'll notice you and fall quiet.$(br2)Stay more than 5 blocks from every member for 10 seconds to let them chat again."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "A little comfort",
+      "text": "Each bedtime chatter bubble lowers the speaker's Fear of her owner by 1, down to zero. Each maid can lose up to 5 Fear per shift per game day. Waking up and going back to bed uses the same allowance.$(br2)Important dialogue takes priority."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "What is she dreaming?",
+      "text": "Outside chatter hours, even a maid sleeping alone may talk in her sleep. She tries every 25–45 seconds, even with her owner nearby.$(br2)Subtract her Trust in her owner from her Fear of them to find the chance of a nightmare line."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Nightmare odds",
+      "text": "Fear minus Trust · Chance$(br)Below 0 · 10%$(br)0–25 · 30%$(br)26–50 · 50%$(br)51–75 · 70%$(br)76 or more · 90%$(br2)Neither dreams nor nightmares change Trust or Fear."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Waking up",
+      "text": "When your maid wakes during chatter hours, stand within 5 blocks and you might catch her saying, “Ah... I'm going to sleep right now!”$(br2)If she wakes from a dream, you can catch a sleepy remark within 8 blocks, even while sneaking."
+    }
+  ]
+}

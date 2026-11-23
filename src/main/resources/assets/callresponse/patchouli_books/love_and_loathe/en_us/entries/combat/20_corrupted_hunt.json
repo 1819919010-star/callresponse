@@ -1,0 +1,38 @@
+{
+  "name": "Corrupted Pursuit",
+  "icon": "minecraft:goat_horn",
+  "category": "callresponse:combat",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Clearing a Camp",
+      "text": "Clear the guards from a naturally generated $(l:combat/19_revenge_maid_camp)Revenge Maid Camp$(/l). Even if some guards never spawned, an empty camp counts once spawning has finished and the whole site is loaded. You can spare the rare maid GLY."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Who Gets the Effect?",
+      "text": "Every living player inside the camp when it is cleared gains Corrupted Pursuit. Recorded participants also qualify, even after leaving or logging out. Each camp grants one level once, up to level 255, and renews the effect for one hour."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "New World Protection",
+      "text": "By default, the Overworld must run for 10 game days before camps can grant the effect. Servers can set this delay to zero. Camps cleared during protection stay cleared. A $(l:daily_life/14_malice_potion)Malice potion$(/l) can call a pursuit sooner."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Your Respawn Point",
+      "text": "With the effect active, come within 10 blocks of your latest personal respawn point in its dimension. A bed, respawn anchor or /spawnpoint sets it. Setting a new point moves the hunt. It waits in Peaceful, in Spectator mode or while you have no point set."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Where They Arrive",
+      "text": "Leave dry, solid ground with headroom near your respawn point. Hunters need 10 blocks of horizontal clearance from every living non-spectator player. If no spot is safe, they try again. A new hunt in this dimension waits until the current leader dies."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "When the Horn Sounds",
+      "text": "The effect is spent once the whole party arrives. A horn and a red chat message announce the glowing $(l:combat/21_corrupted_wine_fox)Corrupted Wine Fox$(/l) and her Revenge Maids. Levels 1–3 bring five followers. Each level from 4 adds one more, up to 32 followers."
+    }
+  ]
+}

@@ -64,6 +64,7 @@ public final class MaidSignRenderHelper {
         if (this.renderedData != data) {
             // 附件同步时数据整体替换，这里按引用比较就够
             this.holder.setSignText(data.text().setHasGlowingText(true));
+            this.holder.setSignState(MaidSignBlockEntity.wallSignState(data.item()));
             this.renderedData = data;
         }
         // 发光文字由 SignRenderer 内部用满亮度绘制，与光照无关

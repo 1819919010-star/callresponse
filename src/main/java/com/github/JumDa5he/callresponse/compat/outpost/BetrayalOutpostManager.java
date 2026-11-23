@@ -2,6 +2,9 @@ package com.github.JumDa5he.callresponse.compat.outpost;
 
 import com.github.JumDa5he.callresponse.CallResponseMod;
 import com.github.JumDa5he.callresponse.compat.emotion.EmotionBetrayalManager;
+import com.github.JumDa5he.callresponse.compat.story.CampStoryBooks;
+import com.github.JumDa5he.callresponse.compat.story.LootrCampChests;
+import com.github.JumDa5he.callresponse.mixin.accessor.OutpostLootContainerAccessor;
 import com.github.JumDa5he.callresponse.compat.wandering.WanderingMaidManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.info.ServerCustomPackLoader;
@@ -15,6 +18,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.state.properties.ChestType;
 import com.github.JumDa5he.callresponse.compat.intimidation.IntimidationManager;
@@ -23,6 +27,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.FullChunkStatus;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -46,6 +51,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
 import net.minecraft.world.level.levelgen.structure.Structure;
@@ -65,6 +71,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -82,8 +89,11 @@ public final class BetrayalOutpostManager {
     private static BetrayalOutpostManager instance;
     public static final ResourceLocation STRUCTURE_ID = new ResourceLocation("callresponse", "betrayal_maid_outpost");
     private static final ResourceLocation LAYOUT_ID = new ResourceLocation("callresponse", "outpost/betrayal_maid_outpost_layout.json");
+    private static final ResourceLocation STORY_TABLE = new ResourceLocation("callresponse", "chests/betrayal_outpost_story");
     private static final int MAX_SPAWN_ATTEMPTS = 3;
     private static final long RETRY_TICKS = 20L;
+    public static final int NATURAL_CLEAR_REWARD_TICKS = 72000;
+    private static final Set<UUID> DELIVERING_CLEAR_REWARDS = new java.util.HashSet<>();
 
     private final Map<ResourceKey<Level>, Queue<Long>> pendingChunks = new ConcurrentHashMap<>();
     private final Map<ResourceKey<Level>, Set<Long>> queuedChunks = new ConcurrentHashMap<>();
@@ -125,6 +135,14 @@ public final class BetrayalOutpostManager {
         // Bounded work over load events, not a per-tick scan of the world.
         for (int i = 0; i < 8; i++) inspectOneLoadedChunk(level);
         initializeOneReadyOutpost(level);
+        if (level.getGameTime() % 20 == 0 && !level.players().isEmpty()) {
+            var data = BetrayalOutpostSavedData.get(level);
+            Set<BetrayalOutpostSavedData.Outpost> occupiedCamps = new HashSet<>();
+            for (ServerPlayer player : level.players()) {
+                if (player.isAlive()) occupiedCamps.addAll(data.unsettledNaturalOutpostsAt(level, player.blockPosition()));
+            }
+            for (var camp : occupiedCamps) checkNaturalCampClear(level, data, camp);
+        }
     }
 
     private void inspectOneLoadedChunk(ServerLevel level) {
@@ -151,22 +169,24 @@ public final class BetrayalOutpostManager {
             BoundingBox box = start.getBoundingBox();
             String key = structureKey(level, box);
             BetrayalOutpostSavedData data = BetrayalOutpostSavedData.get(level);
-            if (data.isLegacySkipped(key)) continue;
-            if (data.contains(key) && data.plan(key) == null) {
-                // Legacy camps are never re-filled or re-spawned by the new path.
-                data.registerStructure(key, level, box, (box.minY() + box.maxY()) / 2);
+            data.confirmNaturalStructure(key);
+            if (data.isLegacySkipped(key) || data.contains(key) && data.plan(key) == null) {
+                data.registerUnspawnableNaturalStructure(key, level, box);
                 continue;
             }
-            if (data.plan(key) != null && !data.plan(key).needsSpawnWork()) continue;
+            if (data.plan(key) != null && !data.plan(key).needsInitialization()) continue;
             PoolElementStructurePiece piece = start.getPieces().stream()
                     .filter(candidate -> candidate instanceof PoolElementStructurePiece)
                     .map(candidate -> (PoolElementStructurePiece) candidate).findFirst().orElse(null);
             if (piece == null) {
                 CallResponseMod.LOGGER.error("复仇女仆据点 {} 没有可用的结构模板片段", key);
+                data.registerUnspawnableNaturalStructure(key, level, box);
                 continue;
             }
+            PendingOutpost natural = new PendingOutpost(key, box, piece.getPosition(), piece.getRotation());
+            natural.natural = true;
             pendingOutposts.computeIfAbsent(level.dimension(), ignored -> new ConcurrentHashMap<>())
-                    .putIfAbsent(key, new PendingOutpost(key, box, piece.getPosition(), piece.getRotation()));
+                    .putIfAbsent(key, natural);
         }
     }
 
@@ -186,6 +206,12 @@ public final class BetrayalOutpostManager {
         if (outpost == null) return;
         outpost.nextAttempt = level.getGameTime() + RETRY_TICKS;
         try {
+            var existing = savedData.plan(outpost.key);
+            if (existing != null && !existing.needsSpawnWork() && existing.needsStoryWork()) {
+                placeStoryBooks(level, savedData, outpost.key);
+                if (!existing.needsStoryWork()) pending.remove(outpost.key);
+                return;
+            }
             if (outpost.layout == null) {
                 var plan = savedData.plan(outpost.key);
                 outpost.layout = plan != null && !plan.markerLayout().isEmpty()
@@ -193,6 +219,7 @@ public final class BetrayalOutpostManager {
                         : plan != null ? readLayout(level) : scanMarkerLayout(level, outpost.box);
             }
             if (outpost.layout == null) {
+                if (outpost.natural) savedData.registerUnspawnableNaturalStructure(outpost.key, level, outpost.box);
                 pending.remove(outpost.key);
                 return;
             }
@@ -202,7 +229,14 @@ public final class BetrayalOutpostManager {
                 // Register the real StructureStart and its native loot independently of maid success.
                 ServerPlayer firstPlayer = nearestPlayer(level, outpost.box);
                 savedData.createPlan(outpost.key, newSpawnPlan(level, outpost.key, layout, outpost.forceGly),
-                        firstPlayer == null ? null : firstPlayer.getUUID());
+                        firstPlayer == null ? null : firstPlayer.getUUID(), outpost.natural);
+                for (ContainerInfo chest : layout.containers()) {
+                    if (STORY_TABLE.equals(chest.table())) {
+                        BlockPos pos = worldPos(outpost, chest.pos());
+                        savedData.setStoryChest(savedData.plan(outpost.key), pos, CampStoryBooks.registerChoice(level, pos, STORY_TABLE));
+                        break;
+                    }
+                }
                 savedData.setMarkerLayout(outpost.key, encodeMarkerLayout(layout));
                 savedData.markInitialized(outpost.key);
                 savedData.registerStructure(outpost.key, level, outpost.box, home);
@@ -223,12 +257,16 @@ public final class BetrayalOutpostManager {
                 }
             }
             spawnMissingMaids(level, savedData, outpost, layout, home);
+            placeStoryBooks(level, savedData, outpost.key);
+            var camp = savedData.findByKey(level, outpost.key);
+            if (camp != null) checkNaturalCampClear(level, savedData, camp);
             personalizeMaids(level, savedData, outpost.key, outpost.box);
-            if (!savedData.plan(outpost.key).needsSpawnWork()) pending.remove(outpost.key);
+            if (!savedData.plan(outpost.key).needsInitialization()) pending.remove(outpost.key);
         } catch (RuntimeException exception) {
             if (++outpost.failures >= MAX_SPAWN_ATTEMPTS) {
                 pending.remove(outpost.key);
                 savedData.skipLegacy(outpost.key);
+                if (outpost.natural) savedData.registerUnspawnableNaturalStructure(outpost.key, level, outpost.box);
             }
             CallResponseMod.LOGGER.error("Outpost initialization failed ({}/{}): {}",
                     outpost.failures, MAX_SPAWN_ATTEMPTS, outpost.key, exception);
@@ -239,6 +277,7 @@ public final class BetrayalOutpostManager {
     public void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase != TickEvent.Phase.END || !(event.player instanceof ServerPlayer player)
                 || player.tickCount % 20 != 0) return;
+        deliverClearRewards(player);
         ServerLevel level = player.serverLevel();
         BetrayalOutpostSavedData data = BetrayalOutpostSavedData.get(level);
         BetrayalOutpostSavedData.Outpost camp = data.findAt(level, player.blockPosition());
@@ -307,6 +346,7 @@ public final class BetrayalOutpostManager {
             Entity existing = level.getEntity(slot.entityId());
             if (existing instanceof EntityMaid maid && BetrayalOutpostMaidData.isOutpostMaid(maid)
                     && outpost.key.equals(BetrayalOutpostMaidData.group(maid))) {
+                if (BetrayalOutpostMaidData.isGly(maid)) data.confirmStoryGly(data.plan(outpost.key));
                 data.updateSlot(outpost.key, i, new BetrayalOutpostSavedData.SpawnSlot(
                         slot.candidate(), slot.role(), slot.entityId(), slot.attempts(), true, false));
                 continue;
@@ -325,6 +365,7 @@ public final class BetrayalOutpostManager {
                     continue;
                 }
                 // A slot becomes complete only after the real entity successfully enters the level.
+                if (BetrayalOutpostMaidData.isGly(maid)) data.confirmStoryGly(data.plan(outpost.key));
                 data.updateSlot(outpost.key, i, new BetrayalOutpostSavedData.SpawnSlot(
                         slot.candidate(), slot.role(), slot.entityId(), slot.attempts(), true, false));
             } catch (RuntimeException exception) {
@@ -332,6 +373,116 @@ public final class BetrayalOutpostManager {
                 CallResponseMod.LOGGER.error("复仇女仆据点 {} 第 {} 个出生位异常", outpost.key, i + 1, exception);
             }
         }
+    }
+
+    private static BetrayalOutpostSavedData.StoryCamp storyCamp(ServerLevel level, BlockPos pos) {
+        boolean personalChest = level.hasChunkAt(pos) && STORY_TABLE.equals(LootrCampChests.table(level.getBlockEntity(pos)));
+        return BetrayalOutpostSavedData.get(level).storyCampAt(level, pos, STORY_TABLE, personalChest);
+    }
+
+    public static boolean usesRecruitedStory(ServerLevel level, BlockPos pos) {
+        var camp = storyCamp(level, pos);
+        return camp != null && camp.choiceKnown() ? camp.plan().recruitedStory() : CampStoryBooks.selectNew(level, pos);
+    }
+
+    public static boolean hasGlyStory(ServerLevel level, BlockPos pos) {
+        var camp = storyCamp(level, pos);
+        return camp != null && camp.plan().hasGlyStory();
+    }
+
+    public static UUID storyInstance(ServerLevel level, BlockPos pos) {
+        var camp = storyCamp(level, pos);
+        return camp != null ? camp.plan().instanceId() : null;
+    }
+
+    public static boolean isStoryPending(ServerLevel level, BlockPos pos) {
+        var data = BetrayalOutpostSavedData.get(level);
+        var camp = storyCamp(level, pos);
+        if (camp != null) return camp.plan().awaitsGlyStory() && !data.isLegacySkipped(camp.key());
+        if (instance != null) {
+            var pending = instance.pendingOutposts.get(level.dimension());
+            if (pending != null && pending.values().stream().anyMatch(p -> p.box.isInside(pos)
+                    && !data.contains(p.key) && !data.isLegacySkipped(p.key))) return true;
+        }
+        // A new natural start can already have a converted chest before the load-event queue
+        // reaches its owning chunk. Inspect only its already-loaded vanilla structure references.
+        LevelChunk chunk = level.getChunkSource().getChunkNow(pos.getX() >> 4, pos.getZ() >> 4);
+        var structure = level.registryAccess().registryOrThrow(Registries.STRUCTURE).get(STRUCTURE_ID);
+        if (chunk == null || structure == null) return false;
+        boolean waitingForStart = false;
+        for (long packed : chunk.getReferencesForStructure(structure)) {
+            var owner = level.getChunkSource().getChunkNow(ChunkPos.getX(packed), ChunkPos.getZ(packed));
+            if (owner == null) {
+                waitingForStart = true;
+                continue;
+            }
+            var start = owner.getStartForStructure(structure);
+            if (start == null || !start.isValid() || !start.getBoundingBox().isInside(pos)) continue;
+            String key = structureKey(level, start.getBoundingBox());
+            if (!data.contains(key) && !data.isLegacySkipped(key)) return true;
+        }
+        return waitingForStart;
+    }
+
+    private static void placeStoryBooks(ServerLevel level, BetrayalOutpostSavedData data, String camp) {
+        var plan = data.plan(camp);
+        if (!plan.needsStoryWork()) return;
+        BlockPos pos = plan.storyChest();
+        var binding = data.lootChest(level, pos);
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (STORY_TABLE.equals(LootrCampChests.table(blockEntity))) {
+            delegateStoryToTable(data, plan);
+            return;
+        }
+        if (binding == null || !camp.equals(binding.campKey()) || !STORY_TABLE.equals(binding.lootTable())
+                || !(blockEntity instanceof RandomizableContainerBlockEntity chest)) {
+            data.retireStoryChest(plan);
+            return;
+        }
+
+        var access = (OutpostLootContainerAccessor) chest;
+        if (access.callresponse$getLootTable() != null) {
+            if (!STORY_TABLE.equals(access.callresponse$getLootTable())) {
+                data.retireStoryChest(plan);
+                return;
+            }
+            // Keep the native table bound until Lootr has a chance to convert this container.
+            // If conversion is disabled, a normal first unpack still evaluates the same table.
+            if (net.minecraftforge.fml.ModList.get().isLoaded("lootr")) {
+                delegateStoryToTable(data, plan);
+                return;
+            }
+            access.callresponse$unpackLootTable(null);
+        }
+        CompoundTag chestData = chest.getPersistentData();
+        if (!STORY_TABLE.toString().equals(chestData.getString(CampStoryBooks.TABLE_RECEIPT))) {
+            // Coordinates alone are insufficient: a player may have replaced the original chest.
+            data.retireStoryChest(plan);
+            return;
+        }
+        // The native story table supplies exactly one regular book, including if a hopper or
+        // player already unpacked it. Never replace an item the player took with a second book.
+        if (!plan.normalStoryIssued()) data.markStoryIssued(plan, false);
+        if (!plan.needsStoryWork()) return;
+        if (chestData.hasUUID(CampStoryBooks.OUTPOST_GLY_RECEIPT)
+                && plan.instanceId().equals(chestData.getUUID(CampStoryBooks.OUTPOST_GLY_RECEIPT))) {
+            data.markStoryIssued(plan, true);
+            return;
+        }
+        for (int slot = 0; slot < chest.getContainerSize(); slot++) {
+            if (!chest.getItem(slot).isEmpty()) continue;
+            chest.setItem(slot, CampStoryBooks.OUTPOST_GLY.create());
+            chestData.putUUID(CampStoryBooks.OUTPOST_GLY_RECEIPT, plan.instanceId());
+            chest.setChanged();
+            data.markStoryIssued(plan, true);
+            return;
+        }
+        // A full story chest keeps its pending receipt until a slot is free.
+    }
+
+    private static void delegateStoryToTable(BetrayalOutpostSavedData data, BetrayalOutpostSavedData.CampPlan plan) {
+        if (!plan.normalStoryIssued()) data.markStoryIssued(plan, false);
+        if (plan.needsStoryWork()) data.markStoryIssued(plan, true);
     }
 
     private static void recordSpawnFailure(BetrayalOutpostSavedData data, String key, int index,
@@ -364,7 +515,8 @@ public final class BetrayalOutpostManager {
         maid.setOwnerUUID(null);
         maid.setPersistenceRequired();
         BetrayalOutpostMaidData.initialize(maid, group, role, home);
-        maid.getFavorabilityManager().max();
+        // Use native level 3, not an addon-expanded maximum favorability.
+        maid.getFavorabilityManager().add(maid.getFavorabilityManager().getPointByLevel(3) - maid.getFavorability());
         maid.setTame(false);
         maid.setOwnerUUID(null);
         maid.setHealth(maid.getMaxHealth());
@@ -469,14 +621,24 @@ public final class BetrayalOutpostManager {
             for (int z = box.minZ() >> 4; z <= box.maxZ() >> 4; z++) {
                 LevelChunk chunk = level.getChunkSource().getChunkNow(x, z);
                 if (chunk == null) continue;
-                for (BlockEntity entity : chunk.getBlockEntities().values()) {
-                    BlockPos pos = entity.getBlockPos();
+                // Newly loaded structure markers may still be packed in the chunk's pending NBT.
+                for (BlockPos pos : chunk.getBlockEntitiesPos()) {
                     if (!box.isInside(pos)) continue;
+                    BlockEntity entity = chunk.getBlockEntity(pos, LevelChunk.EntityCreationType.CHECK);
                     if (entity instanceof OutpostMarkerBlockEntity marker) {
                         markers.add(marker);
-                    } else if (entity instanceof net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity) {
+                    } else if (STORY_TABLE.equals(LootrCampChests.table(entity))) {
+                        long seed = entity instanceof OutpostLootContainerAccessor access ? access.callresponse$getLootTableSeed() : 0L;
+                        containers.add(new ContainerInfo(pos.immutable(), null, STORY_TABLE, seed));
+                    } else if (entity instanceof RandomizableContainerBlockEntity) {
                         CompoundTag nbt = entity.saveWithoutMetadata();
                         ResourceLocation table = ResourceLocation.tryParse(nbt.getString("LootTable"));
+                        // A player/hopper can unpack the original story table before a complete
+                        // structure is ready. The native fill hook leaves its receipt in that chest.
+                        if (!nbt.contains("LootTable") && STORY_TABLE.toString().equals(
+                                nbt.getCompound("ForgeData").getString(CampStoryBooks.TABLE_RECEIPT))) {
+                            table = STORY_TABLE;
+                        }
                         if (table == null || !table.getNamespace().equals("callresponse")
                                 || !Set.of("chests/betrayal_outpost_kitchen", "chests/betrayal_outpost_storage",
                                 "chests/betrayal_outpost_enchanted", "chests/betrayal_outpost_valuables",
@@ -495,6 +657,8 @@ public final class BetrayalOutpostManager {
                 }
             }
         }
+        // The same technical block can belong to an explicitly different camp type.
+        markers.removeIf(OutpostMarkerBlockEntity::isWanderingCamp);
         var anchors = markers.stream().filter(OutpostMarkerBlockEntity::isAnchor).toList();
         if (anchors.size() != 1) {
             CallResponseMod.LOGGER.warn("Outpost {} has {} anchors; leaving legacy/unmarked structure untouched", box, anchors.size());
@@ -578,8 +742,7 @@ public final class BetrayalOutpostManager {
         AttributeInstance maxHealth = maid.getAttribute(Attributes.MAX_HEALTH);
         if (maxHealth == null) return;
 
-        double limit = BetrayalOutpostMaxHealth.ensureAndGetLimit();
-        double bonus = Math.min(maidKills, Math.max(0.0D, limit - maid.getMaxHealth()));
+        double bonus = BetrayalOutpostMaxHealth.computeRevengeHealthBonus(maidKills, maid.getMaxHealth());
         maxHealth.setBaseValue(maxHealth.getBaseValue() + bonus);
         maid.setHealth(maid.getMaxHealth());
     }
@@ -637,11 +800,11 @@ public final class BetrayalOutpostManager {
         if (movement != null) movement.setBaseValue(movement.getBaseValue() * multiplier);
     }
 
-    private static void addGlySign(EntityMaid maid) {
+    public static void addGlySign(EntityMaid maid) {
         Component[] lines = {Component.empty(),
                 Component.translatable("message.callresponse.outpost.sign.gly.1"),
                 Component.translatable("message.callresponse.outpost.sign.gly.2"), Component.empty()};
-        com.github.JumDa5he.callresponse.compat.sign.MaidSignManager.attach(maid, Items.OAK_SIGN);
+        com.github.JumDa5he.callresponse.compat.sign.MaidSignManager.attach(maid, Items.OAK_SIGN, false);
         com.github.JumDa5he.callresponse.compat.sign.MaidSignManager.setText(maid,
                 new net.minecraft.world.level.block.entity.SignText(lines, lines.clone(),
                         net.minecraft.world.item.DyeColor.CYAN, true));
@@ -665,6 +828,8 @@ public final class BetrayalOutpostManager {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void coordinateOutpostStacking(LivingEvent.LivingTickEvent event) {
+        if (event.getEntity() instanceof EntityMaid surrendered
+                && com.github.JumDa5he.callresponse.compat.winefox.WineFoxSurrender.isSurrendered(surrendered)) return;
         // New subtype's dedicated Brain is the sole behavior owner. Old saves retain this route.
         if (event.getEntity() instanceof com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeMaidEntity) return;
         if (event.getEntity() instanceof EntityMaid maid && !maid.level().isClientSide
@@ -693,7 +858,13 @@ public final class BetrayalOutpostManager {
         if (!(event.getEntity() instanceof EntityMaid victim)
                 || !BetrayalOutpostMaidData.isOutpostMaid(victim)) return;
 
-        Entity attacker = event.getSource().getEntity();
+        Entity attacker = com.github.JumDa5he.callresponse.compat.winefox.WineFoxFaction.resolveAttacker(event.getSource());
+        if (com.github.JumDa5he.callresponse.compat.winefox.WineFoxFaction.blocksAttack(attacker, victim)) {
+            if (attacker instanceof EntityMaid attackingMaid)
+                BetrayalOutpostAlertManager.clearFriendlyTargets(attackingMaid);
+            event.setCanceled(true);
+            return;
+        }
         if (attacker instanceof EntityMaid attackingMaid
                 && BetrayalOutpostMaidData.areSisters(attackingMaid, victim)) {
             attackingMaid.setTarget(null);
@@ -704,7 +875,15 @@ public final class BetrayalOutpostManager {
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onNaturalCampAttack(LivingAttackEvent event) {
+        if (event.getAmount() > 0) recordCampCombat(event.getEntity(), event.getSource());
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onOutpostCombatHurt(net.minecraftforge.event.entity.living.LivingDamageEvent event) {
+        if (event.getAmount() > 0) recordCampCombat(event.getEntity(), event.getSource());
+        if (event.getEntity() instanceof EntityMaid surrendered
+                && com.github.JumDa5he.callresponse.compat.winefox.WineFoxSurrender.isSurrendered(surrendered)) return;
         if (event.getAmount() > 0 && event.getEntity() instanceof EntityMaid maid
                 && BetrayalOutpostMaidData.isOutpostMaid(maid)) {
             Entity source = event.getSource().getEntity();
@@ -712,8 +891,137 @@ public final class BetrayalOutpostManager {
         }
     }
 
+    /** A real attributed attack is sufficient, including a hit blocked by a player's shield. */
+    public static void recordCampCombat(LivingEntity victim, net.minecraft.world.damagesource.DamageSource source) {
+        if (!(victim.level() instanceof ServerLevel)) return;
+        Entity actor = attackActor(source);
+        if (victim instanceof EntityMaid guard) registerCampParticipant(guard, actor);
+        if (actor instanceof EntityMaid guard && victim instanceof ServerPlayer player)
+            registerCampParticipant(guard, player);
+    }
+
+    private static Entity attackActor(net.minecraft.world.damagesource.DamageSource source) {
+        if (source == null) return null;
+        Entity actor = source.getEntity() != null ? source.getEntity() : source.getDirectEntity();
+        Set<UUID> visited = new java.util.HashSet<>();
+        for (int depth = 0; actor instanceof net.minecraft.world.entity.projectile.Projectile projectile
+                && depth < 8 && visited.add(actor.getUUID()); depth++) {
+            Entity owner = projectile.getOwner();
+            if (owner == null) return null;
+            actor = owner;
+        }
+        return actor;
+    }
+
+    private static void registerCampParticipant(EntityMaid guard, Entity actor) {
+        if (!(guard.level() instanceof ServerLevel level) || actor == null || actor.level() != level
+                || !BetrayalOutpostMaidData.isOutpostMaid(guard) || BetrayalOutpostMaidData.isGly(guard)
+                || com.github.JumDa5he.callresponse.compat.winefox.WineFoxSurrender.isSurrendered(guard)) return;
+        UUID owner = null;
+        if (actor instanceof ServerPlayer player) {
+            if (player.isSpectator()) return;
+            owner = player.getUUID();
+        } else if (actor instanceof net.minecraft.world.entity.OwnableEntity owned) {
+            owner = owned.getOwnerUUID(); // Standard owner UUID remains useful while the player is offline.
+        }
+        if (owner == null) return;
+        BetrayalOutpostSavedData data = BetrayalOutpostSavedData.get(level);
+        String group = BetrayalOutpostMaidData.group(guard);
+        var camp = data.findByKey(level, group);
+        if (camp == null) return;
+        double radius = BetrayalOutpostMaidData.CAMP_ACTIVITY_RADIUS;
+        if (actor.distanceToSqr(camp.center().getX() + 0.5D, camp.center().getY(), camp.center().getZ() + 0.5D)
+                <= radius * radius) data.recordParticipant(group, guard.getUUID(), owner);
+    }
+
+    /** Invoked only from the existing EntityMaid death-confirmed paths, never LivingDeathEvent. */
+    public static void onConfirmedGuardDeath(EntityMaid maid, net.minecraft.world.damagesource.DamageSource source) {
+        if (!(maid.level() instanceof ServerLevel level) || !BetrayalOutpostMaidData.isOutpostMaid(maid)
+                || BetrayalOutpostMaidData.isGly(maid)) return;
+        registerCampParticipant(maid, attackActor(source));
+        BetrayalOutpostSavedData data = BetrayalOutpostSavedData.get(level);
+        String group = BetrayalOutpostMaidData.group(maid);
+        if (data.confirmGuardDeath(group, maid.getUUID())) {
+            var camp = data.findByKey(level, group);
+            if (camp != null) checkNaturalCampClear(level, data, camp);
+        }
+    }
+
+    public static boolean naturalRewardsAllowed(long overworldGameTime, int protectionDays) {
+        return Math.max(0L, overworldGameTime) / 24000L >= Math.max(0, Math.min(100, protectionDays));
+    }
+
+    static void checkNaturalCampClear(ServerLevel level, BetrayalOutpostSavedData data,
+                                      BetrayalOutpostSavedData.Outpost camp) {
+        var plan = data.plan(camp.key());
+        if (plan == null || !plan.natural() || plan.rewardSettled()) return;
+        boolean confirmed = plan.allGuardsConfirmedDead();
+        if (!confirmed && plan.needsSpawnWork() && !data.isLegacySkipped(camp.key())) return;
+
+        List<ServerPlayer> inside = level.players().stream()
+                .filter(player -> player.isAlive() && camp.box().isInside(player.blockPosition())).toList();
+        Set<UUID> participants = plan.participants();
+        // Do not consume an empty camp before anyone has had a chance to visit it.
+        if (!confirmed && (inside.isEmpty() && participants.isEmpty()
+                || !campAreaIsClear(level, camp, plan))) return;
+
+        boolean allowed = naturalRewardsAllowed(level.getServer().overworld().getGameTime(),
+                com.github.JumDa5he.callresponse.config.EmotionPassiveConfig.NATURAL_PURSUIT_PROTECTION_DAYS.get());
+        Set<UUID> present = new HashSet<>();
+        for (ServerPlayer player : inside) present.add(player.getUUID());
+        if (!data.settleClearedCamp(camp.key(), allowed, !confirmed, present) || !allowed) return;
+        for (ServerPlayer player : inside) deliverClearRewards(player);
+        for (UUID participant : participants) {
+            if (present.contains(participant)) continue;
+            ServerPlayer player = level.getServer().getPlayerList().getPlayer(participant);
+            if (player != null) deliverClearRewards(player);
+        }
+    }
+
+    private static boolean campAreaIsClear(ServerLevel level, BetrayalOutpostSavedData.Outpost camp,
+                                          BetrayalOutpostSavedData.CampPlan plan) {
+        BoundingBox box = camp.box();
+        for (int x = box.minX() >> 4; x <= box.maxX() >> 4; x++) {
+            for (int z = box.minZ() >> 4; z <= box.maxZ() >> 4; z++) {
+                LevelChunk chunk = level.getChunkSource().getChunkNow(x, z);
+                // A loaded block chunk can still be waiting for its saved entities to arrive.
+                if (chunk == null || !chunk.getFullStatus().isOrAfter(FullChunkStatus.FULL)
+                        || !level.areEntitiesLoaded(ChunkPos.asLong(x, z))) return false;
+            }
+        }
+        Set<UUID> confirmedDead = plan.deadGuards();
+        return level.getEntitiesOfClass(EntityMaid.class, AABB.of(box), maid ->
+                box.isInside(maid.blockPosition()) && BetrayalOutpostMaidData.isOutpostMaid(maid)
+                && camp.key().equals(BetrayalOutpostMaidData.group(maid)) && !BetrayalOutpostMaidData.isGly(maid)
+                && (maid.isAlive() || !confirmedDead.contains(maid.getUUID()))).isEmpty();
+    }
+
+    @SubscribeEvent
+    public void onClearRewardLogin(net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) deliverClearRewards(player);
+    }
+
+    /** Serialized on the server; failed application remains pending and retries at most once per second. */
+    public static void deliverClearRewards(ServerPlayer player) {
+        if (!player.isAlive() || player.isRemoved() || !DELIVERING_CLEAR_REWARDS.add(player.getUUID())) return;
+        try {
+            BetrayalOutpostSavedData data = BetrayalOutpostSavedData.get(player.serverLevel());
+            int remainingBudget = 8;
+            for (UUID camp : data.pendingClearRewards(player.getUUID())) {
+                if (remainingBudget-- <= 0) break;
+                if (!com.github.JumDa5he.callresponse.compat.winefox.WineFoxPotions
+                        .applyMaliceReward(player, NATURAL_CLEAR_REWARD_TICKS)) break;
+                data.consumeClearReward(player.getUUID(), camp);
+            }
+        } finally {
+            DELIVERING_CLEAR_REWARDS.remove(player.getUUID());
+        }
+    }
+
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onGlyHurt(net.minecraftforge.event.entity.living.LivingDamageEvent event) {
+        if (event.getEntity() instanceof EntityMaid surrendered
+                && com.github.JumDa5he.callresponse.compat.winefox.WineFoxSurrender.isSurrendered(surrendered)) return;
         if (event.getAmount() <= 0 || event.getSource().is(net.minecraft.world.damagesource.DamageTypes.STARVE)) return;
         if (event.getEntity() instanceof EntityMaid maid && BetrayalOutpostMaidData.isOutpostMaid(maid)
                 && BetrayalOutpostMaidData.isGly(maid)
@@ -865,6 +1173,7 @@ public final class BetrayalOutpostManager {
         private CampLayout layout;
         private int failures;
         private boolean forceGly;
+        private boolean natural;
 
         private PendingOutpost(String key, BoundingBox box, BlockPos origin, Rotation rotation) {
             this.key = key;

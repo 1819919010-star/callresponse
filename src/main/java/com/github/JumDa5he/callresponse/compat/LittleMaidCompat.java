@@ -1,6 +1,7 @@
 package com.github.JumDa5he.callresponse.compat;
 
 import com.github.JumDa5he.callresponse.compat.bauble.NoEatBauble;
+import com.github.JumDa5he.callresponse.compat.birthday.BirthdayManager;
 import com.github.JumDa5he.callresponse.compat.sign.MaidSignManager;
 import com.github.JumDa5he.callresponse.compat.sign.MaidSignDeterrence;
 import com.github.JumDa5he.callresponse.compat.sign.client.MaidSignTips;
@@ -75,8 +76,10 @@ import java.util.List;
 public class LittleMaidCompat implements ILittleMaid {
 
     public LittleMaidCompat() {
+        com.github.JumDa5he.callresponse.compat.migration.MaidFileManagerCompat.register();
         // 注册所有事件监听
         MinecraftForge.EVENT_BUS.register(new EmotionEventListener());
+        MinecraftForge.EVENT_BUS.register(new EmotionAttributeManager());
         MinecraftForge.EVENT_BUS.register(new EmotionActiveDialogue());
         MinecraftForge.EVENT_BUS.register(new EmotionBetrayalManager());
         MinecraftForge.EVENT_BUS.register(new HungerManager());
@@ -102,9 +105,14 @@ public class LittleMaidCompat implements ILittleMaid {
         // 以 Class 注册，确保 Forge/TLM 各伤害阶段的解取消与原始伤害值恢复监听器真正生效。
         MinecraftForge.EVENT_BUS.register(HuntTargetProtectionBypass.class);
         MinecraftForge.EVENT_BUS.register(new WanderingMaidManager());
+        MinecraftForge.EVENT_BUS.register(new com.github.JumDa5he.callresponse.compat.wanderingcamp.WanderingCampManager());
         MinecraftForge.EVENT_BUS.register(new TradingMaidManager());
         MinecraftForge.EVENT_BUS.register(new TalkEventManager());
         MinecraftForge.EVENT_BUS.register(new NpcEventManager());
+        MinecraftForge.EVENT_BUS.register(new BirthdayManager());
+        MinecraftForge.EVENT_BUS.register(new com.github.JumDa5he.callresponse.compat.sleep.SleepDialogueManager());
+        MinecraftForge.EVENT_BUS.register(new com.github.JumDa5he.callresponse.compat.emotion.OwnerAdvancementResponse());
+        MinecraftForge.EVENT_BUS.register(new com.github.JumDa5he.callresponse.compat.broadcast.EventDialogueBridge());
         MinecraftForge.EVENT_BUS.register(new IntimidationManager());
         MinecraftForge.EVENT_BUS.register(new MaidSignManager());
         MinecraftForge.EVENT_BUS.register(new MaidSignDeterrence());
@@ -120,6 +128,7 @@ public class LittleMaidCompat implements ILittleMaid {
         MinecraftForge.EVENT_BUS.register(new OutpostRecognitionManager());
         MinecraftForge.EVENT_BUS.register(new OutpostLootAccessManager());
         MinecraftForge.EVENT_BUS.register(new PrincessCarryManager());
+        MinecraftForge.EVENT_BUS.register(new com.github.JumDa5he.callresponse.compat.playercarry.PlayerCarryManager());
         MinecraftForge.EVENT_BUS.register(new JealousyCageManager());
         HuntGunEventBridge.register();
         MinecraftForge.EVENT_BUS.register(NoEatBauble.class);
@@ -149,6 +158,7 @@ public class LittleMaidCompat implements ILittleMaid {
     @Override
     public void addExtraMaidBrain(ExtraMaidBrainManager manager) {
         manager.addExtraMaidBrain(new CustomExtraMaidBrain());
+        manager.addExtraMaidBrain(com.github.JumDa5he.callresponse.compat.wanderingcamp.CampRoutineBehavior.EXTENSION);
     }
 
     @Override

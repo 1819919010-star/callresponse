@@ -16,7 +16,7 @@ public abstract class AddonYsmOverlayMixin {
     private static Object entity(java.lang.reflect.Method method, Object receiver, Object[] args)
             throws java.lang.reflect.InvocationTargetException, IllegalAccessException {
         Object entity = method.invoke(receiver, args);
-        return entity instanceof RevengeMaidEntity ? null : entity;
+        return com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeAddonIsolation.blocksControl(entity) ? null : entity;
     }
 }
 

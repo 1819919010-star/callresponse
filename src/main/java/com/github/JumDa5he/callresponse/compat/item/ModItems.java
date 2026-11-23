@@ -6,6 +6,7 @@ import com.github.JumDa5he.callresponse.compat.bauble.NoEatBauble;
 import com.github.JumDa5he.callresponse.compat.block.ModBlocks;
 import com.github.JumDa5he.callresponse.compat.facility.FacilityCapacityToolItem;
 import com.github.JumDa5he.callresponse.compat.disguise.DisguiseItem;
+import com.github.JumDa5he.callresponse.compat.birthday.BirthdayCardItem;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -22,6 +23,11 @@ import java.util.function.Supplier;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, CallResponseMod.MOD_ID);
+    public static final Supplier<Item> WINE_FOX_SPAWN_EGG = ITEMS.register("corrupted_wine_fox_spawn_egg",
+            WineFoxSpawnEggItem::new);
+    public static final Supplier<Item> REMNANT_MEMORY = ITEMS.register("remnant_memory",
+            () -> new com.github.JumDa5he.callresponse.compat.winefox.RemnantMemoryItem(
+                    new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
     public static final Supplier<Item> ALLIED_REVENGE_MAID_SPAWN_EGG = ITEMS.register("allied_revenge_maid_spawn_egg",
             () -> new RevengeMaidSpawnEggItem(true));
     public static final Supplier<Item> REVENGE_MAID_SPAWN_EGG = ITEMS.register("revenge_maid_spawn_egg",
@@ -29,6 +35,9 @@ public class ModItems {
 
     public static final Supplier<Item> EMOTION_BOOK = ITEMS.register("emotion_book",
             () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
+
+    public static final Supplier<Item> BIRTHDAY_CARD = ITEMS.register("birthday_card",
+            () -> new BirthdayCardItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
 
     public static final Supplier<Item> NO_EAT_BAUBLE = ITEMS.register("noeat_bauble",
             () -> new NoEatBauble(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
@@ -71,7 +80,16 @@ public class ModItems {
                     .title(Component.translatable("itemGroup.callresponse"))
                     .displayItems((params, output) -> {
                         output.accept(EMOTION_BOOK.get());
+                        output.accept(BIRTHDAY_CARD.get());
                         output.accept(REVENGE_MAID_SPAWN_EGG.get());
+                        output.accept(WINE_FOX_SPAWN_EGG.get());
+                        output.accept(REMNANT_MEMORY.get());
+                        output.accept(net.minecraft.world.item.alchemy.PotionUtils.setPotion(
+                                new ItemStack(net.minecraft.world.item.Items.POTION),
+                                com.github.JumDa5he.callresponse.compat.winefox.WineFoxPotions.MALICE.get()));
+                        output.accept(net.minecraft.world.item.alchemy.PotionUtils.setPotion(
+                                new ItemStack(net.minecraft.world.item.Items.POTION),
+                                com.github.JumDa5he.callresponse.compat.winefox.WineFoxPotions.DESSERT.get()));
                         output.accept(ALLIED_REVENGE_MAID_SPAWN_EGG.get());
                         output.accept(NO_EAT_BAUBLE.get());
                         output.accept(MORE_EAT_BAUBLE.get());

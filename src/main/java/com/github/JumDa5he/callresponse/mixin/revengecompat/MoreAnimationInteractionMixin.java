@@ -11,11 +11,11 @@ import org.spongepowered.asm.mixin.injection.callback.*;
 public abstract class MoreAnimationInteractionMixin {
     @Inject(method="onDeath", at=@At("HEAD"), cancellable=true)
     private static void death(net.minecraftforge.event.entity.living.LivingDeathEvent event, CallbackInfo ci) {
-        if (event.getEntity() instanceof RevengeMaidEntity) ci.cancel();
+        if (com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeAddonIsolation.blocksControl(event.getEntity())) ci.cancel();
     }
     @Inject(method="requestInteraction(Lcom/github/tartaricacid/touhoulittlemaid/entity/passive/EntityMaid;Ljava/lang/String;Lnet/minecraft/world/entity/Entity;)Z",
             at=@At("HEAD"), cancellable=true)
     private static void request(EntityMaid maid, String type, net.minecraft.world.entity.Entity target, CallbackInfoReturnable<Boolean> cir) {
-        if (maid instanceof RevengeMaidEntity || target instanceof RevengeMaidEntity) cir.setReturnValue(false);
+        if (com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeAddonIsolation.blocksControl(maid) || com.github.JumDa5he.callresponse.compat.outpost.entity.RevengeAddonIsolation.blocksControl(target)) cir.setReturnValue(false);
     }
 }

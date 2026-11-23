@@ -1,0 +1,33 @@
+# Local Gradle state and game runs
+/.gradle*/
+/build/
+/out/
+/bin/
+/run/
+/logs/
+/crash-reports/
+/reports/
+/libs/
+/src/generated/resources/.cache/
+*.log
+*.class
+*.jar
+!/gradle/wrapper/gradle-wrapper.jar
+
+# IDE files
+/.idea/
+/.vscode/
+/.settings/
+/.classpath
+/.project
+*.iml
+
+# Local working notes, tests and backups
+/.codex*/
+/.agents/
+/backups/
+/tools/
+/scripts/
+/*.md
+/*.txt
+/*.zip

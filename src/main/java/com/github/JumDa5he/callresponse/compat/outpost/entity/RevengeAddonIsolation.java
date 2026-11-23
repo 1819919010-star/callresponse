@@ -10,7 +10,11 @@ public final class RevengeAddonIsolation {
     private record Exit(Method active, Method cancel) {}
     private static List<Exit> exits;
     private static final Set<EntityMaid> RELEASED = Collections.newSetFromMap(new WeakHashMap<>());
-    public static void releaseCuteOwnedState(RevengeMaidEntity maid) {
+    public static boolean blocksControl(Object entity) {
+        return entity instanceof RevengeMaidEntity || entity instanceof EntityMaid maid
+                && com.github.JumDa5he.callresponse.compat.winefox.WineFoxSurrender.isSurrendered(maid);
+    }
+    public static void releaseCuteOwnedState(EntityMaid maid) {
         if (maid.level().isClientSide || !RELEASED.add(maid)) return;
         if (exits == null) {
             List<Exit> found = new ArrayList<>();
